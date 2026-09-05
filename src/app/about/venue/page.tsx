@@ -1,39 +1,65 @@
-import type { Metadata } from 'next';
-import { getSiteConfig } from '@/lib/content';
-import { VenueClient } from './VenueClient';
+import type { Metadata } from "next";
+import { constructMetadata } from "@/lib/metadata";
+import { getSiteConfig } from "@/lib/content";
+import { VenueClient } from "./VenueClient";
+import { MapPin, Navigation } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
-export const metadata: Metadata = {
-  title: 'Venue, Campus Guide & Travel Directions | GIKI Topi',
-  description: 'Detailed visitor guide for GIKI Topi: M-1 motorway driving directions, airport shuttle schedules, student hostel accommodations, and campus security clearance protocols.',
-};
+export const metadata: Metadata = constructMetadata({
+  title: "Venue, Campus Guide & Travel Directions | GIKI Topi",
+  description:
+    "Detailed visitor guide for GIKI Topi: M-1 motorway driving directions, airport shuttle schedules, student hostel accommodations, and campus security clearance protocols.",
+  path: "/about/venue",
+});
 
 export default function VenuePage() {
   const siteConfig = getSiteConfig();
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-10">
-      {/* Header */}
-      <header className="space-y-4 max-w-3xl">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-slate-100 text-primary border border-slate-200">
-            Campus Logistics
-          </span>
-          <span className="text-xs font-mono text-neutral-gray uppercase tracking-wider">
-            PRD §18.2
-          </span>
-        </div>
-        <h1 className="text-3xl sm:text-5xl font-heading font-extrabold text-ink tracking-tight">
-          Venue, Travel & Campus Guide
-        </h1>
-        <p className="text-sm sm:text-base text-neutral-gray leading-relaxed">
-          The Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI) provides a secure,
-          picturesque, and technologically advanced backdrop for three days of intense diplomacy and judicial advocacy.
-          Review transportation guidelines, security protocols, and on-campus facilities below.
-        </p>
-      </header>
+    <div className="space-y-12">
+      {/* Modern Atmospheric Venue Hero */}
+      <section className="relative overflow-hidden bg-[#070B19] text-white py-14 sm:py-20 border-b border-white/10">
+        <div className="absolute inset-0 bg-radial-glow-dual opacity-40 pointer-events-none" />
+        <div className="absolute inset-0 bg-tech-grid opacity-20 pointer-events-none" />
 
-      {/* Venue Client Island */}
-      <VenueClient siteConfig={siteConfig} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-white/10 text-gray-200 border border-white/15">
+              <MapPin className="w-3.5 h-3.5 text-[#00B4A6]" />
+              GIKI Campus Headquarters
+            </span>
+            <span className="text-xs font-mono text-gray-400 uppercase tracking-widest">
+              Topi, Khyber Pakhtunkhwa
+            </span>
+          </div>
+
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold text-white tracking-tight leading-tight max-w-4xl">
+            Venue, Travel &amp; <span className="text-gradient-silver">Campus Guide</span>
+          </h1>
+
+          <p className="text-sm sm:text-base text-gray-300 max-w-3xl leading-relaxed">
+            The Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI) provides a secure, picturesque, and technologically advanced collegiate backdrop nestled in the foothills of Topi. Review directions, airport shuttles, residential hostelling, and security checkpoint clearance below.
+          </p>
+
+          <div className="pt-2 flex flex-wrap items-center gap-4">
+            <Button
+              variant="track-moot"
+              href="https://maps.google.com/?q=Ghulam+Ishaq+Khan+Institute+of+Engineering+Sciences+and+Technology"
+              icon={<Navigation className="w-4 h-4" />}
+            >
+              Open in Google Maps
+            </Button>
+            <Button variant="secondary" href="/schedule">
+              Conference Schedule
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Interactive Body */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <VenueClient siteConfig={siteConfig} />
+      </main>
     </div>
   );
 }

@@ -2,14 +2,14 @@
   {
     "id": "faq-1",
     "category": "general",
-    "question": "What is the relationship between GIMUN and the GIKI Moot Cup?",
-    "answer": "GIMUN (Model United Nations) and the GIKI Moot Cup (Moot Court Competition) are two concurrent flagship academic symposiums organized by the student leadership at Ghulam Ishaq Khan Institute (GIKI), Topi. They share event dates, campus facilities, evening socials, and opening/closing ceremonies, while maintaining separate, rigorous competitive frameworks and judicial/diplomatic evaluations."
+    "question": "What is the relationship between GIMUN and GMC?",
+    "answer": "GIMUN (Model United Nations) and GMC (GIKI Moot Court) are two concurrent flagship academic symposiums organized by the student leadership at Ghulam Ishaq Khan Institute (GIKI), Topi. They share event dates, campus facilities, evening socials, and opening/closing ceremonies, while maintaining separate, rigorous competitive frameworks and judicial/diplomatic evaluations."
   },
   {
     "id": "faq-2",
     "category": "general",
     "question": "Who is eligible to participate in the symposiums?",
-    "answer": "GIMUN welcomes delegates from secondary schools (A-Levels/F.Sc) through university undergraduate and postgraduate programs across Pakistan and abroad. The GIKI Moot Cup is open to enrolled students from university law faculties, law colleges, and authorized moot court societies (teams of 2 to 4 students)."
+    "answer": "GIMUN welcomes delegates from secondary schools (A-Levels/F.Sc) through university undergraduate and postgraduate programs across Pakistan and abroad. GMC is open to enrolled students from university law faculties, law colleges, and authorized moot court societies (teams of 2 to 4 students)."
   },
   {
     "id": "faq-3",
@@ -21,13 +21,13 @@
     "id": "faq-4",
     "category": "registration-fees",
     "question": "Does submitting the registration form charge my card or bank account?",
-    "answer": "No. Registration through this web platform is strictly non-payment. GIMUN & GIKI Moot Cup does not collect credit cards or bank payments online. Once your application or delegation roster is approved, our Organizing Committee will issue a formal acceptance letter and invoice with official university bank transfer instructions."
+    "answer": "No. Registration through this web platform is strictly non-payment. GIMUN & GMC does not collect credit cards or bank payments online. Once your application or delegation roster is approved, our Organizing Committee will issue a formal acceptance letter and invoice with official university bank transfer instructions."
   },
   {
     "id": "faq-5",
     "category": "registration-fees",
     "question": "Can I apply as an individual delegate or only as part of an institutional delegation?",
-    "answer": "For GIMUN, applicants may register either as an independent Individual Delegate or as part of an Institutional Delegation (2 to 20 delegates managed by a Head Delegate or Faculty Advisor). For the GIKI Moot Cup, registrations must be submitted as teams of 2 to 4 advocates (strictly 2 oralists plus optional researchers)."
+    "answer": "For GIMUN, applicants may register either as an independent Individual Delegate or as part of an Institutional Delegation (2 to 20 delegates managed by a Head Delegate or Faculty Advisor). For GMC, registrations must be submitted as teams of 2 to 4 advocates (strictly 2 oralists plus optional researchers)."
   },
   {
     "id": "faq-6",
@@ -62,8 +62,8 @@
   {
     "id": "faq-11",
     "category": "moot-cup-specific",
-    "question": "What citation format is required for Moot Cup written memorials?",
-    "answer": "All written memorials must adhere strictly to the Oxford University Standard for the Citation of Legal Authorities (OSCOLA) 4th Edition. Memorials must include title pages, tables of authorities, statements of jurisdiction, and summary of pleadings. Strict word count limits and penal deductions are enforced per the Moot Rules."
+    "question": "What citation format is required for GMC written memorials?",
+    "answer": "All written memorials must adhere strictly to the Oxford University Standard for the Citation of Legal Authorities (OSCOLA) 4th Edition. Memorials must include title pages, tables of authorities, statements of jurisdiction, and summary of pleadings. Strict word count limits and penal deductions are enforced per the GMC Rules."
   },
   {
     "id": "faq-12",
@@ -93,6 +93,6 @@
     "id": "faq-16",
     "category": "logistics",
     "question": "What are the campus security and entry protocols?",
-    "answer": "GIKI maintains strict perimeter security. Confirmed participants must present original government-issued CNIC or B-Form alongside their official GIMUN/Moot Cup Registration Reference Letter at the main security gate to receive their campus access passes. Delegations traveling via institutional buses must register vehicle registration numbers in advance."
+    "answer": "GIKI maintains strict perimeter security. Confirmed participants must present original government-issued CNIC or B-Form alongside their official GIMUN / GMC Registration Reference Letter at the main security gate to receive their campus access passes. Delegations traveling via institutional buses must register vehicle registration numbers in advance."
   }
 ]

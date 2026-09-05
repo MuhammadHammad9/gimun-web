@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -19,10 +19,10 @@ export function ClosedRegistrationBanner({
   const isGimun = track === 'gimun';
 
   const trackTitle = isMoot
-    ? 'GIKI Moot Court Competition'
+    ? 'GIKI Moot Court (GMC)'
     : isGimun
     ? 'GIKI Model United Nations (GIMUN)'
-    : 'GIMUN & GIKI Moot Cup 2026';
+    : 'GIMUN & GMC 2027';
 
   return (
     <div className="max-w-2xl mx-auto p-6 md:p-10 rounded-section bg-surface-elevated border border-whisper-border shadow-card text-center space-y-6">

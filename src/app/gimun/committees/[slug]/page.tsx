@@ -7,6 +7,8 @@ import { CountryMatrix } from '@/components/ui/CountryMatrix';
 import { Download, ArrowLeft } from 'lucide-react';
 import { getCommittees, getCommitteeBySlug, getDocuments } from '@/lib/content';
 
+import { constructMetadata } from '@/lib/metadata';
+
 interface CommitteePageProps {
   params: Promise<{ slug: string }>;
 }
@@ -21,12 +23,18 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: CommitteePageProps): Promise<Metadata> {
   const { slug } = await params;
   const committee = getCommitteeBySlug(slug);
-  if (!committee) return { title: 'Committee Not Found | GIMUN 2027' };
+  if (!committee) {
+    return constructMetadata({
+      title: 'Committee Not Found | GIMUN 2027',
+      path: `/gimun/committees/${slug}`,
+    });
+  }
 
-  return {
+  return constructMetadata({
     title: `${committee.name} | GIMUN 2027 Committee Dossier`,
     description: committee.shortDescription,
-  };
+    path: `/gimun/committees/${slug}`,
+  });
 }
 
 export default async function CommitteeDetailPage({ params }: CommitteePageProps) {

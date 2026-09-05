@@ -24,7 +24,7 @@ const CATEGORY_LABELS: Record<FaqCategory, string> = {
   general: 'General Overview',
   'registration-fees': 'Registration & Fees',
   'gimun-specific': 'GIMUN Track',
-  'moot-cup-specific': 'GIKI Moot Cup',
+  'moot-cup-specific': 'GMC Track',
   logistics: 'Campus & Logistics',
 };
 
@@ -136,25 +136,27 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
           {(Object.keys(CATEGORY_LABELS) as FaqCategory[]).map((cat) => {
             const isActive = activeCategory === cat;
             return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-button text-xs font-semibold transition-all ${
-                  isActive
-                    ? 'bg-primary text-white shadow-xs'
-                    : 'bg-white text-neutral-gray hover:text-ink border border-whisper-border hover:border-slate-300'
-                }`}
-              >
-                <span>{CATEGORY_LABELS[cat]}</span>
-                <span
-                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-neutral-gray'
+              <span key={cat} id={cat === 'registration-fees' ? 'fees' : undefined}>
+                <button
+                  id={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-button text-xs font-semibold transition-all ${
+                    isActive
+                      ? 'bg-primary text-white shadow-xs'
+                      : 'bg-white text-neutral-gray hover:text-ink border border-whisper-border hover:border-slate-300'
                   }`}
                 >
-                  {counts[cat]}
-                </span>
-              </button>
+                  <span>{CATEGORY_LABELS[cat]}</span>
+                  <span
+                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                      isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-neutral-gray'
+                    }`}
+                  >
+                    {counts[cat]}
+                  </span>
+                </button>
+              </span>
             );
           })}
         </div>
@@ -167,7 +169,8 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
           return (
             <div
               key={faq.id}
-              className={`rounded-card border transition-all duration-200 ${
+              id={faq.id}
+              className={`rounded-card border transition-all duration-200 scroll-mt-24 ${
                 isOpen
                   ? 'bg-surface-elevated border-slate-300/80 shadow-card'
                   : 'bg-white border-whisper-border hover:border-slate-300'

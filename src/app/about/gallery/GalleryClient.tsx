@@ -23,7 +23,7 @@ type CategoryTab = 'all' | 'gimun' | 'moot-cup' | 'campus' | 'ceremonies';
 const CATEGORY_TABS: { id: CategoryTab; label: string }[] = [
   { id: 'all', label: 'All Archives' },
   { id: 'gimun', label: 'GIMUN Debates' },
-  { id: 'moot-cup', label: 'Moot Courtroom' },
+  { id: 'moot-cup', label: 'GMC Courtroom' },
   { id: 'campus', label: 'Campus & Culture' },
   { id: 'ceremonies', label: 'Ceremonies & Awards' },
 ];
@@ -148,20 +148,20 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
 
                 {/* Top Badges */}
                 <div className="relative z-10 flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-black/40 backdrop-blur-md text-white border border-white/15">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-black/60 text-white border border-white/20">
                     <Calendar className="w-3 h-3 text-accent" />
                     <span>{item.edition}</span>
                   </span>
 
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase bg-white/10 backdrop-blur-md text-white/90 border border-white/10">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase bg-black/50 text-white/90 border border-white/20">
                     <Layers className="w-3 h-3" />
                     <span>{item.category.replace('-', ' ')}</span>
                   </span>
                 </div>
 
                 {/* Zoom Hint Icon in Center (Hover State) */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
-                  <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transform group-hover:scale-110 transition-transform">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
+                  <div className="w-12 h-12 rounded-full bg-black/50 border border-white/30 flex items-center justify-center text-white transform group-hover:scale-110 transition-transform">
                     <ZoomIn className="w-6 h-6" />
                   </div>
                 </div>
@@ -276,7 +276,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                 />
 
                 <div className="relative z-10 space-y-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/50 backdrop-blur-md text-xs font-mono text-white/90 border border-white/20">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/70 text-xs font-mono text-white/90 border border-white/20">
                     <Camera className="w-3.5 h-3.5 text-accent" />
                     <span>Official Symposium Photographic Archive</span>
                   </div>

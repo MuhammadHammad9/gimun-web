@@ -63,17 +63,23 @@ export async function POST(req: NextRequest) {
     const { name, email, queryType, message, _hp, _ts } = body || {};
 
     if (_hp && String(_hp).trim().length > 0) {
-      return NextResponse.json({
-        success: true,
-        message: 'Your inquiry has been received.',
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Automated inquiry blocked by anti-bot honeypot filter.',
+        },
+        { status: 400 }
+      );
     }
 
     if (_ts && Date.now() - Number(_ts) < MIN_FILL_TIME_MS) {
-      return NextResponse.json({
-        success: true,
-        message: 'Your inquiry has been received.',
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Submission velocity too fast. Automated submissions are blocked.',
+        },
+        { status: 400 }
+      );
     }
 
     const formData: ContactFormData = { name, email, queryType, message };

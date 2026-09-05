@@ -15,14 +15,14 @@ export function constructMetadata({
   path = '',
 }: MetadataProps = {}): Metadata {
   const siteConfig = getSiteConfig();
-  const defaultTitle = `${siteConfig?.eventNames?.combined || 'GIMUN & GIKI Moot Cup'} | Official Website`;
+  const defaultTitle = `${siteConfig?.eventNames?.combined || 'GIMUN & GMC'} | Official Website`;
   const resolvedTitle = title || defaultTitle;
   const url = `https://gimungiki.org${path}`;
 
   return {
     title: {
       default: resolvedTitle,
-      template: `%s | ${siteConfig?.eventNames?.combined || 'GIMUN & GIKI Moot Cup'}`,
+      template: `%s | ${siteConfig?.eventNames?.combined || 'GIMUN & GMC'}`,
     },
     description,
     metadataBase: new URL('https://gimungiki.org'),
@@ -30,13 +30,13 @@ export function constructMetadata({
       title: resolvedTitle,
       description,
       url,
-      siteName: siteConfig?.eventNames?.combined || 'GIMUN & GIKI Moot Cup',
+      siteName: siteConfig?.eventNames?.combined || 'GIMUN & GMC',
       images: [
         {
           url: image,
           width: 1200,
           height: 630,
-          alt: 'GIMUN & GIKI Moot Cup — Where Diplomacy Meets the Courtroom',
+          alt: 'GIMUN & GMC — Where Diplomacy Meets the Courtroom',
         },
       ],
       locale: 'en_US',
@@ -44,7 +44,7 @@ export function constructMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: resolvedTitle,
       description,
       images: [image],
     },

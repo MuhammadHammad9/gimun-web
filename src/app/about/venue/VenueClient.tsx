@@ -464,7 +464,7 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
           </div>
           <div className="p-3.5 rounded-button bg-white/80 border border-amber-200/70 space-y-1">
             <strong className="block text-ink">Official Reference Pass</strong>
-            <span>Print and carry your official GIMUN / Moot Cup Registration Reference confirmation slip.</span>
+            <span>Print and carry your official GIMUN / GMC Registration Reference confirmation slip.</span>
           </div>
           <div className="p-3.5 rounded-button bg-white/80 border border-amber-200/70 space-y-1">
             <strong className="block text-ink">Student ID Verification</strong>

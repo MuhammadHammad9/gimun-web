@@ -1,8 +1,8 @@
 {
   "eventNames": {
     "gimun": "GIKI Model United Nations",
-    "mootCup": "GIKI Moot Court Competition",
-    "combined": "GIMUN & GIKI Moot Cup 2027"
+    "mootCup": "GIKI Moot Court (GMC)",
+    "combined": "GIMUN & GMC 2027"
   },
   "hostInstitution": "Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, Khyber Pakhtunkhwa, Pakistan",
   "eventDates": {
@@ -33,5 +33,6 @@
   "registrationStatus": {
     "gimunOpen": true,
     "mootCupOpen": true
-  }
+  },
+  "resultsPublished": false
 }

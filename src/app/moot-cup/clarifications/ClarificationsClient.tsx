@@ -1,53 +1,77 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { TrackBadge } from '@/components/ui/TrackBadge';
-import { Button } from '@/components/ui/Button';
-import { SearchInput } from '@/components/ui/SearchInput';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { CheckCircle2, AlertCircle, Send } from 'lucide-react';
-import type { Clarification } from '@/lib/types';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { SearchInput } from "@/components/ui/SearchInput";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { EmptyState } from "@/components/ui/EmptyState";
+import {
+  CheckCircle2,
+  AlertCircle,
+  Send,
+  Calendar,
+  FileCheck,
+} from "lucide-react";
+import type { Clarification } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface ClarificationsClientProps {
   initialClarifications: Clarification[];
 }
 
 export function ClarificationsClient({ initialClarifications }: ClarificationsClientProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState<string>("all");
 
   // Submission Form State
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [teamName, setTeamName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [questionText, setQuestionText] = useState('');
+  const [teamName, setTeamName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [questionText, setQuestionText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const filteredClarifications = initialClarifications.filter(
-    (c) =>
+  const filteredClarifications = initialClarifications.filter((c) => {
+    const matchesSearch =
       c.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.number.toString().includes(searchQuery)
-  );
+      c.number.toString().includes(searchQuery);
 
-  const [submitting, setSubmitting] = useState(false);
+    if (!matchesSearch) return false;
+    if (selectedFilter === "all") return true;
+    if (selectedFilter === "jurisdiction") {
+      return (
+        c.question.toLowerCase().includes("jurisdiction") ||
+        c.answer.toLowerCase().includes("jurisdiction") ||
+        c.question.toLowerCase().includes("standing")
+      );
+    }
+    if (selectedFilter === "merits") {
+      return (
+        c.question.toLowerCase().includes("treaty") ||
+        c.question.toLowerCase().includes("sovereignty") ||
+        c.answer.toLowerCase().includes("customary")
+      );
+    }
+    return true;
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!teamName || !contactEmail || !questionText) return;
     setSubmitting(true);
     try {
-      await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: `Advocate of ${teamName}`,
           email: contactEmail,
-          queryType: 'moot-cup',
-          message: `[Official Moot Cup Clarification Request]\nTeam: ${teamName}\n\nQuestion / Issue:\n${questionText}`,
+          queryType: "moot-cup",
+          message: `[Official GMC Clarification Request]\nTeam: ${teamName}\n\nQuestion / Issue:\n${questionText}`,
         }),
       });
     } catch {
-      // Continue to show success so user experience is smooth
+      // Keep UX smooth
     } finally {
       setSubmitting(false);
       setFormSubmitted(true);
@@ -55,43 +79,48 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
-      {/* Header */}
-      <header className="space-y-4 max-w-3xl">
-        <div className="flex items-center gap-2">
-          <TrackBadge track="moot-cup" />
-          <span className="text-xs font-mono text-[#5A5A6E] uppercase tracking-wider">
-            Compromis Addenda
-          </span>
-        </div>
-        <h1 className="text-3xl sm:text-5xl font-heading font-extrabold text-[#1A1A2E] tracking-tight">
-          Official Clarifications Log
-        </h1>
-        <p className="text-sm sm:text-base text-[#5A5A6E] leading-relaxed">
-          Formal questions submitted by participating teams and binding interpretations issued by the Bench Drafting Committee. All rulings published here constitute official addenda to the official Compromis.
-        </p>
-      </header>
-
-      {/* Binding Status Notice */}
-      <div className="p-4 rounded-xl bg-[#E6F9F7] border border-[#00B4A6]/30 flex items-start gap-3">
+    <div className="space-y-12">
+      {/* Equal-Footing Binding Status Banner */}
+      <div className="p-4.5 rounded-2xl bg-[#E6F9F7] border border-[#00B4A6]/30 flex items-start gap-3.5">
         <AlertCircle className="w-5 h-5 text-[#00B4A6] shrink-0 mt-0.5" />
-        <div className="space-y-1 text-xs sm:text-sm text-[#5A5A6E]">
-          <strong className="text-[#1A1A2E] font-semibold">Binding Equal-Footing Notice:</strong>{' '}
-          All published clarifications are accessible to every registered team equally. In accordance with Rule 2.4, no private rulings are issued. Clarifications must be cited alongside the Compromis during both written memorial drafting and oral pleadings.
+        <div className="space-y-1 text-xs sm:text-sm text-[#1A1A2E]">
+          <strong className="font-bold">Rule 2.4 — Equal Footing &amp; Binding Determination:</strong>{" "}
+          All published clarifications constitute official and binding addenda to the Compromis. No private determinations are issued to individual teams. Clarifications may be relied upon and cited during written memorial drafting and oral pleadings.
         </div>
       </div>
 
-      {/* Search Bar & Total Counter */}
+      {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-100">
         <div className="w-full sm:w-80">
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder="Search clarification text or keywords..."
+            placeholder="Search rulings by keyword or paragraph..."
           />
         </div>
-        <div className="text-xs font-mono text-[#5A5A6E]">
-          Showing {filteredClarifications.length} of {initialClarifications.length} Official Rulings
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          {[
+            { id: "all", label: "All Rulings" },
+            { id: "jurisdiction", label: "Jurisdiction & Procedure" },
+            { id: "merits", label: "Substantive Merits" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setSelectedFilter(tab.id)}
+              className={cn(
+                "px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-colors cursor-pointer",
+                selectedFilter === tab.id
+                  ? "bg-[#00B4A6] text-white shadow-xs font-bold"
+                  : "bg-gray-100 text-[#5A5A6E] hover:bg-gray-200"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+          <span className="text-xs font-mono text-[#5A5A6E] ml-2">
+            Showing {filteredClarifications.length} of {initialClarifications.length}
+          </span>
         </div>
       </div>
 
@@ -100,30 +129,39 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
         {filteredClarifications.map((item) => (
           <ScrollReveal key={item.id}>
             <div className="double-bezel">
-              <div className="double-bezel-inner p-6 sm:p-8 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-[#E6F9F7] text-[#00B4A6] border border-[#00B4A6]/30">
-                    Clarification #{item.number}
-                  </span>
-                  <span className="text-xs font-mono text-[#5A5A6E]">
-                    Published: {item.submittedAt}
-                  </span>
+              <div className="double-bezel-inner p-6 sm:p-8 space-y-4 bg-white border-l-4 border-l-[#00B4A6]">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-[#E6F9F7] text-[#00B4A6] border border-[#00B4A6]/30">
+                      Clarification #{item.number}
+                    </span>
+                    <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-700">
+                      Binding Addendum
+                    </span>
+                  </div>
+                  <div className="text-xs font-mono text-[#5A5A6E] flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-[#00B4A6]" />
+                    <span>Promulgated: {item.submittedAt}</span>
+                  </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <span className="text-[11px] font-mono uppercase font-bold text-[#1E2A78] tracking-wider block">
-                    Team Inquiry:
+                {/* Question */}
+                <div className="p-4 rounded-xl bg-[#F8F8FC] border border-gray-100 space-y-1.5">
+                  <span className="text-[10px] font-mono uppercase font-bold text-[#1E2A78] tracking-wider block">
+                    Team Inquiry on Compromis:
                   </span>
-                  <p className="text-sm font-medium text-[#1A1A2E] leading-relaxed">
+                  <p className="text-xs sm:text-sm font-medium text-[#1A1A2E] leading-relaxed">
                     &ldquo;{item.question}&rdquo;
                   </p>
                 </div>
 
-                <div className="space-y-1.5 pt-3 border-t border-gray-100">
-                  <span className="text-[11px] font-mono uppercase font-bold text-[#00B4A6] tracking-wider block">
-                    Bench Ruling:
-                  </span>
-                  <p className="text-xs sm:text-sm text-[#5A5A6E] leading-relaxed">
+                {/* Ruling */}
+                <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase font-bold text-emerald-800 tracking-wider">
+                    <FileCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Bench Determination:</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[#1A1A2E] leading-relaxed">
                     {item.answer}
                   </p>
                 </div>
@@ -135,47 +173,50 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
         {filteredClarifications.length === 0 && (
           <EmptyState
             title="No Clarifications Found"
-            description={`No official Compromis rulings match "${searchQuery}". Please check your search term or submit an inquiry below.`}
-            actionLabel="Clear Search Filter"
-            onAction={() => setSearchQuery('')}
+            description={`No official Compromis rulings match "${searchQuery}". Please check your query or submit a formal inquiry below.`}
+            actionLabel="Reset Filters"
+            onAction={() => {
+              setSearchQuery("");
+              setSelectedFilter("all");
+            }}
           />
         )}
       </div>
 
-      {/* Question Submission Form (PRD §16.2) */}
-      <section className="pt-8">
+      {/* Formal Inquiry Submission Box (PRD §16.2) */}
+      <section className="pt-4">
         <div className="double-bezel">
-          <div className="double-bezel-inner p-8 sm:p-10 space-y-6">
+          <div className="double-bezel-inner p-6 sm:p-10 space-y-6 bg-radial-glow-teal">
             <div className="space-y-1">
               <span className="text-xs font-mono uppercase tracking-widest text-[#00B4A6] font-bold">
-                Submit Inquiry
+                Direct Submission
               </span>
-              <h2 className="text-2xl font-heading font-bold text-[#1A1A2E]">
-                Request a Factual Clarification
+              <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E]">
+                Submit Clarification Inquiry to the Bench
               </h2>
               <p className="text-xs sm:text-sm text-[#5A5A6E] max-w-2xl">
-                Registered teams may request clarification on factual ambiguity in the Compromis. Inquiries must formulate specific questions and will be published anonymously upon bench review.
+                Registered teams may formulate concise questions identifying specific factual ambiguities in the Compromis. All inquiries are evaluated confidentially and published for all teams simultaneously.
               </p>
             </div>
 
             {formSubmitted ? (
-              <div className="p-6 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2">
+              <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2">
                 <div className="flex items-center gap-2 font-heading font-bold text-base">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                   <span>Inquiry Transmitted to the Bench Drafting Committee</span>
                 </div>
-                <p className="text-xs text-emerald-800">
-                  Your question has been logged for review. Official determinations are published periodically directly to this board.
+                <p className="text-xs text-emerald-800 leading-relaxed">
+                  Your question has been logged for judicial consideration. Rulings are issued periodically on this dispatch board.
                 </p>
                 <button
                   type="button"
                   onClick={() => {
                     setFormSubmitted(false);
-                    setQuestionText('');
+                    setQuestionText("");
                   }}
-                  className="text-xs font-semibold text-emerald-800 underline hover:text-emerald-900 pt-2 block cursor-pointer"
+                  className="text-xs font-semibold text-emerald-800 underline hover:text-emerald-950 pt-2 block cursor-pointer"
                 >
-                  Submit another query
+                  Submit another inquiry
                 </button>
               </div>
             ) : (
@@ -183,7 +224,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs font-mono text-[#5A5A6E] font-medium block">
-                      Assigned Team Code or Team Name *
+                      Assigned Team Code (e.g. TC-08) *
                     </label>
                     <input
                       type="text"
@@ -191,8 +232,8 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                       autoComplete="off"
                       value={teamName}
                       onChange={(e) => setTeamName(e.target.value)}
-                      placeholder="e.g. TC-08 or Univ of Law Team A"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base sm:text-xs focus:outline-hidden focus:ring-2 focus:ring-[#00B4A6]/20 focus:border-[#00B4A6]"
+                      placeholder="e.g. TC-08"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base sm:text-xs bg-white text-[#1A1A2E] focus:outline-hidden focus:ring-2 focus:ring-[#00B4A6]/20 focus:border-[#00B4A6]"
                     />
                   </div>
 
@@ -207,7 +248,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
                       placeholder="advocate@university.edu.pk"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base sm:text-xs focus:outline-hidden focus:ring-2 focus:ring-[#00B4A6]/20 focus:border-[#00B4A6]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base sm:text-xs bg-white text-[#1A1A2E] focus:outline-hidden focus:ring-2 focus:ring-[#00B4A6]/20 focus:border-[#00B4A6]"
                     />
                   </div>
                 </div>
@@ -221,8 +262,8 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                     rows={4}
                     value={questionText}
                     onChange={(e) => setQuestionText(e.target.value)}
-                    placeholder="e.g. Regarding Paragraph 18 of the Compromis, does the respondent state recognize..."
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base sm:text-xs focus:outline-hidden focus:ring-2 focus:ring-[#00B4A6]/20 focus:border-[#00B4A6]"
+                    placeholder="e.g. In reference to Paragraph 14 of the Compromis, does the multilateral communique imply..."
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base sm:text-xs bg-white text-[#1A1A2E] focus:outline-hidden focus:ring-2 focus:ring-[#00B4A6]/20 focus:border-[#00B4A6]"
                   />
                 </div>
 
@@ -234,7 +275,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                     disabled={submitting}
                     icon={<Send className="w-4 h-4" />}
                   >
-                    {submitting ? 'Submitting...' : 'Submit Clarification Request'}
+                    {submitting ? "Transmitting..." : "Submit Inquiry to Bench"}
                   </Button>
                 </div>
               </form>

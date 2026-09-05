@@ -6,7 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "validate": "node scripts/validate-content.mjs",
+    "test:emergency": "node scripts/test-11pm-update.mjs",
+    "audit:links": "node scripts/audit-links.js",
+    "audit:a11y": "node scripts/audit-accessibility.js",
+    "audit:seo": "node scripts/audit-seo.js",
+    "test:forms": "node scripts/test-forms-e2e.js",
+    "qa:full": "npm run validate && npm run test:emergency && npm run audit:links && npm run audit:a11y && npm run audit:seo && npm run test:forms"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.3.0",

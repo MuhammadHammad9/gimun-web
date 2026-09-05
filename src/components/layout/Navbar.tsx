@@ -12,7 +12,7 @@ interface NavDropdownItem {
   label: string;
   href: string;
   description?: string;
-  trackBadge?: 'GIMUN' | 'MOOT CUP';
+  trackBadge?: 'GIMUN' | 'GMC';
 }
 
 interface NavItem {
@@ -33,11 +33,11 @@ const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
-    label: 'Moot Cup',
+    label: 'GMC',
     href: '/moot-cup',
     dropdown: [
-      { label: 'Track Overview', href: '/moot-cup', description: 'National appellate advocacy' },
-      { label: 'Problem Categories', href: '/moot-cup/categories', description: 'Areas of law & compromis', trackBadge: 'MOOT CUP' },
+      { label: 'GMC Overview', href: '/moot-cup', description: 'National appellate advocacy' },
+      { label: 'Problem Categories', href: '/moot-cup/categories', description: 'Areas of law & compromis', trackBadge: 'GMC' },
       { label: 'Rules & Memorials', href: '/moot-cup/rules', description: 'Formatting & bench criteria' },
       { label: 'Clarifications Log', href: '/moot-cup/clarifications', description: 'Official rulings & Q&A' },
     ],
@@ -45,15 +45,18 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Schedule', href: '/schedule' },
   { label: 'Resources', href: '/resources' },
   {
-    label: 'About',
+    label: 'About & Hub',
     href: '/about',
     dropdown: [
-      { label: 'About the Events', href: '/about', description: 'Conference background & history' },
+      { label: 'About the Symposium', href: '/about', description: 'Conference background & history' },
       { label: 'Organizing Team', href: '/about/team', description: 'Secretariat & Conveners' },
       { label: 'Venue & Travel', href: '/about/venue', description: 'GIKI Campus, Swabi' },
       { label: 'Frequently Asked Questions', href: '/about/faq', description: 'Eligibility, fees, & logistics' },
+      { label: 'Live Announcements', href: '/announcements', description: 'Real-time dispatches & news' },
+      { label: 'Results & Awards', href: '/results', description: 'Hall of fame & awardees' },
       { label: 'Sponsors & Partners', href: '/about/sponsors', description: 'Academic & legal patrons' },
       { label: 'Gallery & Press', href: '/about/gallery', description: 'Visual archives & media' },
+      { label: 'Contact Us', href: '/contact', description: 'Direct desk inquiries' },
     ],
   },
 ];
@@ -103,12 +106,12 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
           >
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded-full bg-[#FF6B35]" title="GIMUN Track" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#00B4A6]" title="Moot Cup Track" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#00B4A6]" title="GMC Track" />
             </span>
             <span className="hidden sm:inline font-bold">
-              {siteConfig?.eventNames?.combined || 'GIMUN & GIKI MOOT CUP'}
+              {siteConfig?.eventNames?.combined || 'GIMUN & GMC'}
             </span>
-            <span className="sm:hidden font-bold">GIMUN & MOOT</span>
+            <span className="sm:hidden font-bold">GIMUN & GMC</span>
           </Link>
 
           {/* Desktop Navigation Links */}

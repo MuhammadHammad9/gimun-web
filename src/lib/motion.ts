@@ -6,8 +6,8 @@ import type { Variants } from 'framer-motion';
 export const springConfig = {
   default: { stiffness: 100, damping: 20 },
   snappy: { stiffness: 300, damping: 30 },
-  gentle: { stiffness: 60, damping: 15 },
-  bouncy: { stiffness: 200, damping: 12 },
+  gentle: { stiffness: 80, damping: 20 },
+  bouncy: { stiffness: 180, damping: 20 },
 };
 
 // Entrance animation variants typed as Variants

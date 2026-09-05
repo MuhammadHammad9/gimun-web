@@ -50,7 +50,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               className="font-heading text-lg font-bold text-white tracking-tight flex items-center gap-2"
             >
               <span className="w-2.5 h-2.5 rounded-full bg-[#FF6B35]" />
-              <span>GIMUN & MOOT CUP</span>
+              <span>GIMUN & GMC</span>
             </Link>
 
             <button
@@ -114,14 +114,14 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               )}
             </div>
 
-            {/* Moot Cup Section */}
+            {/* GMC Section */}
             <div>
               <button
                 type="button"
                 onClick={() => setMootOpen(!mootOpen)}
                 className="w-full flex items-center justify-between font-heading text-2xl font-bold text-white/90 hover:text-[#00B4A6] transition-colors text-left"
               >
-                <span>GIKI Moot Cup</span>
+                <span>GMC (Moot Court)</span>
                 <ChevronDown
                   className={`w-5 h-5 transition-transform duration-200 ${
                     mootOpen ? 'rotate-180 text-[#00B4A6]' : ''
@@ -176,6 +176,30 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               className="block font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors"
             >
               Resource Hub
+            </Link>
+
+            <Link
+              href="/announcements"
+              onClick={onClose}
+              className="block font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors"
+            >
+              Announcements
+            </Link>
+
+            <Link
+              href="/results"
+              onClick={onClose}
+              className="block font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors"
+            >
+              Results & Awards
+            </Link>
+
+            <Link
+              href="/contact"
+              onClick={onClose}
+              className="block font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors"
+            >
+              Contact Us
             </Link>
 
             {/* About Section */}

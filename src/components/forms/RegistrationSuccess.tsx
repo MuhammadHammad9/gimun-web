@@ -45,13 +45,13 @@ export function RegistrationSuccess({
   };
 
   const isMoot = track === 'moot-cup';
-  const trackLabel = isMoot ? 'GIKI Moot Court Competition' : 'GIKI Model United Nations';
+  const trackLabel = isMoot ? 'GIKI Moot Court (GMC)' : 'GIKI Model United Nations';
   const typeLabel =
     applicantType === 'individual'
       ? 'Individual Delegate'
       : applicantType === 'delegation'
       ? 'Institutional Delegation'
-      : 'Moot Court Team';
+      : 'Law School Advocacy Team';
 
   return (
     <motion.div
@@ -63,7 +63,7 @@ export function RegistrationSuccess({
       {/* Printable Institutional Header (Visible ONLY during print) */}
       <div className="hidden print:block text-center border-b-2 border-slate-900 pb-4 mb-6">
         <div className="text-xl font-heading font-black tracking-tight text-slate-900">
-          GIMUN &amp; GIKI MOOT CUP 2027
+          GIMUN &amp; GMC 2027
         </div>
         <p className="text-xs font-serif text-slate-700">
           Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, KP, Pakistan

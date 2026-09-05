@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ShieldCheck } from 'lucide-react';
 
 interface NonPaymentNoticeProps {
@@ -29,7 +29,7 @@ export function NonPaymentNotice({ track }: NonPaymentNoticeProps) {
             Zero Online Payment Collection Policy
           </h4>
           <p className="text-xs text-neutral-gray leading-relaxed">
-            Submitting this application does not charge you anything. GIMUN & GIKI Moot Cup does not
+            Submitting this application does not charge you anything. GIMUN & GMC does not
             collect payments online. Our Secretariat / Bench will review your credentials and contact
             you within 2–3 business days with allocation status and manual bank transfer instructions for
             seat confirmation.

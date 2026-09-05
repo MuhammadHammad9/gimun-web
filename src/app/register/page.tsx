@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
+import { constructMetadata } from '@/lib/metadata';
 import { getCommittees, getProblemCategories, getSiteConfig } from '@/lib/content';
 import { RegisterPageClient } from './RegisterPageClient';
 
-export const metadata: Metadata = {
-  title: 'Official Registration Portal | GIMUN & GIKI Moot Cup 2027',
+export const metadata: Metadata = constructMetadata({
+  title: 'Official Registration Portal | GIMUN & GMC 2027',
   description:
-    'Official application portal for GIKI Model United Nations (Individual & Delegation) and GIKI Moot Court Competition. Zero online payment collection.',
-};
+    'Official application portal for GIKI Model United Nations (Individual & Delegation) and GMC (GIKI Moot Court). Zero online payment collection.',
+  path: '/register',
+});
 
 export default function RegisterPage() {
   const committees = getCommittees();
@@ -24,7 +26,7 @@ export default function RegisterPage() {
           Delegate & Team Registration
         </h1>
         <p className="text-neutral-gray text-sm md:text-base leading-relaxed">
-          Apply to represent your sovereign nation at GIMUN or argue before appellate benches at the GIKI Moot Cup.
+          Apply to represent your sovereign nation at GIMUN or argue before appellate benches at the GMC.
           All allocations are issued by the Secretariat and Bench Committee on merit.
         </p>
       </header>

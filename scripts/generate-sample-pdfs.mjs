@@ -42,6 +42,11 @@ const documents = [
     title: 'GIKI Moot Cup Competition Rules & Memorial Drafting Handbook',
     subtitle: 'Appellate Advocacy Standards, Word Counts, Citation & Scoring Rubric',
   },
+  {
+    path: 'public/documents/shared/GIMUN_MootCup_Sponsorship_Deck.pdf',
+    title: 'GIMUN & GMC Official Sponsorship Deck & Corporate Proposal',
+    subtitle: 'Tier Structures, Visibility Packages, Brand Partnership Matrix',
+  },
 ];
 
 function createMinimalPdf(title, subtitle) {

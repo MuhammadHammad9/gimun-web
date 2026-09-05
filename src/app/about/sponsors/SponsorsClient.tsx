@@ -67,7 +67,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
             Partner Value Proposition
           </span>
           <h2 className="text-2xl sm:text-3xl font-heading font-bold text-ink">
-            Why Sponsor GIMUN & GIKI Moot Cup?
+            Why Sponsor GIMUN & GMC?
           </h2>
           <p className="text-xs sm:text-sm text-neutral-gray max-w-2xl leading-relaxed">
             Direct access to Pakistan&apos;s most articulate, legally minded, and ambitious student leaders,
@@ -146,7 +146,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
             <span>Corporate Partnerships Deck</span>
           </span>
           <h3 className="text-xl sm:text-2xl font-heading font-bold text-ink">
-            Download the 2026 Sponsorship Prospectus
+            Download the 2027 Sponsorship Prospectus
           </h3>
           <p className="text-xs sm:text-sm text-neutral-gray max-w-xl leading-relaxed">
             Review detailed tier benefits, stage branding packages, delegate kit inserts, and CSR alignment
