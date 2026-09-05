@@ -1,0 +1,92 @@
+[
+  {
+    "id": "doc-delegate-handbook",
+    "title": "Official Delegate & Participant Handbook 2027",
+    "track": "shared",
+    "type": "handbook",
+    "fileUrl": "/documents/shared/GIMUN_MootCup_Handbook_2027.pdf",
+    "fileSize": "3.8 MB",
+    "fileFormat": "PDF",
+    "versionDate": "2027-01-10"
+  },
+  {
+    "id": "doc-bg-unsc",
+    "title": "UNSC Background Guide — Autonomous Weapons & Maritime Security",
+    "track": "gimun",
+    "type": "background-guide",
+    "fileUrl": "/documents/gimun/UNSC_Background_Guide_2027.pdf",
+    "fileSize": "2.1 MB",
+    "fileFormat": "PDF",
+    "versionDate": "2027-01-25"
+  },
+  {
+    "id": "doc-bg-unhrc",
+    "title": "UNHRC Background Guide — Surveillance & Climate Displacement",
+    "track": "gimun",
+    "type": "background-guide",
+    "fileUrl": "/documents/gimun/UNHRC_Background_Guide_2027.pdf",
+    "fileSize": "1.9 MB",
+    "fileFormat": "PDF",
+    "versionDate": "2027-01-25"
+  },
+  {
+    "id": "doc-bg-disec",
+    "title": "DISEC Background Guide — Hypersonic Proliferation",
+    "track": "gimun",
+    "type": "background-guide",
+    "fileUrl": "/documents/gimun/DISEC_Background_Guide_2027.pdf",
+    "fileSize": "1.7 MB",
+    "fileFormat": "PDF",
+    "versionDate": "2027-01-25"
+  },
+  {
+    "id": "doc-gimun-rop",
+    "title": "GIMUN Parliamentary Rules of Procedure (RoP)",
+    "track": "gimun",
+    "type": "rules",
+    "fileUrl": "/documents/gimun/GIMUN_Rules_of_Procedure.pdf",
+    "fileSize": "1.2 MB",
+    "fileFormat": "PDF",
+    "versionDate": "2027-01-05"
+  },
+  {
+    "id": "doc-moot-prop-2027",
+    "title": "GIKI Moot Cup 2027 Official Proposition (IHL & Cyber Warfare)",
+    "track": "moot-cup",
+    "type": "proposition",
+    "fileUrl": "/documents/moot-cup/GIKI_Moot_Cup_2027_Proposition.pdf",
+    "fileSize": "2.4 MB",
+    "fileFormat": "PDF",
+    "versionDate": "2027-01-20"
+  },
+  {
+    "id": "doc-moot-rules",
+    "title": "Moot Cup Competition Rules, Memorial Formatting & Citation Guide",
+    "track": "moot-cup",
+    "type": "rules",
+    "fileUrl": "/documents/moot-cup/Moot_Cup_Rules_and_Memorial_Guide.pdf",
+    "fileSize": "1.5 MB",
+    "fileFormat": "PDF",
+    "versionDate": "2027-01-18"
+  },
+  {
+    "id": "doc-campus-map",
+    "title": "GIKI Campus & Venue Map for Delegations",
+    "track": "shared",
+    "type": "map",
+    "fileUrl": "/documents/shared/GIKI_Campus_Map_Venue_Guide.pdf",
+    "fileSize": "4.2 MB",
+    "fileFormat": "PDF",
+    "versionDate": "2027-01-12"
+  },
+  {
+    "id": "doc-sponsor-deck",
+    "title": "Official Sponsorship Deck & Corporate Partnership Proposal",
+    "track": "shared",
+    "type": "sponsorship-deck",
+    "fileUrl": "/documents/shared/GIMUN_MootCup_Sponsorship_Deck.pdf",
+    "fileSize": "5.6 MB",
+    "fileFormat": "PDF",
+    "versionDate": "2027-01-08"
+  }
+]

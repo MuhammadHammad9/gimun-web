@@ -1,0 +1,26 @@
+[
+  {
+    "id": "moot-cat-01",
+    "name": "Public International Law & State Responsibility",
+    "areaOfLaw": "International Law",
+    "description": "Cross-border environmental remediation and state liability for extraterritorial industrial accidents under customary international law.",
+    "propositionDocId": "doc-03",
+    "lastUpdated": "2026-09-03"
+  },
+  {
+    "id": "moot-cat-02",
+    "name": "Constitutional Law & Fundamental Rights",
+    "areaOfLaw": "Domestic & Comparative Constitutional Law",
+    "description": "Proportionality of emergency surveillance legislation versus constitutionally entrenched privacy rights in high-security jurisdictions.",
+    "propositionDocId": "doc-03",
+    "lastUpdated": "2026-09-03"
+  },
+  {
+    "id": "moot-cat-03",
+    "name": "Cyber Jurisdiction & Transboundary Digital Evidence",
+    "areaOfLaw": "Technology & Criminal Law",
+    "description": "Admissibility of extra-jurisdictionally extracted cryptographic evidence and international law enforcement warrants in sovereign courts.",
+    "propositionDocId": "doc-03",
+    "lastUpdated": "2026-09-04"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ann-01",
+    "title": "Early Bird Delegate Registrations Open",
+    "body": "Early bird registrations for GIMUN and GIKI Moot Cup are officially open. Priority committee allocations will be awarded to delegations submitting prior to October 15.",
+    "track": "all",
+    "timestamp": "2026-09-01T10:00:00Z",
+    "pinnedFlag": true
+  },
+  {
+    "id": "ann-02",
+    "title": "Official Moot Court Proposition Released",
+    "body": "The problem proposition covering International Cyber Sovereignty & Transboundary Jurisdiction is now accessible in the Resource Hub.",
+    "track": "moot-cup",
+    "timestamp": "2026-09-03T14:30:00Z",
+    "pinnedFlag": false
+  },
+  {
+    "id": "ann-03",
+    "title": "GIMUN Rules of Procedure Handbook Updated",
+    "body": "The 2026 revision of the GIMUN RoP document has been updated with clarified crisis committee flow and working paper submission formatting.",
+    "track": "gimun",
+    "timestamp": "2026-09-04T09:15:00Z",
+    "pinnedFlag": false
+  }
+]

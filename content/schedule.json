@@ -1,0 +1,110 @@
+[
+  {
+    "id": "sch-1",
+    "day": 1,
+    "dayLabel": "Day 1 — Thursday, March 18",
+    "startTime": "09:00",
+    "endTime": "11:00",
+    "title": "Registration Check-in & Delegate Kit Distribution",
+    "track": "shared",
+    "location": "Agha Hasan Abedi (AHA) Auditorium Foyer",
+    "notes": "Bring your institutional ID card and confirmation email",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-2",
+    "day": 1,
+    "dayLabel": "Day 1 — Thursday, March 18",
+    "startTime": "11:30",
+    "endTime": "13:00",
+    "title": "Joint Opening Ceremony & Keynote Address",
+    "track": "shared",
+    "location": "Main Auditorium (AHA)",
+    "notes": "Formal Western / Traditional diplomatic attire",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-3",
+    "day": 1,
+    "dayLabel": "Day 1 — Thursday, March 18",
+    "startTime": "14:30",
+    "endTime": "17:30",
+    "title": "GIMUN Committee Session I",
+    "track": "gimun",
+    "location": "Academic Block Rooms 201-208",
+    "notes": "Setting the agenda and opening statements",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-4",
+    "day": 1,
+    "dayLabel": "Day 1 — Thursday, March 18",
+    "startTime": "14:30",
+    "endTime": "17:30",
+    "title": "GIKI Moot Cup Preliminary Round I",
+    "track": "moot-cup",
+    "location": "Moot Courtrooms A & B (Faculty of Law Wing)",
+    "notes": "Oral submissions for Applicant and Respondent",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-5",
+    "day": 2,
+    "dayLabel": "Day 2 — Friday, March 19",
+    "startTime": "09:30",
+    "endTime": "13:00",
+    "title": "GIMUN Committee Session II (Working Paper Drafting)",
+    "track": "gimun",
+    "location": "Academic Block Rooms 201-208",
+    "notes": "Informal caucuses and multilateral bloc negotiations",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-6",
+    "day": 2,
+    "dayLabel": "Day 2 — Friday, March 19",
+    "startTime": "09:30",
+    "endTime": "13:00",
+    "title": "GIKI Moot Cup Preliminary Round II & Quarter-Finals",
+    "track": "moot-cup",
+    "location": "Moot Courtrooms A, B, C",
+    "notes": "Bench questions and rebuttal rounds",
+    "updatedFlag": true
+  },
+  {
+    "id": "sch-7",
+    "day": 3,
+    "dayLabel": "Day 3 — Saturday, March 20",
+    "startTime": "10:00",
+    "endTime": "13:00",
+    "title": "GIMUN Committee Session III (Draft Resolution Voting)",
+    "track": "gimun",
+    "location": "Academic Block Rooms 201-208",
+    "notes": "Formal voting procedures under RoP",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-8",
+    "day": 3,
+    "dayLabel": "Day 3 — Saturday, March 20",
+    "startTime": "14:00",
+    "endTime": "16:30",
+    "title": "GIKI Moot Cup Grand Final Before Full Bench",
+    "track": "moot-cup",
+    "location": "AHA Main Stage",
+    "notes": "Open to all delegates and faculty advisors",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-9",
+    "day": 3,
+    "dayLabel": "Day 3 — Saturday, March 20",
+    "startTime": "17:30",
+    "endTime": "19:30",
+    "title": "Grand Closing Ceremony & Awards Gala",
+    "track": "shared",
+    "location": "AHA Main Auditorium",
+    "notes": "Announcement of Best Delegate, Best Team & Trophies",
+    "updatedFlag": false
+  }
+]

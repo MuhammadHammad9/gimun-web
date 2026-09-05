@@ -1,0 +1,20 @@
+[
+  {
+    "id": "res-01",
+    "track": "gimun",
+    "categoryOrCommittee": "United Nations Security Council",
+    "awardName": "Best Delegate",
+    "winnerName": "TBA (Post-Conference)",
+    "institution": "TBA",
+    "photo": "/images/gallery/award-placeholder.jpg"
+  },
+  {
+    "id": "res-02",
+    "track": "moot-cup",
+    "categoryOrCommittee": "GIKI Moot Court 2026",
+    "awardName": "Winning Team Bench",
+    "winnerName": "TBA (Post-Conference)",
+    "institution": "TBA",
+    "photo": "/images/gallery/award-placeholder.jpg"
+  }
+]

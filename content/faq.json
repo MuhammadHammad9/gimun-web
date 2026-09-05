@@ -1,0 +1,44 @@
+[
+  {
+    "id": "faq-1",
+    "category": "general",
+    "question": "What is the relationship between GIMUN and the GIKI Moot Cup?",
+    "answer": "GIMUN (Model United Nations) and the GIKI Moot Cup (Moot Court Competition) are two concurrent flagship student competitions organized by the same society at Ghulam Ishaq Khan Institute (GIKI), Topi. They share dates, campus facilities, social programming, and opening/closing ceremonies, while featuring distinct competition tracks and evaluation formats."
+  },
+  {
+    "id": "faq-2",
+    "category": "registration-fees",
+    "question": "Does submitting the registration form charge my card?",
+    "answer": "No. Registration on this website is strictly form-only. Submitting an application does not collect any payment. Once your application or delegation is reviewed, our Secretariat will contact you via email with your allocation and formal bank transfer instructions."
+  },
+  {
+    "id": "faq-3",
+    "category": "registration-fees",
+    "question": "Can I register as an individual delegate or only as part of an institutional delegation?",
+    "answer": "Both options are supported for GIMUN. You can register as an Individual Delegate or submit a full institutional delegation through our Head of Delegation form. For the Moot Cup, registration is conducted in teams of 2 to 4 students."
+  },
+  {
+    "id": "faq-4",
+    "category": "gimun-specific",
+    "question": "When will country and committee allocations be released?",
+    "answer": "Country allocations are processed on a rolling basis. Delegates who submit early receive prioritized assignment according to their first or second committee and country preferences."
+  },
+  {
+    "id": "faq-5",
+    "category": "moot-cup-specific",
+    "question": "What citation style is required for moot court written memorials?",
+    "answer": "All written memorials must adhere strictly to the Oxford University Standard for the Citation of Legal Authorities (OSCOLA) 4th Edition. Word count limits and formatting guidelines are available in the Moot Cup Rules document in the Resource Hub."
+  },
+  {
+    "id": "faq-6",
+    "category": "logistics",
+    "question": "Is on-campus accommodation available for outstation participants?",
+    "answer": "Yes. GIKI offers secure on-campus hostel accommodation for both male and female delegations upon prior booking. Delegations requiring boarding should specify their room count during registration follow-up."
+  },
+  {
+    "id": "faq-7",
+    "category": "logistics",
+    "question": "How do outstation delegates reach the GIKI campus in Topi?",
+    "answer": "GIKI is located in Topi, Khyber Pakhtunkhwa, approximately 90 minutes from Islamabad via the M1 Motorway (Swabi Interchange). Dedicated event shuttle services from Islamabad Airport and Daewoo bus terminals will be arranged for registered delegations."
+  }
+]

@@ -1,0 +1,1138 @@
+
+PRODUCT REQUIREMENTS DOCUMENT
+GIMUN & GIKI Moot Cup
+Official Event Website — Full Feature, Content & Delivery Specification
+
+Two concurrent flagship events. One unified digital home.
+
+Prepared for: Organizing Committee (Student Society/Club)
+Version 1.0 — Draft for Build
+Host institution (assumed, pending confirmation): Ghulam Ishaq Khan Institute (GIKI), Topi, KP, Pakistan
+
+
+Table of Contents
+
+
+
+
+1. Document Control
+This Product Requirements Document (PRD) defines the complete scope, features, content structure, technical approach, and delivery plan for a unified website serving two concurrent flagship events hosted by the Organizing Committee: GIMUN (the Model United Nations conference) and the GIKI Moot Cup (the Moot Court competition). The two events share a venue, a set of dates, and an organizing committee, but serve two distinct participant communities with different content and workflow needs. This document is written to be handed directly to a developer (in this case, the site owner themselves) as a build-ready specification.
+Field
+Value
+Document title
+GIMUN & GIKI Moot Cup — Official Website PRD
+Version
+1.0 (Draft for build)
+Prepared for
+Organizing Committee — Student Society/Club (site owner & sole maintainer)
+Prepared by
+Claude, in collaboration with the Organizing Committee
+Status
+Ready to build — three fields marked [TBD] pending confirmation (see Appendix B)
+Event names used in this document
+“GIMUN” and “GIKI Moot Cup” (working names — confirm official titles/edition number before launch)
+Assumed host institution
+Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, Khyber Pakhtunkhwa, Pakistan — CONFIRM before build
+Event dates
+[DATES TBD — insert confirmed conference dates]
+Event scale
+Medium — approx. 150–400 combined delegates and moot participants
+Primary language
+English only
+Payment collection on-site
+Out of scope. Registration is form-only; the Organizing Committee follows up manually with each registrant.
+Build approach
+Fully custom-coded website, built and maintained by the Organizing Committee lead personally
+Domain
+Already secured (name to be confirmed)
+Hosting
+Not yet arranged — recommendation included in Section 13
+
+How to use this document
+Every feature section below includes: a plain-language purpose, the user story it satisfies, a functional requirements list, the content fields it needs from the Organizing Committee, and acceptance criteria a developer can test against. Sections marked [TBD] contain placeholder values that must be replaced with real information before the site goes live — they are also collected in Appendix B so nothing gets missed.
+
+2. Executive Summary
+The Organizing Committee runs two respected, competitive student events on the same campus, in the same window of days: GIMUN, a Model United Nations conference where students simulate diplomatic negotiation across UN-style committees, and the GIKI Moot Cup, a moot court competition where law and non-law students argue simulated legal cases before a bench of judges. Today, information about both events is scattered across Facebook posts, WhatsApp groups, and PDF attachments — delegates and moot participants have no single, authoritative place to find registration details, committee or case assignments, background guides, the day-by-day schedule, or venue logistics. That gap creates avoidable confusion for participants, extra manual work for organizers answering the same questions repeatedly, and a less credible first impression for sponsors and faculty advisors evaluating whether to support or send delegations to the event.
+This PRD specifies a single, custom-built website that solves that problem by becoming the definitive hub for both events. It is designed around four priorities the Organizing Committee identified as most important: a simple, no-payment registration flow that captures the information organizers need and lets the team follow up manually; a content hub that puts every handbook, background guide, and schedule in one browsable, searchable place instead of buried in file attachments; live-day features so announcements, schedule changes, and results reach participants instantly instead of through word-of-mouth; and a sponsor and media showcase that gives partners a professional, credible reason to say yes.
+The site is scoped for a medium-sized combined event (roughly 150–400 participants across both tracks), built entirely in custom code, maintained by one person on the Organizing Committee, and delivered in English only. Because the two events share dates and a venue but have very different content (committees and country assignments for GIMUN; problem categories, memorials, and bench panels for the Moot Cup), the site's information architecture treats them as two clearly branded tracks under one shared shell — shared homepage, shared venue/travel/FAQ/sponsor content, but dedicated sections, registration forms, and resource libraries for each event. This avoids the two most common failure modes in joint-event sites: forcing one event to feel like an afterthought bolted onto the other, or duplicating so much shared content that it becomes inconsistent and hard to maintain.
+The recommended technical approach favors simplicity over cleverness, in direct response to the fact that one person will maintain this codebase without a team behind them: a lightweight, file-based content system (content lives in structured Markdown/JSON files inside the codebase, edited directly and redeployed) rather than a full database-backed admin panel, unless the Organizing Committee's technical comfort and available time say otherwise (see Section 13 for both paths). This keeps ongoing maintenance realistic for a single, likely time-constrained, student maintainer while still producing a professional, fast, modern website.
+This document is organized to be read start-to-finish by the person building the site, or dipped into by section during development. It totals the full feature set, content architecture, design direction, non-functional requirements, delivery timeline, risks, and a launch checklist, so that by the end there is nothing about the website left ambiguous except the three explicitly flagged open items (final event names/edition, exact dates, and budget), which are simple placeholders to swap once confirmed.
+3. Introduction & Background
+3.1 What GIMUN Is
+A Model United Nations (MUN) conference is an educational simulation of the real United Nations and its bodies. Students, called delegates, are each assigned a country, organization, or historical figure to represent inside a committee — a simulated version of a real UN body such as the General Assembly, the Security Council, or a specialized agency like UNHCR or WHO. Within committee sessions, delegates research their assigned country's actual foreign policy positions, then debate, negotiate, form blocs, draft working papers, and ultimately vote on resolutions addressing real global issues, all while following a structured set of parliamentary procedure rules (motions, points of order, formal and informal caucusing) that keep debate organized. Delegates are evaluated by committee chairs on diplomacy, research quality, public speaking, negotiation skill, and adherence to their assigned country's real position — awards typically include Best Delegate, Outstanding Delegate, and Honorable Mention per committee.
+GIMUN follows this same format: delegates apply or register (individually or as part of a school/university delegation), are allocated to a committee and a country, receive a background guide written by that committee's chairs outlining the topics to be debated, and spend the conference days in structured committee sessions culminating in a closing ceremony where awards are announced.
+3.2 What the GIKI Moot Cup Is
+A moot court competition is a simulated appellate court proceeding. Teams of two to four students are given a hypothetical legal problem (the “moot proposition”) months in advance, and must research the applicable law, write formal legal briefs (called memorials or memoranda) arguing both sides of the case, and then appear in person to deliver oral arguments before a panel of judges, who question them on the strength of their legal reasoning exactly as a real bench would. Unlike GIMUN's negotiation-based format, the Moot Cup is adversarial and rules-of-evidence-driven, typically organized into problem categories or tracks (for example, constitutional law, criminal law, or international law problems), preliminary rounds, quarter/semi-finals, and a final round judged by senior legal practitioners or academics. Awards typically include Best Team (Champions and Runners-up), Best Memorial, and Best Oralist.
+3.3 Why One Website for Two Different Events
+GIMUN and the GIKI Moot Cup are organized by the same committee, run on the same dates, at the same venue, and draw from overlapping applicant pools (many participating universities send both MUN delegations and moot teams). A shared website is the right call for three concrete reasons: first, it means one registration deadline reminder, one venue map, one accommodation and travel page, and one sponsor pitch serve both audiences instead of duplicating effort across two separate sites; second, it presents a single, more credible institutional brand to sponsors, faculty advisors, and press, rather than two smaller, less polished properties; and third, it matches how the Organizing Committee itself is structured — one team, one budget, one set of logistics, two competition formats layered on top.
+The risk to manage is the opposite failure: making the site feel like it is only about one event with the other awkwardly squeezed in. Section 5 (Information Architecture) is built specifically to avoid that, using a shared shell with two co-equal, clearly branded event tracks rather than a primary event and an attachment.
+3.4 The Core Problem This Website Solves
+Today, a prospective delegate or moot participant trying to learn about the event has to piece information together from multiple, often inconsistent sources: a Facebook page for announcements, a Google Form for registration, a WhatsApp group for last-minute schedule changes, and PDF attachments emailed out for handbooks and background guides. This creates four recurring problems the Organizing Committee has to absorb: repeated inbox and DM questions asking things already “answered somewhere,” confusion about where the authoritative version of a schedule or handbook lives once it has been revised, a weaker first impression for sponsors and faculty advisors sizing up whether the event is professionally run, and lost participants who simply give up looking for the right form or document and don't register at all. The website specified in this PRD is built to directly close each of those four gaps.
+4. Purpose and Objectives of This Document
+This PRD exists to remove ambiguity before a single line of code is written. It defines what the website must do, for whom, with what content, built on what technical foundation, delivered on what timeline, and validated against what acceptance criteria — so that the person building it (the Organizing Committee lead) can work from a single reference instead of reconstructing decisions mid-build. It deliberately separates decisions that are already confirmed (see Section 2's decision table and Section 6.4) from the small number of open items still pending real-world information (Appendix B), so that build work is not blocked waiting on those items — every open item has a placeholder value that can be swapped in later via a simple find-and-replace.
+
+5. Goals and Success Criteria
+5.1 Primary Goals
+Give every prospective and confirmed participant one authoritative place to find registration, committee/case assignments, background guides and handbooks, the live schedule, and venue logistics — eliminating the need to search Facebook, WhatsApp, and email threads.
+Reduce the Organizing Committee's repetitive-question burden by making the most commonly asked information (deadlines, fees, eligibility, venue, accommodation) self-serve through the FAQ and content hub.
+Raise the perceived credibility and production quality of both events for sponsors, faculty advisors, and delegations deciding whether to commit budget or send representatives.
+Support a clean, simple, no-payment registration flow that captures everything the Organizing Committee needs to manually follow up with each applicant.
+Keep both events — GIMUN and the GIKI Moot Cup — feeling co-equal and distinctly branded, while sharing logistics content that genuinely is shared (venue, dates, travel, sponsors).
+Be realistically maintainable by a single, non-professional-developer maintainer after launch, without requiring an ongoing team or paid CMS subscription.
+5.2 Success Criteria (How We'll Know It Worked)
+Success Criterion
+How It's Measured
+Registration completion rate improves vs. last cycle's Google Form
+Compare completed-registration count against page-visit count in analytics (target: 40%+ of visitors who start the form complete it)
+Fewer repeat questions in DMs/inbox during the registration window
+Organizing Committee tracks inbound question volume informally before/after launch; target a noticeable, felt reduction
+Content hub is actually used instead of PDFs being re-emailed
+Analytics on downloads/views of handbooks and background guides from the resource hub page
+Site loads acceptably on typical participant devices (mostly mobile, Pakistan mobile networks)
+Page load under 3 seconds on a throttled 4G connection for key pages (home, registration, resource hub)
+Sponsors view the site as credible collateral
+Qualitative: sponsors reference the site positively when responding to outreach; site is usable as a standalone pitch asset
+Zero critical content errors live on launch day (wrong dates, dead links, broken forms)
+Launch-day checklist in Section 15.4 signed off before go-live
+
+6. Scope
+6.1 In Scope
+A single responsive marketing + content website covering both GIMUN and the GIKI Moot Cup, on one domain, one shared navigation shell.
+Dedicated content sections for each event: committees & country matrix (GIMUN) and problem categories & rules (Moot Cup).
+A form-only registration flow for both events (delegation and individual paths for GIMUN; team-based registration for the Moot Cup) — no payment collection anywhere on the site.
+A resource hub / document library for handbooks, background guides, rules documents, and templates, organized and searchable/filterable by event and category.
+A day-by-day schedule / agenda view covering both events, filterable by track.
+A secretariat / organizing team page, sponsors & partners page, FAQ, venue & travel/accommodation page, and a gallery/press page for past-edition photos and media coverage.
+Live-day features: an announcements/updates feed and a results & awards page populated after the event.
+Lightweight, file-based content maintenance workflow suited to a single non-professional-developer maintainer.
+Basic analytics, SEO fundamentals, and accessibility baseline (see Section 12).
+6.2 Out of Scope (For This Version)
+Any online payment collection or invoicing — explicitly excluded per the Organizing Committee's direction. Registration is form submission only; fee collection and confirmation happen manually, outside the website.
+A logged-in delegate/participant portal with authentication (e.g., a MUNager-style system where each delegate logs in to see personalized assignments). This is listed as a strong Phase 2 candidate in Section 16, not Phase 1.
+Real-time committee tools (live voting, resolution submission portals, crisis-simulation update feeds during committee sessions).
+Multi-language support beyond English.
+Native mobile apps — the responsive website serves mobile users directly.
+Automated email/SMS notification systems beyond simple form-submission confirmation emails.
+Livestreaming or video hosting infrastructure (embedding existing YouTube/social links is in scope; hosting original video is not).
+Why payment is explicitly excluded
+The Organizing Committee has directed that no payment flow appear anywhere on the site: registrants submit the form, and the Organizing Committee follows up manually (typically to arrange bank transfer or in-person payment and confirm the seat). This is a deliberate scope reduction that also removes an entire category of security and compliance work (no card data, no PCI concerns, no payment-gateway integration or fees) — worth calling out explicitly so it is never accidentally reintroduced mid-build.
+
+7. Assumptions and Dependencies
+7.1 Assumptions Made in This Document
+The host institution is Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, Khyber Pakhtunkhwa, Pakistan — based on the site owner's location and the existence of a known GIMUN + GIKI Moot Cup joint event there. This must be confirmed before launch; if incorrect, replace institutional references throughout Sections 3, 10, and the Appendices.
+Both events run on the same dates at the same venue, as stated by the Organizing Committee. Exact dates are marked [DATES TBD] throughout and must be inserted before the schedule and countdown features can go live.
+Handbooks, background guides, and schedules mostly already exist as PDF/Word documents and primarily need to be organized and surfaced on the site, not authored from scratch — this shapes the Resource Hub spec in Section 9.
+The site will be built and maintained by one person (the Organizing Committee lead) with development ability but not necessarily ongoing full-time availability — this shapes the technical architecture recommendation in Section 13 toward simplicity over a full custom admin system.
+A domain name is already secured; hosting is not yet arranged.
+English is the only required language.
+Expected combined scale is medium: roughly 150–400 delegates and moot participants across both events.
+7.2 Dependencies
+Final, confirmed event names, edition number, and dates must be provided before the countdown timer, schedule page, and meta content (page titles, social sharing previews) can be finalized.
+Existing handbook/background-guide/schedule documents must be handed over (as files or links) before the Resource Hub can be populated — the structure can be built ahead of time using placeholder entries.
+Branding assets (logo files, any existing color guidance, past-edition photography) should be gathered early; where they do not yet exist, Section 6 (Design System) proposes a starter direction consistent with the “modern & vibrant” brief that can be used as-is or swapped for real assets later.
+Sponsor logos and tier information will be needed to populate the Sponsors & Partners page — a placeholder structure is specified so this section can go live incrementally as sponsors are confirmed.
+Hosting must be selected and provisioned before deployment (see Section 13.4 for recommendations matched to a single-maintainer, custom-code, no-payment site).
+8. Decisions Already Confirmed
+The following decisions were confirmed directly by the Organizing Committee during scoping and are treated as final throughout this document. They are restated here as a single reference point.
+Decision Area
+Confirmed Direction
+Build approach
+Fully custom-coded website (not a no-code builder or WordPress)
+Visual/brand direction
+Modern & vibrant — bold color, energetic, youth-oriented
+Top priorities, in order of importance
+1) Registration (no payment) 2) Content hub for handbooks & schedules 3) Live-day announcements & results 4) Sponsor/media showcase
+Payment collection
+Explicitly excluded. Registration is form-only; the Organizing Committee follows up manually.
+Site ownership / organizer
+A student society/club committee
+Existing content
+Handbooks, background guides, and schedules mostly already exist as documents and need to be organized on the site
+Domain & hosting
+Domain already secured; hosting still needs to be set up
+Ongoing maintainer
+The Organizing Committee lead, personally
+Language
+English only
+Event scale
+Medium — roughly 150–400 combined participants
+
+
+9. Target Audience and Personas
+The website serves seven distinct audiences with different goals and different tolerance for friction. Every feature specified later in this document is written against at least one of these personas so that design and content decisions can be checked against a real need rather than guesswork.
+9.1 Persona A — The Prospective MUN Delegate
+Attribute
+Detail
+Who they are
+A university (or, if applicable, senior high school) student who has heard about GIMUN through a society, friend, or social media post and is deciding whether to apply.
+Primary goal
+Quickly understand what the conference is, whether they're eligible, what it costs, what committees exist, and how to register.
+Key questions
+Is this legit and well-run? What are the dates and venue? What does it cost? Which committees are open and what topics will be debated? How do I register as an individual vs. as part of a delegation?
+Frustration if unmet
+Gives up and doesn't register if the answer isn't findable in under two minutes, or registers through a stale/confusing form and is unsure it was received.
+Device context
+Primarily mobile, often on a constrained data connection — page weight and load speed matter more for this persona than for a desktop-first user.
+
+9.2 Persona B — The Confirmed MUN Delegate
+Attribute
+Detail
+Who they are
+A student who has already registered and been assigned a committee and country, now preparing for the conference.
+Primary goal
+Download their background guide, understand the rules of procedure, check the schedule for their committee's sessions, and find logistics (venue map, accommodation, what to bring).
+Key questions
+Where do I find my background guide? What time does my committee meet each day? Has anything changed since I last checked? How do I get to the venue and where do I stay?
+Frustration if unmet
+Shows up unprepared or confused about timing because the schedule they saw was outdated and there was no way to know it had changed.
+
+9.3 Persona C — The Moot Cup Team Member
+Attribute
+Detail
+Who they are
+A law (or law-adjacent) student, usually part of a 2–4 person team, deciding whether to compete and then preparing to do so.
+Primary goal
+Understand the moot proposition/problem categories, competition rules, memorial submission requirements and deadlines, and round format — this persona needs more precise, rules-heavy information than the MUN delegate.
+Key questions
+What is the moot proposition this year? What's the memorial word limit and submission deadline? How are teams judged? What does the round structure look like (prelims, knockouts, final)? Who's on the bench?
+Frustration if unmet
+Submits a memorial that doesn't meet formatting/deadline requirements because the rules were buried in an old PDF version, risking disqualification through no real fault of their own.
+
+9.4 Persona D — The Faculty Advisor / Delegation Head
+Attribute
+Detail
+Who they are
+A teacher, society president, or senior student bringing a group of delegates/mooters from another institution, responsible for their safety, logistics, and registration paperwork.
+Primary goal
+Assess whether the event is credible and worth committing budget and travel to, then handle bulk/delegation-level registration and get concrete logistics answers (accommodation, transport, emergency contact).
+Key questions
+Is this a well-organized, reputable event? How do I register a delegation of N people at once, not one by one? What's the refund/cancellation situation? Who do I contact if something goes wrong on the day?
+Frustration if unmet
+Chooses a competing event instead because this one's site looked unprofessional or under-organized, or struggles through a registration form clearly designed only for individual delegates.
+
+9.5 Persona E — The Committee Chair / Bench Judge / Event Staff
+Attribute
+Detail
+Who they are
+Student chairs running MUN committees, or judges/practitioners sitting on the Moot Cup bench, plus general event-day staff (logistics, registration desk volunteers).
+Primary goal
+Access their specific materials (chair reports, judging rubrics, moot proposition and bench memoranda) and know the exact schedule for their sessions.
+Key questions
+Where is the chair/judge-specific material, separate from delegate-facing content? What time do I need to be where?
+Frustration if unmet
+Chair- or judge-only materials get mixed in with public delegate content, or staff can't quickly find the schedule they personally need on event day.
+
+9.6 Persona F — The Sponsor / Partner (Prospective or Confirmed)
+Attribute
+Detail
+Who they are
+A company, NGO, or institutional representative being pitched sponsorship, or a confirmed sponsor checking how they're being represented.
+Primary goal
+Quickly gauge the scale, credibility, and audience of the event to justify a sponsorship decision, and later confirm their branding is properly displayed.
+Key questions
+How many people will actually attend? What visibility do I get (logo placement, mentions, booth space)? Who ran this event before and how did it go (past editions, photos, media coverage)?
+Frustration if unmet
+Can't find a clean sponsorship one-pager or past-edition evidence, and dismisses the event as too informal to justify a budget line.
+
+9.7 Persona G — The Organizing Committee Member (Internal / Admin User)
+Attribute
+Detail
+Who they are
+A member of the Organizing Committee — most importantly, the single person who will maintain the site after launch — who needs to add or update content without redesigning pages each time.
+Primary goal
+Update schedules, publish announcements, add/replace documents in the resource hub, and edit sponsor/team listings quickly, without needing to touch page layout code for routine updates.
+Key questions
+How do I add a new announcement or swap a PDF without breaking the page? How do I update the schedule when a session time changes at 11pm the night before?
+Frustration if unmet
+Every small content change requires digging through page-layout code, making updates slow and risky right when speed matters most (event week).
+
+Design implication
+Because Persona G is the same person as the sole maintainer identified in Section 2, every feature in this document is checked against one extra question: ‘can this be updated by one person, quickly, under time pressure, without touching layout code?’ This is why Section 13 recommends a structured-content-file approach over hand-editing HTML for anything that changes often (schedule, announcements, resource hub, FAQ).
+
+
+10. Competitive and Inspirational Analysis
+Before specifying features, existing MUN and moot court conference websites were reviewed to identify patterns that work well and pitfalls to avoid. This section summarizes the findings and states, explicitly, which patterns were adopted, adapted, or deliberately rejected for this project.
+10.1 What the Strongest MUN Conference Sites Have in Common
+Long-running, large-scale MUN conferences (Harvard WorldMUN, Harvard National Model United Nations (HNMUN), and Harvard Model United Nations (HMUN)) were reviewed as reference points, since they represent decades of iteration on exactly this kind of site. Across all three, the same structural pattern recurs: a public-facing marketing layer and a separate, more transactional registration/logistics layer.
+A Secretariat/leadership welcome letter on the homepage or About page, personalizing the event and establishing credibility before any logistics are presented.
+A dedicated, structured registration and delegate-management system (Harvard's conferences use a custom tool called “MUNager”) that is clearly separated from the marketing site — delegates create an account, submit delegation details, and later receive committee/country assignments and invoices through it.
+A public FAQ page addressing eligibility, fees, what's included, and logistics — reducing inbound questions by answering them once, visibly, instead of repeatedly by email.
+Clear, prominent statement of dates, venue, and the registration deadline near the top of the homepage — the single most time-sensitive piece of information is never buried.
+A committees page listing every committee with its type (General Assembly, Specialized Agency, Crisis Committee, etc.) and a background-guide download per committee, rather than one bundled document for the whole conference.
+Sponsor/partner acknowledgment and a media/gallery presence from past years, used as social proof for both prospective delegates and future sponsors.
+Clear eligibility rules stated up front (age or enrollment requirements), preventing wasted registrations from ineligible applicants.
+10.2 What the Research Confirmed Should Be Different Here
+A full account-based delegate portal (like MUNager) is the right long-term pattern but is explicitly out of scope for this version, given the no-payment, form-only registration decision and the single-maintainer constraint — see Section 16 for this as a Phase 2 recommendation once the site and process have proven themselves for one cycle.
+None of the reference sites had to represent two structurally different competition formats (negotiation-based MUN vs. adversarial moot court) under one roof — this is a genuinely different information-architecture problem, addressed in Section 11, not something to copy directly from a single-event reference site.
+Reference sites are built for large, well-resourced, multi-person web teams. This PRD deliberately scales the ambition down to what one maintainer can sustain, favoring a simpler, file-based content approach over a heavier custom admin system (Section 13).
+10.3 What Moot Court Competition Sites Emphasize Differently
+Moot court competitions place much greater weight on precise, unambiguous rules content than MUN sites do, because memorials and procedural compliance are graded formally and a missed deadline or formatting rule can disqualify a team. Reviewed moot competitions (referenced generally, since individual sites vary widely) consistently foreground: the moot proposition or problem itself as a prominent, clearly dated download; a strict rules/rules-of-procedure document covering memorial format, word count, citation style, and submission deadlines; a clarifications/queries mechanism where teams can ask questions about the proposition and see all answers published centrally (so no team gets an information advantage); and a results/bracket structure once the competition begins. This directly informs the Moot Cup-specific requirements in Section 8.2.
+10.4 Design and Brand Tone Reference
+For the chosen “modern & vibrant, youth-oriented” direction, the goal is to feel closer to a well-produced student hackathon or youth summit brand than to the more institutional navy-and-serif look of the official United Nations or a law firm. That means: bold accent color used deliberately (not desaturated “safe” corporate blue), confident sans-serif typography, photography-forward sections showing real students in real committee/courtroom moments rather than stock diplomacy imagery, and motion/interaction touches (hover states, subtle transitions) that read as contemporary rather than dated. Section 6 translates this into a concrete design system.
+11. Detailed Comparison Table
+Feature
+Harvard WorldMUN/HNMUN/HMUN pattern
+Adopted for this project?
+Secretariat welcome letter
+Prominent, personal, on homepage/About
+Yes — adapted for both a MUN Secretary-General and a Moot Cup Convenor/President
+Account-based delegate portal
+Full login system (MUNager) with assignments, invoicing
+No — Phase 2 candidate; Phase 1 uses form-only registration
+Per-committee background guide downloads
+Yes, one per committee
+Yes — core Resource Hub requirement (Section 9.1)
+Public FAQ
+Yes, extensive
+Yes — required, see Section 10.1
+Fee/payment info & online payment
+Yes, integrated invoicing
+Partially — fee info displayed, but no online payment; manual follow-up only
+Sponsor showcase
+Yes
+Yes — required, see Section 10.3
+Gallery/media from past editions
+Common
+Yes — required, see Section 10.4
+Live schedule updates on event day
+Varies by conference
+Yes — explicitly prioritized by the Organizing Committee, see Section 8.4 and 10.5
+Moot-specific: proposition + clarifications log
+N/A (not MUN)
+Yes — required for Moot Cup track, see Section 8.2
+
+
+12. Information Architecture
+The site uses a shared shell (global navigation, footer, homepage, and truly shared content like venue/travel and sponsors) with two co-equal event tracks branching off it. A visitor should be able to tell within one click whether they are looking at GIMUN content or Moot Cup content, and switch between them without losing their place. This structure directly answers the risk raised in Section 10.2 — neither event should read as the “main” one with the other bolted on.
+12.1 Top-Level Navigation
+The global navigation bar is identical on every page and contains exactly six items plus a persistent call-to-action button, kept deliberately short so it works on mobile without a cramped hamburger-only experience:
+Nav Label
+Destination
+Notes
+Home
+/
+Shared landing page introducing both events
+GIMUN
+/gimun
+Dropdown: Overview · Committees · Background Guides · Rules of Procedure
+Moot Cup
+/moot-cup
+Dropdown: Overview · Problem Categories · Rules & Memorials · Clarifications
+Schedule
+/schedule
+Combined, filterable by track
+Resources
+/resources
+Full document hub, filterable by track and document type
+About
+/about
+Dropdown: Organizing Team · Venue & Travel · FAQ · Sponsors · Gallery
+[Register] — persistent button
+/register
+Always visible in the nav bar, styled as the primary accent-color button; routes to a track chooser (GIMUN vs. Moot Cup) if arrived at directly
+
+12.2 Full Sitemap
+Home (/) — hero, event countdown, ‘what is GIMUN / what is the Moot Cup’ dual intro, key dates strip, quick links to register/resources, sponsor logo strip, latest announcement banner
+GIMUN (/gimun) — event overview, eligibility, fee info, key dates
+Committees (/gimun/committees) — full committee list with type, chair(s), topic teaser, background guide download link
+Committee detail (/gimun/committees/[slug]) — full topic description, chair bio, background guide, country matrix for that committee
+Rules of Procedure (/gimun/rules) — downloadable + on-page rules document
+Moot Cup (/moot-cup) — event overview, eligibility, fee info, key dates
+Problem Categories (/moot-cup/categories) — list of moot propositions/categories with downloads
+Rules & Memorials (/moot-cup/rules) — memorial format, word limits, submission deadlines, citation rules
+Clarifications (/moot-cup/clarifications) — published Q&A log for proposition queries, dated and numbered
+Schedule (/schedule) — day-by-day agenda, filterable by GIMUN / Moot Cup / Shared (opening, closing, socials), highlights “live now” during the event window
+Resources (/resources) — searchable/filterable document library spanning both tracks: handbooks, background guides, rules documents, delegate/participant handbook, templates
+Register (/register) — track chooser, then GIMUN or Moot Cup specific form (Section 9.2)
+About (/about) — combined event story, host institution note
+Organizing Team (/about/team) — Secretariat (GIMUN) and Convening Committee (Moot Cup) profiles, plus general Organizing Committee
+Venue & Travel (/about/venue) — campus map, accommodation info, transport guidance, local tips
+FAQ (/about/faq) — categorized questions (General · Registration & Fees · GIMUN-specific · Moot Cup-specific · Logistics)
+Sponsors & Partners (/about/sponsors) — tiered sponsor showcase + a downloadable sponsorship pitch deck/one-pager
+Gallery & Press (/about/gallery) — photos from past editions, embedded social/press mentions
+Announcements (/announcements) — reverse-chronological updates feed, most prominent during the live event window
+Results & Awards (/results) — populated post-event: award winners per committee (GIMUN) and per category/round (Moot Cup)
+Contact (/contact) — simple contact form + direct emails/social links, split by GIMUN vs. Moot Cup query where relevant
+12.3 Footer (Every Page)
+Quick links: Register, Resources, Schedule, FAQ, Contact
+Social media icons (Instagram/Facebook/LinkedIn, whichever the Organizing Committee actually maintains)
+Host institution name and event dates ([DATES TBD])
+Sponsor logo strip (top-tier sponsors), linking to the full Sponsors page
+Copyright line and a lightweight privacy note (see Section 14.3)
+12.4 Why This Structure
+Two decisions here are deliberate and worth explaining rather than leaving implicit. First, Resources and Schedule are top-level nav items rather than being nested under each event, because both are cross-cutting: a delegation head or faculty advisor bringing people to both events benefits from one combined schedule and one combined document library instead of checking two separate sub-sites. Second, Registration is a persistent button rather than a nav dropdown item, because it is the single highest-value action on the entire site (Section 5's #1 confirmed priority) and should never be more than one click away regardless of what page a visitor is currently reading.
+
+13. Site-Wide (Global) Features
+These requirements apply to every page on the site and are not repeated inside each individual feature spec later in this document.
+Global Requirement
+Detail
+Responsive layout
+Fully responsive from 320px mobile width up through large desktop; mobile is the primary design target given Persona A/B's device context (Section 9.1–9.2)
+Global navigation
+Persistent header per Section 5.1, collapsing to a mobile menu below 768px; the Register button remains visible even in the collapsed state
+Global footer
+Present on every page per Section 5.3
+Loading performance
+Target under 3 seconds to interactive on a throttled 4G connection for all top-level pages; images lazy-loaded and served in modern compressed formats
+Countdown/date awareness
+A small persistent ‘X days until [Event Name]’ element in the header or hero, switching automatically to ‘Happening Now’ during the event window and ‘See you next year’ after
+Announcement banner
+An optional, dismissible top-of-page banner for urgent updates (e.g., ‘Registration closes in 3 days’ or a schedule change), controlled from the same content file as the Announcements page
+Accessibility baseline
+See Section 12 in full; summarized here as: sufficient color contrast even with the vibrant palette, keyboard navigability, alt text on all images, semantic heading structure
+Analytics
+Lightweight, privacy-respecting analytics (see Section 14.2) on every page
+404 page
+Branded, on-theme 404 page with links back to Home, Schedule, and Resources — not a bare server error
+Favicon & social preview
+Custom favicon; Open Graph / Twitter Card meta tags per page so links shared in WhatsApp/social preview correctly with title, description, and an image
+
+14. Design System and Brand Direction
+The Organizing Committee confirmed a “modern & vibrant, energetic, youth-oriented” direction. Because a finished logo and locked color palette were not confirmed as already existing, this section proposes a complete, ready-to-use starter design system consistent with that brief. If the Organizing Committee already has or later produces official brand assets, those should simply replace the values below — the system (roles, ratios, usage rules) stays valid either way.
+14.1 Color Palette
+Role
+Suggested Hex
+Usage
+Primary (Diplomatic Anchor)
+#1E2A78 — deep indigo
+Header background, primary headings, footer, GIMUN track accents
+Accent (Energy)
+#FF6B35 — vibrant orange
+Primary buttons (especially Register), highlights, active nav state, countdown
+Secondary Accent
+#00B4A6 — teal
+Moot Cup track accent color, secondary buttons, tags/badges
+Ink / Dark Text
+#1A1A2E
+Body copy on light backgrounds
+Neutral Gray
+#5A5A6E
+Secondary text, captions, metadata
+Light Surface
+#F2F2F7
+Section backgrounds, card fills, alternating table rows
+White
+#FFFFFF
+Primary background, text on dark/accent surfaces
+
+Using two distinct accent colors — orange for GIMUN-related elements, teal for Moot Cup-related elements — while sharing the same primary indigo and neutral system, is the specific mechanism that keeps both events feeling co-equal (Section 5.4) without needing two entirely different visual languages. A visitor should subconsciously learn “orange = GIMUN, teal = Moot Cup” within a couple of page views.
+14.2 Typography
+Use
+Suggested Typeface Direction
+Notes
+Headings
+A confident, geometric sans-serif (e.g., Poppins, Sora, or Space Grotesk)
+Bold weights for H1/H2 to carry the ‘energetic’ tone; avoid ultra-thin weights which read as delicate rather than vibrant
+Body text
+A highly legible humanist sans-serif (e.g., Inter, Work Sans, or system UI font)
+Prioritize legibility at small sizes on mobile over stylistic flourish
+Scale
+Modular scale, roughly 1.25 ratio
+H1 ~ 40–48px desktop / 30–34px mobile; body ~16–18px; never below 14px for body copy
+
+14.3 Imagery and Photography Style
+Prioritize real photography from past editions (committee sessions, moot courtroom moments, candid delegate/participant interaction, closing ceremony energy) over generic stock diplomacy imagery — this is both more credible to sponsors and more true to the ‘youth-oriented’ brief.
+Where no photography exists yet (e.g., before the first hosted edition, or for pages that must go live before this year's event), use bold flat-color geometric illustration or abstract shapes in the brand palette rather than generic stock photos of handshakes and globes, which read as dated and impersonal.
+Consistent treatment: a subtle color overlay or duotone treatment in the primary/accent colors keeps a mixed set of photos (different cameras, different years) looking like one cohesive brand rather than a random album.
+14.4 Tone of Voice
+Confident and direct, not overly formal or bureaucratic — this is a studentrun event for students, and copy should read that way (e.g., “Ready to negotiate your way to a resolution?” rather than “Participants are cordially invited to submit an application”).
+Precise where it matters — deadlines, eligibility, and rules content (especially for the Moot Cup) should be unambiguous and literal, with zero room for the confident tone to blur into vagueness.
+Consistent naming — always refer to participants as “delegates” in GIMUN contexts and “participants” or “teams” in Moot Cup contexts, matching each format's real-world convention (Section 3).
+14.5 UI Components (Reusable Across Pages)
+Primary Button — accent-orange fill, white text, used for the single most important action per page (Register, Download).
+Secondary Button — outlined, primary-indigo or track-accent border, used for lower-priority actions (Learn more, View schedule).
+Track Badge — small pill-shaped label reading ‘GIMUN’ (orange) or ‘MOOT CUP’ (teal), applied to any card or list item so users always know which track a piece of content belongs to, even inside the combined Schedule and Resources pages.
+Content Card — used for committees, problem categories, team profiles, resources, and announcements: image/icon, title, one-line description, track badge, action link.
+Countdown Chip — compact date-aware element described in Section 13's table.
+FAQ Accordion — expandable question/answer pairs, categorized (Section 5.2).
+
+15. Feature Specifications — Core Pages
+Each feature below follows the same structure: Purpose, User Story, Functional Requirements, Content Fields Needed, and Acceptance Criteria. This structure is repeated consistently through Sections 15–19 so that any feature can be built and verified independently.
+15.1 Homepage
+Purpose
+The homepage is the shared front door for both events. Its job is to let a first-time visitor understand, within seconds, that there are two events happening, what they are, when, where, and how to take the next step — whether that's registering, downloading a resource, or reading an announcement.
+User Story
+“As a prospective delegate or moot participant who just heard about this event, I want to immediately understand what it is, when it's happening, and what to do next, without hunting through menus.”
+Functional Requirements
+Hero section with event name(s), dates ([DATES TBD]), venue, and two clear primary actions: ‘Register for GIMUN’ and ‘Register for Moot Cup’ (or a single ‘Register’ button routing to the track chooser — see Section 16.1).
+Countdown chip (Section 13) showing days remaining.
+Dismissible announcement banner slot, pulling from the same content source as the Announcements page (Section 18.1), so an urgent update posted once appears in both places automatically.
+‘What is GIMUN’ and ‘What is the Moot Cup’ side-by-side (or stacked on mobile) summary blocks, each 2–3 sentences plus a ‘Learn more’ link into that track, using the track badge/color system from Section 14.5.
+Key dates strip: registration deadline, background guide/proposition release, conference dates, results announcement — pulled from the same structured content as the Schedule page so dates never go out of sync between pages.
+Sponsor logo strip (top-tier sponsors only), linking to the full Sponsors page.
+Social proof section: a short pull-quote or stat from a past edition (e.g., ‘200+ delegates, 15 universities, 2025’) if available; omit gracefully if no past-edition data exists yet rather than showing a placeholder number.
+Footer per Section 5.3.
+Content Fields Needed From Organizing Committee
+Confirmed event name(s), edition number, dates, venue name
+One-paragraph description each for GIMUN and Moot Cup (can reuse Section 3.1/3.2 language as a starting draft)
+Past-edition stat or quote (optional)
+Sponsor logos (as they're confirmed — page should support zero, one, or many sponsors gracefully)
+Acceptance Criteria
+A first-time visitor can identify both event names, the dates, and at least one clear next action within 5 seconds of the page loading, without scrolling.
+Both event summary blocks are visually equal in size and prominence — neither event appears secondary.
+The countdown and key-dates strip both read from one shared date source, so updating a date in one content file updates both.
+Page achieves the 3-second load target from Section 13 on a throttled 4G connection.
+15.2 Event Overview Pages (/gimun and /moot-cup)
+Purpose
+Each overview page is the dedicated landing page for one event track, giving Persona A/C everything needed to decide to apply: format explanation, eligibility, fees, and key dates, before drilling into committees/categories or registering.
+User Story
+“As a student deciding whether to apply, I want one page that tells me exactly what this event involves, whether I'm eligible, what it costs, and what happens if I'm accepted — so I can decide with confidence.”
+Functional Requirements
+Track-specific hero using that track's accent color and badge.
+Format explainer section adapted from Section 3.1 (GIMUN) or 3.2 (Moot Cup) language, written for a first-time reader who may not know what MUN or moot court even is.
+Eligibility block: who can apply (student status, institution restrictions if any, individual vs. delegation/team rules).
+Fee block: registration fee amount, what it includes, payment process explained in plain language (‘Submit the registration form below — our team will contact you within [X] days with payment instructions.’) — reflecting the no-online-payment decision from Section 6.2.
+Key dates specific to this track (registration deadline, allocation/results-of-application date if applicable, document release dates).
+For GIMUN: a link into the Committees page (Section 16.1) and Rules of Procedure.
+For Moot Cup: a link into Problem Categories and Rules & Memorials (Section 16.2).
+Primary Register CTA specific to this track.
+Content Fields Needed
+Eligibility rules (age/enrollment/institution restrictions, individual vs. delegation minimum/maximum size)
+Fee amount and what it includes (materials, meals, kit, etc.)
+Track-specific key dates
+Acceptance Criteria
+A reader with zero prior MUN/moot knowledge can explain in their own words, after reading this page, what the format is and whether they're eligible to apply.
+Fee and payment-process language never implies or contains an on-page payment mechanism.
+15.3 Organizing Team / Secretariat Page (/about/team)
+Purpose
+Establishes the human credibility of the event (Persona D and F both look for this) and gives delegates/participants a named point of contact for their track.
+User Story
+“As a faculty advisor deciding whether to trust this event with my students, I want to see who's actually running it and that it's a real, organized team.”
+Functional Requirements
+Grouped sections: GIMUN Secretariat, Moot Cup Convening Committee, and shared Organizing Committee (logistics, sponsorship, media/design teams) — grouping mirrors how the real team is actually structured rather than one flat grid.
+Each profile card: photo (or placeholder avatar in the brand palette if no photo yet), name, role/title, one-line bio or focus area, optional LinkedIn/email link.
+Cards use the Content Card component and track badges from Section 14.5.
+Content Fields Needed
+Full team roster with names, roles, and (optional) photos/bios per person
+Acceptance Criteria
+Team is grouped by function/track, not a single undifferentiated list, so a visitor can find ‘who do I contact about Moot Cup logistics’ quickly.
+
+16. Feature Specifications — Event-Specific Content
+16.1 Committees Page (GIMUN) — /gimun/committees and /gimun/committees/[slug]
+Purpose
+This is the single most important content page for a confirmed or prospective GIMUN delegate: it is where they learn what committees exist, what will be debated, who's chairing, and where to get the background guide they need to prepare.
+User Story
+“As a delegate choosing or preparing for my committee, I want to see every committee, its topic, its chair, and download its background guide, all from one page.”
+Functional Requirements — List View
+Grid or list of Content Cards, one per committee: committee name, committee type (General Assembly / Specialized Agency / Crisis / Regional Body, etc.), one-line topic teaser, chair name(s), and a background-guide download icon/link.
+Filter or sort by committee type if there are more than roughly 6 committees — not needed for smaller counts.
+Each card links to a full committee detail page.
+Functional Requirements — Detail View
+Full topic description(s) — most committees debate 1–2 agenda topics; each should have its own short description.
+Chair bio(s) with photo/placeholder.
+Background guide download (PDF), clearly dated/versioned so delegates can tell if it's been updated since they last checked.
+Country/delegation matrix for that committee: which countries are assigned, and (once registration closes) which are still available if applications are rolling — this list should be easy to keep current since it changes as registrations come in.
+A note on committee size/capacity if capped.
+Content Fields Needed
+Full committee list: name, type, topic(s), chair name(s)/bio/photo, background guide file, country list, capacity
+Acceptance Criteria
+Every committee has a working, current background-guide download link — broken or outdated links here are treated as a launch blocker (Section 15.4).
+A delegate can find their specific committee's information in two clicks or fewer from the homepage.
+16.2 Problem Categories Page (Moot Cup) — /moot-cup/categories and /moot-cup/rules
+Purpose
+The equivalent hub for Moot Cup participants, but shaped around the format's real needs identified in Section 10.3: precise rules, a dated moot proposition, and a transparent clarifications process.
+User Story
+“As a moot team preparing my memorial, I want the exact, current version of the proposition and rules, and a place to see every clarification question that's been answered so I don't miss something another team already asked.”
+Functional Requirements — Problem Categories
+One entry per problem category/track (if the competition runs multiple simultaneous propositions) with: category name, area of law, a short description, and the full moot proposition document download.
+Clear version/date stamp on every proposition document, and a visible ‘last updated’ note if a corrected version is ever issued.
+Functional Requirements — Rules & Memorials
+Full memorial formatting rules: word count, font/spacing requirements, citation style, page limits.
+Submission process and hard deadline (date and time, with timezone if relevant), stated identically here and on the Schedule page.
+Round structure explanation: preliminary rounds, knockout stages, final — including how many rounds a team is guaranteed regardless of outcome.
+Judging criteria summary (memorial score weighting vs. oral round weighting) if the Organizing Committee wants this public.
+Functional Requirements — Clarifications Log (/moot-cup/clarifications)
+A numbered, dated, publicly viewable list of every question submitted about the proposition and its official answer — critical for competition fairness (Section 10.3).
+Simple submission mechanism for teams to ask a new question (a form that routes to the Organizing Committee's email or a shared inbox; answers are then manually published to this page — no need for a live Q&A system).
+Chronological, most-recent-first ordering, with a simple search/filter if the list grows long.
+Content Fields Needed
+Problem categories with descriptions and proposition documents
+Full rules and memorial format document
+Round structure and judging criteria (if public)
+Ongoing: clarification questions and answers as they occur
+Acceptance Criteria
+The current proposition version and its date are unambiguous — a team can verify they are working from the latest version without contacting the Organizing Committee.
+Every published clarification is visible to all teams equally (no team-specific or private answers to proposition questions).
+16.3 Schedule / Agenda Page (/schedule)
+Purpose
+One combined, always-current schedule covering both events plus shared moments (opening ceremony, meals, socials, closing ceremony) — this was explicitly named a top priority by the Organizing Committee.
+User Story
+“As a delegate or participant on-site, I want to quickly check what's happening now, what's next, and whether anything has changed, filtered to just the track I care about if I want.”
+Functional Requirements
+Day-by-day tabbed or accordion view (Day 1, Day 2, Day 3...), each showing a chronological list of sessions/events with time, title, location, and track badge (GIMUN orange / Moot Cup teal / Shared — a third neutral badge color for joint events like opening/closing ceremonies).
+Filter control to show only GIMUN, only Moot Cup, only Shared, or All.
+During the live event window, automatically highlight the current time block (e.g., a subtle left border or 'Happening Now' tag) — this only requires comparing the visitor's local time against each session's stored start/end time, no manual daily updates needed for this part.
+A prominent, visually distinct treatment for any session marked as ‘changed’ (e.g., a small ‘Updated’ tag) so returning visitors notice schedule changes rather than assuming the version they already saw is still accurate.
+Mobile-first layout, since this page will be checked most heavily from phones while on-site.
+Content Fields Needed
+Full schedule: day, start/end time, session title, track, location/room, and any notes (e.g., ‘bring your laptop’, ‘formal dress’)
+Acceptance Criteria
+The maintainer (Persona G) can update a single session's time or add a new entry by editing one structured content file, without touching page layout code (this is a direct requirement of the data model in Section 21).
+During the event, the current session is visually obvious within one second of the page loading, with no scrolling required on mobile.
+
+17. Feature Specifications — Resource Hub and Registration
+These two features were named by the Organizing Committee as the #1 and #2 priorities respectively (registration first, content hub second), so they receive the deepest specification in this document.
+17.1 Resource Hub / Document Library (/resources)
+Purpose
+Replaces the current pattern of handbooks and guides being emailed as attachments or scattered across posts. This page is the single, permanent, findable home for every document either audience needs, solving the exact problem named in Section 3.4.
+User Story
+“As a delegate, participant, or faculty advisor, I want to find any handbook, guide, or rules document from one page, filtered to what's relevant to me, without needing to remember which email it was attached to.”
+Functional Requirements
+A single list/grid of every downloadable document across the site (committee background guides, moot propositions, rules documents, general delegate/participant handbook, code of conduct, venue map PDF, sponsorship deck) — this page can pull the same underlying document entries used elsewhere (e.g., a background guide also linked from its committee page) rather than duplicating files.
+Filter by track (GIMUN / Moot Cup / General) and by document type (Handbook, Background Guide/Proposition, Rules, Form, Map, Other).
+Simple text search across document titles.
+Each entry shows: title, track badge, document type tag, file size/format, and a ‘last updated’ date — the date is what lets a returning user tell whether they need to re-download something.
+Documents open in a new tab / trigger a direct download rather than navigating away from the resource hub, so users can grab several documents in one visit.
+Content Fields Needed
+All existing handbook/guide/schedule/rules documents (the Organizing Committee confirmed these mostly already exist) — need to be handed over as files, with a title, track, type, and date for each
+Acceptance Criteria
+Every document referenced anywhere else on the site (committee pages, Moot Cup rules page, FAQ) also appears here — this page is a superset, never a separate, incomplete list.
+A visitor can find the general delegate/participant handbook in under 10 seconds using the filters or search.
+Adding a new document (e.g., a corrected background guide) requires only adding one entry to the underlying content list, per the data model in Section 21 — not editing multiple pages.
+17.2 Registration (/register) — No Payment
+Purpose
+The highest-priority feature on the entire site. Captures everything the Organizing Committee needs to process an application and follow up manually — nothing more, nothing that implies or requires online payment.
+User Story
+“As a prospective delegate, team, or delegation head, I want to submit my details in one clear form suited to my situation (individual vs. group), and know for certain it was received — with a clear understanding that a person, not a payment page, will follow up with me next.”
+Functional Requirements — Track Chooser
+Landing on /register presents a clear choice: ‘Register for GIMUN’ or ‘Register for the Moot Cup’, each with a one-line reminder of what that involves and a link back to the relevant Rules/Eligibility content in case someone arrives unsure.
+If a visitor arrives from a track-specific page (e.g., clicked Register from /gimun), skip the chooser and go straight to that track's form.
+Functional Requirements — GIMUN Registration Form
+Applicant type selector: Individual Delegate vs. Delegation (school/university group) — form fields adapt based on this choice, directly addressing Persona D's frustration in Section 9.4 (a delegation head needs to submit a group, not repeat the individual flow N times).
+Individual path fields: full name, email, phone, institution/university, year of study, prior MUN experience (yes/no + brief detail), committee preference (1st/2nd/3rd choice from the live committee list in Section 16.1), country preference (optional), dietary/accessibility notes, how they heard about the event.
+Delegation path fields: delegation head name, email, phone, institution name, number of delegates in the delegation, a repeatable per-delegate mini-block (name + committee/country preference) or a simple upload option (spreadsheet) for larger delegations, plus the same dietary/accessibility and referral fields at the delegation level.
+A clear, non-payment closing statement directly on the form: e.g., ‘Submitting this form does not charge you anything. Our team will contact you within [X] business days with acceptance status and payment instructions.’
+Functional Requirements — Moot Cup Registration Form
+Team-based by default (2–4 members per team, per Section 3.2's format): team name, institution, team member names/emails/phone (repeatable block per member), problem category preference (from Section 16.2's live list), prior moot experience, dietary/accessibility notes, referral source.
+Same explicit non-payment closing statement as above, adapted for the Moot Cup context.
+Functional Requirements — Shared Submission Behavior
+Client-side + server-side validation on required fields and email format before submission is accepted.
+On successful submission: an on-page confirmation message, and an automated confirmation email to the applicant restating what they submitted and the manual-follow-up expectation (Section 17.2's non-payment statement, repeated in the email).
+Submitted data is stored in a way the Organizing Committee (a single non-technical-in-the-moment maintainer during a busy period) can actually access and act on quickly — recommendation: write submissions to a simple, append-only structured store (e.g., a spreadsheet-backed store or lightweight database table) and notify the Organizing Committee's email or a shared inbox on every new submission, so nothing sits unseen. Full technical options are compared in Section 13.3.
+A registration-closed state: once the deadline passes (or the Organizing Committee manually closes it), the form is replaced with a clear closed message rather than silently continuing to accept submissions nobody will read in time.
+Content Fields Needed From Organizing Committee
+Confirmed registration deadline(s) per track
+Confirmed fee amount to display (without collecting it on-site)
+Where submissions should be delivered/notified (an email address or shared inbox at minimum)
+Acceptance Criteria
+No payment field, payment gateway reference, or ‘pay now’ language appears anywhere in either form or its confirmation flow.
+A delegation head can submit an entire delegation in one form submission, not one per delegate.
+Every successful submission reliably reaches both the applicant (confirmation email) and the Organizing Committee (notification), verified as part of the launch checklist (Section 15.4) with a real end-to-end test submission before go-live.
+The closed-registration state is tested and confirmed to display correctly once the deadline is reached.
+
+18. Feature Specifications — Support and Credibility Pages
+18.1 FAQ (/about/faq)
+Purpose
+Directly reduces the repeated-question burden named as a core goal in Section 5.1, by answering the most common questions once, visibly, in a searchable format.
+Functional Requirements
+Categorized accordion: General, Registration & Fees, GIMUN-Specific, Moot Cup-Specific, Logistics (venue/travel/accommodation).
+Each question expands in place (no page navigation); only one open at a time per category is fine, or allow multiple open — either is acceptable, but avoid making users lose their place by collapsing everything on scroll.
+A simple on-page search/filter box that filters questions by keyword across all categories at once.
+A closing ‘still have a question?’ prompt linking to the Contact page.
+Content Fields Needed
+Full FAQ content — a strong starting list to fill in: eligibility, fee amount and what it covers, refund/cancellation policy, individual vs. delegation registration, what to bring, dress code, accommodation options, visa/travel letters for outstation delegations, dietary accommodations, code of conduct, what happens if a delegate/team can't attend after registering.
+Acceptance Criteria
+Every question the registration form's confirmation email references (e.g., timeline for acceptance) has a corresponding FAQ answer, so the two pieces of content stay consistent.
+18.2 Venue & Travel (/about/venue)
+Purpose
+Serves both Persona B/C (attending participants) and Persona D (delegation heads responsible for group logistics) with everything needed to physically get to and through the event.
+Functional Requirements
+Embedded or linked campus map showing key locations (registration desk, committee rooms, moot courtroom, dining, accommodation blocks).
+Written directions/transport guidance for common arrival methods (own transport, public transport, nearest airport/city with onward travel notes) — especially important given the venue's location outside a major city.
+Accommodation information: on-campus options if available, and/or recommended nearby options, with a note on how delegations should coordinate bookings if the Organizing Committee doesn't centrally manage this.
+Local essentials: weather expectations for the event dates, what to pack, connectivity/wifi expectations, any emergency contact number for on-site issues.
+Content Fields Needed
+Campus map, transport guidance, accommodation details, emergency contact
+18.3 Sponsors & Partners (/about/sponsors)
+Purpose
+Named as a top-4 priority by the Organizing Committee. Serves Persona F directly, both as a pitch tool for prospective sponsors and as a public acknowledgment for confirmed ones.
+Functional Requirements
+Tiered display (e.g., Title Sponsor, Gold, Silver, Partner, Media Partner — tier names and count adaptable to whatever structure the Organizing Committee actually uses) with logo, and where appropriate a one-line description and link to the sponsor's own site.
+A downloadable sponsorship pitch one-pager or deck (PDF) — this is the single highest-leverage document for Persona F and should be a prominent, direct download from this page, not buried in the general Resource Hub.
+A short ‘why sponsor us’ section stating audience size/reach in concrete terms (expected attendance, number of institutions represented, past-edition reach if available) — pulling from the same stats used on the homepage (Section 15.1) so numbers never contradict across pages.
+A simple ‘become a sponsor’ contact CTA routing to the Contact page or a dedicated sponsorship email.
+Graceful empty/early state: if no sponsors are confirmed yet, the page should still work as a pure pitch page (pitch deck + why-sponsor-us + contact) rather than showing an empty or broken-looking logo grid.
+Content Fields Needed
+Sponsorship pitch deck/one-pager, tier structure, confirmed sponsor logos as they come in, audience/reach statistics
+Acceptance Criteria
+Page reads as professional and complete even with zero confirmed sponsors listed, since this page will likely go live before most sponsors are confirmed.
+18.4 Gallery & Press (/about/gallery)
+Purpose
+Provides the social proof referenced in Section 10.1 and 10.4 — evidence, for prospective delegates, faculty advisors, and sponsors alike, that this is a real, well-attended, well-run event.
+Functional Requirements
+Photo grid/masonry layout, filterable by year/edition if multiple past editions have photos.
+Embedded or linked press mentions and social media highlights (e.g., an Instagram post embed or a link-out card to a news article covering a past edition).
+Lightbox/full-size view on click, with lazy loading so the page stays fast even with many images (Section 13's performance target).
+Graceful empty state for a first-ever edition with no past photos: the page can instead feature venue/campus photography and a ‘check back after the event for this year's gallery’ note, rather than appearing broken.
+Content Fields Needed
+Past-edition photography, press article links, social post links/embeds
+
+19. Feature Specifications — Live Event and Operations
+19.1 Announcements (/announcements)
+Purpose
+Named as a top-priority ‘live-day feature’ by the Organizing Committee. Gives participants one authoritative place to check for urgent updates instead of relying on word-of-mouth or scattered social posts during the event.
+Functional Requirements
+Reverse-chronological feed of short, timestamped posts (title + short body + optional track badge for GIMUN-only / Moot Cup-only / All).
+The single most recent announcement also surfaces as the dismissible homepage banner (Section 15.1) automatically — one content entry, two display locations, so the maintainer never has to post the same update twice.
+Pinning support for one especially important announcement (e.g., a venue change) to stay at the top regardless of post date, until unpinned.
+No commenting or interaction features needed — this is a one-way broadcast channel, kept deliberately simple so it's fast to post to under time pressure.
+Content Fields Needed
+Ongoing — organizing committee posts updates as needed before and during the event
+Acceptance Criteria
+The maintainer can publish a new announcement (e.g., at 11pm the night before a schedule change) by adding one entry to a content file and redeploying, in well under 10 minutes end-to-end — this is the single most time-pressured content update the site needs to support, and is a direct test case for the technical approach in Section 13.
+19.2 Results & Awards (/results)
+Purpose
+Closes the loop after the event: gives winners public recognition (valuable for their own resumes/portfolios and for the event's credibility) and gives the Organizing Committee a lasting, shareable record for next year's Gallery/Press and Sponsors pages.
+Functional Requirements
+GIMUN section: awards per committee (Best Delegate, Outstanding Delegate, Honorable Mention, or whatever award structure the Organizing Committee uses), listing winner name and institution.
+Moot Cup section: Champions, Runners-up, Best Memorial, Best Oralist (or the actual award structure used), listing team/individual name and institution.
+Page remains present but shows a clear ‘results will be published after the closing ceremony’ placeholder state before the event concludes, rather than a broken or empty-looking page.
+Optional: winner photos from the closing ceremony, feeding into the Gallery page for next year.
+Content Fields Needed
+Final award results, populated after the event
+19.3 Contact (/contact)
+Purpose
+The fallback for anything not already answered by the FAQ, Resource Hub, or track-specific pages.
+Functional Requirements
+Simple contact form: name, email, query type (dropdown: GIMUN / Moot Cup / Sponsorship / Media / Other), message.
+Direct contact details displayed alongside the form: general email, and track-specific emails if the Organizing Committee maintains separate ones for GIMUN vs. Moot Cup queries.
+Social media links.
+Submissions routed the same way as registration submissions (Section 17.2) — notify the Organizing Committee's inbox on every message.
+Acceptance Criteria
+A message submitted through the form reliably reaches the Organizing Committee, verified with a real test submission before launch.
+20. Content Maintenance / Admin Workflow
+Because the site is fully custom-coded and maintained by one person (Section 2, Section 9.7's Persona G), this section specifies how that person actually updates content day-to-day — this is a feature in its own right, even though it has no public-facing UI.
+Recommended Approach
+Rather than building a full password-protected admin panel (extra build time, extra security surface, extra maintenance burden for a single non-professional maintainer), content that changes often — schedule, announcements, resource hub entries, FAQ, team roster, sponsor list — should live in structured, human-readable content files (JSON or Markdown with front-matter) inside the codebase. The maintainer edits these files directly and redeploys, which for most modern hosting (Section 13.4) is a single command or an automatic action triggered by saving the change.
+Content Type
+Suggested File
+Update Frequency
+Schedule / agenda
+content/schedule.json
+Frequent, especially event week
+Announcements
+content/announcements.json
+Frequent, especially event week
+Resource hub entries
+content/resources.json (files themselves stored alongside)
+Occasional, spikes before each deadline
+Committees (GIMUN)
+content/committees.json
+Set once, minor edits as chairs/topics finalize
+Problem categories (Moot Cup)
+content/moot-categories.json
+Set once, minor edits as proposition finalizes
+FAQ
+content/faq.json
+Occasional
+Team roster
+content/team.json
+Rare
+Sponsors
+content/sponsors.json
+Occasional, grows as sponsors confirm
+Results & Awards
+content/results.json
+One-time, post-event
+
+Alternative if the maintainer wants a simpler day-of workflow
+If editing JSON/Markdown files feels like too much friction during the live, high-pressure event window, a lightweight middle ground is to connect the Announcements and Schedule content specifically to a private, structured Google Sheet that the site reads from — this lets urgent updates be posted from a phone without touching code at all, at the cost of a bit more technical setup up front. This is worth deciding early (Section 13) since it affects how those two features are built, not something to bolt on later.
+
+
+21. Content Architecture / Data Model
+This section defines the underlying entities the site is built around, independent of any specific page. Building the site against this shared model (rather than hard-coding content directly into page templates) is what makes the maintenance workflow in Section 20 possible, and is what lets the same data (e.g., a committee's background guide) appear correctly on the Committees page, the Resource Hub, and the FAQ without being duplicated and falling out of sync.
+Entity
+Key Fields
+Used On
+Event/Track
+id, name, track_color, dates, venue, fee, eligibility_summary
+Home, Overview pages, global track badges
+Committee (GIMUN)
+id, name, type, topics[], chair[], background_guide_doc_id, country_list[], capacity
+Committees list & detail, Resource Hub, Registration form (committee preference dropdown)
+Problem Category (Moot Cup)
+id, name, area_of_law, description, proposition_doc_id
+Categories page, Resource Hub, Registration form (category preference dropdown)
+Document
+id, title, track, type, file_url, version_date
+Resource Hub, Committees, Moot Cup Rules, FAQ links
+Schedule Item
+id, day, start_time, end_time, title, track, location, notes, updated_flag
+Schedule page, Homepage key-dates strip (derived subset)
+Announcement
+id, title, body, track, timestamp, pinned_flag
+Announcements page, Homepage banner
+Team Member (Org Committee)
+id, name, role, group (Secretariat / Convening Committee / Organizing Committee), photo, bio, links
+Team page
+Sponsor
+id, name, tier, logo, url, description
+Sponsors page, Homepage sponsor strip
+FAQ Item
+id, category, question, answer
+FAQ page
+Registration Submission
+id, track, applicant_type, all form fields, submitted_at, status
+Not publicly displayed — stored for Organizing Committee follow-up (Section 17.2)
+Result / Award
+id, track, category_or_committee, award_name, winner_name, institution
+Results page
+Clarification (Moot Cup)
+id, number, question, answer, submitted_at
+Clarifications page
+
+Two relationships are worth calling out explicitly because they are easy to get wrong: a Committee's background_guide_doc_id and a Problem Category's proposition_doc_id both point to a Document entity rather than embedding a raw file link directly — this is what allows the Resource Hub to always show a complete, accurate list of every document on the site (Section 17.1's acceptance criteria) by simply listing every Document entity, rather than needing someone to remember to add each new guide to the Resource Hub separately.
+22. Key User Flows
+22.1 Flow: Individual Delegate Registers for GIMUN
+Arrives on Home, clicks 'Register' in the persistent nav button.
+Track chooser presents GIMUN vs. Moot Cup; selects GIMUN.
+Selects 'Individual Delegate' applicant type.
+Fills personal details, selects committee preferences from the live Committee list, submits.
+Sees on-page confirmation restating: 'no payment required now, our team will follow up.'
+Receives confirmation email with the same restated details.
+Organizing Committee receives a notification and later follows up manually with acceptance and payment instructions.
+22.2 Flow: Delegation Head Registers a Group for GIMUN
+Arrives via /gimun page's Register CTA (skips the track chooser since track is already known).
+Selects 'Delegation' applicant type.
+Enters delegation-level details, then adds each delegate via the repeatable member block (or uploads a spreadsheet for a large delegation).
+Submits once for the whole group.
+Receives one confirmation email listing every delegate submitted, for their own records.
+Organizing Committee receives one notification containing the full delegation, rather than N separate individual notifications to piece together.
+22.3 Flow: Moot Cup Team Checks for Proposition Clarifications
+Arrives on /moot-cup/clarifications directly (bookmarked after registering) or via the Moot Cup nav dropdown.
+Scans the numbered, dated list for any question relevant to their proposition concern.
+If not already answered, uses the submission mechanism to ask a new question.
+Organizing Committee answers via email/internally, then manually publishes the Q&A to this page, visible to all teams.
+Team returns closer to the submission deadline to re-check for new entries.
+22.4 Flow: Maintainer Posts an Urgent Schedule Change During the Event
+A committee room change is decided on the morning of Day 2.
+Maintainer edits the relevant Schedule Item's location field and sets its updated_flag to true in the schedule content file (or the connected Sheet, per Section 20's alternative).
+Maintainer also adds a new Announcement entry describing the change.
+Redeploys (or, if using the Sheet-based approach, the change reflects automatically without a redeploy).
+The Schedule page shows the room change with an 'Updated' tag; the Homepage banner and Announcements feed both show the new announcement automatically, from the single entry.
+22.5 Flow: Prospective Sponsor Evaluates the Event
+Arrives at the Sponsors page, likely via a direct link sent in outreach rather than organic navigation.
+Reads the 'why sponsor us' section with concrete reach numbers.
+Downloads the sponsorship pitch deck.
+Browses the Gallery for evidence of past-edition scale and quality (or, for a first edition, browses venue photography and organizing team credentials instead).
+Uses the Contact page (Sponsorship query type) or the deck's stated contact to follow up.
+
+23. Non-Functional Requirements
+Category
+Requirement
+Performance
+Under 3 seconds to interactive on throttled 4G for all key pages (Home, Register, Resources, Schedule); images compressed and lazy-loaded; total page weight kept lean given Persona A/B's mobile-first, data-conscious context
+Responsiveness
+Fully usable from 320px mobile width through desktop; touch targets sized appropriately for mobile (minimum ~44px tap area) since most on-site checking of the Schedule happens on phones
+Browser support
+Latest two versions of Chrome, Safari, Firefox, and Edge, plus mobile Safari and Chrome on iOS/Android — no legacy Internet Explorer support required
+Uptime
+Standard best-effort uptime is sufficient outside two critical windows — the registration deadline period and the live event days — during which the site should be treated as effectively mission-critical and monitored actively (Section 15's launch checklist covers this)
+Accessibility
+WCAG 2.1 AA as a target baseline: sufficient color contrast (validate the vibrant accent-on-white and white-on-indigo combinations specifically, since bold palettes can accidentally fail contrast checks), keyboard-navigable menus and forms, alt text on all meaningful images, semantic HTML heading structure, visible focus states
+Security
+Standard web hygiene: HTTPS everywhere, input validation and sanitization on both registration and contact forms (server-side, not just client-side), rate-limiting or basic bot protection on public forms (e.g., a lightweight CAPTCHA or honeypot field) to prevent spam submissions clogging the Organizing Committee's inbox
+Data privacy
+Registration and contact form data (names, emails, phone numbers, institution names) is personal data — see Section 24.3 for handling requirements even in the absence of an online payment system
+SEO fundamentals
+Descriptive page titles and meta descriptions per page, semantic heading structure, a sitemap.xml, and Open Graph tags so shared links render properly in WhatsApp/social — most traffic will likely arrive via direct/social links rather than search, but this is low-cost to include correctly from the start
+Maintainability
+Any content listed as 'frequent update' in Section 20's table must be editable without touching page-layout code, verified directly against the flows in Section 22
+
+24. Technical Architecture and Hosting Recommendation
+24.1 Guiding Constraint
+The build approach is confirmed as fully custom-coded, maintained by one person. The single most important technical decision this document can make, therefore, is not which framework is most powerful — it's which combination keeps ongoing maintenance realistic for that one person, especially under the time pressure of event week. Every recommendation below is filtered through that lens first.
+24.2 Recommended Stack
+Layer
+Recommendation
+Why
+Frontend framework
+A modern React-based framework such as Next.js (or a lighter static-site generator such as Astro if the maintainer prefers minimal JavaScript)
+Both support the file-based content approach from Section 20 naturally, generate fast static pages by default (helping the performance NFR), and have large communities/documentation, which matters for a solo maintainer who will hit unfamiliar problems and need to self-serve answers
+Styling
+A utility-first CSS approach (e.g., Tailwind CSS) built against the design system in Section 14
+Speeds up building the many similar Content Card / badge / button components consistently without hand-writing repetitive CSS
+Content storage (frequent-update content)
+Structured JSON/Markdown files in the repo, per Section 20's table, OR a connected Google Sheet for Schedule/Announcements specifically (Section 20's alternative)
+Matches the single-maintainer constraint; avoids standing up and securing a full database + admin panel for content that doesn't need one
+Registration & contact form handling
+A managed form-backend service (form submissions routed to email + a spreadsheet/lightweight database) rather than a custom-built backend server
+Removes the need to build, host, and secure a full backend just to receive form submissions — directly serves the no-payment, keep-it-simple registration flow in Section 17.2
+Document/file storage
+Static files served from the same hosting platform, or a simple cloud storage bucket for larger PDFs
+Keeps background guides, propositions, and handbooks fast to load and simple to update by replacing a file
+Hosting
+A static/JAMstack-friendly host with a generous free tier (e.g., Vercel, Netlify, or Cloudflare Pages)
+Matches the confirmed situation (domain owned, hosting not yet arranged): these platforms connect directly to a code repository, deploy automatically on every content update/redeploy (directly supporting the maintenance flows in Section 22.4), require no server administration, and their free tiers comfortably cover a medium-scale event site's traffic
+
+24.3 Deployment Workflow
+Code lives in a version-controlled repository (e.g., GitHub).
+The chosen hosting platform is connected directly to that repository.
+Every time the maintainer pushes a change (whether a new feature or a one-line content-file edit for an announcement), the hosting platform automatically rebuilds and republishes the live site within roughly one to two minutes.
+The custom domain (already secured) is pointed at the hosting platform via a DNS change, which is a one-time setup step.
+24.4 Why Not a Heavier Approach
+A traditional server-rendered application with its own database and a custom-built admin dashboard was considered and rejected for Phase 1, specifically because it introduces ongoing server maintenance, security patching, and hosting cost that don't have a clear payoff given a single maintainer and a no-payment, content-hub-first feature set. That heavier approach becomes worth revisiting specifically if/when the Phase 2 delegate-portal idea in Section 26 is greenlit, since a login-based, personalized-assignment system genuinely needs a database and user accounts in a way the current scope does not.
+24.5 Local Environment Notes
+Standard modern web development requires Node.js and a package manager (npm or yarn) installed locally — mentioned here explicitly since the maintainer is working solo and may be setting this up for the first time.
+Environment variables (e.g., the email address form submissions notify) should be stored in the hosting platform's environment-variable settings, not hard-coded into the repository, so the maintainer can change the notification address without a code change.
+
+25. Content Requirements Checklist
+This is the master list of everything the Organizing Committee needs to gather or write before each page can be fully populated. It is organized to match Sections 15–19 so nothing gets missed, and can be used directly as a task list running in parallel with development.
+Page/Feature
+Content Needed
+Status
+Homepage
+Confirmed event name(s)/dates/venue; one-paragraph description per track; past-edition stat (optional)
+[TBD — dates & names]
+GIMUN Overview
+Eligibility rules, fee amount, key dates
+Pending
+Committees
+Full committee list, chairs, topics, background guides, country lists
+Mostly exists per Organizing Committee — needs handover & organizing
+Moot Cup Overview
+Eligibility rules, fee amount, key dates
+Pending
+Problem Categories
+Category list, propositions
+Mostly exists — needs handover
+Rules & Memorials
+Full memorial format & submission rules
+Mostly exists — needs handover
+Schedule
+Full day-by-day agenda for both tracks
+Mostly exists — needs handover, reformatted into the data model (Section 21)
+Resource Hub
+All documents above, tagged by track/type/date
+Derived from other rows once handed over
+Team Page
+Full roster: names, roles, photos, bios
+Pending
+Venue & Travel
+Campus map, transport guidance, accommodation info, emergency contact
+Pending
+FAQ
+Full question/answer set (starter list in Section 18.1)
+Pending — draft can start from this PRD's suggested list
+Sponsors
+Pitch deck, tier structure, confirmed logos
+Pending, incremental
+Gallery & Press
+Past-edition photos, press/social links
+Pending, or graceful empty state if first edition
+Registration
+Confirmed deadlines, fee amounts, notification email
+Pending — [BUDGET/fee TBD]
+Results & Awards
+Award structure (names of categories); actual results only after event
+Structure pending, results post-event
+
+26. SEO and Marketing Considerations
+Since most traffic will likely come from direct shares (WhatsApp, Instagram, email) rather than organic search, Open Graph/Twitter Card tags (title, description, preview image) per page are a higher-leverage investment than deep SEO keyword work — get link-preview rendering right first.
+Still worth doing at low cost: descriptive, unique page titles (e.g., 'Committees — GIMUN 2027' not just 'Committees'), a sitemap.xml submitted to Google Search Console, and clean, readable URLs (already reflected in the sitemap in Section 12.2).
+Consider a short, memorable, shareable URL structure for the registration link specifically (e.g., a redirect like /go or /apply pointing to /register) since this is the single link most likely to be shared directly in outreach messages and social bios.
+27. Analytics and Success Metrics
+Recommend a lightweight, privacy-respecting analytics tool (e.g., Plausible, Fathom, or Google Analytics 4 configured minimally) tracking, at minimum: page views per top-level page, registration-form start vs. completion rate (the single most important funnel on the site), resource-hub document download counts, and traffic source (direct/social/search) to understand which outreach channels are actually working. These map directly back to the success criteria table in Section 5.2, so the same numbers used to judge whether the site worked are the ones being tracked from day one.
+28. Security and Data Privacy
+28.1 What Data the Site Collects
+Even with no payment collection, the site collects real personal data: names, emails, phone numbers, institution names, and dietary/accessibility notes through the Registration and Contact forms. This still requires basic, responsible handling.
+28.2 Minimum Requirements
+HTTPS enforced site-wide (standard on any modern hosting platform recommended in Section 24, and free).
+A short, plain-language privacy note (not necessarily a formal legal privacy policy, but at minimum a sentence in the footer or on the Registration form) explaining what data is collected and that it's used only to process the application and contact the applicant.
+Registration data should only be accessible to the Organizing Committee, not publicly exposed anywhere on the site (the public-facing Country Matrix on Committee pages, for example, should show which countries are taken, not the personal details of who took them).
+Basic spam/bot protection (Section 23) on public forms, since an unprotected public form will eventually attract spam submissions that bury real registrations.
+A sensible data-retention practice: since this is a recurring annual event, decide (even informally) whether past years' registration data is kept for continuity or cleared after each cycle, and treat dietary/accessibility notes as sensitive information not to be shared beyond what's operationally necessary.
+Scope note
+Because there is no payment processing, this project avoids PCI-DSS and payment-gateway compliance entirely (Section 6.2). The requirements above are the standard, lightweight baseline for any form-collecting site, not a heavier compliance regime — deliberately proportionate to the project's actual scope.
+
+
+29. Timeline and Milestones
+The phased plan below is built backward from the confirmed event dates ([DATES TBD]) and forward from today. Since exact dates are still pending confirmation, durations are expressed in relative weeks so the plan can be dropped onto a real calendar the moment dates are finalized.
+Phase
+Relative Timing
+Key Milestones
+Phase 0 — Finalize Inputs
+Week 0 (immediately)
+Confirm event names/edition, exact dates, venue; confirm fee amounts; gather existing handbooks/schedules/branding assets; choose content-maintenance approach (files vs. connected Sheet, Section 20)
+Phase 1 — Foundation Build
+Weeks 1–2
+Set up repository, hosting, domain DNS; implement design system (Section 14) as reusable components; build global nav/footer/homepage shell
+Phase 2 — Core Content Pages
+Weeks 2–4
+Build GIMUN & Moot Cup overview pages, Committees & Problem Categories (list + detail), Schedule page, Resource Hub — populate with real content as it's handed over per Section 25
+Phase 3 — Registration & Forms
+Weeks 3–5 (can overlap Phase 2)
+Build Registration flow (both tracks, both applicant types), Contact form, confirmation email flow, notification routing — end-to-end test submissions required before sign-off
+Phase 4 — Support & Credibility Pages
+Weeks 4–6
+Build FAQ, Venue & Travel, Sponsors, Gallery, Team pages
+Phase 5 — Live-Event Features & QA
+Weeks 5–7
+Build Announcements and Results pages; full cross-device QA pass (Section 30.1); accessibility check; performance check against Section 23's targets
+Phase 6 — Pre-Launch
+1–2 weeks before registration opens
+Content freeze and final review; launch checklist (Section 30.2) signed off; soft-launch to Organizing Committee for internal review
+Launch
+Registration opens
+Public launch; monitor form submissions and analytics closely for the first 48 hours
+Event Week
+Event dates
+Active maintenance mode: announcements, schedule updates, on-call monitoring (Section 30.3)
+Post-Event
+1–2 weeks after
+Publish Results & Awards; archive registration data per Section 28.2; capture lessons learned for next edition's Phase 0
+
+30. Testing, QA, and Launch
+30.1 Testing and QA Plan
+Cross-device check: real testing on at least one mid-range Android phone (the most common device profile for Persona A/B in this context), one iPhone, and desktop Chrome/Safari — not just browser dev-tools device emulation.
+Form testing: submit real end-to-end test registrations for every applicant type (individual GIMUN, delegation GIMUN, Moot Cup team) and the Contact form, confirming both the applicant confirmation email and the Organizing Committee notification arrive correctly.
+Link/document audit: every download link across Committees, Problem Categories, Rules, and the Resource Hub opens the correct, current file — this is the single highest-consequence content bug given how central these documents are (Section 16, 17.1).
+Accessibility spot-check: keyboard-only navigation through the main nav and the Registration form; run an automated contrast checker against the palette in Section 14.1, particularly white text on the orange accent and teal accent, which are the combinations most likely to fail AA contrast at smaller text sizes.
+Performance check: run the key pages (Home, Register, Resources, Schedule) through a page-speed tool on a throttled connection profile and confirm the sub-3-second target from Section 23.
+Spam/bot check: confirm the honeypot/CAPTCHA protection on public forms actually blocks a basic automated test submission.
+30.2 Launch Checklist
+All [TBD] placeholders (event names, dates, fee amounts, budget-dependent choices) replaced with confirmed values sitewide.
+Every navigation link and footer link tested and working.
+Registration forms tested end-to-end for every applicant type, per Section 30.1.
+Every document (background guides, propositions, rules, handbooks) uploaded, correctly tagged, and verified as the current version.
+Analytics tool installed and confirmed to be recording page views.
+Custom domain correctly pointed and HTTPS active (no browser security warnings).
+Social preview (Open Graph) tested by sharing the homepage link in WhatsApp/social to confirm it renders with the correct title, description, and image.
+Privacy note present on the Registration form per Section 28.2.
+404 page and mobile menu both function correctly.
+A final full read-through of every page's copy for typos, especially dates, fee amounts, and deadlines.
+30.3 Event-Week Operating Mode
+During the event itself, the site shifts from a mostly-static marketing asset to an active operational tool (Schedule and Announcements pages in particular). The maintainer should plan to check and be ready to update the site at least once each morning and once each evening of the event, with the ability to push an urgent update (per the flow in Section 22.4) within minutes if something changes on the ground — a room change, a delay, a safety notice. It is worth deciding, before the event starts, who else on the Organizing Committee can reach the maintainer quickly if an update is needed while they are not immediately available, since the maintainer is a single point of failure for this capability by design (Section 2).
+31. Risks and Mitigations
+Risk
+Likelihood/Impact
+Mitigation
+Single maintainer becomes unavailable during a critical window (e.g., sick during event week)
+Low likelihood, high impact
+Document the content-update workflow (Section 20) clearly enough that a second Organizing Committee member could follow it in an emergency; keep repository access shared with at least one trusted backup person
+Content handover (handbooks, schedules) arrives later than needed, delaying population of key pages
+Medium likelihood, medium impact
+Build all page templates and structure ahead of real content using placeholder entries (Phase 2 in Section 29), so the moment content arrives it's a data-entry task, not a build task
+Registration form submissions get missed or delayed in follow-up, frustrating applicants
+Medium likelihood, medium-high impact (directly undermines the site's top priority)
+Ensure notification routing (Section 17.2, 24.2) is tested and reliable before launch; set and communicate a clear follow-up-time expectation in the confirmation email and FAQ
+Spam or bot submissions flood the registration/contact forms
+Medium likelihood, low-medium impact
+Bot protection per Section 23/30.1; monitor submission volume in the first 48 hours after launch
+Bold color palette fails accessibility contrast in places
+Medium likelihood, medium impact
+Explicit contrast check in the QA plan (Section 30.1) before launch, not discovered after
+Two-event structure ends up feeling unbalanced despite the design intent (Section 12.4)
+Low-medium likelihood, medium impact (undermines a core goal)
+Periodic self-check during build: view the Homepage, Schedule, and Resources pages and confirm both track badges/colors appear with genuinely equal visual weight
+Hosting free-tier limits are exceeded during a traffic spike (e.g., registration deadline day)
+Low likelihood given medium event scale, low-medium impact
+Recommended platforms' free tiers (Section 24.2) comfortably exceed expected traffic for a 150–400 participant event; monitor usage dashboards in the week leading up to the registration deadline as a precaution
+[BUDGET TBD] constrains hosting/tooling choices once confirmed
+Unknown until confirmed
+All primary recommendations in Section 24 default to free-tier options specifically so budget constraints are unlikely to force a rebuild — revisit only if a paid requirement emerges (e.g., a custom domain email service)
+
+
+32. Future Enhancements (Phase 2 and Beyond)
+These are deliberately excluded from the current scope (Section 6.2) but worth recording now so they aren't lost, and so Phase 1 architecture decisions (particularly the data model in Section 21) don't accidentally make them harder to add later.
+Enhancement
+Value
+Why It's Phase 2, Not Phase 1
+Authenticated delegate/participant portal (login-based, personalized assignments and documents)
+Removes the need for delegates to hunt for their own committee/country/team info among everyone else's; enables personalized notifications
+Needs real user accounts and a database — a meaningfully heavier build than the current form-only approach; makes most sense once the current site has run for one cycle and real usage patterns are known
+Online payment collection
+Removes the manual follow-up step entirely
+Explicitly excluded by the Organizing Committee for this version (Section 6.2); would also introduce payment-compliance scope avoided in Section 28
+Live results/bracket updates during the Moot Cup knockout rounds
+Real-time excitement and transparency during the competition
+Needs either manual fast-turnaround updates or a more real-time technical layer; a simple manually-updated Results page (Section 19.2) is sufficient for Phase 1
+Automated committee/country or team allocation matching preferences
+Saves manual allocation effort for the Organizing Committee
+Requires an allocation algorithm and admin tooling beyond this phase's scope; manual allocation from submitted preferences is workable at the current medium event scale
+Multi-language (Urdu) support
+Broader accessibility for some local audiences
+Explicitly out of scope per confirmed decision (Section 2); revisit if audience composition changes
+Native mobile app
+Push notifications for schedule changes
+The responsive website plus the Announcements feature (Section 19.1) covers the same core need at far lower build/maintenance cost
+
+Appendix A — Glossary
+Term
+Meaning
+Delegate
+A GIMUN participant representing an assigned country/organization in a committee
+Committee
+A simulated UN body (e.g., General Assembly, Security Council, a specialized agency) in which delegates debate
+Background Guide
+The document a committee's chairs prepare explaining the topics to be debated, distributed to delegates ahead of the conference
+Rules of Procedure
+The formal rules governing how debate, motions, and voting work within a GIMUN committee
+Secretariat
+The senior student leadership team running a GIMUN conference
+Moot Court / Moot Cup
+A simulated appellate legal proceeding where teams argue a hypothetical case before a judging panel
+Moot Proposition
+The hypothetical legal problem/case teams are given to research and argue
+Memorial (Memorandum)
+The written legal brief a moot team submits arguing their assigned side of the case
+Oralist
+A team member who delivers spoken argument during a moot round, as opposed to focusing only on written work
+Bench
+The panel of judges hearing a moot round
+Clarification
+An official, published answer to a team's question about the moot proposition, visible to all competing teams equally
+Delegation
+A group of delegates from the same school/institution registering together for GIMUN
+Track
+This document's term for referring to 'the GIMUN side of the site' vs. 'the Moot Cup side of the site'
+
+Appendix B — Open Items Requiring Confirmation
+Everything else in this PRD is ready to build against. These three items are the only true blockers, and each has a placeholder already in use throughout the document so work is not held up waiting on them.
+Placeholder Used
+What's Needed
+Where It Appears
+[EVENT NAME] / “GIMUN” & “GIKI Moot Cup” as working names
+Official confirmed names, edition/year number, and confirmation that the host institution is GIKI, Topi
+Throughout — Sections 1, 3, 15.1, all page titles/meta
+[DATES TBD]
+Confirmed conference dates and exact venue details (halls, accommodation blocks)
+Homepage countdown, Schedule page, Key Dates strips, Timeline (Section 29)
+[BUDGET TBD]
+Rough budget figure, and confirmed registration fee amount(s) per track
+Section 29 timeline assumptions, Section 24 hosting choice (default recommendation already assumes a $0 budget path), Registration form fee display (Section 17.2)
+
+Nothing else in this document should be finalized without your input where marked
+Per the brief for this PRD, every other decision in this document reflects either your explicit answers during scoping (Section 8's confirmed-decisions table) or a clearly reasoned recommendation you're free to override (e.g., the specific hex codes in Section 14.1, or the specific hosting platform in Section 24.2). None of it is presented as unchangeable — it's a complete, consistent starting point built from real answers, not a guess dressed up as a decision.
+
+Appendix C — Sample Homepage Copy (Starting Draft)
+Hero
+[EVENT NAME] — Where Diplomacy Meets the Courtroom. Two flagship student competitions, one unforgettable week at [Host Institution], [DATES TBD]. Register for GIMUN — Register for the Moot Cup.
+
+GIMUN summary block
+Step into the shoes of a diplomat. Represent a country, negotiate real global issues, and debate your way to a resolution across our committees. Whether you're a first-time delegate or a seasoned MUN veteran, GIMUN is built to challenge you. Learn more about GIMUN.
+
+Moot Cup summary block
+Make your case. Build your memorial, sharpen your argument, and take the floor before a bench of real legal minds. The GIKI Moot Cup is where advocacy skills are tested and built. Learn more about the Moot Cup.
+
+This copy is intentionally short and ready to use as-is, or as a starting point for the Organizing Committee's own voice — it demonstrates the tone of voice direction from Section 14.4 (confident, direct, student-to-student) in practice.
+Appendix D — Full Competitive Comparison Detail
+This expands on the summary table in Section 11 with additional detail gathered during research, for reference if the Organizing Committee wants to review specific reference sites directly during design work.
+Reference
+Notable Pattern Observed
+Relevance Here
+Harvard WorldMUN
+Bidding process for host city each year; heavy emphasis on 'the Olympics of Model UN' branding and global-village cultural programming alongside committee sessions
+Less directly applicable (single-institution recurring venue here), but the cultural/social-programming emphasis is a good idea to consider for the Schedule's 'Shared' track events
+Harvard National MUN (HNMUN)
+Custom 'MUNager' portal for registration, preferences, and invoicing, separate from the marketing site
+Directly informs the Phase 2 roadmap item (Section 32) — the right long-term pattern once the event outgrows a form-only registration flow
+Harvard MUN (HMUN)
+Clear, strict eligibility statement (age/enrollment) stated prominently before application
+Directly adopted into the Overview page eligibility block (Section 15.2)
+General moot court competition conventions
+Central, dated clarifications log; strict, unambiguous memorial formatting rules; published round structure
+Directly adopted into Sections 16.2's Problem Categories/Rules/Clarifications requirements
+
+Closing Note
+This document is intentionally complete rather than minimal: every page has a stated purpose, a user it serves, a list of what it needs to contain, and a way to check it was built correctly. Where a real-world fact was still pending (Appendix B), a clearly marked placeholder was used instead of a guess, so build work can start immediately without waiting, and nothing gets quietly finalized on an assumption that turns out to be wrong. Once the three open items in Appendix B are confirmed, this PRD requires no further decisions to begin full development.

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "team-sg",
+    "name": "Syed Zain Ali",
+    "role": "Secretary-General, GIMUN",
+    "group": "secretariat",
+    "photo": "/images/team/sg.jpg",
+    "bio": "Leading academic vision, committee affairs, and delegate training for GIMUN 2027.",
+    "links": { "email": "sg@gimungiki.org" }
+  },
+  {
+    "id": "team-convenor",
+    "name": "Fatima Noor",
+    "role": "President & Moot Convenor",
+    "group": "convening-committee",
+    "photo": "/images/team/convenor.jpg",
+    "bio": "Supervising proposition vetting, judicial bench coordination, and oralist rounds.",
+    "links": { "email": "mootconvenor@gimungiki.org" }
+  },
+  {
+    "id": "team-director-gen",
+    "name": "Muhammad Umar",
+    "role": "Director-General (Operations & Logistics)",
+    "group": "organizing-committee",
+    "photo": "/images/team/dg.jpg",
+    "bio": "Overseeing transport logistics, campus security protocol, and outstation hospitality.",
+    "links": { "email": "operations@gimungiki.org" }
+  },
+  {
+    "id": "team-sponsorship",
+    "name": "Zoya Malik",
+    "role": "Under-Secretary-General, External Relations",
+    "group": "organizing-committee",
+    "photo": "/images/team/sponsorship.jpg",
+    "bio": "Directing institutional outreach, partner relations, and delegate delegate onboarding.",
+    "links": { "email": "external@gimungiki.org" }
+  }
+]

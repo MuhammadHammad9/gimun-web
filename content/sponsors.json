@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sp-1",
+    "name": "Higher Education Commission (HEC)",
+    "tier": "title",
+    "logo": "/images/sponsors/hec.svg",
+    "url": "https://hec.gov.pk",
+    "description": "Strategic education partner championing academic debate and youth diplomacy."
+  },
+  {
+    "id": "sp-2",
+    "name": "Khyber Pakhtunkhwa IT Board (KPITB)",
+    "tier": "gold",
+    "logo": "/images/sponsors/kpitb.svg",
+    "url": "https://kpitb.gov.pk",
+    "description": "Empowering youth leadership through digital innovation."
+  },
+  {
+    "id": "sp-3",
+    "name": "Lawyers International Review",
+    "tier": "partner",
+    "logo": "/images/sponsors/lir.svg",
+    "url": "https://lawyersintl.org",
+    "description": "Official legal publications partner for the GIKI Moot Cup."
+  }
+]

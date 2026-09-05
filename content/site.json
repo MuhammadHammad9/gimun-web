@@ -1,0 +1,28 @@
+{
+  "eventNames": {
+    "gimun": "GIKI Model United Nations",
+    "mootCup": "GIKI Moot Court Competition",
+    "combined": "GIMUN & GIKI Moot Cup 2026"
+  },
+  "hostInstitution": "Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, Khyber Pakhtunkhwa, Pakistan",
+  "eventDates": {
+    "start": "2026-11-13",
+    "end": "2026-11-15"
+  },
+  "registrationDeadlines": {
+    "gimun": "2026-10-25",
+    "mootCup": "2026-10-20"
+  },
+  "venue": "GIKI Campus, Topi, Swabi District, KP, Pakistan",
+  "socialLinks": {
+    "instagram": "https://instagram.com/gimun_giki",
+    "facebook": "https://facebook.com/gimunofficial",
+    "linkedin": "https://linkedin.com/company/gimun-mootcup"
+  },
+  "contactEmails": {
+    "general": "info@gimun-mootcup.org",
+    "gimun": "secretariat@gimun-mootcup.org",
+    "mootCup": "mootcourt@gimun-mootcup.org",
+    "sponsorship": "partnerships@gimun-mootcup.org"
+  }
+}
