@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -27,6 +27,14 @@ export function TrackChooser({
   mootCupOpen,
   fees,
 }: TrackChooserProps) {
+  const formattedGimunDeadline = gimunDeadline
+    ? new Date(gimunDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : 'Feb 15, 2027';
+
+  const formattedMootDeadline = mootCupDeadline
+    ? new Date(mootCupDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : 'March 05, 2027';
+
   return (
     <StaggerChildren className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
       {/* GIMUN Track Card */}
@@ -49,7 +57,7 @@ export function TrackChooser({
                 </span>
               ) : (
                 <span className="text-xs font-mono text-neutral-gray">
-                  Deadline: <span className="font-semibold text-ink">{gimunDeadline}</span>
+                  Deadline: <span className="font-semibold text-ink">{formattedGimunDeadline}</span>
                 </span>
               )}
             </div>
@@ -137,7 +145,7 @@ export function TrackChooser({
                 </span>
               ) : (
                 <span className="text-xs font-mono text-neutral-gray">
-                  Deadline: <span className="font-semibold text-ink">{mootCupDeadline}</span>
+                  Deadline: <span className="font-semibold text-ink">{formattedMootDeadline}</span>
                 </span>
               )}
             </div>

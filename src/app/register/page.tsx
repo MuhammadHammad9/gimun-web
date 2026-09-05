@@ -1,9 +1,9 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { getCommittees, getProblemCategories, getSiteConfig } from '@/lib/content';
 import { RegisterPageClient } from './RegisterPageClient';
 
 export const metadata: Metadata = {
-  title: 'Official Registration Portal | GIMUN & GIKI Moot Cup 2026',
+  title: 'Official Registration Portal | GIMUN & GIKI Moot Cup 2027',
   description:
     'Official application portal for GIKI Model United Nations (Individual & Delegation) and GIKI Moot Court Competition. Zero online payment collection.',
 };

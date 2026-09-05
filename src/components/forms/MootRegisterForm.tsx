@@ -165,7 +165,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         institution: formData.institution,
         summary: `${catName} · ${formData.members.length} Team Advocates`,
       };
-      onSuccess(data.referenceId || 'REG-MOOT-2026', `${formData.teamName} (${formData.institution})`, details);
+      onSuccess(data.referenceId || 'REG-MOOT-2027', `${formData.teamName} (${formData.institution})`, details);
     } catch (err) {
       console.error('Submission failed:', err);
       setStatus('error');

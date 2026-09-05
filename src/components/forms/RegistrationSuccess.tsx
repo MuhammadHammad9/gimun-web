@@ -60,6 +60,19 @@ export function RegistrationSuccess({
       animate="visible"
       className="max-w-2xl mx-auto p-6 md:p-10 rounded-section bg-surface-elevated border border-whisper-border shadow-card space-y-8 print:border-none print:shadow-none print:p-0"
     >
+      {/* Printable Institutional Header (Visible ONLY during print) */}
+      <div className="hidden print:block text-center border-b-2 border-slate-900 pb-4 mb-6">
+        <div className="text-xl font-heading font-black tracking-tight text-slate-900">
+          GIMUN &amp; GIKI MOOT CUP 2027
+        </div>
+        <p className="text-xs font-serif text-slate-700">
+          Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, KP, Pakistan
+        </p>
+        <div className="inline-block mt-2 px-3 py-1 bg-slate-100 border border-slate-400 text-xs font-mono font-bold uppercase tracking-wider text-slate-900">
+          Official Application Voucher &amp; Seat Reservation Receipt
+        </div>
+      </div>
+
       {/* Header Badge & Title */}
       <div className="text-center space-y-3">
         <div
@@ -230,6 +243,25 @@ export function RegistrationSuccess({
           <ArrowLeft className="w-4 h-4" />
           <span>Return to Homepage</span>
         </Link>
+      </div>
+
+      {/* Printable Institutional Verification Signatures (Visible ONLY during print) */}
+      <div className="hidden print:block pt-8 mt-8 border-t border-slate-300 text-xs text-slate-700 space-y-6">
+        <div className="grid grid-cols-2 gap-12 text-left">
+          <div>
+            <div className="h-16 border-b-2 border-dashed border-slate-400 mb-2" />
+            <span className="font-mono uppercase font-bold text-[10px] text-slate-600 block">Applicant / Head Delegate Signature</span>
+            <span className="text-[10px] text-slate-500">Date: ___________________________</span>
+          </div>
+          <div>
+            <div className="h-16 border-b-2 border-dashed border-slate-400 mb-2" />
+            <span className="font-mono uppercase font-bold text-[10px] text-slate-600 block">GIKI Organizing Committee Registrar Seal</span>
+            <span className="text-[10px] text-slate-500">Stamp &amp; Verification Ref: {referenceId}</span>
+          </div>
+        </div>
+        <p className="text-[9px] text-center text-slate-500 font-mono">
+          Important Notice: This receipt confirms preliminary registration dossier logging. Formal delegate credentials, country allocations, and courtroom slots are confirmed upon manual verification of institutional affiliation.
+        </p>
       </div>
     </motion.div>
   );

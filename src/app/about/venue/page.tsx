@@ -1,49 +1,39 @@
 import type { Metadata } from 'next';
 import { getSiteConfig } from '@/lib/content';
+import { VenueClient } from './VenueClient';
 
 export const metadata: Metadata = {
-  title: 'Venue & Travel | GIKI Campus Guide',
-  description: 'Directions, shuttle services, campus maps, and accommodation details at GIKI, Topi.',
+  title: 'Venue, Campus Guide & Travel Directions | GIKI Topi',
+  description: 'Detailed visitor guide for GIKI Topi: M-1 motorway driving directions, airport shuttle schedules, student hostel accommodations, and campus security clearance protocols.',
 };
 
 export default function VenuePage() {
-  const config = getSiteConfig();
+  const siteConfig = getSiteConfig();
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12 space-y-8">
-      <header className="space-y-3">
-        <span className="text-xs font-mono uppercase text-primary font-semibold">Campus & Travel</span>
-        <h1 className="text-3xl md:text-5xl font-heading font-bold text-ink">
-          Venue & Logistics
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-10">
+      {/* Header */}
+      <header className="space-y-4 max-w-3xl">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-slate-100 text-primary border border-slate-200">
+            Campus Logistics
+          </span>
+          <span className="text-xs font-mono text-neutral-gray uppercase tracking-wider">
+            PRD §18.2
+          </span>
+        </div>
+        <h1 className="text-3xl sm:text-5xl font-heading font-extrabold text-ink tracking-tight">
+          Venue, Travel & Campus Guide
         </h1>
-        <p className="text-neutral-gray text-base max-w-2xl">
-          Everything you need to know about traveling to GIKI Topi, security protocols, and on-campus facilities.
+        <p className="text-sm sm:text-base text-neutral-gray leading-relaxed">
+          The Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI) provides a secure,
+          picturesque, and technologically advanced backdrop for three days of intense diplomacy and judicial advocacy.
+          Review transportation guidelines, security protocols, and on-campus facilities below.
         </p>
       </header>
 
-      <div className="space-y-6">
-        <div className="p-6 rounded-card bg-surface-elevated border border-whisper-border shadow-card space-y-3">
-          <h2 className="text-xl font-heading font-bold text-ink">Campus Location</h2>
-          <p className="text-sm text-neutral-gray">{config.venue}</p>
-          <p className="text-sm text-neutral-gray leading-relaxed">
-            GIKI is situated in the scenic district of Swabi, Khyber Pakhtunkhwa, adjacent to the Tarbela Dam reservoir. The campus is approximately 90 minutes from Islamabad via the M1 Motorway (Swabi Interchange).
-          </p>
-        </div>
-
-        <div className="p-6 rounded-card bg-surface-elevated border border-whisper-border shadow-card space-y-3">
-          <h2 className="text-xl font-heading font-bold text-ink">Official Shuttles</h2>
-          <p className="text-sm text-neutral-gray leading-relaxed">
-            Designated shuttle transport is arranged for confirmed delegations arriving at Islamabad International Airport (ISB) and Rawalpindi/Peshawar bus terminals on the morning of Day 1.
-          </p>
-        </div>
-
-        <div className="p-6 rounded-card bg-surface-elevated border border-whisper-border shadow-card space-y-3">
-          <h2 className="text-xl font-heading font-bold text-ink">Hostel Accommodation</h2>
-          <p className="text-sm text-neutral-gray leading-relaxed">
-            All registered participants are assigned residential rooms within student hostels. Separate male and female wings are enforced with 24/7 security oversight.
-          </p>
-        </div>
-      </div>
+      {/* Venue Client Island */}
+      <VenueClient siteConfig={siteConfig} />
     </div>
   );
 }

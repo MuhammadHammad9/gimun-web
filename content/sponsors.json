@@ -1,26 +1,50 @@
 [
   {
     "id": "sp-1",
-    "name": "Higher Education Commission (HEC)",
+    "name": "Higher Education Commission (HEC) Pakistan",
     "tier": "title",
     "logo": "/images/sponsors/hec.svg",
     "url": "https://hec.gov.pk",
-    "description": "Strategic education partner championing academic debate and youth diplomacy."
+    "description": "Principal national academic patron promoting tertiary research, youth diplomatic debate, and inter-university intellectual competition across Pakistan."
   },
   {
     "id": "sp-2",
-    "name": "Khyber Pakhtunkhwa IT Board (KPITB)",
+    "name": "Khyber Pakhtunkhwa Information Technology Board (KPITB)",
     "tier": "gold",
     "logo": "/images/sponsors/kpitb.svg",
     "url": "https://kpitb.gov.pk",
-    "description": "Empowering youth leadership through digital innovation."
+    "description": "Strategic provincial innovation partner supporting digital infrastructure, livestreamed championship rounds, and youth tech leadership."
   },
   {
     "id": "sp-3",
-    "name": "Lawyers International Review",
+    "name": "Pakistan Software Export Board (PSEB)",
+    "tier": "silver",
+    "logo": "/images/sponsors/pseb.svg",
+    "url": "https://pseb.org.pk",
+    "description": "Official career and technology symposium partner connecting high-achieving student debaters with national industry opportunities."
+  },
+  {
+    "id": "sp-4",
+    "name": "Supreme Court Bar Association Legal Research Wing",
     "tier": "partner",
-    "logo": "/images/sponsors/lir.svg",
-    "url": "https://lawyersintl.org",
-    "description": "Official legal publications partner for the GIKI Moot Cup."
+    "logo": "/images/sponsors/scba.svg",
+    "url": "https://scbap.org",
+    "description": "Academic adjudicatory partner supporting judicial evaluation bench panels, guest judge delegations, and legal internship awards."
+  },
+  {
+    "id": "sp-5",
+    "name": "Pakistan Law Journal & Jurists Review",
+    "tier": "partner",
+    "logo": "/images/sponsors/plj.svg",
+    "url": "https://pakistanlawsite.com",
+    "description": "Publishing partner presenting the Best Memorial Award and publishing winning championship memorials in national legal archives."
+  },
+  {
+    "id": "sp-6",
+    "name": "Youth Diplomatic Herald",
+    "tier": "media-partner",
+    "logo": "/images/sponsors/ydh.svg",
+    "url": "https://youthherald.pk",
+    "description": "Digital press partner delivering daily committee gazettes, live courtroom dispatch reports, and delegate interviews."
   }
 ]

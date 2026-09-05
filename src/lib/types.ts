@@ -133,6 +133,17 @@ export interface FAQItem {
   answer: string;
 }
 
+export interface GalleryItem {
+  id: string;
+  title: string;
+  category: 'gimun' | 'moot-cup' | 'campus' | 'ceremonies';
+  edition: string;
+  caption: string;
+  location: string;
+  aspectRatio: 'landscape' | 'portrait' | 'square' | 'wide';
+  gradientPlaceholder: string;
+}
+
 // === FORM DATA TYPES (PRD §17.2) ===
 
 export interface GimunIndividualData {
@@ -204,10 +215,21 @@ export interface RegistrationSubmission {
   formData: GimunIndividualData | GimunDelegationData | MootCupTeamData;
 }
 
+export interface SubmissionReceiptDetails {
+  applicantName: string;
+  institution: string;
+  email: string;
+  track: 'gimun' | 'moot-cup';
+  applicantType: 'individual' | 'delegation' | 'team';
+  participantCount?: number;
+  submittedAt: string;
+}
+
 export interface SubmissionResponse {
   success: boolean;
   referenceId?: string;
   message: string;
+  receipt?: SubmissionReceiptDetails;
   errors?: Record<string, string>;
 }
 

@@ -60,7 +60,7 @@ function getNextReferenceId(track: 'gimun' | 'moot-cup'): string {
     // fallback
   }
 
-  const prefix = track === 'gimun' ? 'REG-GIMUN-2026' : 'REG-MOOT-2026';
+  const prefix = track === 'gimun' ? 'REG-GIMUN-2027' : 'REG-MOOT-2027';
   const numStr = String(counter[key]).padStart(4, '0');
   return `${prefix}-${numStr}`;
 }
@@ -165,12 +165,40 @@ export async function POST(req: NextRequest) {
 
     // 5. Generate Reference ID & Save
     const referenceId = getNextReferenceId(track);
+    const submittedAt = new Date().toISOString();
+
+    let applicantName = '';
+    let institution = '';
+    let email = '';
+    let participantCount = 1;
+
+    if (track === 'gimun') {
+      if (applicantType === 'individual') {
+        const ind = formData as GimunIndividualData;
+        applicantName = ind.fullName || '';
+        institution = ind.institution || '';
+        email = ind.email || '';
+        participantCount = 1;
+      } else {
+        const del = formData as GimunDelegationData;
+        applicantName = del.delegationHeadName ? `${del.delegationHeadName} (Head Delegate)` : 'Delegation Head';
+        institution = del.institution || '';
+        email = del.delegationHeadEmail || '';
+        participantCount = del.delegates?.length || del.delegateCount || 1;
+      }
+    } else {
+      const moot = formData as MootCupTeamData;
+      applicantName = moot.teamName || 'Moot Court Team';
+      institution = moot.institution || '';
+      email = moot.members?.[0]?.email || '';
+      participantCount = moot.members?.length || 2;
+    }
 
     const submissionRecord: RegistrationSubmission = {
       id: referenceId,
       track,
       applicantType: applicantType || 'individual',
-      submittedAt: new Date().toISOString(),
+      submittedAt,
       status: 'received',
       formData,
     };
@@ -183,6 +211,15 @@ export async function POST(req: NextRequest) {
       success: true,
       referenceId,
       message: 'Application received successfully.',
+      receipt: {
+        applicantName,
+        institution,
+        email,
+        track,
+        applicantType: applicantType || 'individual',
+        participantCount,
+        submittedAt,
+      },
     });
   } catch (err) {
     console.error('API /api/register error:', err);

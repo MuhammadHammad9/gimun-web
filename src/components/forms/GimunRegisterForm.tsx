@@ -254,7 +254,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
               summary: `Institutional Delegation Roster (${delegationData.delegates.length} Delegates)`,
             };
 
-      onSuccess(data.referenceId || 'REG-GIMUN-2026', applicantName, applicantType, details);
+      onSuccess(data.referenceId || 'REG-GIMUN-2027', applicantName, applicantType, details);
     } catch (err) {
       console.error('Submission failed:', err);
       setStatus('error');

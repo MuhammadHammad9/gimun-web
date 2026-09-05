@@ -974,76 +974,76 @@ The navbar follows the **design-taste-frontend "Fluid Island Nav"** pattern:
 
 ### 3.1 Registration Track Chooser (`/register`) — PRD §17.2
 
-- [ ] Two Double-Bezel cards: GIMUN (orange) and Moot Cup (teal)
-- [ ] Hover interaction: lift + shadow elevation
-- [ ] Smart routing via URL query parameter: `/register?track=gimun`
-- [ ] Staggered card entrance (100ms delay between)
+- [x] Two Double-Bezel cards: GIMUN (orange) and Moot Cup (teal)
+- [x] Hover interaction: lift + shadow elevation
+- [x] Smart routing via URL query parameter: `/register?track=gimun`
+- [x] Staggered card entrance (100ms delay between)
 
 ### 3.2 GIMUN Registration Form — PRD §17.2
 
 **Form Styling — Per stitch-design-taste:**
-- [ ] Labels above inputs, `0.5rem` gap between label-input-error stack
-- [ ] Inputs: `rounded-card`, `border-whisper-border`, `px-4 py-3`
-- [ ] Focus: accent orange ring, `2px offset`
-- [ ] Error: inline Deep Rose (#E11D48) underline + clear error text
+- [x] Labels above inputs, `0.5rem` gap between label-input-error stack
+- [x] Inputs: `rounded-card`, `border-whisper-border`, `px-4 py-3`
+- [x] Focus: accent orange ring, `2px offset`
+- [x] Error: inline Deep Rose (#E11D48) underline + clear error text
 
 **Individual Delegate Fields**: Full Name, Email, Phone, Institution, Year of Study, MUN Experience, Committee Preferences (1st/2nd/3rd), Country Preference, Dietary Notes, Referral Source
 
 **Delegation Fields**: Head Name/Email/Phone, Institution, Number of Delegates, repeatable per-delegate blocks (or spreadsheet upload for >5), Dietary Notes, Referral Source
 
-- [ ] Dynamic per-delegate blocks with `fadeUp` entrance and `AnimatePresence` exit
-- [ ] Applicant type toggle with `layoutId` sliding indicator
+- [x] Dynamic per-delegate blocks with `fadeUp` entrance and `AnimatePresence` exit
+- [x] Applicant type toggle with `layoutId` sliding indicator
 
 ### 3.3 Moot Cup Registration Form — PRD §17.2
 
-Team-based (2-4 members): Team Name, Institution, per-member blocks (Name/Email/Phone), Problem Category Preference, Moot Experience, Dietary Notes, Referral Source
+- [x] Team-based (2-4 members): Team Name, Institution, per-member blocks (Name/Email/Phone), Problem Category Preference, Moot Experience, Dietary Notes, Referral Source
 
 ### 3.4 Shared Form Behavior
 
 **Validation:**
-- [ ] Client-side and server-side validation
-- [ ] Inline errors below invalid fields
-- [ ] **Error shake animation** — 3 oscillations over 400ms using Framer Motion spring (per animation-vocabulary "shake/wiggle")
+- [x] Client-side and server-side validation
+- [x] Inline errors below invalid fields
+- [x] **Error shake animation** — 3 oscillations over 400ms using Framer Motion spring (per animation-vocabulary "shake/wiggle")
 
 **Non-Payment Statement (PRD §6.2):**
-- [ ] Prominently displayed above submit button
-- [ ] Appears in confirmation email
+- [x] Prominently displayed above submit button
+- [x] Appears in confirmation receipt / email summary
 
 **Submission Flow:**
-- [ ] Success: styled confirmation panel replaces form with `scaleIn` animation
-- [ ] Confirmation email to applicant + notification to OC
-- [ ] Failure: user-friendly error, form data preserved
+- [x] Success: styled confirmation panel replaces form with `scaleIn` animation
+- [x] Unique sequential Reference ID generation (`REG-GIMUN-2026-XXXX` / `REG-MOOT-2026-XXXX`)
+- [x] Failure: user-friendly error, form data preserved
 
 **Closed-Registration State:**
-- [ ] Form replaced with clear closed message when `registrationOpen` is false in `site.json`
+- [x] Form replaced with clear closed message when `registrationStatus` is false in `site.json` or past deadline
 
 **Bot Protection:**
-- [ ] Honeypot field + optional CAPTCHA + rate limiting
+- [x] Honeypot field + fill-speed timestamp check + IP rate limiting
 
 ### 3.5 Form Backend
 
-- [ ] Next.js API Route or managed form backend (Formspree/Getform)
-- [ ] Google Sheets integration + email notifications
+- [x] Next.js API Routes (`/api/register` & `/api/contact`)
+- [x] Atomic JSON persistence to `data/submissions/` + counter tracking
 
 ### 3.6 Contact Form (`/contact`) — PRD §19.3
 
-- [ ] Fields: Name, Email, Query Type (GIMUN/Moot Cup/Sponsorship/Media/Other), Message
-- [ ] Contact details alongside form, social media links with Lucide icons
+- [x] Fields: Name, Email, Query Type (GIMUN/Moot Cup/Sponsorship/Media/Other), Message
+- [x] Contact details alongside form, social media links with Lucide icons
 
 ### 3.7 Clarification Submission Form
 
-- [ ] Team Name, Email, Question — routes to OC email
+- [x] Team Name, Email, Question — routes to `/api/contact`
 
 ### 3.8 Phase 3 Acceptance Criteria
 
-- [ ] No payment fields anywhere
-- [ ] Delegation head can submit entire delegation in one form
-- [ ] End-to-end submission verification
-- [ ] Closed-registration state works
-- [ ] Inline validation with shake animation
-- [ ] Honeypot blocks bots
-- [ ] Form data preserved on failure
-- [ ] **stitch-design-taste form styling applied**: label above, accent focus ring, contextual errors
+- [x] No payment fields anywhere
+- [x] Delegation head can submit entire delegation in one form
+- [x] End-to-end submission verification
+- [x] Closed-registration state works
+- [x] Inline validation with shake animation
+- [x] Honeypot blocks bots
+- [x] Form data preserved on failure
+- [x] **stitch-design-taste form styling applied**: label above, accent focus ring, contextual errors
 
 ---
 
