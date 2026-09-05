@@ -79,6 +79,13 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
     }, 150);
   };
 
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setActiveDropdown(null);
+    setMobileMenuOpen(false);
+  }
+
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);

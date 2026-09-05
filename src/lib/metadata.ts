@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getSiteConfig } from '@/lib/content';
 
 export interface MetadataProps {
   title?: string;
@@ -8,25 +9,28 @@ export interface MetadataProps {
 }
 
 export function constructMetadata({
-  title = 'GIMUN & GIKI Moot Cup 2027 | Official Website',
+  title,
   description = 'Two flagship collegiate student competitions. One unified digital home at Ghulam Ishaq Khan Institute (GIKI), Topi. Model United Nations diplomacy meets appellate moot court advocacy.',
   image = '/images/og/default.jpg',
   path = '',
 }: MetadataProps = {}): Metadata {
+  const siteConfig = getSiteConfig();
+  const defaultTitle = `${siteConfig?.eventNames?.combined || 'GIMUN & GIKI Moot Cup'} | Official Website`;
+  const resolvedTitle = title || defaultTitle;
   const url = `https://gimungiki.org${path}`;
 
   return {
     title: {
-      default: title,
-      template: '%s | GIMUN & GIKI Moot Cup',
+      default: resolvedTitle,
+      template: `%s | ${siteConfig?.eventNames?.combined || 'GIMUN & GIKI Moot Cup'}`,
     },
     description,
     metadataBase: new URL('https://gimungiki.org'),
     openGraph: {
-      title,
+      title: resolvedTitle,
       description,
       url,
-      siteName: 'GIMUN & GIKI Moot Cup',
+      siteName: siteConfig?.eventNames?.combined || 'GIMUN & GIKI Moot Cup',
       images: [
         {
           url: image,

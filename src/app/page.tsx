@@ -8,6 +8,7 @@ import { SponsorStrip } from '@/components/ui/SponsorStrip';
 import { CountdownChip } from '@/components/ui/CountdownChip';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { ArrowRight, CheckCircle2, ChevronRight } from 'lucide-react';
+import { formatDateRange } from '@/lib/utils';
 import {
   getSiteConfig,
   getAnnouncements,
@@ -33,9 +34,15 @@ export default function Home() {
           <div className="inline-flex flex-wrap items-center gap-3">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-white border border-gray-200/80 shadow-xs text-[#1E2A78]">
               <span className="w-2 h-2 rounded-full bg-[#FF6B35] animate-pulse" />
-              <span>March 18–21, 2027 • GIKI Campus, Topi</span>
+              <span>
+                {formatDateRange(siteConfig?.eventDates?.start, siteConfig?.eventDates?.end)} •{' '}
+                {siteConfig?.venue?.split(',')[0] || 'GIKI Campus'}
+              </span>
             </div>
-            <CountdownChip startDate={siteConfig.eventDates.start} />
+            <CountdownChip
+              startDate={siteConfig?.eventDates?.start || '2027-03-18'}
+              endDate={siteConfig?.eventDates?.end || '2027-03-21'}
+            />
           </div>
         }
         title={
@@ -252,7 +259,9 @@ export default function Home() {
                     <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">Active</span>
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Early Bird Open</div>
-                  <div className="text-xs font-mono text-[#FF6B35] font-semibold">Deadline: Feb 15, 2027</div>
+                  <div className="text-xs font-mono text-[#FF6B35] font-semibold">
+                    Deadline: {new Date(siteConfig?.registrationDeadlines?.gimun || '2027-02-15').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </div>
                   <p className="text-xs text-[#5A5A6E]">Priority committee preference & delegation discounts applied.</p>
                 </div>
 
@@ -272,7 +281,9 @@ export default function Home() {
                     <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-medium">Upcoming</span>
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Memorial Submission</div>
-                  <div className="text-xs font-mono text-[#00B4A6] font-semibold">Deadline: March 05, 2027</div>
+                  <div className="text-xs font-mono text-[#00B4A6] font-semibold">
+                    Deadline: {new Date(siteConfig?.registrationDeadlines?.mootCup || '2027-03-05').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </div>
                   <p className="text-xs text-[#5A5A6E]">Final electronic submission deadline for Moot Court memorials.</p>
                 </div>
 
@@ -282,7 +293,9 @@ export default function Home() {
                     <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">On-Campus</span>
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Conference Days</div>
-                  <div className="text-xs font-mono text-[#1E2A78] font-semibold">March 18–21, 2027</div>
+                  <div className="text-xs font-mono text-[#1E2A78] font-semibold">
+                    {formatDateRange(siteConfig?.eventDates?.start, siteConfig?.eventDates?.end)}
+                  </div>
                   <p className="text-xs text-[#5A5A6E]">Check-in, opening ceremony, committee sessions, and Grand Final.</p>
                 </div>
               </div>

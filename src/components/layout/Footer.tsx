@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Mail, MapPin, Calendar, ShieldCheck } from 'lucide-react';
 import type { SiteConfig, Sponsor } from '@/lib/types';
+import { formatDateRange } from '@/lib/utils';
 
 export interface FooterProps {
   siteConfig?: SiteConfig;
@@ -58,7 +59,7 @@ export function Footer({ siteConfig, sponsors }: FooterProps) {
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-3.5 h-3.5 text-[#00B4A6] shrink-0" />
-                <span>March 18–21, 2027</span>
+                <span>{formatDateRange(siteConfig?.eventDates?.start, siteConfig?.eventDates?.end)}</span>
               </div>
             </div>
           </div>
