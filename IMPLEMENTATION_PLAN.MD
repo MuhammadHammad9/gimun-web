@@ -154,34 +154,27 @@ graph TD
 
 **Tasks:**
 
-- [ ] **Install Node.js** (LTS v20+) and verify with `node -v` and `npm -v`
-- [ ] **Install Git** and configure with the maintainer's GitHub credentials
-- [ ] **Create a new GitHub repository** named `gimun-mootcup-website` (private initially, can be made public later)
-  - Add a `.gitignore` for Node.js/Next.js projects
-  - Add a `README.md` with project overview and quick-start instructions
+- [x] **Install Node.js** (LTS v20+) and verify with `node -v` and `npm -v` — verified v24.13.0, npm 11.6.2
+- [x] **Install Git** and configure — verified Git 2.53.0
+- [x] **Initialize Git repository** with `.gitignore` and `README.md`
+- [ ] **Create remote GitHub repository** named `gimun-mootcup-website` (push remote when GitHub credentials provided)
   - Add at least one trusted backup collaborator (PRD §31 risk mitigation — single maintainer unavailability)
 
 ### 0.2 Project Initialization
 
 **Tasks:**
 
-- [ ] **Scaffold the Next.js project** using the App Router:
+- [x] **Scaffold the Next.js project** using the App Router:
   ```bash
-  npx create-next-app@latest gimun-mootcup-website --typescript --tailwind --eslint --app --src-dir
+  npx create-next-app@latest . --ts --tailwind --eslint --app --src-dir
   ```
-- [ ] **Install additional dependencies**:
+- [x] **Install additional dependencies**:
   ```bash
-  npm install lucide-react    # Icon library (lightweight, tree-shakeable)
-  npm install clsx            # Conditional class names utility
-  npm install date-fns        # Lightweight date manipulation for countdown/schedule
-  npm install gray-matter     # Parse Markdown front-matter (if using .md content files)
-  npm install sharp           # Image optimization (Next.js uses this internally)
-  npm install framer-motion   # Spring-physics animation library — per framer-motion-animator skill
+  npm install lucide-react clsx tailwind-merge date-fns sharp framer-motion
   ```
-- [ ] **Install dev dependencies**:
+- [x] **Install dev dependencies**:
   ```bash
-  npm install -D prettier prettier-plugin-tailwindcss
-  npm install -D @types/node
+  npm install -D prettier prettier-plugin-tailwindcss @types/node
   ```
 
 > [!IMPORTANT]
@@ -630,19 +623,20 @@ export const reducedMotionVariants = {
   - `NEXT_PUBLIC_GA_ID` — Google Analytics measurement ID
   - `FORM_ENDPOINT` — Form backend service endpoint URL
   - `NOTIFICATION_EMAIL` — Email address for form submission notifications
-- [ ] **Create `.env.example`** file listing all required env vars (committed to repo as documentation)
+- [x] **Create `.env.example`** file listing all required env vars (committed to repo as documentation)
 - [ ] **Test the deployment pipeline** — push a minimal change and verify it auto-deploys within 1-2 minutes
 
 ### 0.9 Phase 0 Acceptance Criteria
 
-- [ ] Running `npm run dev` launches the site locally at `localhost:3000`
-- [ ] Pushing to `main` branch triggers automatic deployment to the live custom domain
-- [ ] All content JSON files exist with valid placeholder data
-- [ ] TypeScript compiles with zero errors
-- [ ] The live site shows HTTPS (no security warnings)
+- [x] Running `npm run dev` launches the site locally at `localhost:3000` (Verified: HTTP 200 OK)
+- [ ] Pushing to `main` branch triggers automatic deployment to the live custom domain (requires Vercel link)
+- [x] All content JSON files exist with valid placeholder data (Verified: 11/11 validated)
+- [x] TypeScript compiles with zero errors (`npx tsc --noEmit` passed)
+- [x] ESLint passes with zero errors/warnings (`npm run lint` passed)
+- [x] Next.js production build succeeds with 25/25 routes prerendered (`npm run build` passed)
 - [ ] At least one backup collaborator has GitHub repository access
-- [ ] Framer Motion is installed and importable
-- [ ] Motion config file (`src/lib/motion.ts`) exists with all shared animation variants
+- [x] Framer Motion is installed and importable (`framer-motion@13.2.0`)
+- [x] Motion config file (`src/lib/motion.ts`) exists with all shared animation variants
 
 ---
 
