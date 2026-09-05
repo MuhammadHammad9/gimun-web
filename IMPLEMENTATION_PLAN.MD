@@ -826,27 +826,27 @@ The navbar follows the **design-taste-frontend "Fluid Island Nav"** pattern:
 
 ### 1.9 Metadata & SEO Utilities — PRD §26
 
-- [ ] `src/lib/metadata.ts` — generates Next.js `Metadata` objects with OG/Twitter Card tags
-- [ ] Default OG image: branded 1200x630 in `/public/images/og/default.jpg`
-- [ ] `src/app/sitemap.ts` — generates `sitemap.xml`
+- [x] `src/lib/metadata.ts` — generates Next.js `Metadata` objects with OG/Twitter Card tags
+- [x] Default OG image: branded 1200x630 in `/public/images/og/default.jpg`
+- [x] `src/app/sitemap.ts` — generates `sitemap.xml`
 
 ### 1.10 Phase 1 Acceptance Criteria
 
-- [ ] Navbar renders correctly on desktop and mobile with all nav items + Register button
-- [ ] **Navbar floats** with rounded corners and glass effect (per design-taste-frontend)
-- [ ] Register button visible at all times on mobile
-- [ ] Dropdown menus animate with spring-physics scale transition
-- [ ] **Mobile menu uses staggered reveal** — 80ms cascaded delays
-- [ ] Hamburger morphs to X smoothly
-- [ ] Announcement banner works correctly with dismiss persistence
-- [ ] Footer displays on every page with all required links
-- [ ] Countdown chip computes correctly with number animation
-- [ ] **Cards use Double-Bezel architecture** (outer shell + inner core)
-- [ ] Color contrast passes WCAG 2.1 AA
-- [ ] All components keyboard navigable
-- [ ] **All animations use only `transform` and `opacity`** (GPU-safe)
-- [ ] **`prefers-reduced-motion` respected** on all animated components
-- [ ] **No emojis used as icons** — all Lucide SVGs
+- [x] Navbar renders correctly on desktop and mobile with all nav items + Register button
+- [x] **Navbar floats** with rounded corners and glass effect (per design-taste-frontend)
+- [x] Register button visible at all times on mobile
+- [x] Dropdown menus animate with spring-physics scale transition
+- [x] **Mobile menu uses staggered reveal** — 80ms cascaded delays
+- [x] Hamburger morphs to X smoothly
+- [x] Announcement banner works correctly with dismiss persistence
+- [x] Footer displays on every page with all required links
+- [x] Countdown chip computes correctly with number animation
+- [x] **Cards use Double-Bezel architecture** (outer shell + inner core)
+- [x] Color contrast passes WCAG 2.1 AA
+- [x] All components keyboard navigable
+- [x] **All animations use only `transform` and `opacity`** (GPU-safe)
+- [x] **`prefers-reduced-motion` respected** on all animated components
+- [x] **No emojis used as icons** — all Lucide SVGs
 
 ---
 
