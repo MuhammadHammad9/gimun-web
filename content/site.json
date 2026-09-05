@@ -24,5 +24,10 @@
     "gimun": "secretariat@gimun-mootcup.org",
     "mootCup": "mootcourt@gimun-mootcup.org",
     "sponsorship": "partnerships@gimun-mootcup.org"
+  },
+  "fees": {
+    "gimunIndividual": "PKR 4,500",
+    "gimunDelegationPerDelegate": "PKR 4,000",
+    "mootCupTeam": "PKR 12,000"
   }
 }

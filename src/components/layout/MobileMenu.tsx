@@ -16,6 +16,22 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const [mootOpen, setMootOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') onClose();
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [isOpen, onClose]);
+
   return (
     <AnimatePresence>
       {isOpen && (
