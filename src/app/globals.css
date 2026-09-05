@@ -21,6 +21,12 @@
   --color-surface-elevated: #FFFFFF;
   --color-whisper-border: rgba(226, 232, 240, 0.8);
 
+  --color-primary-foreground: #FFFFFF;
+  --color-muted: #F1F1F8;
+  --color-muted-foreground: #64748B;
+  --color-background: #F8F8FC;
+  --color-foreground: #1A1A2E;
+
   --font-heading: var(--font-outfit), system-ui, -apple-system, sans-serif;
   --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-jetbrains-mono), monospace;
