@@ -1,19 +1,7 @@
-﻿import type { Metadata } from 'next';
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 import { Button } from '@/components/ui/Button';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import {
-  Scale,
-  Download,
-  FileText,
-  AlertTriangle,
-  Gavel,
-  Clock,
-  Award,
-  CheckCircle2,
-  ArrowRight,
-} from 'lucide-react';
+import { Download, AlertTriangle, Clock } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Rules & Memorial Guidelines | GIKI Moot Court 2027',

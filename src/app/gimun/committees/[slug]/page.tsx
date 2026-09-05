@@ -4,18 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 import { CountryMatrix } from '@/components/ui/CountryMatrix';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import {
-  Globe2,
-  Users2,
-  FileText,
-  Download,
-  ArrowLeft,
-  ArrowRight,
-  ShieldCheck,
-  Building,
-  Mail,
-} from 'lucide-react';
+import { Download, ArrowLeft } from 'lucide-react';
 import { getCommittees, getCommitteeBySlug, getDocuments } from '@/lib/content';
 
 interface CommitteePageProps {

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 import { Button } from '@/components/ui/Button';
@@ -7,10 +7,7 @@ import {
   Scale,
   Download,
   Calendar,
-  FileText,
   ArrowRight,
-  ShieldCheck,
-  MessageSquare,
   AlertCircle,
 } from 'lucide-react';
 import { getMootCategories, getDocuments } from '@/lib/content';

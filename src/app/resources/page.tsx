@@ -1,24 +1,14 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 import { Button } from '@/components/ui/Button';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { FilterBar } from '@/components/ui/FilterBar';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import {
-  FileText,
-  Download,
-  Calendar,
-  Search,
-  BookOpen,
-  ArrowUpRight,
-  ShieldCheck,
-  Tag,
-} from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { Download } from 'lucide-react';
 import { getDocuments } from '@/lib/content';
-import type { Document, Track } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 export default function ResourcesPage() {
@@ -169,8 +159,17 @@ export default function ResourcesPage() {
         ))}
 
         {filteredDocuments.length === 0 && (
-          <div className="col-span-full p-12 text-center text-xs font-mono text-gray-500 bg-[#F8F8FC] rounded-2xl border border-dashed border-gray-200">
-            No official documents found matching your filter criteria.
+          <div className="col-span-full">
+            <EmptyState
+              title="No Documents Found"
+              description={`No official documents match "${searchQuery || 'your filter combination'}". Try clearing filters or using different search terms.`}
+              actionLabel="Reset All Filters"
+              onAction={() => {
+                setSearchQuery('');
+                setTrackFilter('all');
+                setTypeFilter('all');
+              }}
+            />
           </div>
         )}
       </div>

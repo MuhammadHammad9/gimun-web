@@ -1,20 +1,12 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 import { Button } from '@/components/ui/Button';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import {
-  Scale,
-  Search,
-  MessageSquare,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-  Send,
-} from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { CheckCircle2, AlertCircle, Send } from 'lucide-react';
 import { getClarifications } from '@/lib/content';
 
 export default function ClarificationsPage() {
@@ -119,9 +111,12 @@ export default function ClarificationsPage() {
         ))}
 
         {filteredClarifications.length === 0 && (
-          <div className="p-12 text-center text-xs font-mono text-gray-500 bg-[#F8F8FC] rounded-2xl border border-dashed border-gray-200">
-            No clarifications found matching &ldquo;{searchQuery}&rdquo;.
-          </div>
+          <EmptyState
+            title="No Clarifications Found"
+            description={`No official Compromis rulings match "${searchQuery}". Please check your search term or submit an inquiry below.`}
+            actionLabel="Clear Search Filter"
+            onAction={() => setSearchQuery('')}
+          />
         )}
       </div>
 

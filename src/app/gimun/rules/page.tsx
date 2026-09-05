@@ -1,18 +1,7 @@
-﻿import type { Metadata } from 'next';
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 import { Button } from '@/components/ui/Button';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import {
-  BookOpen,
-  Download,
-  CheckCircle2,
-  FileText,
-  Shield,
-  ArrowRight,
-  Gavel,
-  HelpCircle,
-} from 'lucide-react';
+import { Download } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Rules of Procedure (RoP) | GIMUN 2027',

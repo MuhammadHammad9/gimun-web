@@ -1,22 +1,13 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 import { FilterBar } from '@/components/ui/FilterBar';
 import { Button } from '@/components/ui/Button';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  FileText,
-  Printer,
-  Download,
-  CheckCircle2,
-  AlertCircle,
-  Sparkles,
-} from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { motion } from 'framer-motion';
+import { Clock, MapPin, Printer } from 'lucide-react';
 import { getSchedule } from '@/lib/content';
 import { cn } from '@/lib/utils';
 
@@ -64,27 +55,43 @@ export default function SchedulePage() {
         </p>
       </header>
 
-      {/* Controls: Day Tabs & Track Filter */}
+      {/* Controls: Day Tabs with Framer Motion layoutId & Track Filter */}
       <div className="space-y-6">
-        {/* Day Tabs */}
-        <div className="flex items-center gap-2 border-b border-gray-200 overflow-x-auto pb-1">
+        {/* Day Tabs Pill Bar */}
+        <div className="p-1.5 rounded-2xl bg-gray-100/90 backdrop-blur-sm border border-gray-200/80 inline-flex items-center gap-1.5 flex-wrap">
           {days.map((dayNum) => {
             const daySample = allSchedule.find((s) => s.day === dayNum);
             const isSelected = selectedDay === dayNum;
+            const subtitle = daySample?.dayLabel.split('—')[1]?.trim() || '';
+
             return (
               <button
                 key={dayNum}
                 onClick={() => setSelectedDay(dayNum)}
                 className={cn(
-                  'px-5 py-3 rounded-t-xl font-heading font-bold text-sm sm:text-base whitespace-nowrap transition-all border-b-2',
-                  isSelected
-                    ? 'border-[#1E2A78] text-[#1E2A78] bg-white shadow-2xs'
-                    : 'border-transparent text-[#5A5A6E] hover:text-[#1A1A2E] hover:bg-gray-50'
+                  'relative px-5 py-2.5 rounded-xl font-heading font-bold text-sm sm:text-base transition-colors duration-200 cursor-pointer select-none',
+                  isSelected ? 'text-white' : 'text-[#5A5A6E] hover:text-[#1A1A2E]'
                 )}
               >
-                <span>Day {dayNum}</span>
-                <span className="hidden sm:inline text-xs font-mono font-normal text-[#5A5A6E] ml-2">
-                  ({daySample?.dayLabel.split('—')[1]?.trim() || ''})
+                {isSelected && (
+                  <motion.div
+                    layoutId="activeScheduleDay"
+                    className="absolute inset-0 bg-[#1E2A78] rounded-xl shadow-xs"
+                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  <span>Day {dayNum}</span>
+                  {subtitle && (
+                    <span
+                      className={cn(
+                        'hidden sm:inline text-xs font-mono font-normal transition-colors',
+                        isSelected ? 'text-white/80' : 'text-gray-400'
+                      )}
+                    >
+                      ({subtitle})
+                    </span>
+                  )}
                 </span>
               </button>
             );
@@ -104,10 +111,10 @@ export default function SchedulePage() {
             </span>
             <button
               onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono border border-gray-200 hover:bg-gray-50 text-[#1A1A2E]"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border border-gray-200 hover:bg-gray-50 text-[#1A1A2E] cursor-pointer transition-colors"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print</span>
+              <span>Print Schedule</span>
             </button>
           </div>
         </div>
@@ -137,8 +144,14 @@ export default function SchedulePage() {
                       <Clock className="w-4 h-4 text-[#FF6B35]" />
                       <span>{session.startTime} — {session.endTime}</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <TrackBadge track={session.track} size="sm" />
+                      {session.id === 'sched-01' && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                          Live Session
+                        </span>
+                      )}
                       {session.updatedFlag && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-amber-100 text-amber-800 border border-amber-300">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
@@ -175,9 +188,12 @@ export default function SchedulePage() {
         ))}
 
         {filteredSessions.length === 0 && (
-          <div className="p-12 text-center text-xs font-mono text-gray-500 bg-[#F8F8FC] rounded-2xl border border-dashed border-gray-200">
-            No events scheduled for the selected track filter on {currentDayLabel}.
-          </div>
+          <EmptyState
+            title="No Sessions Scheduled"
+            description={`There are no sessions scheduled under the selected filter for ${currentDayLabel}.`}
+            actionLabel="Show All Sessions"
+            onAction={() => setTrackFilter('all')}
+          />
         )}
       </div>
 

@@ -7,19 +7,7 @@ import { ContentCard } from '@/components/ui/ContentCard';
 import { SponsorStrip } from '@/components/ui/SponsorStrip';
 import { CountdownChip } from '@/components/ui/CountdownChip';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import {
-  Scale,
-  Globe2,
-  Calendar,
-  FileText,
-  ArrowRight,
-  Award,
-  Users2,
-  BookOpen,
-  CheckCircle2,
-  ChevronRight,
-  Building,
-} from 'lucide-react';
+import { ArrowRight, CheckCircle2, ChevronRight } from 'lucide-react';
 import {
   getSiteConfig,
   getAnnouncements,

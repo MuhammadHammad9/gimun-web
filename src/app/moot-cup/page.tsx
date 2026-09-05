@@ -8,14 +8,11 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import {
   Scale,
   Gavel,
-  Calendar,
   FileText,
   CheckCircle2,
   AlertCircle,
   ArrowRight,
   ShieldCheck,
-  BookOpen,
-  MessageSquare,
 } from 'lucide-react';
 import { getMootCategories, getSiteConfig } from '@/lib/content';
 

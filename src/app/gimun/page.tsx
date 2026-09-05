@@ -8,14 +8,11 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import {
   Globe2,
   Users2,
-  Calendar,
   FileCheck,
   CheckCircle2,
   AlertCircle,
   ArrowRight,
   ShieldCheck,
-  BookOpen,
-  HelpCircle,
 } from 'lucide-react';
 import { getCommittees, getSiteConfig } from '@/lib/content';
 
