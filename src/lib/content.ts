@@ -10,6 +10,7 @@ import type {
   Sponsor,
   Clarification,
   ResultAward,
+  GalleryItem,
 } from './types';
 
 import siteConfigData from '../../content/site.json';
@@ -23,6 +24,7 @@ import teamData from '../../content/team.json';
 import sponsorsData from '../../content/sponsors.json';
 import clarificationsData from '../../content/clarifications.json';
 import resultsData from '../../content/results.json';
+import galleryData from '../../content/gallery.json';
 
 export function getSiteConfig(): SiteConfig {
   return siteConfigData as SiteConfig;
@@ -77,4 +79,12 @@ export function getClarifications(): Clarification[] {
 
 export function getResults(): ResultAward[] {
   return resultsData as ResultAward[];
+}
+
+export function getGallery(): GalleryItem[] {
+  return galleryData as GalleryItem[];
+}
+
+export function getGalleryByCategory(category: GalleryItem['category']): GalleryItem[] {
+  return (galleryData as GalleryItem[]).filter((item) => item.category === category);
 }

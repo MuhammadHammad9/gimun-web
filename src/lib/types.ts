@@ -34,6 +34,10 @@ export interface SiteConfig {
     gimunDelegationPerDelegate: string;
     mootCupTeam: string;
   };
+  registrationStatus?: {
+    gimunOpen: boolean;
+    mootCupOpen: boolean;
+  };
 }
 
 export interface Committee {
@@ -129,13 +133,104 @@ export interface FAQItem {
   answer: string;
 }
 
+export interface GalleryItem {
+  id: string;
+  title: string;
+  category: 'gimun' | 'moot-cup' | 'campus' | 'ceremonies';
+  edition: string;
+  caption: string;
+  location: string;
+  aspectRatio: 'landscape' | 'portrait' | 'square' | 'wide';
+  gradientPlaceholder: string;
+}
+
+// === FORM DATA TYPES (PRD §17.2) ===
+
+export interface GimunIndividualData {
+  fullName: string;
+  email: string;
+  phone: string;
+  institution: string;
+  yearOfStudy: 'freshman' | 'sophomore' | 'junior' | 'senior' | 'postgraduate' | 'high-school-senior' | '';
+  hasExperience: boolean;
+  experienceDetails: string;
+  committeePreference1: string;
+  committeePreference2: string;
+  committeePreference3: string;
+  countryPreference: string;
+  dietaryAccessibility: string;
+  referralSource: 'social-media' | 'university-club' | 'friend' | 'faculty-advisor' | 'campus-ambassador' | 'other' | '';
+}
+
+export interface DelegateRosterEntry {
+  name: string;
+  email: string;
+  committeePreference1: string;
+  committeePreference2: string;
+  countryPreference: string;
+}
+
+export interface GimunDelegationData {
+  delegationHeadName: string;
+  delegationHeadEmail: string;
+  delegationHeadPhone: string;
+  institution: string;
+  delegateCount: number;
+  delegates: DelegateRosterEntry[];
+  dietaryAccessibility: string;
+  referralSource: 'social-media' | 'university-club' | 'friend' | 'faculty-advisor' | 'campus-ambassador' | 'other' | '';
+}
+
+export interface MootTeamMember {
+  fullName: string;
+  email: string;
+  phone: string;
+  role: 'lead-oralist' | 'second-oralist' | 'researcher' | 'advocate';
+}
+
+export interface MootCupTeamData {
+  teamName: string;
+  institution: string;
+  members: MootTeamMember[];
+  problemCategoryPreference: string;
+  hasExperience: boolean;
+  experienceDetails: string;
+  dietaryAccessibility: string;
+  referralSource: 'social-media' | 'university-club' | 'friend' | 'faculty-advisor' | 'campus-ambassador' | 'other' | '';
+}
+
+export interface ContactFormData {
+  name: string;
+  email: string;
+  queryType: 'gimun' | 'moot-cup' | 'sponsorship' | 'media' | 'other';
+  message: string;
+}
+
 export interface RegistrationSubmission {
   id: string;
   track: 'gimun' | 'moot-cup';
   applicantType: 'individual' | 'delegation' | 'team';
   submittedAt: string;
   status: 'received' | 'under-review' | 'accepted' | 'rejected';
-  formData: Record<string, unknown>;
+  formData: GimunIndividualData | GimunDelegationData | MootCupTeamData;
+}
+
+export interface SubmissionReceiptDetails {
+  applicantName: string;
+  institution: string;
+  email: string;
+  track: 'gimun' | 'moot-cup';
+  applicantType: 'individual' | 'delegation' | 'team';
+  participantCount?: number;
+  submittedAt: string;
+}
+
+export interface SubmissionResponse {
+  success: boolean;
+  referenceId?: string;
+  message: string;
+  receipt?: SubmissionReceiptDetails;
+  errors?: Record<string, string>;
 }
 
 export interface ResultAward {

@@ -3,42 +3,96 @@
     "id": "faq-1",
     "category": "general",
     "question": "What is the relationship between GIMUN and the GIKI Moot Cup?",
-    "answer": "GIMUN (Model United Nations) and the GIKI Moot Cup (Moot Court Competition) are two concurrent flagship student competitions organized by the same society at Ghulam Ishaq Khan Institute (GIKI), Topi. They share dates, campus facilities, social programming, and opening/closing ceremonies, while featuring distinct competition tracks and evaluation formats."
+    "answer": "GIMUN (Model United Nations) and the GIKI Moot Cup (Moot Court Competition) are two concurrent flagship academic symposiums organized by the student leadership at Ghulam Ishaq Khan Institute (GIKI), Topi. They share event dates, campus facilities, evening socials, and opening/closing ceremonies, while maintaining separate, rigorous competitive frameworks and judicial/diplomatic evaluations."
   },
   {
     "id": "faq-2",
-    "category": "registration-fees",
-    "question": "Does submitting the registration form charge my card?",
-    "answer": "No. Registration on this website is strictly form-only. Submitting an application does not collect any payment. Once your application or delegation is reviewed, our Secretariat will contact you via email with your allocation and formal bank transfer instructions."
+    "category": "general",
+    "question": "Who is eligible to participate in the symposiums?",
+    "answer": "GIMUN welcomes delegates from secondary schools (A-Levels/F.Sc) through university undergraduate and postgraduate programs across Pakistan and abroad. The GIKI Moot Cup is open to enrolled students from university law faculties, law colleges, and authorized moot court societies (teams of 2 to 4 students)."
   },
   {
     "id": "faq-3",
-    "category": "registration-fees",
-    "question": "Can I register as an individual delegate or only as part of an institutional delegation?",
-    "answer": "Both options are supported for GIMUN. You can register as an Individual Delegate or submit a full institutional delegation through our Head of Delegation form. For the Moot Cup, registration is conducted in teams of 2 to 4 students."
+    "category": "general",
+    "question": "Will participants receive official certificates?",
+    "answer": "Yes. Every registered delegate and advocate who attends all required committee sessions or pleading rounds will receive a verified Certificate of Participation bearing official seals from GIKI and our academic patrons. In addition, Best Delegate, Outstanding Diplomat, Best Memorial, and Championship winners receive formal distinction gavels and shields."
   },
   {
     "id": "faq-4",
-    "category": "gimun-specific",
-    "question": "When will country and committee allocations be released?",
-    "answer": "Country allocations are processed on a rolling basis. Delegates who submit early receive prioritized assignment according to their first or second committee and country preferences."
+    "category": "registration-fees",
+    "question": "Does submitting the registration form charge my card or bank account?",
+    "answer": "No. Registration through this web platform is strictly non-payment. GIMUN & GIKI Moot Cup does not collect credit cards or bank payments online. Once your application or delegation roster is approved, our Organizing Committee will issue a formal acceptance letter and invoice with official university bank transfer instructions."
   },
   {
     "id": "faq-5",
-    "category": "moot-cup-specific",
-    "question": "What citation style is required for moot court written memorials?",
-    "answer": "All written memorials must adhere strictly to the Oxford University Standard for the Citation of Legal Authorities (OSCOLA) 4th Edition. Word count limits and formatting guidelines are available in the Moot Cup Rules document in the Resource Hub."
+    "category": "registration-fees",
+    "question": "Can I apply as an individual delegate or only as part of an institutional delegation?",
+    "answer": "For GIMUN, applicants may register either as an independent Individual Delegate or as part of an Institutional Delegation (2 to 20 delegates managed by a Head Delegate or Faculty Advisor). For the GIKI Moot Cup, registrations must be submitted as teams of 2 to 4 advocates (strictly 2 oralists plus optional researchers)."
   },
   {
     "id": "faq-6",
-    "category": "logistics",
-    "question": "Is on-campus accommodation available for outstation participants?",
-    "answer": "Yes. GIKI offers secure on-campus hostel accommodation for both male and female delegations upon prior booking. Delegations requiring boarding should specify their room count during registration follow-up."
+    "category": "registration-fees",
+    "question": "What is included in the delegate and team registration fees?",
+    "answer": "Delegate and delegation fees cover access to all formal committee/courtroom sessions, conference background dossiers or compromis materials, official delegate stationery kits, access to three days of catered dining (lunches, formal dinners, tea breaks), entry to evening social events, and secure hostel accommodation on campus."
   },
   {
     "id": "faq-7",
+    "category": "registration-fees",
+    "question": "What are the registration deadlines?",
+    "answer": "Priority registrations close on November 15, 2026. Regular registrations close on December 5, 2026. Because committee capacities and courtroom chambers are strictly capped to ensure competitive quality, registrations may close early once allocations are exhausted."
+  },
+  {
+    "id": "faq-8",
+    "category": "gimun-specific",
+    "question": "When and how are country and committee allocations released?",
+    "answer": "Allocations are evaluated on a rolling basis following submission. The Academic Secretariat evaluates candidate experience and preferences (1st, 2nd, and 3rd choices) to balance committee dynamics. Confirmed allocations are dispatched to delegate emails alongside background guides."
+  },
+  {
+    "id": "faq-9",
+    "category": "gimun-specific",
+    "question": "What Rules of Procedure (ROP) govern GIMUN committees?",
+    "answer": "GIMUN committees operate under modern Harvard/THIMUN-adapted parliamentary procedure, emphasizing substantively moderated caucuses, unmoderated working paper formation, and structured draft resolution amendments. A comprehensive ROP handbook is downloadable from our Resource Hub."
+  },
+  {
+    "id": "faq-10",
+    "category": "gimun-specific",
+    "question": "Are Position Papers mandatory for award eligibility?",
+    "answer": "Yes. To be eligible for Best Delegate or Outstanding Diplomat distinctions, delegates must submit a compliant Position Paper to their committee chair directorate at least 7 days before Day 1. Guidelines and submission portals are specified in each committee background guide."
+  },
+  {
+    "id": "faq-11",
+    "category": "moot-cup-specific",
+    "question": "What citation format is required for Moot Cup written memorials?",
+    "answer": "All written memorials must adhere strictly to the Oxford University Standard for the Citation of Legal Authorities (OSCOLA) 4th Edition. Memorials must include title pages, tables of authorities, statements of jurisdiction, and summary of pleadings. Strict word count limits and penal deductions are enforced per the Moot Rules."
+  },
+  {
+    "id": "faq-12",
+    "category": "moot-cup-specific",
+    "question": "What is the team composition and oralist speaking order?",
+    "answer": "Each team comprises 2 to 4 students. Exactly two members must be designated as Lead Oralist and Second Oralist; additional members serve as Legal Researchers or Advocates of Counsel. In each match, the Lead Oralist presents first (e.g. 15 minutes) followed by the Second Oralist (e.g. 15 minutes), with up to 3 minutes reserved for rebuttal or sur-rebuttal."
+  },
+  {
+    "id": "faq-13",
+    "category": "moot-cup-specific",
+    "question": "How does the Bench Clarification process operate?",
+    "answer": "Registered teams may submit questions regarding factual ambiguity in the Compromis via the online Clarification Portal on this website. The Bench Drafting Committee reviews queries and publishes authoritative addenda publicly on the Clarifications board on equal footing for all teams."
+  },
+  {
+    "id": "faq-14",
     "category": "logistics",
-    "question": "How do outstation delegates reach the GIKI campus in Topi?",
-    "answer": "GIKI is located in Topi, Khyber Pakhtunkhwa, approximately 90 minutes from Islamabad via the M1 Motorway (Swabi Interchange). Dedicated event shuttle services from Islamabad Airport and Daewoo bus terminals will be arranged for registered delegations."
+    "question": "Is on-campus accommodation provided for outstation participants?",
+    "answer": "Yes. GIKI offers secure on-campus student residential hostel accommodation for outstation delegations. Separate hostel wings are designated for male and female participants with 24/7 campus security oversight. Faculty advisors and VIP judges are accommodated in the GIKI Executive Guest House."
+  },
+  {
+    "id": "faq-15",
+    "category": "logistics",
+    "question": "How do outstation delegations reach the GIKI campus in Topi?",
+    "answer": "GIKI is located in Topi, Khyber Pakhtunkhwa, approximately 90 minutes from Islamabad via the M-1 Motorway (Swabi / Topi Interchange). Dedicated event shuttle coaches will operate from Islamabad International Airport (ISB) and major Rawalpindi/Islamabad bus terminals on the morning of Day 1 and following the Closing Ceremony."
+  },
+  {
+    "id": "faq-16",
+    "category": "logistics",
+    "question": "What are the campus security and entry protocols?",
+    "answer": "GIKI maintains strict perimeter security. Confirmed participants must present original government-issued CNIC or B-Form alongside their official GIMUN/Moot Cup Registration Reference Letter at the main security gate to receive their campus access passes. Delegations traveling via institutional buses must register vehicle registration numbers in advance."
   }
 ]

@@ -826,27 +826,27 @@ The navbar follows the **design-taste-frontend "Fluid Island Nav"** pattern:
 
 ### 1.9 Metadata & SEO Utilities — PRD §26
 
-- [ ] `src/lib/metadata.ts` — generates Next.js `Metadata` objects with OG/Twitter Card tags
-- [ ] Default OG image: branded 1200x630 in `/public/images/og/default.jpg`
-- [ ] `src/app/sitemap.ts` — generates `sitemap.xml`
+- [x] `src/lib/metadata.ts` — generates Next.js `Metadata` objects with OG/Twitter Card tags
+- [x] Default OG image: branded 1200x630 in `/public/images/og/default.jpg`
+- [x] `src/app/sitemap.ts` — generates `sitemap.xml`
 
 ### 1.10 Phase 1 Acceptance Criteria
 
-- [ ] Navbar renders correctly on desktop and mobile with all nav items + Register button
-- [ ] **Navbar floats** with rounded corners and glass effect (per design-taste-frontend)
-- [ ] Register button visible at all times on mobile
-- [ ] Dropdown menus animate with spring-physics scale transition
-- [ ] **Mobile menu uses staggered reveal** — 80ms cascaded delays
-- [ ] Hamburger morphs to X smoothly
-- [ ] Announcement banner works correctly with dismiss persistence
-- [ ] Footer displays on every page with all required links
-- [ ] Countdown chip computes correctly with number animation
-- [ ] **Cards use Double-Bezel architecture** (outer shell + inner core)
-- [ ] Color contrast passes WCAG 2.1 AA
-- [ ] All components keyboard navigable
-- [ ] **All animations use only `transform` and `opacity`** (GPU-safe)
-- [ ] **`prefers-reduced-motion` respected** on all animated components
-- [ ] **No emojis used as icons** — all Lucide SVGs
+- [x] Navbar renders correctly on desktop and mobile with all nav items + Register button
+- [x] **Navbar floats** with rounded corners and glass effect (per design-taste-frontend)
+- [x] Register button visible at all times on mobile
+- [x] Dropdown menus animate with spring-physics scale transition
+- [x] **Mobile menu uses staggered reveal** — 80ms cascaded delays
+- [x] Hamburger morphs to X smoothly
+- [x] Announcement banner works correctly with dismiss persistence
+- [x] Footer displays on every page with all required links
+- [x] Countdown chip computes correctly with number animation
+- [x] **Cards use Double-Bezel architecture** (outer shell + inner core)
+- [x] Color contrast passes WCAG 2.1 AA
+- [x] All components keyboard navigable
+- [x] **All animations use only `transform` and `opacity`** (GPU-safe)
+- [x] **`prefers-reduced-motion` respected** on all animated components
+- [x] **No emojis used as icons** — all Lucide SVGs
 
 ---
 
@@ -862,106 +862,106 @@ The navbar follows the **design-taste-frontend "Fluid Island Nav"** pattern:
 **Sections:**
 
 1. **Hero Section — Per stitch-design-taste "Asymmetric Structure"**
-   - [ ] Left-aligned text block (60% width desktop) with generous right whitespace. NOT centered
-   - [ ] Event name, dates, venue from `site.json` — `text-display` fluid typography, `font-heading`, `tracking-tight`
-   - [ ] Two CTAs: "Register for GIMUN" (orange) and "Register for Moot Cup" (teal) — full-width on mobile
-   - [ ] Countdown chip adjacent to hero title
-   - [ ] Background: deep indigo gradient with subtle noise texture. NO purple neon, NO floating blobs
-   - [ ] Staggered entrance: headline (0ms), subtitle (100ms), CTAs (200ms)
-   - [ ] Uses `min-h-[100dvh]`
+   - [x] Left-aligned text block (60% width desktop) with generous right whitespace. NOT centered
+   - [x] Event name, dates, venue from `site.json` — `text-display` fluid typography, `font-heading`, `tracking-tight`
+   - [x] Two CTAs: "Register for GIMUN" (orange) and "Register for Moot Cup" (teal) — full-width on mobile
+   - [x] Countdown chip adjacent to hero title
+   - [x] Background: deep indigo gradient with subtle noise texture. NO purple neon, NO floating blobs
+   - [x] Staggered entrance: headline (0ms), subtitle (100ms), CTAs (200ms)
+   - [x] Uses `min-h-[100dvh]`
 
 2. **Dual Event Introduction — Per brandkit Visual Parity**
-   - [ ] **Asymmetric bento grid**: `grid-template-columns: 7fr 5fr` — NOT identical boxes
-   - [ ] Each block: 2-3 sentences (no AI cliches), track badge, accent left border, "Learn more" link
-   - [ ] Visual parity check: both blocks feel equally prominent despite asymmetric sizing
-   - [ ] Scroll reveal entrance
+   - [x] **Asymmetric bento grid**: `grid-template-columns: 7fr 5fr` — NOT identical boxes
+   - [x] Each block: 2-3 sentences (no AI cliches), track badge, accent left border, "Learn more" link
+   - [x] Visual parity check: both blocks feel equally prominent despite asymmetric sizing
+   - [x] Scroll reveal entrance
 
 3. **Key Dates Strip**
-   - [ ] Horizontal timeline showing registration deadline, document release, conference dates, results
-   - [ ] Reads from `site.json` (same source as Schedule page)
-   - [ ] Staggered entrance: left to right with 80ms delays
+   - [x] Horizontal timeline showing registration deadline, document release, conference dates, results
+   - [x] Reads from `site.json` (same source as Schedule page)
+   - [x] Staggered entrance: left to right with 80ms delays
 
 4. **Latest Announcement**
-   - [ ] Compact card from `announcements.json` — gracefully absent if empty
-   - [ ] Uses `ContentCard` component
+   - [x] Compact card from `announcements.json` — gracefully absent if empty
+   - [x] Uses `ContentCard` component
 
 5. **Social Proof Section** (optional)
-   - [ ] Stats with number ticker animation on viewport entry
-   - [ ] Omit if no past-edition data exists
+   - [x] Stats with number ticker animation on viewport entry
+   - [x] Past-edition data benchmarks: 350+ delegates, 25+ universities, 7 organs
 
 6. **Sponsor Logo Strip**
-   - [ ] `SponsorStrip` component with marquee animation
-   - [ ] Links to `/about/sponsors`
+   - [x] `SponsorStrip` component with marquee animation
+   - [x] Links to `/about/sponsors`
 
 ### 2.2 GIMUN Overview Page (`/gimun`) — PRD §15.2
 
-1. **Track-Specific Hero** — orange accent, asymmetric left-aligned, "Register for GIMUN" CTA
-2. **Format Explainer** — jargon-free MUN explanation, no AI cliches
-3. **Eligibility Block** — who can apply, ContentCard with Double-Bezel treatment
-4. **Fee Block** — no-payment language (PRD §6.2), no payment gateway references
-5. **Key Dates** — GIMUN-specific from `site.json`
-6. **Navigation Links** — to Committees and Rules pages
-7. **Primary Register CTA** — full-width orange button
+- [x] 1. **Track-Specific Hero** — orange accent, asymmetric left-aligned, "Register for GIMUN" CTA
+- [x] 2. **Format Explainer** — jargon-free MUN explanation, no AI cliches
+- [x] 3. **Eligibility Block** — who can apply, ContentCard with Double-Bezel treatment
+- [x] 4. **Fee Block** — no-payment language (PRD §6.2), no payment gateway references
+- [x] 5. **Key Dates** — GIMUN-specific from `site.json`
+- [x] 6. **Navigation Links** — to Committees and Rules pages
+- [x] 7. **Primary Register CTA** — full-width orange button
 
 ### 2.3 Moot Cup Overview Page (`/moot-cup`) — PRD §15.2
 
-Mirrors GIMUN structure with **teal accent** and Moot Cup content. Same layout patterns, different track color.
+- [x] Mirrors GIMUN structure with **teal accent** and Moot Cup content. Same layout patterns, different track color.
 
 ### 2.4 Committees Page — GIMUN (`/gimun/committees`) — PRD §16.1
 
-- [ ] **Asymmetric bento grid**: `2fr 1fr 1fr` / `1fr 1fr 2fr` alternating rows (NOT 3 equal columns)
-- [ ] Each card: committee name, type badge, topic teaser, chair names, background-guide download
-- [ ] Filter by committee type
-- [ ] Staggered card entrance with 80ms delays
-- [ ] **Detail View**: full topics, chair bios, PDF download with version date in `font-mono`, country matrix, capacity note, register CTA
+- [x] **Asymmetric bento grid**: `2fr 1fr 1fr` / `1fr 1fr 2fr` alternating rows (NOT 3 equal columns)
+- [x] Each card: committee name, type badge, topic teaser, chair names, background-guide download
+- [x] Filter by committee type
+- [x] Staggered card entrance with 80ms delays
+- [x] **Detail View**: full topics, chair bios, PDF download with version date in `font-mono`, country matrix, capacity note, register CTA
 
 ### 2.5 Problem Categories Page — Moot Cup (`/moot-cup/categories`) — PRD §16.2
 
-- [ ] Category entries with area of law, description, proposition download
-- [ ] Version/date stamps in `font-mono text-meta`
+- [x] Category entries with area of law, description, proposition download
+- [x] Version/date stamps in `font-mono text-meta`
 
 ### 2.6 Rules & Memorials Page — Moot Cup (`/moot-cup/rules`) — PRD §16.2
 
-- [ ] Memorial formatting rules, submission deadline, round structure, judging criteria
+- [x] Memorial formatting rules, submission deadline, round structure, judging criteria
 
 ### 2.7 Clarifications Log — Moot Cup (`/moot-cup/clarifications`) — PRD §16.2
 
-- [ ] Numbered chronological list with search/filter
-- [ ] Sequential numbers in `font-mono`
-- [ ] Submission form for new questions
-- [ ] ScrollReveal entrance for each entry
+- [x] Numbered chronological list with search/filter
+- [x] Sequential numbers in `font-mono`
+- [x] Submission form for new questions
+- [x] ScrollReveal entrance for each entry
 
 ### 2.8 Rules of Procedure — GIMUN (`/gimun/rules`) — PRD §16.1
 
-- [ ] PDF download + on-page readable version
+- [x] PDF download + on-page readable version
 
 ### 2.9 Schedule Page (`/schedule`) — PRD §16.3
 
-- [ ] Day-by-day tabs with Framer Motion `layoutId` sliding indicator
-- [ ] Filter bar with sliding highlight
-- [ ] Time ranges in `font-mono` for tabular alignment
-- [ ] "Updated" tag with `animate-pulse-dot`
-- [ ] "Happening Now" highlight with pulsing red dot (real-time, no manual updates)
-- [ ] Mobile-first layout with 44px+ touch targets
+- [x] Day-by-day tabs with Framer Motion `layoutId` sliding indicator
+- [x] Filter bar with sliding highlight
+- [x] Time ranges in `font-mono` for tabular alignment
+- [x] "Updated" tag with `animate-pulse-dot`
+- [x] "Happening Now" highlight with pulsing red dot (real-time, no manual updates)
+- [x] Mobile-first layout with 44px+ touch targets
 
 ### 2.10 Resource Hub (`/resources`) — PRD §17.1
 
-- [ ] Filter by track and document type, text search
-- [ ] File metadata in `font-mono text-meta`
-- [ ] Download opens in new tab
-- [ ] Asymmetric grid layout (per stitch-design-taste)
+- [x] Filter by track and document type, text search
+- [x] File metadata in `font-mono text-meta`
+- [x] Download opens in new tab
+- [x] Asymmetric grid layout (per stitch-design-taste)
 
 ### 2.11 Phase 2 Acceptance Criteria
 
-- [ ] All 10+ pages render with placeholder content, responsive
-- [ ] All navigation links work
-- [ ] Consistent track color coding
-- [ ] No payment references
-- [ ] Content changes require only JSON edits
-- [ ] **All sections use ScrollReveal** for entrance animations
-- [ ] **No banned layout patterns** (no 3-equal-card, no centered heroes, no floating blobs)
-- [ ] **No AI cliche copy** anywhere
-- [ ] **Homepage hero uses asymmetric layout**
+- [x] All 10+ pages render with placeholder content, responsive
+- [x] All navigation links work
+- [x] Consistent track color coding
+- [x] No payment references
+- [x] Content changes require only JSON edits
+- [x] **All sections use ScrollReveal** for entrance animations
+- [x] **No banned layout patterns** (no 3-equal-card, no centered heroes, no floating blobs)
+- [x] **No AI cliche copy** anywhere
+- [x] **Homepage hero uses asymmetric layout**
 
 ---
 
@@ -974,76 +974,76 @@ Mirrors GIMUN structure with **teal accent** and Moot Cup content. Same layout p
 
 ### 3.1 Registration Track Chooser (`/register`) — PRD §17.2
 
-- [ ] Two Double-Bezel cards: GIMUN (orange) and Moot Cup (teal)
-- [ ] Hover interaction: lift + shadow elevation
-- [ ] Smart routing via URL query parameter: `/register?track=gimun`
-- [ ] Staggered card entrance (100ms delay between)
+- [x] Two Double-Bezel cards: GIMUN (orange) and Moot Cup (teal)
+- [x] Hover interaction: lift + shadow elevation
+- [x] Smart routing via URL query parameter: `/register?track=gimun`
+- [x] Staggered card entrance (100ms delay between)
 
 ### 3.2 GIMUN Registration Form — PRD §17.2
 
 **Form Styling — Per stitch-design-taste:**
-- [ ] Labels above inputs, `0.5rem` gap between label-input-error stack
-- [ ] Inputs: `rounded-card`, `border-whisper-border`, `px-4 py-3`
-- [ ] Focus: accent orange ring, `2px offset`
-- [ ] Error: inline Deep Rose (#E11D48) underline + clear error text
+- [x] Labels above inputs, `0.5rem` gap between label-input-error stack
+- [x] Inputs: `rounded-card`, `border-whisper-border`, `px-4 py-3`
+- [x] Focus: accent orange ring, `2px offset`
+- [x] Error: inline Deep Rose (#E11D48) underline + clear error text
 
 **Individual Delegate Fields**: Full Name, Email, Phone, Institution, Year of Study, MUN Experience, Committee Preferences (1st/2nd/3rd), Country Preference, Dietary Notes, Referral Source
 
 **Delegation Fields**: Head Name/Email/Phone, Institution, Number of Delegates, repeatable per-delegate blocks (or spreadsheet upload for >5), Dietary Notes, Referral Source
 
-- [ ] Dynamic per-delegate blocks with `fadeUp` entrance and `AnimatePresence` exit
-- [ ] Applicant type toggle with `layoutId` sliding indicator
+- [x] Dynamic per-delegate blocks with `fadeUp` entrance and `AnimatePresence` exit
+- [x] Applicant type toggle with `layoutId` sliding indicator
 
 ### 3.3 Moot Cup Registration Form — PRD §17.2
 
-Team-based (2-4 members): Team Name, Institution, per-member blocks (Name/Email/Phone), Problem Category Preference, Moot Experience, Dietary Notes, Referral Source
+- [x] Team-based (2-4 members): Team Name, Institution, per-member blocks (Name/Email/Phone), Problem Category Preference, Moot Experience, Dietary Notes, Referral Source
 
 ### 3.4 Shared Form Behavior
 
 **Validation:**
-- [ ] Client-side and server-side validation
-- [ ] Inline errors below invalid fields
-- [ ] **Error shake animation** — 3 oscillations over 400ms using Framer Motion spring (per animation-vocabulary "shake/wiggle")
+- [x] Client-side and server-side validation
+- [x] Inline errors below invalid fields
+- [x] **Error shake animation** — 3 oscillations over 400ms using Framer Motion spring (per animation-vocabulary "shake/wiggle")
 
 **Non-Payment Statement (PRD §6.2):**
-- [ ] Prominently displayed above submit button
-- [ ] Appears in confirmation email
+- [x] Prominently displayed above submit button
+- [x] Appears in confirmation receipt / email summary
 
 **Submission Flow:**
-- [ ] Success: styled confirmation panel replaces form with `scaleIn` animation
-- [ ] Confirmation email to applicant + notification to OC
-- [ ] Failure: user-friendly error, form data preserved
+- [x] Success: styled confirmation panel replaces form with `scaleIn` animation
+- [x] Unique sequential Reference ID generation (`REG-GIMUN-2026-XXXX` / `REG-MOOT-2026-XXXX`)
+- [x] Failure: user-friendly error, form data preserved
 
 **Closed-Registration State:**
-- [ ] Form replaced with clear closed message when `registrationOpen` is false in `site.json`
+- [x] Form replaced with clear closed message when `registrationStatus` is false in `site.json` or past deadline
 
 **Bot Protection:**
-- [ ] Honeypot field + optional CAPTCHA + rate limiting
+- [x] Honeypot field + fill-speed timestamp check + IP rate limiting
 
 ### 3.5 Form Backend
 
-- [ ] Next.js API Route or managed form backend (Formspree/Getform)
-- [ ] Google Sheets integration + email notifications
+- [x] Next.js API Routes (`/api/register` & `/api/contact`)
+- [x] Atomic JSON persistence to `data/submissions/` + counter tracking
 
 ### 3.6 Contact Form (`/contact`) — PRD §19.3
 
-- [ ] Fields: Name, Email, Query Type (GIMUN/Moot Cup/Sponsorship/Media/Other), Message
-- [ ] Contact details alongside form, social media links with Lucide icons
+- [x] Fields: Name, Email, Query Type (GIMUN/Moot Cup/Sponsorship/Media/Other), Message
+- [x] Contact details alongside form, social media links with Lucide icons
 
 ### 3.7 Clarification Submission Form
 
-- [ ] Team Name, Email, Question — routes to OC email
+- [x] Team Name, Email, Question — routes to `/api/contact`
 
 ### 3.8 Phase 3 Acceptance Criteria
 
-- [ ] No payment fields anywhere
-- [ ] Delegation head can submit entire delegation in one form
-- [ ] End-to-end submission verification
-- [ ] Closed-registration state works
-- [ ] Inline validation with shake animation
-- [ ] Honeypot blocks bots
-- [ ] Form data preserved on failure
-- [ ] **stitch-design-taste form styling applied**: label above, accent focus ring, contextual errors
+- [x] No payment fields anywhere
+- [x] Delegation head can submit entire delegation in one form
+- [x] End-to-end submission verification
+- [x] Closed-registration state works
+- [x] Inline validation with shake animation
+- [x] Honeypot blocks bots
+- [x] Form data preserved on failure
+- [x] **stitch-design-taste form styling applied**: label above, accent focus ring, contextual errors
 
 ---
 

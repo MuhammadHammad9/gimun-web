@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useSyncExternalStore } from 'react';
-import { cn } from '@/lib/utils';
+import { cn, formatDateRange } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
 
 const emptySubscribe = () => () => {};
@@ -71,7 +71,7 @@ export function CountdownChip({
         )}
       >
         <Calendar className="w-3.5 h-3.5 text-[#FF6B35]" />
-        <span>Dates: March 18–21, 2027</span>
+        <span>Dates: {formatDateRange(startDate, endDate)}</span>
       </div>
     );
   }
