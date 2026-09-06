@@ -16,7 +16,7 @@ export interface CountdownChipProps {
 export function CountdownChip({
   startDate,
   endDate,
-  eventName = 'GIMUN & Moot Cup',
+  eventName = 'GIMUN & GMC',
   className,
 }: CountdownChipProps) {
   const mounted = useSyncExternalStore(
@@ -66,7 +66,7 @@ export function CountdownChip({
     return (
       <div
         className={cn(
-          'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium bg-white/10 text-white/90 border border-white/15 backdrop-blur-sm select-none',
+          'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium bg-white/15 text-white/90 border border-white/20 select-none',
           className
         )}
       >
@@ -80,7 +80,7 @@ export function CountdownChip({
     return (
       <div
         className={cn(
-          'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 backdrop-blur-sm select-none animate-pulse',
+          'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-500/25 text-emerald-300 border border-emerald-400/40 select-none animate-pulse',
           className
         )}
       >
@@ -106,7 +106,7 @@ export function CountdownChip({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-medium bg-white/10 text-white border border-white/15 backdrop-blur-sm select-none shadow-sm',
+        'inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-medium bg-white/15 text-white border border-white/20 select-none shadow-sm',
         className
       )}
     >

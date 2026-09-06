@@ -38,6 +38,7 @@ export interface SiteConfig {
     gimunOpen: boolean;
     mootCupOpen: boolean;
   };
+  resultsPublished?: boolean;
 }
 
 export interface Committee {
@@ -102,6 +103,8 @@ export interface Announcement {
   track: Track | 'all';
   timestamp: string;
   pinnedFlag: boolean;
+  badgeLabel?: string;
+  actionUrl?: string;
 }
 
 export interface TeamMember {

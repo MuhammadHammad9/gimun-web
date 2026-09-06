@@ -29,7 +29,7 @@ export function ClarificationForm() {
           name: `Advocate of ${teamId.trim()}`,
           email: teamEmail.trim() || 'moot-advocate@institution.edu.pk',
           queryType: 'moot-cup',
-          message: `[Moot Cup Compromis Clarification]\nCompromis Citation: ${paragraphRef.trim()}\n\nQuestion:\n${questionText.trim()}`,
+          message: `[GMC Compromis Clarification]\nCompromis Citation: ${paragraphRef.trim()}\n\nQuestion:\n${questionText.trim()}`,
           _hp: honeypot,
         }),
       });

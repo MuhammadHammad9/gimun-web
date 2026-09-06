@@ -30,7 +30,7 @@ export default function LogoIcon({ className = 'size-8', ...props }: LogoIconPro
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Moot Cup Scales of Justice (Right) in Teal accent */}
+      {/* GMC Scales of Justice (Right) in Teal accent */}
       <path
         d="M24 14V34M20 34H28M19 18H29M29 18L33 24M25 24H33M33 24L31 28M32 18C33.5 20.5 33.5 24 32 27"
         stroke="#00B4A6"

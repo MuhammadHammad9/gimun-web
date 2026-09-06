@@ -107,22 +107,28 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { track, applicantType, formData, _hp, _ts } = body || {};
 
-    // 2. Honeypot check (Silent success to not alert bots)
+    // 2. Honeypot check (Block bots with 400 Bad Request and do not save)
     if (_hp && String(_hp).trim().length > 0) {
-      return NextResponse.json({
-        success: true,
-        referenceId: 'REG-BOT-BLOCKED',
-        message: 'Application received successfully.',
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          referenceId: 'REG-BOT-BLOCKED',
+          message: 'Automated submission blocked by anti-bot honeypot filter.',
+        },
+        { status: 400 }
+      );
     }
 
-    // 3. Form fill time check (Reject ultra-fast bot submissions silently)
+    // 3. Form fill time check (Reject ultra-fast velocity submissions with 400 Bad Request)
     if (_ts && Date.now() - Number(_ts) < MIN_FILL_TIME_MS) {
-      return NextResponse.json({
-        success: true,
-        referenceId: 'REG-BOT-SPEED',
-        message: 'Application received successfully.',
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          referenceId: 'REG-BOT-SPEED',
+          message: 'Submission velocity too fast. Automated submissions are blocked.',
+        },
+        { status: 400 }
+      );
     }
 
     if (!track || !['gimun', 'moot-cup'].includes(track)) {

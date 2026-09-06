@@ -181,7 +181,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
       {/* Header */}
       <div className="space-y-2 pb-2 border-b border-slate-100">
         <span className="text-[11px] font-mono uppercase tracking-wider text-secondary font-bold">
-          Moot Cup Track Registration
+          GMC Track Registration
         </span>
         <h2 className="text-xl md:text-2xl font-heading font-bold text-ink">
           Law Team Registration Form
@@ -507,7 +507,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         </FormField>
 
         <FormField
-          label="How did your team hear about GIKI Moot Cup 2026?"
+          label="How did your team hear about GMC 2027?"
           required
           track="moot-cup"
           error={errors.referralSource}

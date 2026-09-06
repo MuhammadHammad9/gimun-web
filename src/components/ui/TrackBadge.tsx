@@ -16,7 +16,7 @@ export function TrackBadge({ track, size = 'sm', className }: TrackBadgeProps) {
       dot: 'bg-[#FF6B35]',
     },
     'moot-cup': {
-      label: 'MOOT CUP',
+      label: 'GMC',
       styles: 'bg-[#E6F9F7] text-[#007A70] border border-[#00B4A6]/30',
       dot: 'bg-[#00B4A6]',
     },

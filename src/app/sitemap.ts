@@ -1,13 +1,18 @@
 import { MetadataRoute } from 'next';
+import { getCommittees } from '@/lib/content';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://gimungiki.org';
   const currentDate = new Date().toISOString();
+  const committees = getCommittees();
+
+  const committeeRoutes = committees.map((c) => `/gimun/committees/${c.slug}`);
 
   const routes = [
     '',
     '/gimun',
     '/gimun/committees',
+    ...committeeRoutes,
     '/gimun/rules',
     '/moot-cup',
     '/moot-cup/categories',

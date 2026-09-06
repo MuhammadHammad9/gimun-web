@@ -9,6 +9,8 @@ import { CountdownChip } from '@/components/ui/CountdownChip';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { ArrowRight, CheckCircle2, ChevronRight } from 'lucide-react';
 import { formatDateRange } from '@/lib/utils';
+import type { Metadata } from 'next';
+import { constructMetadata } from '@/lib/metadata';
 import {
   getSiteConfig,
   getAnnouncements,
@@ -16,6 +18,13 @@ import {
   getProblemCategories,
   getSponsors,
 } from '@/lib/content';
+
+export const metadata: Metadata = constructMetadata({
+  title: 'GIMUN & GMC 2027 | Where Diplomacy Meets the Courtroom',
+  description:
+    'Two flagship collegiate student competitions. One unified digital home at Ghulam Ishaq Khan Institute (GIKI), Topi. Model United Nations diplomacy meets appellate moot court advocacy.',
+  path: '',
+});
 
 export default function Home() {
   const siteConfig = getSiteConfig();
@@ -28,11 +37,12 @@ export default function Home() {
 
   return (
     <div className="space-y-20 sm:space-y-28 pb-24">
-      {/* 1. HERO SECTION (PRD §15.1 - Asymmetric, Fluid Typography, Dual CTAs) */}
+      {/* 1. HERO SECTION (PRD §15.1 - Dark Atmospheric, Asymmetric, Fluid Typography, Dual CTAs) */}
       <HeroSection
+        variant="dark"
         eyebrow={
           <div className="inline-flex flex-wrap items-center gap-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-white border border-gray-200/80 shadow-xs text-[#1E2A78]">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-white/15 border border-white/20 shadow-xs text-white">
               <span className="w-2 h-2 rounded-full bg-[#FF6B35] animate-pulse" />
               <span>
                 {formatDateRange(siteConfig?.eventDates?.start, siteConfig?.eventDates?.end)} •{' '}
@@ -47,69 +57,65 @@ export default function Home() {
         }
         title={
           <>
-            Where <span className="text-[#FF6B35]">Diplomacy</span> Meets the{' '}
-            <span className="text-[#00B4A6]">Courtroom</span>.
+            Where <span className="text-gradient-orange">Diplomacy</span> Meets the{' '}
+            <span className="text-gradient-teal">Courtroom</span>.
           </>
         }
-        description="Two concurrent flagship national student competitions hosted under one authoritative platform at the Ghulam Ishaq Khan Institute. Engage in multilateral negotiation across UN-style bodies, or make your legal case before a bench of senior jurists."
+        description="Two concurrent flagship national student symposiums hosted under one authoritative platform at the Ghulam Ishaq Khan Institute. Engage in multilateral negotiation across UN-style bodies, or make your legal case before a bench of senior jurists."
         primaryAction={{
           label: 'Register for GIMUN',
           href: '/register?track=gimun',
           variant: 'track-gimun',
         }}
         secondaryAction={{
-          label: 'Register for Moot Cup',
+          label: 'Register for GMC',
           href: '/register?track=moot-cup',
         }}
         sideContent={
           <div className="space-y-4">
-            {/* GIMUN Quick Card */}
-            <div className="double-bezel transition-all hover:translate-y-[-2px]">
-              <div className="double-bezel-inner p-6 space-y-3">
-                <div className="flex items-center justify-between">
-                  <TrackBadge track="gimun" />
-                  <span className="text-xs font-mono text-[#5A5A6E] font-medium">4 Committees</span>
-                </div>
-                <h3 className="font-heading font-bold text-lg text-[#1A1A2E]">
-                  Model United Nations (GIMUN)
-                </h3>
-                <p className="text-sm text-[#5A5A6E] leading-relaxed">
-                  Simulate multilateral diplomacy, draft binding resolutions, and represent sovereign interests across crisis and general assembly organs.
-                </p>
-                <div className="pt-2">
-                  <Link
-                    href="/gimun"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF6B35] hover:underline"
-                  >
-                    <span>Explore GIMUN Track</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+            {/* GIMUN Spotlight Card */}
+            <div className="glass-card-dark rounded-2xl p-6 space-y-3 transition-all duration-300 hover:translate-y-[-2px] hover:border-[#FF6B35]/40 group">
+              <div className="flex items-center justify-between">
+                <TrackBadge track="gimun" />
+                <span className="text-xs font-mono text-slate-400 font-medium">4 UN Chambers</span>
+              </div>
+              <h3 className="font-heading font-bold text-lg text-white group-hover:text-[#FFA27B] transition-colors">
+                Model United Nations (GIMUN)
+              </h3>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Simulate multilateral diplomacy, draft binding resolutions, and represent sovereign interests across crisis and general assembly organs.
+              </p>
+              <div className="pt-1">
+                <Link
+                  href="/gimun"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FFA27B] hover:underline"
+                >
+                  <span>Explore GIMUN Track</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             </div>
 
-            {/* Moot Cup Quick Card */}
-            <div className="double-bezel transition-all hover:translate-y-[-2px]">
-              <div className="double-bezel-inner p-6 space-y-3">
-                <div className="flex items-center justify-between">
-                  <TrackBadge track="moot-cup" />
-                  <span className="text-xs font-mono text-[#5A5A6E] font-medium">3 Problem Tracks</span>
-                </div>
-                <h3 className="font-heading font-bold text-lg text-[#1A1A2E]">
-                  GIKI National Moot Cup
-                </h3>
-                <p className="text-sm text-[#5A5A6E] leading-relaxed">
-                  Rigorous appellate advocacy before panels of esteemed judges. Draft comprehensive memorials and present oral pleadings under pressure.
-                </p>
-                <div className="pt-2">
-                  <Link
-                    href="/moot-cup"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#00B4A6] hover:underline"
-                  >
-                    <span>Explore Moot Cup Track</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+            {/* GMC Spotlight Card */}
+            <div className="glass-card-dark rounded-2xl p-6 space-y-3 transition-all duration-300 hover:translate-y-[-2px] hover:border-[#00B4A6]/40 group">
+              <div className="flex items-center justify-between">
+                <TrackBadge track="moot-cup" />
+                <span className="text-xs font-mono text-slate-400 font-medium">3 Problem Tracks</span>
+              </div>
+              <h3 className="font-heading font-bold text-lg text-white group-hover:text-[#5EEAD4] transition-colors">
+                GIKI Moot Court (GMC)
+              </h3>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Rigorous appellate advocacy before panels of esteemed judges. Draft comprehensive memorials and present oral pleadings under pressure.
+              </p>
+              <div className="pt-1">
+                <Link
+                  href="/moot-cup"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5EEAD4] hover:underline"
+                >
+                  <span>Explore GMC Track</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             </div>
           </div>
@@ -182,7 +188,7 @@ export default function Home() {
             </ScrollReveal>
           </div>
 
-          {/* Moot Cup Section (5 cols) */}
+          {/* GMC Section (5 cols) */}
           <div className="lg:col-span-5">
             <ScrollReveal delay={0.2}>
               <div className="double-bezel h-full">
@@ -193,7 +199,7 @@ export default function Home() {
                       <span className="text-xs font-mono text-[#5A5A6E]">Judicial Advocacy</span>
                     </div>
                     <h3 className="text-2xl sm:text-3xl font-heading font-bold text-[#1A1A2E]">
-                      GIKI Moot Cup: Appellate Trial
+                      GIKI Moot Court (GMC): Appellate Trial
                     </h3>
                     <p className="text-[#5A5A6E] text-sm sm:text-base leading-relaxed">
                       A high-stakes legal tournament where 2-to-4 member teams analyze complex problem propositions (Compromis) and argue both Applicant and Respondent positions before senior advocates and retired judges.
@@ -216,7 +222,7 @@ export default function Home() {
 
                   <div className="pt-8 mt-6 border-t border-gray-100 flex flex-wrap items-center gap-4">
                     <Button variant="track-moot" href="/moot-cup">
-                      Moot Cup Overview
+                      GMC Overview
                     </Button>
                     <Button variant="ghost" href="/moot-cup/categories">
                       View Problem Tracks →
@@ -253,50 +259,54 @@ export default function Home() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="p-4 rounded-xl bg-[#F8F8FC] border border-gray-100 space-y-2">
+                <div className="p-5 rounded-2xl bg-white border border-emerald-200/80 shadow-xs space-y-2 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-emerald-500" />
                   <div className="flex items-center justify-between text-xs font-mono text-[#5A5A6E]">
                     <span>Phase 01</span>
-                    <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">Active</span>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">Active</span>
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Early Bird Open</div>
                   <div className="text-xs font-mono text-[#FF6B35] font-semibold">
                     Deadline: {new Date(siteConfig?.registrationDeadlines?.gimun || '2027-02-15').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
-                  <p className="text-xs text-[#5A5A6E]">Priority committee preference & delegation discounts applied.</p>
+                  <p className="text-xs text-[#5A5A6E] leading-relaxed">Priority committee preference & delegation discounts applied.</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#F8F8FC] border border-gray-100 space-y-2">
+                <div className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-[#1E2A78]/30" />
                   <div className="flex items-center justify-between text-xs font-mono text-[#5A5A6E]">
                     <span>Phase 02</span>
-                    <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-medium">Upcoming</span>
+                    <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium text-[10px]">Upcoming</span>
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Guides & Proposition</div>
                   <div className="text-xs font-mono text-[#1E2A78] font-semibold">Released: Jan 20, 2027</div>
-                  <p className="text-xs text-[#5A5A6E]">Background guides, Compromis, and rules published in Resource Hub.</p>
+                  <p className="text-xs text-[#5A5A6E] leading-relaxed">Background guides, Compromis, and rules published in Resource Hub.</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#F8F8FC] border border-gray-100 space-y-2">
+                <div className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-[#00B4A6]/40" />
                   <div className="flex items-center justify-between text-xs font-mono text-[#5A5A6E]">
                     <span>Phase 03</span>
-                    <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-medium">Upcoming</span>
+                    <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium text-[10px]">Upcoming</span>
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Memorial Submission</div>
                   <div className="text-xs font-mono text-[#00B4A6] font-semibold">
                     Deadline: {new Date(siteConfig?.registrationDeadlines?.mootCup || '2027-03-05').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
-                  <p className="text-xs text-[#5A5A6E]">Final electronic submission deadline for Moot Court memorials.</p>
+                  <p className="text-xs text-[#5A5A6E] leading-relaxed">Final electronic submission deadline for Moot Court memorials.</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#F8F8FC] border border-gray-100 space-y-2">
+                <div className="p-5 rounded-2xl bg-white border border-blue-200/80 shadow-xs space-y-2 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-blue-500" />
                   <div className="flex items-center justify-between text-xs font-mono text-[#5A5A6E]">
                     <span>Phase 04</span>
-                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">On-Campus</span>
+                    <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">On-Campus</span>
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Conference Days</div>
                   <div className="text-xs font-mono text-[#1E2A78] font-semibold">
                     {formatDateRange(siteConfig?.eventDates?.start, siteConfig?.eventDates?.end)}
                   </div>
-                  <p className="text-xs text-[#5A5A6E]">Check-in, opening ceremony, committee sessions, and Grand Final.</p>
+                  <p className="text-xs text-[#5A5A6E] leading-relaxed">Check-in, opening ceremony, committee sessions, and Grand Final.</p>
                 </div>
               </div>
             </div>
@@ -364,7 +374,7 @@ export default function Home() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <div className="double-bezel">
-              <div className="double-bezel-inner p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+              <div className="double-bezel-inner p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-l-4 border-l-[#1E2A78]">
                 <div className="space-y-2 max-w-2xl">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-[#FF6B35]/10 text-[#FF6B35]">
@@ -399,42 +409,42 @@ export default function Home() {
         </section>
       )}
 
-      {/* 6. SOCIAL PROOF / STATS (PRD §15.1) */}
+      {/* 6. SOCIAL PROOF / STATS (PRD §15.1 - Dark Bento Elegance) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <div className="rounded-3xl bg-[#1E2A78] text-white p-8 sm:p-12 relative overflow-hidden shadow-xl">
-            <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-white/[0.03] pointer-events-none" />
+          <div className="rounded-3xl bg-[#070B19] text-white p-8 sm:p-12 relative overflow-hidden border border-white/10 shadow-2xl bg-tech-grid">
+            <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-[#1E2A78]/30 blur-3xl pointer-events-none" />
             <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center sm:text-left">
               <div className="space-y-1">
-                <div className="font-heading font-extrabold text-3xl sm:text-5xl text-white tracking-tight">
+                <div className="font-heading font-extrabold text-3xl sm:text-5xl tracking-tight text-white">
                   350<span className="text-[#FF6B35]">+</span>
                 </div>
-                <div className="text-xs sm:text-sm font-medium text-white/80">Delegates & Advocates</div>
-                <div className="text-[10px] font-mono text-white/50">Across Pakistan</div>
+                <div className="text-xs sm:text-sm font-medium text-slate-200">Delegates & Advocates</div>
+                <div className="text-[10px] font-mono text-slate-400">Across Pakistan</div>
               </div>
 
               <div className="space-y-1">
-                <div className="font-heading font-extrabold text-3xl sm:text-5xl text-white tracking-tight">
+                <div className="font-heading font-extrabold text-3xl sm:text-5xl tracking-tight text-white">
                   25<span className="text-[#00B4A6]">+</span>
                 </div>
-                <div className="text-xs sm:text-sm font-medium text-white/80">Represented Universities</div>
-                <div className="text-[10px] font-mono text-white/50">Colleges & Law Faculties</div>
+                <div className="text-xs sm:text-sm font-medium text-slate-200">Represented Universities</div>
+                <div className="text-[10px] font-mono text-slate-400">Colleges & Law Faculties</div>
               </div>
 
               <div className="space-y-1">
-                <div className="font-heading font-extrabold text-3xl sm:text-5xl text-white tracking-tight">
+                <div className="font-heading font-extrabold text-3xl sm:text-5xl tracking-tight text-white">
                   7
                 </div>
-                <div className="text-xs sm:text-sm font-medium text-white/80">Committees & Benches</div>
-                <div className="text-[10px] font-mono text-white/50">Specialized Jurisdictions</div>
+                <div className="text-xs sm:text-sm font-medium text-slate-200">Committees & Benches</div>
+                <div className="text-[10px] font-mono text-slate-400">Specialized Jurisdictions</div>
               </div>
 
               <div className="space-y-1">
-                <div className="font-heading font-extrabold text-3xl sm:text-5xl text-white tracking-tight">
+                <div className="font-heading font-extrabold text-3xl sm:text-5xl tracking-tight text-white">
                   100<span className="text-[#FF6B35]">%</span>
                 </div>
-                <div className="text-xs sm:text-sm font-medium text-white/80">Merit-Based Allocation</div>
-                <div className="text-[10px] font-mono text-white/50">Transparent Adjudication</div>
+                <div className="text-xs sm:text-sm font-medium text-slate-200">Merit-Based Allocation</div>
+                <div className="text-[10px] font-mono text-slate-400">Transparent Adjudication</div>
               </div>
             </div>
           </div>
@@ -470,7 +480,7 @@ export default function Home() {
                   Register for GIMUN
                 </Button>
                 <Button variant="track-moot" size="lg" href="/register?track=moot-cup">
-                  Register for Moot Cup
+                  Register for GMC
                 </Button>
                 <Button variant="secondary" size="lg" href="/resources">
                   Download Handbook

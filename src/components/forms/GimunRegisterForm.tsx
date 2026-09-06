@@ -640,7 +640,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
               </FormField>
 
               <FormField
-                label="How did you hear about GIMUN 2026?"
+                label="How did you hear about GIMUN 2027?"
                 required
                 error={errors.referralSource}
                 id="field-referralSource"

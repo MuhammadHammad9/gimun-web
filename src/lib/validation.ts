@@ -271,7 +271,7 @@ export function validateMootCupTeam(
   }
 
   if (!data.referralSource) {
-    errors.referralSource = 'Please tell us how your team heard about GIKI Moot Cup';
+    errors.referralSource = 'Please tell us how your team heard about GMC';
   }
 
   return errors;

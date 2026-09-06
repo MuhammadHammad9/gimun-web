@@ -21,14 +21,15 @@ export function AnnouncementBanner({
   linkText = 'Read Announcement',
   linkHref = '/announcements',
 }: AnnouncementBannerProps) {
-  const displayMessage = announcement?.title || message || 'Early Bird Registration now open for delegations and moot court teams.';
+  const displayMessage =
+    announcement?.title ||
+    message ||
+    'Early Bird Registration now open for delegations and moot court teams.';
+  const targetHref =
+    announcement?.actionUrl ||
+    (announcement?.id ? `/announcements#${announcement.id}` : linkHref);
   const storageKey = `gimun_announcement_dismissed_${announcement?.id || 'default'}`;
   
-  const isClient = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
 
   const [manuallyDismissed, setManuallyDismissed] = useState(false);
 
@@ -41,7 +42,7 @@ export function AnnouncementBanner({
         return false;
       }
     },
-    () => true
+    () => false
   );
 
   const handleDismiss = () => {
@@ -53,7 +54,6 @@ export function AnnouncementBanner({
     }
   };
 
-  if (!isClient) return null;
   const dismissed = isDismissedInStorage || manuallyDismissed;
 
   return (
@@ -75,7 +75,7 @@ export function AnnouncementBanner({
                 {displayMessage}
               </span>
               <Link
-                href={linkHref}
+                href={targetHref}
                 className="underline underline-offset-2 font-semibold text-[#FF6B35] hover:text-[#E55A28] shrink-0 ml-1 transition-colors"
               >
                 {linkText} →

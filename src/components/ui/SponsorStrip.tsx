@@ -22,7 +22,7 @@ export function SponsorStrip({
   const marqueeItems = [...sponsors, ...sponsors, ...sponsors];
 
   return (
-    <div className={cn('py-10 border-y border-gray-200/80 bg-white/50 backdrop-blur-sm overflow-hidden', className)}>
+    <div className={cn('py-10 border-y border-gray-200/80 bg-white/80 overflow-hidden', className)}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 text-center">
         <p className="text-xs font-mono uppercase tracking-widest text-[#5A5A6E] font-medium">
           {title}

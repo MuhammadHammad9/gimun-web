@@ -125,7 +125,7 @@ export function TrackChooser({
         </div>
       </motion.div>
 
-      {/* Moot Cup Track Card */}
+      {/* GMC Track Card */}
       <motion.div
         variants={{
           hidden: { opacity: 0, y: 20 },
@@ -137,7 +137,7 @@ export function TrackChooser({
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-2">
               <span className="px-3 py-1 rounded-full text-xs font-mono uppercase font-bold bg-teal-50 text-secondary border border-teal-200/60">
-                Moot Cup Track
+                GMC Track
               </span>
               {!mootCupOpen ? (
                 <span className="inline-flex items-center gap-1 text-[11px] font-mono uppercase font-bold text-[#E11D48] bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
@@ -152,7 +152,7 @@ export function TrackChooser({
 
             <div className="space-y-2">
               <h2 className="text-2xl md:text-3xl font-heading font-bold text-ink">
-                GIKI Moot Court Competition
+                GIKI Moot Court (GMC)
               </h2>
               <p className="text-sm text-neutral-gray leading-relaxed">
                 Argue before distinguished appellate benches. Submit memorial briefs and compete in simulated
@@ -192,7 +192,7 @@ export function TrackChooser({
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
               }`}
             >
-              <span>{mootCupOpen ? 'Apply for Moot Cup' : 'Registration Closed'}</span>
+              <span>{mootCupOpen ? 'Apply for GMC' : 'Registration Closed'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <div className="flex items-center justify-center gap-3 text-[11px] text-neutral-gray">
