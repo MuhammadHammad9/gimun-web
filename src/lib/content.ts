@@ -12,6 +12,7 @@ import type {
   ResultAward,
   GalleryItem,
 } from './types';
+import { formatScheduleDay } from './site-config';
 
 import siteConfigData from '../../content/site.json';
 import announcementsData from '../../content/announcements.json';
@@ -56,7 +57,14 @@ export function getDocuments(): Document[] {
 export const getResources = getDocuments;
 
 export function getSchedule(): ScheduleItem[] {
-  return scheduleData as ScheduleItem[];
+  const site = siteConfigData as SiteConfig;
+  const [year, month, day] = site.eventDates.start.split('-').map(Number);
+
+  return (scheduleData as ScheduleItem[]).map((item) => {
+    const date = new Date(Date.UTC(year, month - 1, day + item.day - 1));
+    const dateString = date.toISOString().slice(0, 10);
+    return { ...item, dayLabel: `Day ${item.day} — ${formatScheduleDay(dateString)}` };
+  });
 }
 
 export function getFAQ(): FAQItem[] {

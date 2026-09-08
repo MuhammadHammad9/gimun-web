@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -19,22 +19,55 @@ export function Lightbox({
   onClose,
   onNavigate,
 }: LightboxProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousActiveRef = useRef<HTMLElement | null>(null);
+  const previousOverflowRef = useRef('');
+
   useEffect(() => {
     if (!isOpen) return;
 
+    previousActiveRef.current = document.activeElement as HTMLElement | null;
+    previousOverflowRef.current = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => closeButtonRef.current?.focus());
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') onNavigate((currentIndex + 1) % images.length);
-      if (e.key === 'ArrowLeft')
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        onNavigate((currentIndex + 1) % images.length);
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
         onNavigate((currentIndex - 1 + images.length) % images.length);
+      }
+      if (e.key === 'Tab') {
+        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable || focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    document.body.style.overflow = 'hidden';
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = previousOverflowRef.current;
+      requestAnimationFrame(() => previousActiveRef.current?.focus());
     };
   }, [isOpen, currentIndex, images.length, onClose, onNavigate]);
 
@@ -53,6 +86,7 @@ export function Lightbox({
         >
           {/* Close button */}
           <button
+            ref={closeButtonRef}
             type="button"
             onClick={onClose}
             aria-label="Close image viewer"
@@ -93,6 +127,7 @@ export function Lightbox({
 
           {/* Image Container */}
           <div
+            ref={dialogRef}
             className="relative max-w-5xl max-h-[85vh] flex flex-col items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >

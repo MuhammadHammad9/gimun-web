@@ -126,7 +126,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
               className={cn(
                 "px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-colors cursor-pointer",
                 selectedFilter === tab.id
-                  ? "bg-[#00B4A6] text-white shadow-xs font-bold"
+                  ? "bg-[#007A70] text-white shadow-xs font-bold"
                   : "bg-gray-100 text-[#5A5A6E] hover:bg-gray-200"
               )}
             >
@@ -147,7 +147,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
               <div className="double-bezel-inner p-6 sm:p-8 space-y-4 bg-white border-l-4 border-l-[#00B4A6]">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-[#E6F9F7] text-[#00B4A6] border border-[#00B4A6]/30">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-[#E6F9F7] text-[#007A70] border border-[#00B4A6]/30">
                       Clarification #{item.number}
                     </span>
                     <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-700">
@@ -203,7 +203,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
         <div className="double-bezel">
           <div className="double-bezel-inner p-6 sm:p-10 space-y-6 bg-radial-glow-teal">
             <div className="space-y-1">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#00B4A6] font-bold">
+              <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
                 Direct Submission
               </span>
               <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E]">

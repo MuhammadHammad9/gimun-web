@@ -12,7 +12,7 @@ export function TrackBadge({ track, size = 'sm', className }: TrackBadgeProps) {
   const configs = {
     gimun: {
       label: 'GIMUN',
-      styles: 'bg-[#FFF0E8] text-[#C84815] border border-[#FF6B35]/30',
+      styles: 'bg-[#FFF0E8] text-[#A83A11] border border-[#FF6B35]/30',
       dot: 'bg-[#FF6B35]',
     },
     'moot-cup': {

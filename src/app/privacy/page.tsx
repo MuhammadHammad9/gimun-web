@@ -19,6 +19,9 @@ export default function PrivacyPage() {
           Registration, contact, and clarification information is collected only to review applications,
           coordinate event logistics, answer inquiries, and communicate official updates.
         </p>
+        <p className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">
+          Draft notice — institutional retention and legal-contact terms are pending approval.
+        </p>
       </header>
 
       <div className="space-y-8 rounded-section border border-whisper-border bg-white p-6 shadow-card sm:p-10">

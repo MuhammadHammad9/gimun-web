@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getSiteConfig } from '@/lib/content';
+import { getSiteUrl } from '@/lib/site-config';
 
 export interface MetadataProps {
   title?: string;
@@ -15,7 +16,7 @@ export function constructMetadata({
   path = '',
 }: MetadataProps = {}): Metadata {
   const siteConfig = getSiteConfig();
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://gimungiki.org').replace(/\/$/, '');
+  const siteUrl = getSiteUrl();
   const defaultTitle = `${siteConfig?.eventNames?.combined || 'GIMUN & GMC'} | Official Website`;
   const resolvedTitle = title || defaultTitle;
   const url = `${siteUrl}${path}`;

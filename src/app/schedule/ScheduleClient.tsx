@@ -113,7 +113,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
-                <span className="relative z-10 font-mono text-xs font-bold text-[#FF6B35]">
+                <span className="relative z-10 font-mono text-xs font-bold text-[#C84815]">
                   Day {dayNum}
                 </span>
                 <span className="relative z-10 font-heading font-bold text-sm">
@@ -175,7 +175,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                       <Clock
                         className={cn(
                           "w-4 h-4",
-                          isGimun ? "text-[#FF6B35]" : isMoot ? "text-[#00B4A6]" : "text-[#1E2A78]"
+                          isGimun ? "text-[#C84815]" : isMoot ? "text-[#007A70]" : "text-[#1E2A78]"
                         )}
                       />
                       <span>
@@ -222,7 +222,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                       <MapPin
                         className={cn(
                           "w-3.5 h-3.5",
-                          isGimun ? "text-[#FF6B35]" : isMoot ? "text-[#00B4A6]" : "text-[#1E2A78]"
+                          isGimun ? "text-[#C84815]" : isMoot ? "text-[#007A70]" : "text-[#1E2A78]"
                         )}
                       />
                       <span>{session.location}</span>

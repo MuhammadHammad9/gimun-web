@@ -179,11 +179,11 @@ export function Footer27({
             {/* Quick Metadata Badges */}
             <div className="flex flex-col gap-2 pt-1 text-xs text-neutral-400 font-mono">
               <div className="flex items-center gap-2">
-                <HugeiconsIcon icon={Calendar03Icon} className="size-3.5 text-accent shrink-0" />
+                <HugeiconsIcon icon={Calendar03Icon} className="size-3.5 text-[#FFA27B] shrink-0" />
                 <span>{formatDateRange(siteConfig?.eventDates?.start, siteConfig?.eventDates?.end)}</span>
               </div>
               <div className="flex items-center gap-2">
-                <HugeiconsIcon icon={MapPinIcon} className="size-3.5 text-secondary shrink-0" />
+                <HugeiconsIcon icon={MapPinIcon} className="size-3.5 text-[#5EEAD4] shrink-0" />
                 <span>GIKI Campus, Topi, Khyber Pakhtunkhwa</span>
               </div>
             </div>

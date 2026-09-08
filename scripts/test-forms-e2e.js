@@ -93,7 +93,13 @@ async function runE2ETests() {
 
     serverProcess = spawn(process.execPath, [nextBin, 'start', '-p', String(port)], {
       cwd: rootDir,
-      env: { ...process.env, RATE_LIMIT_MAX: '5', SUBMISSIONS_BACKEND: 'memory', ALLOW_IN_MEMORY_SUBMISSIONS: '1' },
+      env: {
+        ...process.env,
+        RATE_LIMIT_MAX: '5',
+        RATE_LIMIT_HMAC_SECRET: 'test-only-rate-limit-secret',
+        SUBMISSIONS_BACKEND: 'memory',
+        ALLOW_IN_MEMORY_SUBMISSIONS: '1',
+      },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
 
@@ -142,13 +148,14 @@ async function runE2ETests() {
           email: 'zoraiz.qureshi@giki.edu.pk',
           phone: '03001234567',
           institution: 'GIKI Faculty of Computer Science',
-          yearOfStudy: 'Senior',
+          yearOfStudy: 'senior',
           experienceLevel: 'Advanced',
           committeePreference1: 'unsc',
           committeePreference2: 'disec',
           committeePreference3: 'unhrc',
           countryPreference: 'Pakistan',
-          referralSource: 'Social Media',
+          dietaryAccessibility: 'None',
+          referralSource: 'social-media',
         },
         _hp: '',
         _ts: Date.now() - 3500, // Valid velocity (> 2000ms)
@@ -187,7 +194,8 @@ async function runE2ETests() {
             { name: 'Delegate Alpha', email: 'alpha@nust.edu.pk', committeePreference1: 'unsc' },
             { name: 'Delegate Beta', email: 'beta@nust.edu.pk', committeePreference1: 'disec' },
           ],
-          referralSource: 'Faculty Advisor',
+          dietaryAccessibility: 'None',
+          referralSource: 'faculty-advisor',
         },
         _hp: '',
         _ts: Date.now() - 4000,

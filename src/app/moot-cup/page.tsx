@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { getMootCategories, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
+import { formatEventMonth } from '@/lib/site-config';
 
 export const metadata: Metadata = constructMetadata({
   title: 'GIKI Moot Court (GMC) | Appellate Courtroom Advocacy',
@@ -63,7 +64,7 @@ export default function MootCupOverviewPage() {
                 Competition At a Glance
               </span>
               <span className="px-2 py-0.5 rounded-full bg-[#00B4A6]/20 text-[#5EEAD4] text-[10px] font-mono font-semibold">
-                March 2027
+                {formatEventMonth(siteConfig.eventDates.start)}
               </span>
             </div>
             <h2 className="font-heading font-bold text-xl text-white">
@@ -110,7 +111,7 @@ export default function MootCupOverviewPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="max-w-3xl mb-10">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#00B4A6] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
               Courtroom Procedure
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-bold text-[#1A1A2E] mt-1">
@@ -192,7 +193,7 @@ export default function MootCupOverviewPage() {
             <div className="double-bezel-inner p-8 sm:p-10 space-y-6 border-l-4 border-l-[#00B4A6]">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <span className="text-xs font-mono uppercase tracking-widest text-[#00B4A6] font-bold">
+                  <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
                     Eligibility Guidelines
                   </span>
                   <h3 className="font-heading font-bold text-2xl text-[#1A1A2E] mt-1">
@@ -295,7 +296,7 @@ export default function MootCupOverviewPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#00B4A6] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
               Substantive Jurisprudence
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-bold text-[#1A1A2E] mt-1">
@@ -304,7 +305,7 @@ export default function MootCupOverviewPage() {
           </div>
           <Link
             href="/moot-cup/categories"
-            className="text-xs font-mono font-semibold text-[#00B4A6] hover:underline inline-flex items-center gap-1"
+            className="text-xs font-mono font-semibold text-[#007A70] hover:underline inline-flex items-center gap-1"
           >
             <span>Explore All Categories &amp; Propositions</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -333,7 +334,7 @@ export default function MootCupOverviewPage() {
         <ScrollReveal>
           <div className="double-bezel">
             <div className="double-bezel-inner p-8 sm:p-12 space-y-6">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#00B4A6] font-bold">
+              <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
                 Step Up to the Bar
               </span>
               <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-[#1A1A2E] max-w-xl mx-auto">

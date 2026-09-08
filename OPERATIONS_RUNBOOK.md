@@ -4,18 +4,18 @@ This runbook applies after the production Supabase, Resend, Upstash, and Vercel 
 
 ## Before launch
 
-1. Apply `supabase/migrations/0001_public_launch.sql` and confirm the `registrations`, `contact_messages`, and `reference_counters` tables exist.
+1. Apply `supabase/migrations/0001_public_launch.sql` followed by the additive `supabase/migrations/0002_submission_outbox.sql`; confirm the `registrations`, `contact_messages`, `reference_counters`, and `email_outbox` tables/functions exist.
 2. Confirm Supabase backups/PITR and a staff export path. Test a restricted export and store it in the approved institutional location.
 3. Verify the Resend sending domain, sender address, Secretariat recipients, and receipt delivery to a test inbox.
 4. Verify Upstash rate limiting from a protected staging deployment.
 5. Configure Vercel preview and production environments, custom-domain HTTPS, deployment protection, and the previous-deployment rollback path.
-6. Submit one staging registration for each mode, one contact inquiry, and one clarification inquiry. Confirm database persistence, stable reference IDs, receipt/notification status, and privacy handling.
+6. Submit one staging registration for each mode, one contact inquiry, and one clarification inquiry. Confirm the durable submission row and outbox rows, stable reference IDs, cron delivery, retry/idempotency behavior, and privacy handling.
 7. Run `npm run validate:launch` and `npm run qa:full` from the release commit.
 
 ## Daily registration monitoring
 
 - Review new Supabase rows and export a daily encrypted operational snapshot according to the approved retention policy.
-- Review Resend delivery, bounce, and failed-send logs. A stored submission with `emailQueued: false` requires a controlled resend from the provider dashboard.
+- Review `email_outbox` pending/retry/failed rows alongside Resend delivery, bounce, and failed-send logs. `emailQueued: true` means the durable outbox row exists; it does not mean the provider has delivered the message.
 - Review Vercel function errors/latency and Upstash rate-limit errors.
 - Keep `content/site.json` registration flags and deadlines aligned with Secretariat decisions; deploy copy changes through the normal protected branch workflow.
 
@@ -27,7 +27,7 @@ Do not switch production to the memory backend. Disable the affected registratio
 
 ### Email delivery failure
 
-Durable persistence remains authoritative. Check Resend domain/API status and provider logs, then resend from the managed provider workflow. Do not ask applicants to resubmit unless the database row is absent.
+Durable persistence remains authoritative. Check the outbox row, Vercel Cron execution, Resend domain/API status, and provider logs. Allow the worker’s retry window to complete; escalate exhausted or uncertain rows for staff review. Do not ask applicants to resubmit unless the database row is absent.
 
 ### Spam or abuse burst
 

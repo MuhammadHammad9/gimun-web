@@ -64,14 +64,14 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           Committees
         </Link>
         <span>/</span>
-        <span className="text-[#FF6B35] font-semibold">{committee.slug.toUpperCase()}</span>
+        <span className="text-[#C84815] font-semibold">{committee.slug.toUpperCase()}</span>
       </nav>
 
       {/* Header Dossier */}
       <header className="space-y-4 max-w-4xl">
         <div className="flex flex-wrap items-center gap-2.5">
           <TrackBadge track="gimun" />
-          <span className="px-3 py-0.5 rounded-full text-xs font-mono uppercase font-semibold bg-[#FFF0E8] text-[#FF6B35] border border-[#FF6B35]/20">
+          <span className="px-3 py-0.5 rounded-full text-xs font-mono uppercase font-semibold bg-[#FFF0E8] text-[#A83A11] border border-[#FF6B35]/20">
             {committee.type.replace('-', ' ')}
           </span>
           <span className="text-xs font-mono text-[#5A5A6E]">
@@ -109,7 +109,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
       {/* Agenda Topics Detailed Breakdown */}
       <section className="space-y-6">
         <div className="border-b border-gray-100 pb-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#FF6B35] font-bold">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#C84815] font-bold">
             Substantive Agenda
           </span>
           <h2 className="text-2xl font-heading font-bold text-[#1A1A2E] mt-0.5">
@@ -122,7 +122,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
             <div key={i} className="double-bezel">
               <div className="double-bezel-inner p-6 sm:p-8 space-y-3">
                 <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="font-bold text-[#FF6B35]">Agenda Topic {i + 1}</span>
+                  <span className="font-bold text-[#C84815]">Agenda Topic {i + 1}</span>
                   <span className="text-[#5A5A6E]">Formal Debate</span>
                 </div>
                 <h3 className="font-heading font-bold text-lg sm:text-xl text-[#1A1A2E] leading-snug">
@@ -161,7 +161,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
                 </div>
                 <div>
                   <h3 className="font-heading font-bold text-base text-[#1A1A2E]">{chair.name}</h3>
-                  <p className="text-xs font-mono text-[#FF6B35] font-medium">{chair.role}</p>
+                  <p className="text-xs font-mono text-[#C84815] font-medium">{chair.role}</p>
                 </div>
               </div>
               {chair.bio && <p className="text-xs text-[#5A5A6E] leading-relaxed">{chair.bio}</p>}
@@ -174,7 +174,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gray-100 pb-3">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#FF6B35] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#C84815] font-bold">
               Portfolio Allocations
             </span>
             <h2 className="text-2xl font-heading font-bold text-[#1A1A2E] mt-0.5">
@@ -193,7 +193,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
       <div className="pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
         <Link
           href="/gimun/committees"
-          className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-[#1E2A78] hover:text-[#FF6B35] transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-[#1E2A78] hover:text-[#C84815] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to All Committees</span>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -70,6 +70,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const mobileToggleRef = useRef<HTMLButtonElement>(null);
 
   const handleMouseEnter = (label: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -81,6 +82,8 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
       setActiveDropdown(null);
     }, 150);
   };
+
+  const handleMobileMenuClose = useCallback(() => setMobileMenuOpen(false), []);
 
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (pathname !== prevPathname) {
@@ -130,6 +133,12 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                   className="relative"
                   onMouseEnter={() => hasDropdown && handleMouseEnter(item.label)}
                   onMouseLeave={handleMouseLeave}
+                  onFocus={() => hasDropdown && handleMouseEnter(item.label)}
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                      setActiveDropdown(null);
+                    }
+                  }}
                 >
                   <Link
                     href={item.href}
@@ -203,13 +212,14 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
           <div className="flex items-center gap-3">
             <Link
               href="/register"
-              className="px-4 py-2 rounded-full bg-[#FF6B35] hover:bg-[#E55A28] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-[0_2px_12px_rgba(255,107,53,0.4)] hover:shadow-[0_4px_16px_rgba(255,107,53,0.6)] active:scale-[0.98]"
+              className="px-4 py-2 rounded-full bg-[#C84815] hover:bg-[#A83A11] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-[0_2px_12px_rgba(200,72,21,0.4)] hover:shadow-[0_4px_16px_rgba(200,72,21,0.6)] active:scale-[0.98]"
             >
               Register
             </Link>
 
             {/* Hamburger Button that morphs to X */}
             <button
+              ref={mobileToggleRef}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
               className="md:hidden p-2 rounded-xl text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35]"
@@ -241,7 +251,8 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
       {/* Full-screen Mobile Menu */}
       <MobileMenu
         isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
+        onClose={handleMobileMenuClose}
+        triggerRef={mobileToggleRef}
       />
     </>
   );

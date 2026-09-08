@@ -255,7 +255,7 @@ export function ResultsClient({
                 <div className="double-bezel-inner p-8 space-y-6">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-[#FF6B35]/15 text-[#FF6B35] flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-lg bg-[#FF6B35]/15 text-[#C84815] flex items-center justify-center">
                         <Globe2 className="w-4 h-4" />
                       </div>
                       <h3 className="font-heading font-bold text-xl text-[#1A1A2E]">
@@ -273,7 +273,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Consensus Building &amp; Caucus Diplomacy</span>
-                        <span className="text-[#FF6B35] font-bold">30%</span>
+                        <span className="text-[#C84815] font-bold">30%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#FF6B35] rounded-full" style={{ width: '30%' }} />
@@ -284,7 +284,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Resolution &amp; Working Paper Drafting</span>
-                        <span className="text-[#FF6B35] font-bold">25%</span>
+                        <span className="text-[#C84815] font-bold">25%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#FF6B35] rounded-full" style={{ width: '25%' }} />
@@ -295,7 +295,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Foreign Policy Fidelity &amp; Research</span>
-                        <span className="text-[#FF6B35] font-bold">25%</span>
+                        <span className="text-[#C84815] font-bold">25%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#FF6B35] rounded-full" style={{ width: '25%' }} />
@@ -306,7 +306,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Rules of Procedure &amp; Oratory</span>
-                        <span className="text-[#FF6B35] font-bold">20%</span>
+                        <span className="text-[#C84815] font-bold">20%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#FF6B35] rounded-full" style={{ width: '20%' }} />
@@ -322,7 +322,7 @@ export function ResultsClient({
                 <div className="double-bezel-inner p-8 space-y-6">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-[#00B4A6]/15 text-[#00B4A6] flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-lg bg-[#00B4A6]/15 text-[#007A70] flex items-center justify-center">
                         <Scale className="w-4 h-4" />
                       </div>
                       <h3 className="font-heading font-bold text-xl text-[#1A1A2E]">
@@ -340,7 +340,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Written Memorials &amp; Authority Citations</span>
-                        <span className="text-[#00B4A6] font-bold">30%</span>
+                        <span className="text-[#007A70] font-bold">30%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#00B4A6] rounded-full" style={{ width: '30%' }} />
@@ -351,7 +351,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Substantive Legal Reasoning</span>
-                        <span className="text-[#00B4A6] font-bold">25%</span>
+                        <span className="text-[#007A70] font-bold">25%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#00B4A6] rounded-full" style={{ width: '25%' }} />
@@ -362,7 +362,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Bench Question Responsiveness</span>
-                        <span className="text-[#00B4A6] font-bold">25%</span>
+                        <span className="text-[#007A70] font-bold">25%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#00B4A6] rounded-full" style={{ width: '25%' }} />
@@ -373,7 +373,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Court Demeanor &amp; Rebuttal Agility</span>
-                        <span className="text-[#00B4A6] font-bold">20%</span>
+                        <span className="text-[#007A70] font-bold">20%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#00B4A6] rounded-full" style={{ width: '20%' }} />

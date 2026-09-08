@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Users, Award, BookOpen, Scale, CheckCircle2, Lock } from 'lucide-react';
 import { StaggerChildren } from '@/components/motion/StaggerChildren';
+import { formatEventDate } from '@/lib/site-config';
 
 interface TrackChooserProps {
   onSelectTrack: (track: 'gimun' | 'moot-cup') => void;
@@ -28,11 +29,11 @@ export function TrackChooser({
   fees,
 }: TrackChooserProps) {
   const formattedGimunDeadline = gimunDeadline
-    ? new Date(gimunDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    ? formatEventDate(gimunDeadline)
     : 'Deadline pending';
 
   const formattedMootDeadline = mootCupDeadline
-    ? new Date(mootCupDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    ? formatEventDate(mootCupDeadline)
     : 'Deadline pending';
 
   return (

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { getCommittees, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
+import { formatEventMonth } from '@/lib/site-config';
 
 export const metadata: Metadata = constructMetadata({
   title: 'GIMUN Track | Model United Nations Diplomacy',
@@ -63,7 +64,7 @@ export default function GimunOverviewPage() {
                 At a Glance
               </span>
               <span className="px-2 py-0.5 rounded-full bg-[#FF6B35]/20 text-[#FFA27B] text-[10px] font-mono font-semibold">
-                March 2027
+                {formatEventMonth(siteConfig.eventDates.start)}
               </span>
             </div>
             <h2 className="font-heading font-bold text-xl text-white">
@@ -104,7 +105,7 @@ export default function GimunOverviewPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="max-w-3xl mb-10">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#FF6B35] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#C84815] font-bold">
               Conference Mechanics
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-bold text-[#1A1A2E] mt-1">
@@ -334,7 +335,7 @@ export default function GimunOverviewPage() {
           </div>
           <Link
             href="/gimun/committees"
-            className="text-xs font-mono font-semibold text-[#FF6B35] hover:underline inline-flex items-center gap-1"
+            className="text-xs font-mono font-semibold text-[#C84815] hover:underline inline-flex items-center gap-1"
           >
             <span>View All Committees &amp; Country Matrices</span>
             <ArrowRight className="w-3.5 h-3.5" />

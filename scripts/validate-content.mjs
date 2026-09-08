@@ -1,11 +1,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import sharp from 'sharp';
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 const contentDir = path.join(process.cwd(), 'content');
 
 const VALID_TRACKS = new Set(['gimun', 'moot-cup', 'shared', 'all', 'general']);
 
 const validationRules = [
+  {
+    file: 'asset-approvals.json',
+    validate: (data) => {
+      if (!data || typeof data !== 'object' || Array.isArray(data)) return ['Must be an object'];
+      if (data.version !== 1) return ['version must be 1'];
+      if (!data.assets || typeof data.assets !== 'object' || Array.isArray(data.assets)) return ['assets must be an object'];
+      return [];
+    },
+  },
   {
     file: 'site.json',
     validate: (data) => {
@@ -259,6 +270,52 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
   const sponsors = parsedContent.get('sponsors.json') || [];
   const gallery = parsedContent.get('gallery.json') || [];
   const resources = parsedContent.get('resources.json') || [];
+  const approvals = parsedContent.get('asset-approvals.json')?.assets || {};
+  const expectedStart = new Date(`${site?.eventDates?.start}T12:00:00+05:00`);
+  const expectedEnd = new Date(`${site?.eventDates?.end}T12:00:00+05:00`);
+  const eventDays = Math.floor((expectedEnd.getTime() - expectedStart.getTime()) / 86_400_000) + 1;
+  const schedule = parsedContent.get('schedule.json') || [];
+  const scheduleDays = new Set(schedule.map((item) => item.day));
+
+  if (!Number.isFinite(expectedStart.getTime()) || !Number.isFinite(expectedEnd.getTime())) {
+    launchErrors.push('site.json event dates must be valid ISO dates');
+  } else if (eventDays !== 4) {
+    launchErrors.push(`site.json event range must cover four days, received ${eventDays}`);
+  }
+
+  for (let day = 1; day <= eventDays; day += 1) {
+    if (!scheduleDays.has(day)) launchErrors.push(`schedule.json is missing content for Day ${day}`);
+  }
+
+  const contentAssetReferences = assetReferences.map((reference) => reference.value);
+  const staticReleaseAssets = [
+    '/images/og/default.jpg',
+    '/images/og/gimun.jpg',
+    '/images/og/moot-cup.jpg',
+    '/favicon.ico',
+    '/favicon-16x16.png',
+    '/favicon-32x32.png',
+    '/apple-icon.png',
+  ];
+  const expectedAssets = [...new Set([...contentAssetReferences, ...staticReleaseAssets])];
+  const manifestAssets = Object.keys(approvals);
+
+  for (const asset of expectedAssets) {
+    const approval = approvals[asset];
+    if (!approval) {
+      launchErrors.push(`asset-approvals.json is missing approval metadata for ${asset}`);
+    } else if (approval.status !== 'approved') {
+      launchErrors.push(`${asset} is not approved for production`);
+    } else {
+      for (const field of ['permissionRef', 'approvedByRole', 'approvedAt', 'source']) {
+        if (!approval[field]) launchErrors.push(`${asset} approval metadata is missing ${field}`);
+      }
+    }
+  }
+
+  for (const asset of manifestAssets) {
+    if (!expectedAssets.includes(asset)) launchErrors.push(`asset-approvals.json contains an unreferenced asset: ${asset}`);
+  }
 
   team.forEach((member, index) => {
     if (!member.photo) launchErrors.push(`team.json[${index}] is missing a verified photo`);
@@ -269,19 +326,41 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
   gallery.forEach((item, index) => {
     if (!item.image) launchErrors.push(`gallery.json[${index}] is missing a verified image`);
   });
-  resources.forEach((resource, index) => {
+  for (const [index, resource] of resources.entries()) {
     const assetPath = path.join(process.cwd(), 'public', resource.fileUrl.replace(/^\//, ''));
     if (!fs.existsSync(assetPath)) {
       launchErrors.push(`resources.json[${index}] is missing its PDF asset: ${resource.fileUrl}`);
-      return;
+      continue;
     }
     const pdfBuffer = fs.readFileSync(assetPath);
     const pdfText = pdfBuffer.toString('latin1');
+    let pageCount = 0;
+    try {
+      const loadingTask = getDocument({ data: new Uint8Array(pdfBuffer), disableWorker: true });
+      const pdf = await loadingTask.promise;
+      pageCount = pdf.numPages;
+      await loadingTask.destroy();
+    } catch {
+      pageCount = 0;
+    }
     const isGeneratedSeed = pdfText.includes('Official Publication | Page') || pdfText.includes('The Secretariat and Bench Directorate establish binding standards');
-    if (pdfBuffer.length < 10_000 || !pdfBuffer.subarray(0, 5).equals(Buffer.from('%PDF-')) || !pdfText.includes('%%EOF') || isGeneratedSeed) {
+    if (pdfBuffer.length < 10_000 || !pdfBuffer.subarray(0, 5).equals(Buffer.from('%PDF-')) || !pdfText.includes('%%EOF') || pageCount < 1 || isGeneratedSeed) {
       launchErrors.push(`resources.json[${index}] points to a seed/sample document: ${resource.fileUrl}`);
     }
-  });
+  }
+
+  for (const [index, entry] of [...team, ...sponsors, ...gallery].entries()) {
+    const asset = entry.photo || entry.logo || entry.image;
+    if (!asset) continue;
+    const assetPath = path.join(process.cwd(), 'public', asset.replace(/^\//, ''));
+    try {
+      const metadata = await sharp(assetPath).metadata();
+      if (!metadata.width || !metadata.height) launchErrors.push(`Referenced image has no dimensions: ${asset}`);
+      if ((metadata.width || 0) < 320 || (metadata.height || 0) < 240) launchErrors.push(`Referenced image is too small for production: ${asset}`);
+    } catch {
+      launchErrors.push(`Referenced image cannot be parsed: ${asset}`);
+    }
+  }
   for (const generator of ['scripts/generate-brand-media.mjs', 'scripts/generate-production-pdfs.mjs']) {
     if (fs.existsSync(path.join(process.cwd(), generator))) {
       launchErrors.push(`${generator} is a seed-asset generator; remove it and commit approved human-supplied assets before launch`);

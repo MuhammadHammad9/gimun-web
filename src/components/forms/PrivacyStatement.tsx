@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Lock } from 'lucide-react';
 
 export function PrivacyStatement() {
@@ -9,7 +10,7 @@ export function PrivacyStatement() {
         We respect your privacy. Contact details, delegate rosters, and dietary/accessibility
         accommodations submitted through this portal are processed strictly by the GIMUN & GMC
         Organizing Committee for event logistics and delegate verification. No personal data is
-        shared with third parties or published publicly.
+        published publicly. Read the <Link className="font-semibold text-primary underline" href="/privacy">draft privacy notice</Link> before submitting.
       </p>
     </div>
   );

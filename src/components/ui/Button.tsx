@@ -34,13 +34,13 @@ export function Button({
 
   const variantStyles = {
     primary:
-      'bg-[#FF6B35] text-white hover:bg-[#E55A28] focus-visible:ring-[#FF6B35] shadow-[0_2px_12px_-2px_rgba(255,107,53,0.35)] hover:shadow-[0_4px_16px_-2px_rgba(255,107,53,0.45)] hover:-translate-y-0.5 active:translate-y-0',
+      'bg-[#C84815] text-white hover:bg-[#A83A11] focus-visible:ring-[#C84815] shadow-[0_2px_12px_-2px_rgba(200,72,21,0.35)] hover:shadow-[0_4px_16px_-2px_rgba(200,72,21,0.45)] hover:-translate-y-0.5 active:translate-y-0',
     secondary:
       'border-2 border-[#1E2A78] text-[#1E2A78] bg-transparent hover:bg-[#1E2A78]/5 focus-visible:ring-[#1E2A78]',
     'track-gimun':
-      'bg-[#FF6B35] text-white hover:bg-[#E55A28] focus-visible:ring-[#FF6B35] shadow-[0_2px_12px_-2px_rgba(255,107,53,0.35)] hover:-translate-y-0.5',
+      'bg-[#C84815] text-white hover:bg-[#A83A11] focus-visible:ring-[#C84815] shadow-[0_2px_12px_-2px_rgba(200,72,21,0.35)] hover:-translate-y-0.5',
     'track-moot':
-      'bg-[#00B4A6] text-white hover:bg-[#009E92] focus-visible:ring-[#00B4A6] shadow-[0_2px_12px_-2px_rgba(0,180,166,0.35)] hover:-translate-y-0.5',
+      'bg-[#007A70] text-white hover:bg-[#00665C] focus-visible:ring-[#007A70] shadow-[0_2px_12px_-2px_rgba(0,122,112,0.35)] hover:-translate-y-0.5',
     ghost:
       'text-[#5A5A6E] hover:text-[#1A1A2E] hover:bg-[#1E2A78]/5 focus-visible:ring-[#1E2A78]',
   }[variant];

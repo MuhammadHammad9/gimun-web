@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { getCommittees } from '@/lib/content';
+import { getSiteUrl } from '@/lib/site-config';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://gimungiki.org').replace(/\/$/, '');
+  const baseUrl = getSiteUrl();
   const currentDate = new Date().toISOString();
   const committees = getCommittees();
 

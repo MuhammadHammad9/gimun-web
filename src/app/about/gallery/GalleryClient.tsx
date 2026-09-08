@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -32,6 +32,19 @@ const CATEGORY_TABS: { id: CategoryTab; label: string }[] = [
 export function GalleryClient({ initialItems }: GalleryClientProps) {
   const [selectedCategory, setSelectedCategory] = useState<CategoryTab>('all');
   const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const lastTriggerRef = useRef<HTMLElement | null>(null);
+
+  const closeLightbox = useCallback(() => {
+    setActiveLightboxIndex(null);
+    requestAnimationFrame(() => lastTriggerRef.current?.focus());
+  }, []);
+
+  const openLightbox = useCallback((index: number, trigger: HTMLElement) => {
+    lastTriggerRef.current = trigger;
+    setActiveLightboxIndex(index);
+  }, []);
 
   // Filtered list based on active tab
   const filteredItems = selectedCategory === 'all'
@@ -44,18 +57,35 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
       if (activeLightboxIndex === null) return;
 
       if (e.key === 'Escape') {
-        setActiveLightboxIndex(null);
+        e.preventDefault();
+        closeLightbox();
       } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
         setActiveLightboxIndex((prev) =>
           prev !== null ? (prev + 1) % filteredItems.length : null
         );
       } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
         setActiveLightboxIndex((prev) =>
           prev !== null ? (prev - 1 + filteredItems.length) % filteredItems.length : null
         );
+      } else if (e.key === 'Tab') {
+        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable || focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     },
-    [activeLightboxIndex, filteredItems.length]
+    [activeLightboxIndex, closeLightbox, filteredItems.length]
   );
 
   useEffect(() => {
@@ -67,6 +97,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
   useEffect(() => {
     if (activeLightboxIndex !== null) {
       document.body.style.overflow = 'hidden';
+      closeButtonRef.current?.focus();
     } else {
       document.body.style.overflow = '';
     }
@@ -130,14 +161,19 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
               className={`group relative overflow-hidden rounded-2xl border border-whisper-border bg-surface-elevated shadow-card hover:shadow-card-hover transition-all duration-300 cursor-pointer ${
                 isWide ? 'sm:col-span-2' : 'col-span-1'
               }`}
-              onClick={() => setActiveLightboxIndex(index)}
+              role="button"
+              tabIndex={0}
+              aria-haspopup="dialog"
+              aria-label={`Open gallery image: ${item.title}`}
+              onClick={(event) => openLightbox(index, event.currentTarget)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  openLightbox(index, event.currentTarget);
+                }
+              }}
             >
-              {/* Visual Simulated Media Canvas */}
-              <div
-                className={`relative w-full h-64 sm:h-72 overflow-hidden bg-gradient-to-br ${
-                  item.gradientPlaceholder || 'from-slate-900 via-blue-950 to-slate-800'
-                } flex flex-col justify-between p-5 text-white`}
-              >
+              <div className="relative w-full h-64 sm:h-72 overflow-hidden bg-slate-900 flex flex-col justify-between p-5 text-white">
                 {item.image && (
                   <Image
                     src={item.image}
@@ -177,12 +213,6 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   </div>
                 </div>
 
-                {!item.image && (
-                  <span className="relative z-10 inline-flex w-fit items-center gap-1.5 rounded-md border border-white/20 bg-black/40 px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-white/80">
-                    Archive artwork pending
-                  </span>
-                )}
-
                 {/* Bottom Canvas Tag */}
                 <div className="relative z-10 space-y-1">
                   <div className="flex items-center gap-1.5 text-xs text-white/80 font-mono">
@@ -219,9 +249,10 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/85 backdrop-blur-md"
-            onClick={() => setActiveLightboxIndex(null)}
-          >
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/85 backdrop-blur-md"
+              role="presentation"
+              onClick={closeLightbox}
+            >
             {/* Modal Container */}
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -229,6 +260,10 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
+              ref={dialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="gallery-lightbox-title"
               className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl bg-surface-elevated border border-slate-700/50 shadow-2xl flex flex-col text-white"
             >
               {/* Modal Top Control Bar */}
@@ -268,7 +303,8 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   </button>
 
                   <button
-                    onClick={() => setActiveLightboxIndex(null)}
+                    ref={closeButtonRef}
+                    onClick={closeLightbox}
                     className="p-2 ml-2 rounded-full hover:bg-rose-500/20 text-slate-300 hover:text-white transition-colors cursor-pointer"
                     aria-label="Close modal"
                   >
@@ -279,10 +315,17 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
 
               {/* Full Art Canvas Display */}
               <div
-                className={`relative w-full h-80 sm:h-96 md:h-[420px] bg-gradient-to-br ${
-                  activeItem.gradientPlaceholder || 'from-slate-900 via-blue-950 to-slate-800'
-                } flex flex-col justify-end p-6 sm:p-8`}
+                className="relative w-full h-80 sm:h-96 md:h-[420px] bg-slate-900 flex flex-col justify-end p-6 sm:p-8"
               >
+                {activeItem.image && (
+                  <Image
+                    src={activeItem.image}
+                    alt={activeItem.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 896px"
+                    className="object-cover"
+                  />
+                )}
                 <div
                   className="absolute inset-0 opacity-15 pointer-events-none"
                   style={{
@@ -297,7 +340,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                     <Camera className="w-3.5 h-3.5 text-accent" />
                     <span>Official Symposium Photographic Archive</span>
                   </div>
-                  <h2 className="text-xl sm:text-3xl font-heading font-extrabold text-white tracking-tight">
+                  <h2 id="gallery-lightbox-title" className="text-xl sm:text-3xl font-heading font-extrabold text-white tracking-tight">
                     {activeItem.title}
                   </h2>
                 </div>
@@ -329,7 +372,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                 <div className="pt-4 flex items-center justify-between text-xs font-mono text-slate-500">
                   <span>Use &larr; / &rarr; keys to cycle through records &bull; ESC to exit</span>
                   <button
-                    onClick={() => setActiveLightboxIndex(null)}
+                    onClick={closeLightbox}
                     className="text-accent hover:underline font-semibold"
                   >
                     Close Preview

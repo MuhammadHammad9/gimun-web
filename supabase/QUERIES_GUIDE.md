@@ -112,8 +112,8 @@ In [`.env.local`](file:///C:/Users/Khaas%20Laptop's/OneDrive%20-%20Higher%20Educ
 
 1. Go to **Supabase Dashboard** -> **Project Settings** -> **API**.
 2. Copy the **Project URL** and paste it as `SUPABASE_URL`.
-3. Copy the **service_role** secret key (under **Project API keys**) and paste it as `SUPABASE_SERVICE_ROLE_KEY`.
+3. Copy the server-only **secret** key and paste it as `SUPABASE_SECRET_KEY`.
 4. Set `SUBMISSIONS_BACKEND=supabase`.
 
 > [!IMPORTANT]
-> **Always use the `service_role` key, never the `anon` public key** for `SUPABASE_SERVICE_ROLE_KEY`. Because Row Level Security is strictly enabled on `registrations` and `contact_messages`, only the `service_role` key has backend permission to write and read submission rows.
+> **Never use the `anon` public key** for `SUPABASE_SECRET_KEY`. Because Row Level Security is strictly enabled on submission tables and the email outbox, only the server secret has backend permission to write and read submission rows.

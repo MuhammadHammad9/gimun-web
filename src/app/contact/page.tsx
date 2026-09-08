@@ -58,7 +58,7 @@ export default function ContactPage() {
       </section>
 
       {/* Main Interactive Body */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Interactive Contact Form (7 cols) */}
           <div className="lg:col-span-7">
@@ -94,12 +94,12 @@ export default function ContactPage() {
 
                 {config.contactEmails.gimun && (
                   <div className="space-y-1 p-3 rounded-xl bg-[#FFF0E8]/50 border border-[#FF6B35]/20">
-                    <div className="font-mono uppercase text-[10px] text-[#FF6B35] font-bold">
+                    <div className="font-mono uppercase text-[10px] text-[#C84815] font-bold">
                       GIMUN Secretariat (Committees &amp; Matrix)
                     </div>
                     <a
                       href={`mailto:${config.contactEmails.gimun}`}
-                      className="text-[#FF6B35] font-bold hover:underline block text-sm font-mono"
+                      className="text-[#C84815] font-bold hover:underline block text-sm font-mono"
                     >
                       {config.contactEmails.gimun}
                     </a>
@@ -108,12 +108,12 @@ export default function ContactPage() {
 
                 {config.contactEmails.mootCup && (
                   <div className="space-y-1 p-3 rounded-xl bg-[#E6F9F7]/50 border border-[#00B4A6]/20">
-                    <div className="font-mono uppercase text-[10px] text-[#00B4A6] font-bold">
+                    <div className="font-mono uppercase text-[10px] text-[#007A70] font-bold">
                       GMC Bench Directorate (Advocacy &amp; Briefs)
                     </div>
                     <a
                       href={`mailto:${config.contactEmails.mootCup}`}
-                      className="text-[#00B4A6] font-bold hover:underline block text-sm font-mono"
+                      className="text-[#007A70] font-bold hover:underline block text-sm font-mono"
                     >
                       {config.contactEmails.mootCup}
                     </a>
@@ -167,7 +167,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
