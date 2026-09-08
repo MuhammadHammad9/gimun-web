@@ -9,6 +9,7 @@ import { CountdownChip } from '@/components/ui/CountdownChip';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { ArrowRight, CheckCircle2, ChevronRight } from 'lucide-react';
 import { formatDateRange } from '@/lib/utils';
+import { formatEventDate, formatPublishedDate } from '@/lib/site-config';
 import type { Metadata } from 'next';
 import { constructMetadata } from '@/lib/metadata';
 import {
@@ -17,6 +18,7 @@ import {
   getCommittees,
   getProblemCategories,
   getSponsors,
+  getDocuments,
 } from '@/lib/content';
 
 export const metadata: Metadata = constructMetadata({
@@ -32,6 +34,11 @@ export default function Home() {
   const committees = getCommittees();
   const mootCategories = getProblemCategories();
   const sponsors = getSponsors();
+  const documents = getDocuments();
+  const latestResourceDate = documents.reduce<string | undefined>((latest, document) => {
+    if (!latest || document.versionDate > latest) return document.versionDate;
+    return latest;
+  }, undefined);
 
   const latestAnnouncement = announcements.find((a) => a.pinnedFlag) || announcements[0];
 
@@ -268,7 +275,7 @@ export default function Home() {
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Early Bird Open</div>
                   <div className="text-xs font-mono text-[#FF6B35] font-semibold">
-                    Deadline: {new Date(siteConfig.registrationDeadlines.gimun).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    Deadline: {formatEventDate(siteConfig.registrationDeadlines.gimun, { month: 'short' })}
                   </div>
                   <p className="text-xs text-[#5A5A6E] leading-relaxed">Priority committee preference & delegation discounts applied.</p>
                 </div>
@@ -280,7 +287,9 @@ export default function Home() {
                     <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium text-[10px]">Upcoming</span>
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Guides & Proposition</div>
-                  <div className="text-xs font-mono text-[#1E2A78] font-semibold">Released: Jan 20, 2027</div>
+                  <div className="text-xs font-mono text-[#1E2A78] font-semibold">
+                    Latest resource revision: {latestResourceDate ? formatEventDate(latestResourceDate, { month: 'short' }) : 'Pending publication'}
+                  </div>
                   <p className="text-xs text-[#5A5A6E] leading-relaxed">Background guides, Compromis, and rules published in Resource Hub.</p>
                 </div>
 
@@ -292,7 +301,7 @@ export default function Home() {
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Memorial Submission</div>
                   <div className="text-xs font-mono text-[#00B4A6] font-semibold">
-                    Deadline: {new Date(siteConfig.registrationDeadlines.mootCup).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    Deadline: {formatEventDate(siteConfig.registrationDeadlines.mootCup, { month: 'short' })}
                   </div>
                   <p className="text-xs text-[#5A5A6E] leading-relaxed">Final electronic submission deadline for Moot Court memorials.</p>
                 </div>
@@ -329,14 +338,14 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <Link
               href="/gimun/committees"
-              className="text-xs font-mono font-semibold text-[#FF6B35] hover:underline"
+              className="text-xs font-mono font-semibold text-[#C84815] hover:underline"
             >
               All Committees →
             </Link>
             <span className="text-gray-300">|</span>
             <Link
               href="/moot-cup/categories"
-              className="text-xs font-mono font-semibold text-[#00B4A6] hover:underline"
+              className="text-xs font-mono font-semibold text-[#007A70] hover:underline"
             >
               All Problem Categories →
             </Link>
@@ -383,11 +392,7 @@ export default function Home() {
                       Notice
                     </span>
                     <span className="text-xs font-mono text-[#5A5A6E]">
-                      {new Date(latestAnnouncement.timestamp).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
+                      {formatPublishedDate(latestAnnouncement.timestamp)}
                     </span>
                   </div>
                   <h3 className="font-heading font-bold text-lg text-[#1A1A2E]">

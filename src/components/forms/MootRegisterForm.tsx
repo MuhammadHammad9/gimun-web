@@ -19,7 +19,17 @@ interface MootRegisterFormProps {
   onSuccess: (
     refId: string,
     teamName: string,
-    details?: { email?: string; institution?: string; summary?: string }
+    details?: {
+      email?: string;
+      institution?: string;
+      phone?: string;
+      summary?: string;
+      feeAmount?: string;
+      eventDates?: string;
+      venue?: string;
+      participantCount?: number;
+      timestamp?: string;
+    }
   ) => void;
 }
 
@@ -161,13 +171,19 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         categories.find((c) => c.id === formData.problemCategoryPreference)?.name ||
         formData.problemCategoryPreference;
       const details = {
-        email: formData.members[0]?.email,
-        institution: formData.institution,
-        summary: `${catName} · ${formData.members.length} Team Advocates`,
+        email: data.receipt?.email || formData.members[0]?.email,
+        institution: data.receipt?.institution || formData.institution,
+        phone: data.receipt?.phone || formData.members[0]?.phone,
+        summary: data.receipt?.summary || `${catName} · ${formData.members.length} Team Advocates`,
+        feeAmount: data.receipt?.feeAmount,
+        eventDates: data.receipt?.eventDates,
+        venue: data.receipt?.venue,
+        participantCount: data.receipt?.participantCount || formData.members.length,
+        timestamp: data.receipt?.submittedAt,
       };
       onSuccess(data.referenceId || 'REG-MOOT-2027', `${formData.teamName} (${formData.institution})`, details);
-    } catch (err) {
-      console.error('Submission failed:', err);
+    } catch {
+      console.error('Registration request failed.');
       setStatus('error');
       setServerError('Unable to reach registration server. Please check your connection.');
     }

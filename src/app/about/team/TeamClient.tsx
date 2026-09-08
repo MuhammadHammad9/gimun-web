@@ -23,7 +23,7 @@ const GROUP_CONFIG: Record<
   secretariat: {
     label: "GIMUN Executive Secretariat",
     badge: "Model UN Secretariat",
-    badgeColor: "bg-[#FFF0E8] text-[#FF6B35] border-[#FF6B35]/20",
+    badgeColor: "bg-[#FFF0E8] text-[#A83A11] border-[#FF6B35]/20",
     avatarBg: "bg-gradient-to-br from-[#FF6B35] to-[#FF8C61] text-white",
   },
   "convening-committee": {

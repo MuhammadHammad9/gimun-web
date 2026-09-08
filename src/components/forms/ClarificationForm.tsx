@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
 import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
+import { validateEmail } from '@/lib/validation';
 
 export function ClarificationForm() {
   const [teamId, setTeamId] = useState('');
@@ -21,7 +22,17 @@ export function ClarificationForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!teamId.trim() || !paragraphRef.trim() || !questionText.trim()) return;
+    if (!teamId.trim() || !teamEmail.trim() || !paragraphRef.trim() || !questionText.trim()) {
+      setServerError('Team ID, contact email, citation, and question are required.');
+      setStatus('error');
+      return;
+    }
+    const emailError = validateEmail(teamEmail);
+    if (emailError) {
+      setServerError(emailError);
+      setStatus('error');
+      return;
+    }
 
     setStatus('submitting');
     setServerError(null);
@@ -32,7 +43,7 @@ export function ClarificationForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: `Advocate of ${teamId.trim()}`,
-          email: teamEmail.trim() || 'moot-advocate@institution.edu.pk',
+          email: teamEmail.trim(),
           queryType: 'moot-cup',
           message: `[GMC Compromis Clarification]\nCompromis Citation: ${paragraphRef.trim()}\n\nQuestion:\n${questionText.trim()}`,
           _hp: honeypot,
@@ -103,7 +114,7 @@ export function ClarificationForm() {
           />
         </FormField>
 
-        <FormField label="Contact Email" id="clar-email">
+          <FormField label="Contact Email" required id="clar-email">
           <input
             id="clar-email"
             type="email"

@@ -33,13 +33,13 @@
     "id": "faq-6",
     "category": "registration-fees",
     "question": "What is included in the delegate and team registration fees?",
-    "answer": "Delegate and delegation fees cover access to all formal committee/courtroom sessions, conference background dossiers or compromis materials, official delegate stationery kits, access to three days of catered dining (lunches, formal dinners, tea breaks), entry to evening social events, and secure hostel accommodation on campus."
+    "answer": "Delegate and delegation fees cover access to all formal committee/courtroom sessions, conference background dossiers or compromis materials, official delegate stationery kits, access to four days of catered dining (lunches, formal dinners, tea breaks), entry to evening social events, and secure hostel accommodation on campus."
   },
   {
     "id": "faq-7",
     "category": "registration-fees",
     "question": "What are the registration deadlines?",
-    "answer": "GIMUN registrations close on February 15, 2027, and GMC registrations close on March 5, 2027. Because committee capacities and courtroom chambers are strictly capped to ensure competitive quality, registrations may close early once allocations are exhausted."
+    "answer": "GIMUN registrations close on {{GIMUN_DEADLINE}}, and GMC registrations close on {{GMC_DEADLINE}}. Because committee capacities and courtroom chambers are strictly capped to ensure competitive quality, registrations may close early once allocations are exhausted."
   },
   {
     "id": "faq-8",

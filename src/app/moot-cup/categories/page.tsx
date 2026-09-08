@@ -59,7 +59,7 @@ export default function MootCategoriesPage() {
       </section>
 
       {/* Main Interactive Body */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 space-y-8">
         {/* Equal Footing Notice */}
         <div className="p-4.5 rounded-2xl bg-[#E6F9F7] border border-[#00B4A6]/30 flex items-start gap-3.5">
           <AlertCircle className="w-5 h-5 text-[#00B4A6] shrink-0 mt-0.5" />
@@ -70,7 +70,7 @@ export default function MootCategoriesPage() {
         </div>
 
         <CategoriesClient categories={categories} propositionDoc={propositionDoc} />
-      </main>
+      </div>
     </div>
   );
 }

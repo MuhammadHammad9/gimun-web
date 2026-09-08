@@ -12,6 +12,7 @@ import type {
   ResultAward,
   GalleryItem,
 } from './types';
+import { formatEventDate, formatScheduleDay } from './site-config';
 
 import siteConfigData from '../../content/site.json';
 import announcementsData from '../../content/announcements.json';
@@ -30,8 +31,18 @@ export function getSiteConfig(): SiteConfig {
   return siteConfigData as SiteConfig;
 }
 
+function resolveCanonicalTokens(value: string) {
+  const site = siteConfigData as SiteConfig;
+  return value
+    .replaceAll('{{GIMUN_DEADLINE}}', formatEventDate(site.registrationDeadlines.gimun))
+    .replaceAll('{{GMC_DEADLINE}}', formatEventDate(site.registrationDeadlines.mootCup));
+}
+
 export function getAnnouncements(): Announcement[] {
-  return announcementsData as Announcement[];
+  return (announcementsData as Announcement[]).map((announcement) => ({
+    ...announcement,
+    body: resolveCanonicalTokens(announcement.body),
+  }));
 }
 
 export function getCommittees(): Committee[] {
@@ -56,11 +67,21 @@ export function getDocuments(): Document[] {
 export const getResources = getDocuments;
 
 export function getSchedule(): ScheduleItem[] {
-  return scheduleData as ScheduleItem[];
+  const site = siteConfigData as SiteConfig;
+  const [year, month, day] = site.eventDates.start.split('-').map(Number);
+
+  return (scheduleData as ScheduleItem[]).map((item) => {
+    const date = new Date(Date.UTC(year, month - 1, day + item.day - 1));
+    const dateString = date.toISOString().slice(0, 10);
+    return { ...item, dayLabel: `Day ${item.day} — ${formatScheduleDay(dateString)}` };
+  });
 }
 
 export function getFAQ(): FAQItem[] {
-  return faqData as FAQItem[];
+  return (faqData as FAQItem[]).map((faq) => ({
+    ...faq,
+    answer: resolveCanonicalTokens(faq.answer),
+  }));
 }
 
 export function getTeam(): TeamMember[] {

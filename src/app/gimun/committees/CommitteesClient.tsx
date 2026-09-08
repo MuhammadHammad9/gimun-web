@@ -80,7 +80,7 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
                       {/* Top Badges */}
                       <div className="flex items-center justify-between gap-2 flex-wrap">
                         <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono uppercase font-semibold bg-[#FFF0E8] text-[#FF6B35] border border-[#FF6B35]/20">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono uppercase font-semibold bg-[#FFF0E8] text-[#A83A11] border border-[#FF6B35]/20">
                             {committee.type.replace('-', ' ')}
                           </span>
                           {isFeaturedSpan && (
@@ -120,7 +120,7 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
                         </div>
                         {committee.topics.map((topic, i) => (
                           <div key={i} className="flex items-start gap-2.5 text-xs text-[#1A1A2E]">
-                            <span className="w-5 h-5 rounded-full bg-[#FFF0E8] text-[#FF6B35] font-mono font-bold flex items-center justify-center shrink-0 text-[10px]">
+                            <span className="w-5 h-5 rounded-full bg-[#FFF0E8] text-[#A83A11] font-mono font-bold flex items-center justify-center shrink-0 text-[10px]">
                               {i + 1}
                             </span>
                             <span className="leading-snug pt-0.5">{topic}</span>
@@ -134,7 +134,7 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
                           <Users2 className="w-4 h-4 text-[#1E2A78]" />
                           <span>Dais: {committee.chairs.map((c) => c.name).join(', ')}</span>
                         </div>
-                        <div className="font-mono text-[#FF6B35] font-semibold bg-[#FFF0E8] px-2.5 py-1 rounded-md text-xs">
+                        <div className="font-mono text-[#A83A11] font-semibold bg-[#FFF0E8] px-2.5 py-1 rounded-md text-xs">
                           {committee.countryList.filter((c) => c.status === 'available').length} Available Allocations
                         </div>
                       </div>

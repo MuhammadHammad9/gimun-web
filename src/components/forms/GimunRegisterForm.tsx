@@ -22,7 +22,17 @@ interface GimunRegisterFormProps {
     refId: string,
     applicantName: string,
     applicantType: 'individual' | 'delegation',
-    details?: { email?: string; institution?: string; summary?: string }
+    details?: {
+      email?: string;
+      institution?: string;
+      phone?: string;
+      summary?: string;
+      feeAmount?: string;
+      eventDates?: string;
+      venue?: string;
+      participantCount?: number;
+      timestamp?: string;
+    }
   ) => void;
 }
 
@@ -241,22 +251,21 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
             c.slug === individualData.committeePreference1
         )?.name || individualData.committeePreference1;
 
-      const details =
-        applicantType === 'individual'
-          ? {
-              email: individualData.email,
-              institution: individualData.institution,
-              summary: `1st Pref: ${prefName}`,
-            }
-          : {
-              email: delegationData.delegationHeadEmail,
-              institution: delegationData.institution,
-              summary: `Institutional Delegation Roster (${delegationData.delegates.length} Delegates)`,
-            };
+      const details = {
+        email: data.receipt?.email || (applicantType === 'individual' ? individualData.email : delegationData.delegationHeadEmail),
+        institution: data.receipt?.institution || (applicantType === 'individual' ? individualData.institution : delegationData.institution),
+        phone: data.receipt?.phone || (applicantType === 'individual' ? individualData.phone : delegationData.delegationHeadPhone),
+        summary: data.receipt?.summary || (applicantType === 'individual' ? `1st Pref: ${prefName}` : `Institutional Delegation Roster (${delegationData.delegates.length} Delegates)`),
+        feeAmount: data.receipt?.feeAmount,
+        eventDates: data.receipt?.eventDates,
+        venue: data.receipt?.venue,
+        participantCount: data.receipt?.participantCount || (applicantType === 'individual' ? 1 : delegationData.delegates.length),
+        timestamp: data.receipt?.submittedAt,
+      };
 
       onSuccess(data.referenceId || 'REG-GIMUN-2027', applicantName, applicantType, details);
-    } catch (err) {
-      console.error('Submission failed:', err);
+    } catch {
+      console.error('Registration request failed.');
       setStatus('error');
       setServerError('Unable to reach registration server. Please check your connection.');
     }

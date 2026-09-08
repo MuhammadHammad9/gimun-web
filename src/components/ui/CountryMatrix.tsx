@@ -38,6 +38,8 @@ export function CountryMatrix({ countryList }: CountryMatrixProps) {
           {(['all', 'available', 'assigned', 'reserved'] as const).map((status) => (
             <button
               key={status}
+              type="button"
+              aria-pressed={filter === status}
               onClick={() => setFilter(status)}
               className={cn(
                 'px-3 py-1 rounded-full text-xs font-mono font-medium transition-colors capitalize',
@@ -56,6 +58,7 @@ export function CountryMatrix({ countryList }: CountryMatrixProps) {
           <input
             type="text"
             placeholder="Filter country or portfolio..."
+            aria-label="Filter country or portfolio"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-gray-200 text-xs focus:outline-hidden focus:ring-2 focus:ring-[#FF6B35]/20 focus:border-[#FF6B35]"

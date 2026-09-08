@@ -11,14 +11,25 @@ import type { ContactFormData } from '@/lib/types';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { name, email, queryType, message, _hp, _ts } = body || {};
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ success: false, message: 'Request body must be valid JSON.' }, { status: 400 });
+    }
+
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return NextResponse.json({ success: false, message: 'Request body must be a JSON object.' }, { status: 400 });
+    }
+
+    const { name, email, queryType, message, _hp, _ts } = body as Record<string, unknown>;
 
     if (_hp && String(_hp).trim().length > 0) {
       return NextResponse.json({ success: false, message: 'Automated inquiry blocked by anti-bot honeypot filter.' }, { status: 400 });
     }
 
-    if (_ts && Date.now() - Number(_ts) < MIN_FILL_TIME_MS) {
+    const submittedAt = _ts === undefined || _ts === null || _ts === '' ? null : Number(_ts);
+    if (submittedAt !== null && (!Number.isFinite(submittedAt) || Date.now() - submittedAt < MIN_FILL_TIME_MS)) {
       return NextResponse.json({ success: false, message: 'Submission velocity too fast. Automated submissions are blocked.' }, { status: 400 });
     }
 
@@ -30,7 +41,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const formData: ContactFormData = { name, email, queryType, message };
+    const formData = { name, email, queryType, message } as ContactFormData;
     const errors = validateContactForm(formData);
     if (Object.keys(errors).length > 0) {
       return NextResponse.json({ success: false, message: 'Please resolve the highlighted issues in the form.', errors }, { status: 422 });

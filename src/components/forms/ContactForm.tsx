@@ -90,8 +90,8 @@ function ContactFormInner() {
 
       setStatus('success');
       setServerMessage(data.message);
-    } catch (err) {
-      console.error('Contact form submission error:', err);
+    } catch {
+      console.error('Contact request failed.');
       setStatus('error');
       setServerMessage('Unable to reach inquiry server. Please check your network connection.');
     }
@@ -136,9 +136,9 @@ function ContactFormInner() {
     >
       <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
         <MessageSquare className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-mono uppercase font-bold text-ink tracking-wide">
+        <h2 className="text-sm font-mono uppercase font-bold text-ink tracking-wide">
           Direct Inquiry Dispatch
-        </h3>
+        </h2>
       </div>
 
       {serverMessage && status === 'error' && (

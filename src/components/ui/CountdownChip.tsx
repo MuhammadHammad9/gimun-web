@@ -40,8 +40,15 @@ export function CountdownChip({
   useEffect(() => {
     const updateTimer = () => {
       const now = new Date().getTime();
-      const start = new Date(startDate).getTime();
-      const end = endDate ? new Date(endDate).getTime() : start + 3 * 24 * 60 * 60 * 1000;
+      const start = new Date(`${startDate}T00:00:00+05:00`).getTime();
+      const end = endDate
+        ? new Date(`${endDate}T23:59:59+05:00`).getTime()
+        : new Date(`${startDate}T23:59:59+05:00`).getTime();
+
+      if (!Number.isFinite(start) || !Number.isFinite(end)) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, status: 'completed' });
+        return;
+      }
 
       if (now < start) {
         const diff = start - now;

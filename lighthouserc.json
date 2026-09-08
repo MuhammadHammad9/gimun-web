@@ -1,0 +1,28 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "npm run start -- -p 3100",
+      "startServerReadyPattern": "Ready",
+      "url": ["http://127.0.0.1:3100/", "http://127.0.0.1:3100/register", "http://127.0.0.1:3100/resources"],
+      "numberOfRuns": 1,
+      "settings": {
+        "preset": "lighthouse:default",
+        "formFactor": "mobile",
+        "screenEmulation": { "mobile": true, "width": 390, "height": 844, "deviceScaleFactor": 1 },
+        "throttling": { "rttMs": 150, "throughputKbps": 1600, "requestLatencyMs": 150, "downloadThroughputKbps": 1600, "uploadThroughputKbps": 750, "cpuSlowdownMultiplier": 4 }
+      }
+    },
+    "assert": {
+      "preset": "lighthouse:recommended",
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.85 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
+        "categories:seo": ["error", { "minScore": 0.95 }],
+        "largest-contentful-paint": ["error", { "maxNumericValue": 3000 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+        "total-blocking-time": ["error", { "maxNumericValue": 200 }]
+      }
+    },
+    "upload": { "target": "filesystem", "outputDir": "./artifacts/lighthouse" }
+  }
+}

@@ -106,5 +106,53 @@
     "location": "AHA Main Auditorium",
     "notes": "Announcement of Best Delegate, Best Team & Trophies",
     "updatedFlag": false
+  },
+  {
+    "id": "sch-10",
+    "day": 4,
+    "dayLabel": "Day 4 — Sunday, March 21",
+    "startTime": "09:30",
+    "endTime": "11:00",
+    "title": "Executive Secretariat & Bench Debrief",
+    "track": "shared",
+    "location": "AHA Executive Council Chamber",
+    "notes": "Post-conference debrief with Faculty Advisors, Head Delegates, and Secretariat",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-11",
+    "day": 4,
+    "dayLabel": "Day 4 — Sunday, March 21",
+    "startTime": "11:15",
+    "endTime": "13:30",
+    "title": "Official Certificate Distribution & Delegation Check-out Desk",
+    "track": "shared",
+    "location": "Agha Hasan Abedi (AHA) Auditorium Foyer",
+    "notes": "Collection of verified participation certificates, awards dossiers, and hostel checkout",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-12",
+    "day": 4,
+    "dayLabel": "Day 4 — Sunday, March 21",
+    "startTime": "14:00",
+    "endTime": "17:00",
+    "title": "Optional GIKI Campus & Tarbela Dam Scenic Excursion",
+    "track": "shared",
+    "location": "GIKI Main Gate / Transport Bay",
+    "notes": "Guided tour of campus facilities and Tarbela reservoir viewpoint for visiting delegations",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-13",
+    "day": 4,
+    "dayLabel": "Day 4 — Sunday, March 21",
+    "startTime": "17:30",
+    "endTime": "18:30",
+    "title": "Official Press Release & Delegation Farewell Dispatch",
+    "track": "shared",
+    "location": "Central Media Cell / Online Portal",
+    "notes": "Final media communique and official closing of the symposium registry",
+    "updatedFlag": false
   }
 ]

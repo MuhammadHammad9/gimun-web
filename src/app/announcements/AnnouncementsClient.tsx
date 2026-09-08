@@ -10,6 +10,7 @@ import { Radio, Pin, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import type { Announcement, Track } from '@/lib/types';
+import { formatPublishedDate } from '@/lib/site-config';
 
 interface AnnouncementsClientProps {
   initialAnnouncements: Announcement[];
@@ -72,7 +73,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
       {/* Pinned Urgent Announcements */}
       {pinnedItems.length > 0 && (
         <section className="space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#FF6B35] font-bold">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#C84815] font-bold">
             <Pin className="w-3.5 h-3.5" />
             <span>Priority Directives &amp; Urgent Notices</span>
           </div>
@@ -87,7 +88,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                   <div className="double-bezel-inner p-8 space-y-4 border-l-4 border-l-[#FF6B35] bg-gradient-to-r from-orange-50/20 to-transparent">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-[#FF6B35] text-white shadow-xs">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-[#C84815] text-white shadow-xs">
                           <Pin className="w-3 h-3" />
                           {item.badgeLabel || 'Pinned Directive'}
                         </span>
@@ -96,11 +97,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                       <div className="text-xs font-mono text-[#5A5A6E] flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5" />
                         <span>
-                          {new Date(item.timestamp).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
+                          {formatPublishedDate(item.timestamp)}
                         </span>
                       </div>
                     </div>
@@ -116,7 +113,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                       <div className="pt-2">
                         <Link
                           href={item.actionUrl}
-                          className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-[#FF6B35] hover:text-[#E55A28] underline underline-offset-4 transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-[#C84815] hover:text-[#A83A11] underline underline-offset-4 transition-colors"
                         >
                           Associated Resource or Directive Link &rarr;
                         </Link>
@@ -156,11 +153,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                         )}
                       </div>
                       <span className="text-xs font-mono text-[#5A5A6E]">
-                        {new Date(item.timestamp).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
+                        {formatPublishedDate(item.timestamp)}
                       </span>
                     </div>
 

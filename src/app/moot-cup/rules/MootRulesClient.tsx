@@ -63,7 +63,7 @@ export function MootRulesClient() {
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-gray-100">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#00B4A6] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
               Drafting Rigor
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E] mt-0.5">
@@ -79,8 +79,8 @@ export function MootRulesClient() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-6 sm:p-7 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase font-bold text-[#00B4A6]">Length Limit</span>
-              <FileCheck className="w-4 h-4 text-[#00B4A6]" />
+              <span className="text-xs font-mono uppercase font-bold text-[#007A70]">Length Limit</span>
+              <FileCheck className="w-4 h-4 text-[#007A70]" />
             </div>
             <h3 className="text-2xl font-heading font-extrabold text-[#1A1A2E]">
               8,000 Words Max
@@ -92,8 +92,8 @@ export function MootRulesClient() {
 
           <div className="p-6 sm:p-7 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase font-bold text-[#00B4A6]">Typography</span>
-              <Scale className="w-4 h-4 text-[#00B4A6]" />
+              <span className="text-xs font-mono uppercase font-bold text-[#007A70]">Typography</span>
+              <Scale className="w-4 h-4 text-[#007A70]" />
             </div>
             <h3 className="text-2xl font-heading font-extrabold text-[#1A1A2E]">
               Times New Roman
@@ -105,8 +105,8 @@ export function MootRulesClient() {
 
           <div className="p-6 sm:p-7 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase font-bold text-[#00B4A6]">Citations</span>
-              <BookOpen className="w-4 h-4 text-[#00B4A6]" />
+              <span className="text-xs font-mono uppercase font-bold text-[#007A70]">Citations</span>
+              <BookOpen className="w-4 h-4 text-[#007A70]" />
             </div>
             <h3 className="text-2xl font-heading font-extrabold text-[#1A1A2E]">
               OSCOLA 4th Edition
@@ -122,7 +122,7 @@ export function MootRulesClient() {
           <div className="double-bezel-inner p-6 sm:p-8 space-y-5 bg-radial-glow-teal">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="space-y-1">
-                <span className="text-xs font-mono uppercase font-bold text-[#00B4A6] tracking-wider">
+                <span className="text-xs font-mono uppercase font-bold text-[#007A70] tracking-wider">
                   Interactive Sandbox
                 </span>
                 <h3 className="text-lg sm:text-xl font-heading font-bold text-[#1A1A2E]">
@@ -136,11 +136,12 @@ export function MootRulesClient() {
 
             <div className="grid sm:grid-cols-2 gap-6 items-center">
               <div className="space-y-3">
-                <label className="text-xs font-mono text-[#5A5A6E] block font-medium">
+                <label htmlFor="gmc-word-count" className="text-xs font-mono text-[#5A5A6E] block font-medium">
                   Test Your Substantive Pleadings Word Count:
                 </label>
                 <div className="flex items-center gap-3">
                   <input
+                    id="gmc-word-count"
                     type="range"
                     min="5000"
                     max="9500"
@@ -153,7 +154,7 @@ export function MootRulesClient() {
                     {testWordCount}
                   </span>
                 </div>
-                <div className="flex justify-between text-[10px] font-mono text-gray-400">
+                <div className="flex justify-between text-[10px] font-mono text-gray-500">
                   <span>5,000 words</span>
                   <span>8,000 (Limit)</span>
                   <span>9,500 words</span>
@@ -170,7 +171,7 @@ export function MootRulesClient() {
                   )}
                   <span>{wordCountAssessment.status}</span>
                 </div>
-                <p className="text-[11px] opacity-90 leading-snug">
+                <p className="text-[11px] leading-snug">
                   {wordCountAssessment.penalty === 0
                     ? "Your brief is within the safe 8,000-word ceiling. No mechanical word deductions will apply."
                     : "Penalty rule: 1 point is deducted for every 100 words exceeding the 8,000-word limit."}
@@ -185,7 +186,7 @@ export function MootRulesClient() {
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-gray-100">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#00B4A6] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
               Courtroom Advocacy
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E] mt-0.5">
@@ -199,7 +200,7 @@ export function MootRulesClient() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-6 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2.5">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#00B4A6]">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#007A70]">
               <Clock className="w-4 h-4" />
               <span>Total Match Time</span>
             </div>
@@ -212,7 +213,7 @@ export function MootRulesClient() {
           </div>
 
           <div className="p-6 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2.5">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#00B4A6]">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#007A70]">
               <Clock className="w-4 h-4" />
               <span>Advocate Minimum</span>
             </div>
@@ -225,7 +226,7 @@ export function MootRulesClient() {
           </div>
 
           <div className="p-6 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2.5">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#00B4A6]">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#007A70]">
               <Clock className="w-4 h-4" />
               <span>Rebuttal Protocol</span>
             </div>
@@ -240,7 +241,7 @@ export function MootRulesClient() {
 
         {/* Judicial Intervention Etiquette Guide */}
         <div className="p-5 sm:p-6 rounded-2xl bg-[#070B19] text-white border border-white/10 space-y-3">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#00B4A6]">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#5EEAD4]">
             <Sparkles className="w-4 h-4" />
             <span>Bench Interventions &amp; Courtroom Decorum</span>
           </div>
@@ -254,7 +255,7 @@ export function MootRulesClient() {
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-gray-100">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#00B4A6] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
               Adjudication Standards
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E] mt-0.5">
@@ -269,7 +270,7 @@ export function MootRulesClient() {
               className={cn(
                 "px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer",
                 scoringTab === "memorial"
-                  ? "bg-[#00B4A6] text-white shadow-xs"
+                  ? "bg-[#007A70] text-white shadow-xs"
                   : "text-[#5A5A6E] hover:text-[#1A1A2E]"
               )}
             >
@@ -302,7 +303,7 @@ export function MootRulesClient() {
             >
               <div className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase font-bold text-[#00B4A6]">Criterion 1</span>
+                  <span className="text-[10px] font-mono uppercase font-bold text-[#007A70]">Criterion 1</span>
                   <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700">12 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
@@ -315,7 +316,7 @@ export function MootRulesClient() {
 
               <div className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase font-bold text-[#00B4A6]">Criterion 2</span>
+                  <span className="text-[10px] font-mono uppercase font-bold text-[#007A70]">Criterion 2</span>
                   <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700">10 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
@@ -328,7 +329,7 @@ export function MootRulesClient() {
 
               <div className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase font-bold text-[#00B4A6]">Criterion 3</span>
+                  <span className="text-[10px] font-mono uppercase font-bold text-[#007A70]">Criterion 3</span>
                   <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700">10 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
@@ -341,7 +342,7 @@ export function MootRulesClient() {
 
               <div className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase font-bold text-[#00B4A6]">Criterion 4</span>
+                  <span className="text-[10px] font-mono uppercase font-bold text-[#007A70]">Criterion 4</span>
                   <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700">8 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
@@ -422,7 +423,7 @@ export function MootRulesClient() {
         <div className="absolute inset-0 bg-radial-glow-teal opacity-40 pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-center md:text-left">
-            <span className="text-xs font-mono uppercase text-[#00B4A6] font-bold tracking-wider">
+            <span className="text-xs font-mono uppercase text-[#5EEAD4] font-bold tracking-wider">
               Authoritative Handbook
             </span>
             <h3 className="text-xl sm:text-3xl font-heading font-extrabold text-white">

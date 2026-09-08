@@ -54,7 +54,7 @@ export default function AboutOverviewPage() {
           </h1>
 
           <p className="text-sm sm:text-base text-gray-300 max-w-3xl leading-relaxed">
-            Hosted annually at the scenic foothills of Topi, Khyber Pakhtunkhwa, by the Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), our twin symposium converges over 800 aspiring diplomats, jurists, and policy researchers from 50+ leading institutions for three days of rigorous parliamentary debate, appellate advocacy, and institutional leadership.
+            Hosted annually at the scenic foothills of Topi, Khyber Pakhtunkhwa, by the Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), our twin symposium converges over 800 aspiring diplomats, jurists, and policy researchers from 50+ leading institutions for four days of rigorous parliamentary debate, appellate advocacy, and institutional leadership.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4">
@@ -72,11 +72,11 @@ export default function AboutOverviewPage() {
       </section>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 pb-16">
         {/* 2. 15-Year Legacy Bento Metrics */}
         <section className="space-y-8">
           <div className="space-y-1">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#FF6B35]">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#A83A11]">
               Institutional Stature
             </span>
             <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-[#1A1A2E]">
@@ -101,7 +101,7 @@ export default function AboutOverviewPage() {
             </div>
 
             <div className="p-6 sm:p-7 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3 hover:border-[#FF6B35]/30 transition-all">
-              <div className="w-11 h-11 rounded-xl bg-[#FFF0E8] text-[#FF6B35] flex items-center justify-center">
+              <div className="w-11 h-11 rounded-xl bg-[#FFF0E8] text-[#A83A11] flex items-center justify-center">
                 <Users className="w-5 h-5" />
               </div>
               <span className="text-3xl font-heading font-extrabold text-[#1A1A2E] block">
@@ -424,7 +424,7 @@ export default function AboutOverviewPage() {
         <section className="p-8 sm:p-12 rounded-2xl bg-[#070B19] text-white border border-white/10 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="absolute inset-0 bg-radial-glow-dual opacity-30 pointer-events-none" />
           <div className="relative z-10 space-y-2 text-center md:text-left max-w-xl">
-            <span className="text-xs font-mono uppercase font-bold text-[#FF6B35] tracking-wider">
+            <span className="text-xs font-mono uppercase font-bold text-[#C84815] tracking-wider">
               Delegate Applications Open
             </span>
             <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-white">
@@ -444,7 +444,7 @@ export default function AboutOverviewPage() {
             </Button>
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 }

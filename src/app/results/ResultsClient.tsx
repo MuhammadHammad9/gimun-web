@@ -16,8 +16,6 @@ import {
   Globe2,
   CheckCircle2,
   Sparkles,
-  Eye,
-  EyeOff,
   Calendar,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -41,11 +39,10 @@ export function ResultsClient({
     year: 'numeric',
     timeZone: 'Asia/Karachi',
   }).format(new Date(`${eventEndDate}T12:00:00+05:00`));
-  const [organizerPreview, setOrganizerPreview] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const isDisplayingResults = resultsPublished || organizerPreview;
+  const isDisplayingResults = resultsPublished;
 
   const filterOptions = [
     { label: 'All Honors', value: 'all' },
@@ -74,23 +71,6 @@ export function ResultsClient({
               <strong>Pre-Event Adjudication State:</strong> Results are scheduled for promulgation at the Grand Awards Gala ({galaDate}).
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => setOrganizerPreview((prev) => !prev)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-white border border-amber-300 text-amber-800 hover:bg-amber-100/50 shadow-xs transition-colors shrink-0"
-          >
-            {organizerPreview ? (
-              <>
-                <EyeOff className="w-3.5 h-3.5" />
-                Exit Organizer Preview
-              </>
-            ) : (
-              <>
-                <Eye className="w-3.5 h-3.5" />
-                Preview Promulgated Roster
-              </>
-            )}
-          </button>
         </div>
       )}
 
@@ -255,7 +235,7 @@ export function ResultsClient({
                 <div className="double-bezel-inner p-8 space-y-6">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-[#FF6B35]/15 text-[#FF6B35] flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-lg bg-[#FF6B35]/15 text-[#C84815] flex items-center justify-center">
                         <Globe2 className="w-4 h-4" />
                       </div>
                       <h3 className="font-heading font-bold text-xl text-[#1A1A2E]">
@@ -273,7 +253,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Consensus Building &amp; Caucus Diplomacy</span>
-                        <span className="text-[#FF6B35] font-bold">30%</span>
+                        <span className="text-[#C84815] font-bold">30%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#FF6B35] rounded-full" style={{ width: '30%' }} />
@@ -284,7 +264,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Resolution &amp; Working Paper Drafting</span>
-                        <span className="text-[#FF6B35] font-bold">25%</span>
+                        <span className="text-[#C84815] font-bold">25%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#FF6B35] rounded-full" style={{ width: '25%' }} />
@@ -295,7 +275,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Foreign Policy Fidelity &amp; Research</span>
-                        <span className="text-[#FF6B35] font-bold">25%</span>
+                        <span className="text-[#C84815] font-bold">25%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#FF6B35] rounded-full" style={{ width: '25%' }} />
@@ -306,7 +286,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Rules of Procedure &amp; Oratory</span>
-                        <span className="text-[#FF6B35] font-bold">20%</span>
+                        <span className="text-[#C84815] font-bold">20%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#FF6B35] rounded-full" style={{ width: '20%' }} />
@@ -322,7 +302,7 @@ export function ResultsClient({
                 <div className="double-bezel-inner p-8 space-y-6">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-[#00B4A6]/15 text-[#00B4A6] flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-lg bg-[#00B4A6]/15 text-[#007A70] flex items-center justify-center">
                         <Scale className="w-4 h-4" />
                       </div>
                       <h3 className="font-heading font-bold text-xl text-[#1A1A2E]">
@@ -340,7 +320,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Written Memorials &amp; Authority Citations</span>
-                        <span className="text-[#00B4A6] font-bold">30%</span>
+                        <span className="text-[#007A70] font-bold">30%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#00B4A6] rounded-full" style={{ width: '30%' }} />
@@ -351,7 +331,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Substantive Legal Reasoning</span>
-                        <span className="text-[#00B4A6] font-bold">25%</span>
+                        <span className="text-[#007A70] font-bold">25%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#00B4A6] rounded-full" style={{ width: '25%' }} />
@@ -362,7 +342,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Bench Question Responsiveness</span>
-                        <span className="text-[#00B4A6] font-bold">25%</span>
+                        <span className="text-[#007A70] font-bold">25%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#00B4A6] rounded-full" style={{ width: '25%' }} />
@@ -373,7 +353,7 @@ export function ResultsClient({
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-mono">
                         <span className="font-semibold text-[#1A1A2E]">Court Demeanor &amp; Rebuttal Agility</span>
-                        <span className="text-[#00B4A6] font-bold">20%</span>
+                        <span className="text-[#007A70] font-bold">20%</span>
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className="h-full bg-[#00B4A6] rounded-full" style={{ width: '20%' }} />
@@ -399,24 +379,6 @@ export function ResultsClient({
       ) : (
         /* CONDITIONAL RENDERING: POST-EVENT / PUBLISHED STATE */
         <section className="space-y-8">
-          {organizerPreview && !resultsPublished && (
-            <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-xs font-mono text-indigo-900 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-600" />
-                <span>
-                  <strong>Organizer Preview Active:</strong> Rendering data from <code>content/results.json</code>. Set <code>&quot;resultsPublished&quot;: true</code> in <code>content/site.json</code> to publish permanently.
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOrganizerPreview(false)}
-                className="underline hover:text-indigo-700 font-semibold"
-              >
-                Close Preview
-              </button>
-            </div>
-          )}
-
           {/* Filter & Search Bar */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-gray-100">
             <FilterBar

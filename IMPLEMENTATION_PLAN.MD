@@ -1,7 +1,7 @@
 # GIMUN & GIKI Moot Cup — Unified Event Website
 ## Full Implementation Plan — Development-Ready Specification
 
-> Current implementation status (2026-09-10): the route/page implementation, offline-safe production build, canonical date normalization, privacy/robots metadata, content validation, fresh-build route/accessibility/SEO audits, CI workflow, and managed-submission integration are implemented. `npm run qa:full` is the routine engineering gate. `npm run validate:launch` remains blocked until verified event media, final PDFs, provider credentials, deployment configuration, and content-owner approval are supplied.
+> Current implementation status (2026-09-11): the route/page implementation, offline-safe local-font production build, canonical date/deadline normalization, privacy/robots metadata, strict asset/PDF/content validation, fresh-build route/accessibility/SEO audits, CI workflow, atomic Supabase submission/outbox integration, protected Resend dispatcher, multi-viewport Playwright/axe coverage, and Lighthouse release configuration are implemented. `npm run qa:full` is the routine engineering gate. `npm run validate:launch` remains blocked by unverified seed media/PDFs, the empty approval manifest, provider/domain setup, institutional privacy terms, and content-owner approval. The four-day March 18–21 schedule is present and no longer a blocker.
 
 > [!NOTE]
 > This implementation plan is derived from the complete **GIMUN_MootCup_Website_PRD.docx** (105,888 characters, 32 sections + 4 appendices). Every task, file, component, and acceptance criterion below maps directly to a specific PRD section. Cross-references are noted throughout so any developer can trace a task back to its original requirement.
@@ -69,14 +69,14 @@ The website replaces the current fragmented information landscape (Facebook post
 
 | Layer | Technology | Rationale |
 |---|---|---|
-| **Framework** | Next.js 14+ (App Router) | File-based routing matches the sitemap; static generation (SSG) delivers sub-3s load times on 4G; React ecosystem for components; massive community support for a solo maintainer |
-| **Styling** | Tailwind CSS v3+ | Utility-first approach accelerates building the many repeated card/badge/button components from §14.5; design tokens map directly to the PRD's color/typography system |
-| **Content Storage** | Structured JSON files in `/content/` directory | Matches the single-maintainer constraint (PRD §20); no database to manage; content changes are version-controlled Git commits |
-| **Form Backend** | Managed service (e.g., Formspree, or custom API route → Google Sheets + email notification) | No custom backend server needed; directly serves the no-payment, form-only registration flow |
+| **Framework** | Next.js 16.3.4 (App Router) | File-based routing matches the sitemap; static generation (SSG) delivers sub-3s load times on 4G; React ecosystem for components |
+| **Styling** | Tailwind CSS 4 | Utility-first approach accelerates repeated card/badge/button components; design tokens map directly to the PRD color/typography system |
+| **Content Storage** | Structured JSON files in `/content/` directory | Public copy remains version-controlled Git content; `content/site.json` is canonical for event dates, deadlines, and registration flags |
+| **Form Backend** | Supabase/Postgres + private email outbox, Resend worker, and Upstash Redis | Durable atomic persistence and references; queued applicant/Secretariat mail; distributed abuse controls; no payment collection |
 | **Document Storage** | Static files in `/public/documents/` | Background guides, propositions, handbooks served directly; simple file replacement for updates |
 | **Hosting** | Vercel (free tier) | Auto-deploys from GitHub on every push; free HTTPS; generous bandwidth for a 150–400 participant event; custom domain support; edge CDN for Pakistan-region performance |
 | **Animation** | Framer Motion | Spring-physics animations, `AnimatePresence` for mount/unmount transitions, scroll-triggered reveals via `whileInView` — **per framer-motion-animator skill** |
-| **Analytics** | Google Analytics 4 (minimal config) or Plausible | Tracks the four success metrics from PRD §5.2 |
+| **Analytics** | Optional Google Analytics 4 measurement ID | Enabled only after the organizers supply and approve the production measurement ID |
 | **Version Control** | GitHub | Repository connected to Vercel for CI/CD; backup maintainer can have collaborator access |
 
 ### 1.3 Guiding Constraints
@@ -622,13 +622,12 @@ export const reducedMotionVariants = {
 - [ ] **Configure custom domain** — point the secured domain's DNS records to Vercel (one-time setup, PRD §24.3)
 - [ ] **Verify HTTPS** is active on the custom domain with no browser warnings (PRD §30.2)
 - [ ] **Set environment variables** on Vercel for:
-  - `NEXT_PUBLIC_GA_ID` — Google Analytics measurement ID
-  - `NEXT_PUBLIC_SITE_URL` — Canonical public URL for metadata, sitemap, and robots
-  - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` — Server-only durable submission storage
+  - `SITE_URL` — Canonical public URL for metadata, sitemap, and robots
+  - `SUPABASE_URL` / `SUPABASE_SECRET_KEY` — Server-only durable submission and outbox storage
   - `RESEND_API_KEY` / `EMAIL_FROM` / `NOTIFICATION_EMAIL` — Receipt and Secretariat notifications
   - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` — Distributed rate limiting
-  - `NEXT_PUBLIC_GA_ID` — Optional analytics measurement ID, enabled only after approval
-  - `NOTIFICATION_EMAIL` — Email address for form submission notifications
+  - `RATE_LIMIT_HMAC_SECRET` / `CRON_SECRET` — Server-only abuse and outbox worker secrets
+  - `ANALYTICS_MEASUREMENT_ID` — Optional analytics measurement ID, enabled only after approval
 - [x] **Create `.env.example`** file listing all required env vars (committed to repo as documentation)
 - [ ] **Test the deployment pipeline** — push a minimal change and verify it auto-deploys within 1-2 minutes
 
@@ -636,7 +635,7 @@ export const reducedMotionVariants = {
 
 - [x] Running `npm run dev` launches the site locally at `localhost:3000` (Verified: HTTP 200 OK)
 - [ ] Pushing to `main` branch triggers automatic deployment to the live custom domain (requires Vercel link)
-- [x] All content JSON files exist with valid seed data (Verified: 12/12 validated)
+- [x] All content JSON files exist with valid seed data (Verified: 13/13 validated)
 - [x] TypeScript compiles with zero errors (`npx tsc --noEmit` passed)
 - [x] ESLint passes with zero errors/warnings (`npm run lint` passed)
 - [x] Next.js production build succeeds with 31 application routes generated (`npm run build` passed)
@@ -653,16 +652,16 @@ export const reducedMotionVariants = {
 > [!IMPORTANT]
 > **Skills applied in this phase**: design-taste-frontend (Double-Bezel architecture, magnetic hover), design-taste-frontend-v1 (cubic-bezier easing, GPU-safe animation), stitch-design-taste (typography rules, color roles, banned patterns), brandkit (color discipline), framer-motion-animator (spring configs), animation-vocabulary (motion naming), minimalist-ui (restraint), high-end-visual-design (shadow/depth), review-animations (performance guardrails), full-output-enforcement (complete implementation)
 
-### 1.1 Google Fonts Integration — Per stitch-design-taste & gpt-taste Skills
+### 1.1 Local Font Integration — Per stitch-design-taste & gpt-taste Skills
 
-> Launch note: the network-dependent Google Fonts implementation was removed so production builds work offline. The current build uses deterministic system font stacks until approved, licensed local WOFF2 files are supplied; wire those files through `next/font/local` before enforcing the brand-font requirement.
+> Launch note: the network-dependent Google Fonts implementation was removed. Licensed variable WOFF2 files are vendored under `src/assets/fonts/` and loaded through `next/font/local`, so production builds work offline.
 
 **Tasks:**
 
 - [ ] **Import Outfit** (weights: 400, 500, 600, 700) as the primary heading/display font
 - [ ] **Import Inter** (weights: 400, 500, 600) as body text — acceptable for body per skill rules, banned only for display/heading use
 - [ ] **Import JetBrains Mono** (weight: 400) for metadata, timestamps, and monospaced content
-- [ ] Configure in `src/app/layout.tsx` as CSS variables that Tailwind references, using Next.js `next/font/google`
+- [x] Configure in `src/app/layout.tsx` as CSS variables that Tailwind references, using Next.js `next/font/local`
 - [ ] Verify fonts render correctly on both desktop and mid-range Android Chrome
 
 ### 1.2 Global Root Layout (`src/app/layout.tsx`)

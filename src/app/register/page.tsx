@@ -16,9 +16,9 @@ export default function RegisterPage() {
   const siteConfig = getSiteConfig();
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16 space-y-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16 space-y-10 print:py-0 print:px-0 print:m-0 print:max-w-none print:space-y-0">
       {/* Header */}
-      <header className="space-y-3 text-center max-w-2xl mx-auto">
+      <header className="space-y-3 text-center max-w-2xl mx-auto print:hidden hidden-print" data-print-hide="true">
         <span className="text-xs font-mono uppercase text-accent font-semibold tracking-wider">
           Official Application Portal
         </span>

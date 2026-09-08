@@ -144,7 +144,6 @@ export interface GalleryItem {
   caption: string;
   location: string;
   aspectRatio: 'landscape' | 'portrait' | 'square' | 'wide';
-  gradientPlaceholder: string;
   image?: string;
 }
 
@@ -223,9 +222,14 @@ export interface SubmissionReceiptDetails {
   applicantName: string;
   institution: string;
   email: string;
+  phone?: string;
   track: 'gimun' | 'moot-cup';
   applicantType: 'individual' | 'delegation' | 'team';
   participantCount?: number;
+  feeAmount?: string;
+  summary?: string;
+  eventDates?: string;
+  venue?: string;
   submittedAt: string;
 }
 

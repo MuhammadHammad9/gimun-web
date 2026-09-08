@@ -24,9 +24,9 @@ const contentDir = path.join(rootDir, 'content');
 const nextAppBuildDir = path.join(rootDir, '.next', 'server', 'app');
 const localEnvPath = path.join(rootDir, '.env.local');
 const localSiteUrl = fs.existsSync(localEnvPath)
-  ? (fs.readFileSync(localEnvPath, 'utf8').match(/^NEXT_PUBLIC_SITE_URL=(.*)$/m)?.[1] || '').trim()
+  ? (fs.readFileSync(localEnvPath, 'utf8').match(/^SITE_URL=(.*)$/m)?.[1] || '').trim()
   : '';
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || localSiteUrl || 'https://gimungiki.org').replace(/\/$/, '');
+const siteUrl = (process.env.SITE_URL || localSiteUrl || 'https://gimungiki.org').replace(/\/$/, '');
 
 console.log('====================================================');
 console.log(' GIMUN & GMC SEO, Meta & Social Preview Audit');

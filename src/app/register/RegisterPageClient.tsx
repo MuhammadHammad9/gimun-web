@@ -10,6 +10,7 @@ import { GimunRegisterForm } from '@/components/forms/GimunRegisterForm';
 import { MootRegisterForm } from '@/components/forms/MootRegisterForm';
 import { ClosedRegistrationBanner } from '@/components/forms/ClosedRegistrationBanner';
 import { RegistrationSuccess } from '@/components/forms/RegistrationSuccess';
+import { isRegistrationDeadlinePassed } from '@/lib/site-config';
 
 interface RegisterPageClientProps {
   committees: Committee[];
@@ -25,7 +26,12 @@ interface SuccessState {
   details?: {
     email?: string;
     institution?: string;
+    phone?: string;
     summary?: string;
+    feeAmount?: string;
+    eventDates?: string;
+    venue?: string;
+    participantCount?: number;
     timestamp?: string;
   };
 }
@@ -49,14 +55,14 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
   const isGimunOpen = () => {
     const manualOpen = siteConfig.registrationStatus?.gimunOpen !== false;
     const deadline = siteConfig.registrationDeadlines.gimun;
-    const pastDeadline = new Date() > new Date(deadline + 'T23:59:59');
+    const pastDeadline = isRegistrationDeadlinePassed(deadline);
     return manualOpen && !pastDeadline;
   };
 
   const isMootOpen = () => {
     const manualOpen = siteConfig.registrationStatus?.mootCupOpen !== false;
     const deadline = siteConfig.registrationDeadlines.mootCup;
-    const pastDeadline = new Date() > new Date(deadline + 'T23:59:59');
+    const pastDeadline = isRegistrationDeadlinePassed(deadline);
     return manualOpen && !pastDeadline;
   };
 
@@ -73,7 +79,7 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 print:space-y-0 print:m-0">
       {/* Top Breadcrumb / Track Switch Bar */}
       {selectedTrack && !successData && (
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">

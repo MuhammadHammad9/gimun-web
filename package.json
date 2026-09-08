@@ -15,7 +15,9 @@
     "audit:a11y": "node scripts/audit-accessibility.js",
     "audit:seo": "node scripts/audit-seo.js",
     "test:forms": "node scripts/test-forms-e2e.js",
-    "qa:full": "npm run validate && npm run typecheck && npm run lint && npm run build && npm run audit:links && npm run audit:a11y && npm run audit:seo && npm run test:forms",
+    "test:browser": "playwright test",
+    "audit:lighthouse": "lhci autorun --config=lighthouserc.json",
+    "qa:full": "npm run validate && npm run typecheck && npm run lint && npm run build && npm run audit:links && npm run audit:a11y && npm run audit:seo && npm run test:forms && npm run test:browser",
     "qa:launch": "npm run validate:launch && npm run qa:full"
   },
   "dependencies": {
@@ -27,6 +29,7 @@
     "lucide-react": "^1.41.0",
     "motion": "^13.2.0",
     "next": "16.3.4",
+    "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-icons": "^5.7.0",
@@ -35,10 +38,14 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/outfit": "^5.3.0",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

@@ -190,7 +190,7 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
               {/* Meta row */}
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-3 py-1 rounded-full text-xs font-mono uppercase font-bold bg-[#E6F9F7] text-[#00B4A6] border border-[#00B4A6]/30">
+                  <span className="px-3 py-1 rounded-full text-xs font-mono uppercase font-bold bg-[#E6F9F7] text-[#007A70] border border-[#00B4A6]/30">
                     {currentCategory.areaOfLaw}
                   </span>
                   <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-gray-100 text-[#1E2A78]">
@@ -233,7 +233,7 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
                 </Button>
                 <Link
                   href="/moot-cup/clarifications"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-[#00B4A6] hover:underline ml-auto"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-[#007A70] hover:underline ml-auto"
                 >
                   <span>Submit Factual Inquiry to Bench</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -258,7 +258,7 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
             </div>
 
             <div className="p-6 sm:p-7 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#00B4A6]">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#007A70]">
                 <Shield className="w-4 h-4 text-[#00B4A6]" />
                 <span>Respondent Defense Line</span>
               </div>
@@ -274,7 +274,7 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
           {/* Substantive Questions Accordion */}
           <div className="space-y-4">
             <div className="border-b border-gray-100 pb-3">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#00B4A6] font-bold">
+              <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
                 Appellate Inquiries
               </span>
               <h3 className="text-xl sm:text-2xl font-heading font-bold text-[#1A1A2E] mt-0.5">
@@ -301,7 +301,7 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
                       className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer select-none"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="w-7 h-7 rounded-lg bg-[#E6F9F7] text-[#00B4A6] font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                        <span className="w-7 h-7 rounded-lg bg-[#E6F9F7] text-[#007A70] font-mono font-bold text-xs flex items-center justify-center shrink-0">
                           0{idx + 1}
                         </span>
                         <h4 className="font-heading font-bold text-base sm:text-lg text-[#1A1A2E]">

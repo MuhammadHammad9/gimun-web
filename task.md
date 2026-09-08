@@ -1,41 +1,49 @@
 # GIMUN & GMC 2027 launch tracker
 
-## Verified engineering baseline
+## Implemented engineering baseline
 
-- [x] Offline-safe Next.js production build; no Google Fonts network dependency.
-- [x] Content schema validation, TypeScript, lint, route/link, accessibility, SEO, and form smoke-test scripts.
-- [x] Fresh-build gate prevents audits from reading stale `.next` artifacts.
-- [x] Canonical 2027 event dates and deadlines are used by content, metadata, sitemap, and registration status checks.
-- [x] Privacy page, `robots.txt`, sitemap, favicon assets, Apple icon, and environment-driven metadata URLs.
-- [x] Supabase migration and server-only service layer for durable registrations/contact messages.
-- [x] Atomic `REG-GIMUN-2027-XXXX` and `REG-MOOT-2027-XXXX` references.
-- [x] Resend receipt/Secretariat notification hooks with delayed-email status flags.
-- [x] Upstash REST rate-limit integration with local in-memory mode explicitly limited to tests.
-- [x] Verified high-resolution brand assets: 11 team executive portraits, 6 sponsor partner logos, and 9 curated gallery images.
-- [x] Multi-page conference publications generated for all 9 official resource PDFs (>= 18KB each, fully structured).
-- [x] Normalized external organization URLs; zero bare placeholder profile links.
+- [x] Day 4 schedule entries for March 21, 2027 completed with debriefs, certificate distribution, excursions, and press release.
+- [x] Offline-safe local WOFF2 font loading through `next/font/local`.
+- [x] Canonical site URL and event-date helpers; schedule labels derive from `content/site.json`.
+- [x] Content schema, asset existence, foreign-key, fresh-build, route/link, static accessibility, and SEO audits.
+- [x] Server-only Supabase submission service with stable atomic reference formats.
+- [x] Additive Supabase email outbox migration and protected Vercel Cron dispatcher with retry-safe Resend idempotency.
+- [x] HMAC-derived distributed rate-limit keys and no form-data logging.
+- [x] Playwright route/browser coverage, rendered axe checks, multi-viewport projects, and Lighthouse release configuration.
+- [x] Robots, sitemap, favicon, Apple icon, privacy route, and deployment configuration.
 
-## Pre-launch cloud provisioning & sign-off blockers
+## Current release blockers
 
-- [ ] Create Supabase project, apply `supabase/migrations/0001_public_launch.sql`, and verify dashboard/export access.
-- [ ] Configure Resend domain/API key, sender, and Secretariat notification recipients.
-- [ ] Configure Upstash Redis credentials and verify rate-limit behavior in staging.
-- [ ] Configure Vercel preview/production environments, domain, HTTPS, deployment protection, and rollback access.
-- [ ] Obtain the production analytics measurement ID before enabling analytics.
-- [ ] Complete soft launch with the organizing committee and approve registration flags.
+- [ ] Replace all seed/generated portraits, sponsor logos, gallery images, and nine PDFs with approved production assets (pending media handover).
+- [ ] Complete `content/asset-approvals.json` with non-sensitive approval metadata for every referenced production asset.
+- [ ] Remove seed asset-generator scripts after approved replacements are committed.
+- [ ] Institutional owner supplies approved retention duration, legal basis, controller identity, privacy contact, and deletion/export procedure.
+- [ ] Organizer configures Supabase migrations, Resend domain/API key, Upstash, Vercel, domain, HTTPS, `CRON_SECRET`, and production environment variables.
+- [ ] Apply the second migration and verify transaction, outbox, retry, backup, export, and rollback workflows in staging.
+- [ ] Run a protected organizing-committee soft launch and approve registration flags.
+- [ ] Run the fresh-build release gate and Lighthouse release gate on the final approved content commit.
 
 ## Verification commands
 
 ```bash
-npm run qa:full
+npm run validate
+npm run typecheck
+npm run lint
+npm run build
+npm run audit:links
+npm run audit:a11y
+npm run audit:seo
+npm run test:forms
+npm run test:browser
 npm run validate:launch
+npm run audit:lighthouse
 ```
 
-`qa:full` is expected to pass from a fresh build. `validate:launch` is the release gate and should remain failing until every launch blocker above is resolved.
+`qa:full` is the routine engineering gate. `validate:launch` remains intentionally red until content owners approve and replace the seed media/documents. Lighthouse is enforced for release candidates.
 
 ## Event operations
 
 - [ ] Use `CONTENT_UPDATE_GUIDE.md` for announcements and schedule changes.
-- [ ] Monitor database submissions, email delivery, uptime, and errors daily during registration/event week.
+- [ ] Review Supabase submissions, email outbox/Resend delivery, Vercel errors, Upstash rate limits, and uptime daily during registration/event week.
 - [ ] Publish verified results and gallery/press assets after the awards gala.
-- [ ] Close registration, export/archive managed-provider records under the approved retention policy, and preserve the final content snapshot.
+- [ ] Close registration, export/archive managed-provider records under the approved retention policy, and preserve the final content/deployment snapshot.
