@@ -76,7 +76,7 @@ export default function AboutOverviewPage() {
         {/* 2. 15-Year Legacy Bento Metrics */}
         <section className="space-y-8">
           <div className="space-y-1">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#FF6B35]">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#A83A11]">
               Institutional Stature
             </span>
             <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-[#1A1A2E]">

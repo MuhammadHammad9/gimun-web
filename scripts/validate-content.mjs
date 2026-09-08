@@ -23,6 +23,15 @@ const validationRules = [
       const errs = [];
       if (!data.eventNames || !data.eventNames.combined) errs.push('Missing eventNames.combined');
       if (!data.eventDates || !data.eventDates.start || !data.eventDates.end) errs.push('Missing eventDates');
+      const eventYear = data.eventDates?.start?.slice(0, 4);
+      if (eventYear && data.eventNames?.combined && !data.eventNames.combined.includes(eventYear)) {
+        errs.push(`eventNames.combined must include canonical event year ${eventYear}`);
+      }
+      for (const [label, value] of Object.entries(data.registrationDeadlines || {})) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !Number.isFinite(new Date(`${value}T12:00:00+05:00`).getTime())) {
+          errs.push(`registrationDeadlines.${label} must be a valid ISO date`);
+        }
+      }
       if (!data.venue) errs.push('Missing venue');
       if (!data.contactEmails || !data.contactEmails.general) errs.push('Missing contactEmails.general');
       if (typeof data.resultsPublished !== 'undefined' && typeof data.resultsPublished !== 'boolean') {
@@ -347,6 +356,19 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
     if (pdfBuffer.length < 10_000 || !pdfBuffer.subarray(0, 5).equals(Buffer.from('%PDF-')) || !pdfText.includes('%%EOF') || pageCount < 1 || isGeneratedSeed) {
       launchErrors.push(`resources.json[${index}] points to a seed/sample document: ${resource.fileUrl}`);
     }
+
+    const sizeMatch = typeof resource.fileSize === 'string'
+      ? resource.fileSize.trim().match(/^([0-9]+(?:\.[0-9]+)?)\s*(KB|MB|GB)$/i)
+      : null;
+    if (!sizeMatch) {
+      launchErrors.push(`resources.json[${index}] has an invalid displayed file size: ${resource.fileSize || 'missing'}`);
+    } else {
+      const displayedBytes = Number(sizeMatch[1]) * ({ KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 }[sizeMatch[2].toUpperCase()] || 0);
+      const relativeDifference = displayedBytes > 0 ? Math.abs(pdfBuffer.length - displayedBytes) / displayedBytes : 1;
+      if (relativeDifference > 0.15) {
+        launchErrors.push(`resources.json[${index}] displayed file size does not match ${resource.fileUrl}`);
+      }
+    }
   }
 
   for (const [index, entry] of [...team, ...sponsors, ...gallery].entries()) {
@@ -372,6 +394,27 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
     launchErrors.push('Content contains a placeholder external URL');
   }
   if (eventYear !== '2027') launchErrors.push(`site.json event year must be 2027, received ${eventYear || 'unknown'}`);
+
+  const siteUrl = process.env.SITE_URL || 'https://gimungiki.org';
+  let siteHost = '';
+  try {
+    siteHost = new URL(siteUrl).hostname.toLowerCase();
+  } catch {
+    launchErrors.push(`SITE_URL is invalid: ${siteUrl}`);
+  }
+  const emailValues = [
+    ...Object.values(site?.contactEmails || {}),
+    ...team.map((member) => member.links?.email).filter(Boolean),
+    ...((parsedContent.get('committees.json') || []).flatMap((committee) =>
+      (committee.chairs || []).map((chair) => chair.links?.email).filter(Boolean))),
+  ];
+  const emailDomains = [...new Set(emailValues
+    .filter((value) => typeof value === 'string' && value.includes('@'))
+    .map((value) => value.split('@').pop().toLowerCase()))];
+  const mismatchedEmailDomains = emailDomains.filter((domain) => siteHost && domain !== siteHost);
+  if (mismatchedEmailDomains.length > 0) {
+    launchErrors.push(`Contact/team email domains require owner verification against SITE_URL (${mismatchedEmailDomains.join(', ')})`);
+  }
 
   if (launchErrors.length > 0) {
     totalErrors += launchErrors.length;

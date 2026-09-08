@@ -3,7 +3,7 @@
 
 > Production note: public copy remains JSON-managed, but registration and contact submissions are stored by the managed provider configured in the deployment environment. Local in-memory storage is for development and smoke tests only; it is not an operational submission archive. Email receipts and Secretariat notifications are durable outbox records delivered by the protected Vercel Cron worker.
 >
-> Before launch, run `npm run validate:launch`. The strict gate must pass after approved team photos, sponsor logos, gallery media, final parseable PDFs, the Day 4 schedule, and `content/asset-approvals.json` replace the seed content.
+> Before launch, run `npm run validate:launch`. The strict gate must pass after approved team photos, sponsor logos, gallery media, final parseable PDFs, and `content/asset-approvals.json` replace the seed content.
 
 This document is the official operational guide for the webmaster and organizing directorate of **GIMUN & GMC 2027**. The website is engineered with a **Zero-Code Content Architecture**: every piece of textual data, schedule, announcement, committee list, and result lives in simple JSON files in the `content/` folder.
 
@@ -194,11 +194,11 @@ npm run validate
 - **Foreign Key Integrity**: Confirms background guide and proposition doc IDs exist in `content/resources.json`.
 - **Asset approval metadata**: `asset-approvals.json` must cover every referenced image/document/icon and include only non-sensitive permission reference, approver role, approval date, and source/credit metadata.
 
-The launch validator additionally checks referenced asset existence and dimensions, approval metadata, parseable PDF structure/page count, seed markers/generator scripts, gallery media, placeholder URLs, four-day event coverage, event-year/deadline consistency, and content foreign keys. Run it with `npm run validate:launch`.
+The launch validator additionally checks referenced asset existence and dimensions, approval metadata, parseable PDF structure/page count, displayed PDF file-size accuracy, seed markers/generator scripts, gallery media, placeholder URLs, four-day event coverage, event-year/deadline consistency, and content foreign keys. Run it with `npm run validate:launch`.
 
 ## 5. Production submission operations
 
-The public form endpoints are `POST /api/register` and `POST /api/contact`. Apply `supabase/migrations/0001_public_launch.sql`, then configure Supabase, Resend, and Upstash variables from `.env.example` in Vercel. Records are persisted before receipt/Secretariat email attempts. The response reports `emailQueued` and `notificationQueued`; a delayed email does not invalidate a durable submission.
+The public form endpoints are `POST /api/register` and `POST /api/contact`. Apply both Supabase migrations, then configure Supabase, Resend, Upstash, and Vercel Cron variables from `.env.example` in Vercel. The persistence transaction creates the submission and private email outbox rows before a success response. The response reports durable `emailQueued` and `notificationQueued` state; a delayed email does not invalidate a durable submission.
 
 Staff should use the managed provider dashboard and scheduled exports for administration. Monitor the `email_outbox` table for failed messages and use Resend’s provider dashboard for controlled retries. Do not create a public admin panel or store production submissions in `data/submissions/`.
 

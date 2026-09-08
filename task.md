@@ -2,6 +2,7 @@
 
 ## Implemented engineering baseline
 
+- [x] Day 4 schedule entries for March 21, 2027 completed with debriefs, certificate distribution, excursions, and press release.
 - [x] Offline-safe local WOFF2 font loading through `next/font/local`.
 - [x] Canonical site URL and event-date helpers; schedule labels derive from `content/site.json`.
 - [x] Content schema, asset existence, foreign-key, fresh-build, route/link, static accessibility, and SEO audits.
@@ -13,8 +14,7 @@
 
 ## Current release blockers
 
-- [ ] Content owner supplies Day 4 schedule entries for March 21, 2027.
-- [ ] Replace all seed/generated portraits, sponsor logos, gallery images, and nine PDFs with approved production assets.
+- [ ] Replace all seed/generated portraits, sponsor logos, gallery images, and nine PDFs with approved production assets (pending media handover).
 - [ ] Complete `content/asset-approvals.json` with non-sensitive approval metadata for every referenced production asset.
 - [ ] Remove seed asset-generator scripts after approved replacements are committed.
 - [ ] Institutional owner supplies approved retention duration, legal basis, controller identity, privacy contact, and deletion/export procedure.

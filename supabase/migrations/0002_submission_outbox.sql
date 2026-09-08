@@ -15,6 +15,7 @@ create table if not exists public.email_outbox (
   provider_message_id text,
   last_error text,
   created_at timestamptz not null default now(),
+  retry_until timestamptz not null default (now() + interval '24 hours'),
   sent_at timestamptz
 );
 
@@ -31,6 +32,16 @@ alter table public.email_outbox drop constraint if exists email_outbox_status_ch
 alter table public.email_outbox
   add constraint email_outbox_status_check
   check (status in ('pending', 'processing', 'sent', 'retry', 'failed', 'needs_review'));
+
+-- Keep existing rows inside a bounded retry window when this additive migration
+-- is applied to a previously-created outbox table.
+alter table public.email_outbox add column if not exists retry_until timestamptz;
+update public.email_outbox
+set retry_until = coalesce(retry_until, created_at + interval '24 hours')
+where retry_until is null;
+alter table public.email_outbox
+  alter column retry_until set default (now() + interval '24 hours'),
+  alter column retry_until set not null;
 
 -- Replace the legacy SECURITY DEFINER allocator with an invoker-safe function.
 -- The server role owns the counter tables and is the only role granted execution.

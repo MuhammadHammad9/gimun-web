@@ -241,7 +241,7 @@ export function MootRulesClient() {
 
         {/* Judicial Intervention Etiquette Guide */}
         <div className="p-5 sm:p-6 rounded-2xl bg-[#070B19] text-white border border-white/10 space-y-3">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#007A70]">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#5EEAD4]">
             <Sparkles className="w-4 h-4" />
             <span>Bench Interventions &amp; Courtroom Decorum</span>
           </div>

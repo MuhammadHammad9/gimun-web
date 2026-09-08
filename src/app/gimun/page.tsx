@@ -326,7 +326,7 @@ export default function GimunOverviewPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#FF6B35] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#A83A11] font-bold">
               Substantive Bodies
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-bold text-[#1A1A2E] mt-1">

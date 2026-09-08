@@ -113,7 +113,12 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
-                <span className="relative z-10 font-mono text-xs font-bold text-[#C84815]">
+                <span
+                  className={cn(
+                    "relative z-10 font-mono text-xs font-bold",
+                    isSelected ? "text-[#FFA27B]" : "text-[#7C2D12]"
+                  )}
+                >
                   Day {dayNum}
                 </span>
                 <span className="relative z-10 font-heading font-bold text-sm">

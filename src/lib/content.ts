@@ -12,7 +12,7 @@ import type {
   ResultAward,
   GalleryItem,
 } from './types';
-import { formatScheduleDay } from './site-config';
+import { formatEventDate, formatScheduleDay } from './site-config';
 
 import siteConfigData from '../../content/site.json';
 import announcementsData from '../../content/announcements.json';
@@ -31,8 +31,18 @@ export function getSiteConfig(): SiteConfig {
   return siteConfigData as SiteConfig;
 }
 
+function resolveCanonicalTokens(value: string) {
+  const site = siteConfigData as SiteConfig;
+  return value
+    .replaceAll('{{GIMUN_DEADLINE}}', formatEventDate(site.registrationDeadlines.gimun))
+    .replaceAll('{{GMC_DEADLINE}}', formatEventDate(site.registrationDeadlines.mootCup));
+}
+
 export function getAnnouncements(): Announcement[] {
-  return announcementsData as Announcement[];
+  return (announcementsData as Announcement[]).map((announcement) => ({
+    ...announcement,
+    body: resolveCanonicalTokens(announcement.body),
+  }));
 }
 
 export function getCommittees(): Committee[] {
@@ -68,7 +78,10 @@ export function getSchedule(): ScheduleItem[] {
 }
 
 export function getFAQ(): FAQItem[] {
-  return faqData as FAQItem[];
+  return (faqData as FAQItem[]).map((faq) => ({
+    ...faq,
+    answer: resolveCanonicalTokens(faq.answer),
+  }));
 }
 
 export function getTeam(): TeamMember[] {

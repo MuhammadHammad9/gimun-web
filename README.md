@@ -23,7 +23,7 @@ npm run qa:full
 npm run validate:launch
 ```
 
-`qa:full` is the routine engineering gate and always rebuilds before audits. `validate:launch` is the stricter content gate; it remains blocked until the approved asset manifest, Day 4 schedule, verified team/sponsor/gallery media, and final parseable PDFs replace the current seed content.
+`qa:full` is the routine engineering gate and always rebuilds before audits. `validate:launch` is the stricter content gate; it remains blocked until the approved asset manifest, verified team/sponsor/gallery media, and final parseable PDFs replace the current seed content.
 
 ## Production submission setup
 

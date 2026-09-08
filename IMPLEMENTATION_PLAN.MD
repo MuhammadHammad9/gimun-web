@@ -1,7 +1,7 @@
 # GIMUN & GIKI Moot Cup — Unified Event Website
 ## Full Implementation Plan — Development-Ready Specification
 
-> Current implementation status (2026-09-10): the route/page implementation, offline-safe local-font production build, canonical date normalization, privacy/robots metadata, strict asset/PDF/content validation, fresh-build route/accessibility/SEO audits, CI workflow, durable submission/outbox integration, and rendered browser/axe/Lighthouse configuration are implemented. `npm run qa:full` is the routine engineering gate. `npm run validate:launch` remains blocked until Day 4 schedule content, approved event media, final PDFs, provider credentials, deployment configuration, institutional privacy terms, and content-owner approval are supplied.
+> Current implementation status (2026-09-11): the route/page implementation, offline-safe local-font production build, canonical date/deadline normalization, privacy/robots metadata, strict asset/PDF/content validation, fresh-build route/accessibility/SEO audits, CI workflow, atomic Supabase submission/outbox integration, protected Resend dispatcher, multi-viewport Playwright/axe coverage, and Lighthouse release configuration are implemented. `npm run qa:full` is the routine engineering gate. `npm run validate:launch` remains blocked by unverified seed media/PDFs, the empty approval manifest, provider/domain setup, institutional privacy terms, and content-owner approval. The four-day March 18–21 schedule is present and no longer a blocker.
 
 > [!NOTE]
 > This implementation plan is derived from the complete **GIMUN_MootCup_Website_PRD.docx** (105,888 characters, 32 sections + 4 appendices). Every task, file, component, and acceptance criterion below maps directly to a specific PRD section. Cross-references are noted throughout so any developer can trace a task back to its original requirement.
@@ -69,14 +69,14 @@ The website replaces the current fragmented information landscape (Facebook post
 
 | Layer | Technology | Rationale |
 |---|---|---|
-| **Framework** | Next.js 14+ (App Router) | File-based routing matches the sitemap; static generation (SSG) delivers sub-3s load times on 4G; React ecosystem for components; massive community support for a solo maintainer |
-| **Styling** | Tailwind CSS v3+ | Utility-first approach accelerates building the many repeated card/badge/button components from §14.5; design tokens map directly to the PRD's color/typography system |
-| **Content Storage** | Structured JSON files in `/content/` directory | Matches the single-maintainer constraint (PRD §20); no database to manage; content changes are version-controlled Git commits |
-| **Form Backend** | Managed service (e.g., Formspree, or custom API route → Google Sheets + email notification) | No custom backend server needed; directly serves the no-payment, form-only registration flow |
+| **Framework** | Next.js 16.3.4 (App Router) | File-based routing matches the sitemap; static generation (SSG) delivers sub-3s load times on 4G; React ecosystem for components |
+| **Styling** | Tailwind CSS 4 | Utility-first approach accelerates repeated card/badge/button components; design tokens map directly to the PRD color/typography system |
+| **Content Storage** | Structured JSON files in `/content/` directory | Public copy remains version-controlled Git content; `content/site.json` is canonical for event dates, deadlines, and registration flags |
+| **Form Backend** | Supabase/Postgres + private email outbox, Resend worker, and Upstash Redis | Durable atomic persistence and references; queued applicant/Secretariat mail; distributed abuse controls; no payment collection |
 | **Document Storage** | Static files in `/public/documents/` | Background guides, propositions, handbooks served directly; simple file replacement for updates |
 | **Hosting** | Vercel (free tier) | Auto-deploys from GitHub on every push; free HTTPS; generous bandwidth for a 150–400 participant event; custom domain support; edge CDN for Pakistan-region performance |
 | **Animation** | Framer Motion | Spring-physics animations, `AnimatePresence` for mount/unmount transitions, scroll-triggered reveals via `whileInView` — **per framer-motion-animator skill** |
-| **Analytics** | Google Analytics 4 (minimal config) or Plausible | Tracks the four success metrics from PRD §5.2 |
+| **Analytics** | Optional Google Analytics 4 measurement ID | Enabled only after the organizers supply and approve the production measurement ID |
 | **Version Control** | GitHub | Repository connected to Vercel for CI/CD; backup maintainer can have collaborator access |
 
 ### 1.3 Guiding Constraints
