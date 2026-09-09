@@ -182,8 +182,8 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         timestamp: data.receipt?.submittedAt,
       };
       onSuccess(data.referenceId || 'REG-MOOT-2027', `${formData.teamName} (${formData.institution})`, details);
-    } catch {
-      console.error('Registration request failed.');
+    } catch (err) {
+      console.error('Submission failed:', err);
       setStatus('error');
       setServerError('Unable to reach registration server. Please check your connection.');
     }

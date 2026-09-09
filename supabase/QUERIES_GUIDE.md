@@ -12,12 +12,11 @@ This document provides step-by-step instructions for running database migrations
 3. In the left navigation bar, click **SQL Editor** (the `>_` icon).
 4. Click **New Query** (or the `+` button).
 
-### Step 2: Execute the migrations
-1. Copy and run [`supabase/migrations/0001_public_launch.sql`](file:///C:/Users/Khaas%20Laptop's/OneDrive%20-%20Higher%20Education%20Commission/Desktop/Sophep/Main%20Website/supabase/migrations/0001_public_launch.sql).
+### Step 2: Execute Migration Script
+1. Copy the entire contents of [`supabase/migrations/0001_public_launch.sql`](file:///C:/Users/Khaas%20Laptop's/OneDrive%20-%20Higher%20Education%20Commission/Desktop/Sophep/Main%20Website/supabase/migrations/0001_public_launch.sql).
 2. Paste it into the query editor.
 3. Click **Run** (or press `Ctrl+Enter` / `Cmd+Enter`).
-4. Repeat the process for the additive [`supabase/migrations/0002_submission_outbox.sql`](file:///C:/Users/Khaas%20Laptop's/OneDrive%20-%20Higher%20Education%20Commission/Desktop/Sophep/Main%20Website/supabase/migrations/0002_submission_outbox.sql), which adds the private email outbox and transactional submission functions.
-5. You should see `Success. No rows returned` for both migrations.
+4. You should see `Success. No rows returned`.
 
 ---
 
@@ -28,11 +27,7 @@ This document provides step-by-step instructions for running database migrations
 | `public.reference_counters` | Table | Tracks sequential counters for GIMUN and GMC reference numbers. |
 | `public.registrations` | Table | Primary store for delegate, delegation, and moot team submissions. |
 | `public.contact_messages` | Table | Primary store for general contact and partnership inquiries. |
-| `public.email_outbox` | Table | Private applicant/Secretariat email queue claimed by the protected Vercel Cron worker. |
 | `public.next_submission_reference(p_track)` | Function | Atomically generates sequential references (`REG-GIMUN-2027-0001`, `REG-MOOT-2027-0001`) with row locking. |
-| `public.create_registration_submission(...)` | Function | Allocates a reference, persists a registration, and enqueues both email messages in one transaction. |
-| `public.create_contact_submission(...)` | Function | Persists a contact inquiry and enqueues its Secretariat notification in one transaction. |
-| `public.claim_email_outbox(...)` | Function | Claims pending/retry rows with row locks for one worker. |
 | `public.view_gimun_roster` | View | Flattens individual and group delegation rosters into single-delegate rows for badging and committee lists. |
 | `public.view_moot_roster` | View | Flattens moot teams into individual oralist/researcher rows for bench evaluation. |
 | `public.view_submission_stats` | View | Provides real-time metrics on total delegates, teams, and institution breakdown. |
@@ -43,8 +38,7 @@ This document provides step-by-step instructions for running database migrations
 
 After running the migration, run these queries in the SQL Editor to verify everything is operational:
 
-### A. Test Reference Number Generation (staging only)
-Calling the allocator directly consumes a counter value. Use this only in staging, or reset the counter after the check. Production submissions call the transactional function instead.
+### A. Test Reference Number Generation
 ```sql
 select public.next_submission_reference('gimun');
 ```
@@ -58,7 +52,7 @@ select public.next_submission_reference('moot-cup');
 ### B. Verify Tables and RLS
 ```sql
 select tablename, rowsecurity from pg_tables 
-where schemaname = 'public' and tablename in ('reference_counters', 'registrations', 'contact_messages', 'email_outbox');
+where schemaname = 'public' and tablename in ('reference_counters', 'registrations', 'contact_messages');
 ```
 *All 3 tables must have `rowsecurity = true`.*
 

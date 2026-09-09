@@ -15,7 +15,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { scaleIn } from '@/lib/motion';
-import { getCanonicalEventDateRange, getCanonicalVenue, getEventYear } from '@/lib/site-config';
+import { getCanonicalEventDateRange, getCanonicalVenue } from '@/lib/site-config';
 
 function escapeHtml(value: unknown) {
   return String(value ?? '').replace(/[&<>'"]/g, (character) => ({
@@ -73,20 +73,23 @@ export function RegistrationSuccess({
 
   const eventDates = details?.eventDates || getCanonicalEventDateRange();
   const venueTitle = details?.venue || getCanonicalVenue();
-  const eventYear = getEventYear();
-  const submittedDate = details?.timestamp ? new Date(details.timestamp) : null;
 
-  const formattedDate = submittedDate && Number.isFinite(submittedDate.getTime())
-    ? new Intl.DateTimeFormat('en-PK', {
+  const formattedDate = details?.timestamp
+    ? new Date(details.timestamp).toLocaleDateString('en-PK', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
         timeZoneName: 'short',
-        timeZone: 'Asia/Karachi',
-      }).format(submittedDate)
-    : 'Timestamp pending';
+      })
+    : new Date().toLocaleDateString('en-PK', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
 
   useEffect(() => {
     if (referenceId) {
@@ -655,7 +658,7 @@ export function RegistrationSuccess({
       <div class="dark-header">
         <div class="gold-badge">S O P H E P</div><br>
         <div class="pill">/ APPLICATION RECEIVED</div>
-        <div class="track-title">${safeTrackLabel} ${eventYear}</div>
+        <div class="track-title">${safeTrackLabel} 2027</div>
         <div class="track-sub">Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, KP, Pakistan</div>
       </div>
 
@@ -696,7 +699,7 @@ export function RegistrationSuccess({
         </div>
 
         <div class="event-card">
-          <div class="event-card-title">Event Schedule &amp; Venue Details (${safeTrackShort} ${eventYear})</div>
+          <div class="event-card-title">Event Schedule &amp; Venue Details (${safeTrackShort} 2027)</div>
           <div><strong>Event Dates:</strong> ${safeEventDates} &nbsp;·&nbsp; <strong>Venue:</strong> ${safeVenueTitle}</div>
           <div><strong>Registration Desk:</strong> Opens at <strong>09:00 AM PKT on Day 1</strong> in Main Auditorium Foyer. Bring original student ID, CNIC/B-Form, and this physical voucher.</div>
         </div>
@@ -818,7 +821,7 @@ export function RegistrationSuccess({
                 className="text-lg md:text-xl font-heading font-extrabold tracking-tight text-white uppercase print:text-base"
                 style={{ color: '#ffffff' }}
               >
-                {trackLabel} {eventYear}
+                {trackLabel} 2027
               </h1>
               <p
                 className="text-xs text-slate-400 font-serif max-w-xl mx-auto print:text-[10px]"
@@ -943,7 +946,7 @@ export function RegistrationSuccess({
           <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/90 text-left space-y-2 print:p-3 print:my-1 print:bg-white print:border-amber-400">
             <div className="flex items-center gap-2 text-amber-950 font-heading font-bold text-xs uppercase tracking-wider print:text-[11px]">
               <Calendar className="w-4 h-4 text-amber-600 print:w-3.5 print:h-3.5" />
-              <span>Event Information &amp; Schedule ({trackNameShort} {eventYear})</span>
+              <span>Event Information &amp; Schedule ({trackNameShort} 2027)</span>
             </div>
             <div className="grid sm:grid-cols-2 gap-2 text-xs print:text-[10px] print:gap-1.5">
               <div>

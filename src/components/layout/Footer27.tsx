@@ -119,10 +119,8 @@ const fadeIn: Variants = {
 
 export function Footer27({
   siteConfig,
-  brandName,
+  brandName = "GIMUN & GMC 2027",
 }: Footer27Props) {
-  const eventYear = siteConfig?.eventDates?.start.slice(0, 4) || "2027";
-  const resolvedBrandName = brandName || siteConfig?.eventNames?.combined || `GIMUN & GMC ${eventYear}`;
   const socialIcons = [
     {
       icon: Facebook01Icon,
@@ -169,7 +167,7 @@ export function Footer27({
             <div className="flex items-center gap-3">
               <LogoIcon className="size-9 flex-shrink-0 text-white" />
               <span className="font-bold text-lg tracking-[0.04em] text-white uppercase select-none font-heading">
-                {resolvedBrandName}
+                {brandName}
               </span>
             </div>
 
@@ -253,7 +251,7 @@ export function Footer27({
           className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-white/[0.08] pt-6 pb-6 text-xs text-neutral-400 sm:flex-row sm:items-center"
         >
           <p className="leading-relaxed">
-            &copy; {eventYear} GIMUN &amp; GMC Organizing Committee. Ghulam Ishaq Khan Institute.
+            &copy; {new Date().getFullYear()} GIMUN &amp; GMC Organizing Committee. Ghulam Ishaq Khan Institute.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 text-xs text-neutral-400 font-mono">

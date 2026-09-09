@@ -9,11 +9,11 @@ The implementation branch now contains the release-hardening code and keeps exte
 | `npm run validate` | Pass; 13 content files |
 | `npm run typecheck` | Pass |
 | `npm run lint` | Pass |
-| `npm run build` | Passes from local fonts with no Google Fonts network dependency |
-| `npm run audit:links` / `audit:a11y` / `audit:seo` | Pass from a fresh build with stale-build guards |
-| `npm run test:forms` | 7/7 real-server memory-backend validation/security scenarios pass; provider staging remains required |
+| `npm run build` | Must be rerun after the current font, outbox, and browser changes |
+| `npm run audit:links` / `audit:a11y` / `audit:seo` | Must be rerun from the fresh build |
+| `npm run test:forms` | Existing memory-backend smoke suite; must be rerun after the outbox API changes |
 | `npm run test:browser` | Added with mobile/tablet/desktop projects and rendered axe checks |
-| `npm run validate:launch` | Intentionally blocked: approvals, seed assets/PDFs, low-resolution logos, and generator scripts remain |
+| `npm run validate:launch` | Intentionally blocked: Day 4, approvals, seed assets/PDFs, low-resolution logos, and generator scripts remain |
 | `npm run audit:lighthouse` | Release-candidate gate added; requires a fresh build and Chromium |
 
 ## Receipt Design Unification & Professional Print/Download Engine
@@ -46,8 +46,9 @@ The implementation branch now contains the release-hardening code and keeps exte
   - Contains built-in `@page` and print styles so printing from the downloaded HTML also yields a single-page A4 document.
 
 ### 4. Direct Supabase Sequence & Persistence
-- `createRegistration` calls the transactional Supabase function that allocates the atomic reference, persists the row, and creates applicant/Secretariat outbox rows together.
-- Request handlers never call Resend; the protected Vercel Cron worker claims outbox rows and applies retry/idempotency rules.
+- `createRegistration` calls the atomic Supabase sequence function `next_submission_reference(p_track)` (returning e.g. `REG-GIMUN-2027-0012` and `REG-MOOT-2027-0007`).
+- Persists records directly to `public.registrations`.
+- Dispatches confirmation emails via Resend with graceful fallbacks.
 
 ### 5. UI/UX Receipt Formatting & Visual Polish
 - **QR Code Overflow Fix**:
@@ -75,7 +76,7 @@ The implementation branch now contains the release-hardening code and keeps exte
     - `17:30–18:30 PM`: Official Press Release & Delegation Farewell Dispatch (Central Media Cell)
   - Dynamically populates the "Day 4 — Sunday, March 21" tab on `/schedule` and the homepage schedule highlights.
 - **Launch Gate Blocker Cleared**:
-  - Resolved `schedule.json is missing content for Day 4` in `validate-launch.mjs`; remaining launch failures are approval/asset/provider/operations inputs.
+  - Resolved `schedule.json is missing content for Day 4` in `validate-launch.mjs`.
 - **Quality Assurance Verification**:
   - `npm run validate`: 13/13 content files pass with 0 errors.
   - `npm run typecheck`: 0 errors.
@@ -85,3 +86,4 @@ The implementation branch now contains the release-hardening code and keeps exte
   - `npm run audit:seo`: 37/37 metadata, OpenGraph, and sitemap checks passed.
   - `npm run test:forms`: 7/7 real-server registration, anti-bot honeypot, velocity, and rate-limiting tests passed.
   - `npm run test:emergency`: 11pm schedule change and rollback simulation verified in < 1s.
+

@@ -90,8 +90,8 @@ function ContactFormInner() {
 
       setStatus('success');
       setServerMessage(data.message);
-    } catch {
-      console.error('Contact request failed.');
+    } catch (err) {
+      console.error('Contact form submission error:', err);
       setStatus('error');
       setServerMessage('Unable to reach inquiry server. Please check your network connection.');
     }
