@@ -2,7 +2,7 @@
   {
     "id": "ann-01",
     "title": "Early Bird Delegate Registrations Open",
-    "body": "Early bird registrations for GIMUN and GMC are officially open. Priority committee allocations will be awarded to delegations submitting before the published GIMUN deadline of February 15, 2027.",
+    "body": "Early bird registrations for GIMUN and GMC are officially open. Priority committee allocations will be awarded to delegations submitting before the published GIMUN deadline of {{GIMUN_DEADLINE}}.",
     "track": "all",
     "timestamp": "2026-09-01T10:00:00Z",
     "pinnedFlag": true

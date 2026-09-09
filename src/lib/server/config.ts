@@ -51,8 +51,21 @@ export function getMissingProductionConfig(options: { emailDelivery?: boolean } 
   ];
 
   if (options.emailDelivery) {
-    required.push(['RESEND_API_KEY', config.resendApiKey], ['EMAIL_FROM', config.emailFrom]);
+    required.push(
+      ['RESEND_API_KEY', config.resendApiKey],
+      ['EMAIL_FROM', config.emailFrom],
+      ['CRON_SECRET', config.cronSecret],
+    );
   }
 
-  return required.filter(([, value]) => !value?.trim()).map(([name]) => name);
+  const missing = required.filter(([, value]) => !value?.trim()).map(([name]) => name);
+  if (config.siteUrl?.trim()) {
+    try {
+      const parsed = new URL(config.siteUrl);
+      if (!['http:', 'https:'].includes(parsed.protocol) || !parsed.hostname) missing.push('SITE_URL');
+    } catch {
+      missing.push('SITE_URL');
+    }
+  }
+  return [...new Set(missing)];
 }

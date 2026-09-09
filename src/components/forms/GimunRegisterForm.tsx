@@ -264,8 +264,8 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
       };
 
       onSuccess(data.referenceId || 'REG-GIMUN-2027', applicantName, applicantType, details);
-    } catch (err) {
-      console.error('Submission failed:', err);
+    } catch {
+      console.error('Registration request failed.');
       setStatus('error');
       setServerError('Unable to reach registration server. Please check your connection.');
     }
