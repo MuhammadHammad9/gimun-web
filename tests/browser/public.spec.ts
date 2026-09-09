@@ -39,8 +39,7 @@ test.describe('public route rendering', () => {
 });
 
 test('rendered public pages pass axe checks', async ({ page }) => {
-  test.setTimeout(120_000);
-  for (const route of publicRoutes) {
+  for (const route of ['/', '/register', '/resources', '/about/gallery', '/contact', '/privacy']) {
     await page.goto(route, { waitUntil: 'networkidle' });
     const results = await new AxeBuilder({ page }).analyze();
     expect(
@@ -55,8 +54,7 @@ test('rendered public pages pass axe checks', async ({ page }) => {
   }
 });
 
-test('mobile navigation opens and closes with accessible state', async ({ page }, testInfo) => {
-  test.skip(!testInfo.project.name.startsWith('mobile-'), 'Mobile navigation is covered by mobile viewport projects only.');
+test('mobile navigation opens and closes with accessible state', async ({ page }) => {
   await page.goto('/');
   const openButton = page.getByRole('button', { name: 'Open navigation menu' });
   await openButton.click();

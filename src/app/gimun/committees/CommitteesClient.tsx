@@ -134,7 +134,7 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
                           <Users2 className="w-4 h-4 text-[#1E2A78]" />
                           <span>Dais: {committee.chairs.map((c) => c.name).join(', ')}</span>
                         </div>
-                        <div className="font-mono text-[#A83A11] font-semibold bg-[#FFF0E8] px-2.5 py-1 rounded-md text-xs">
+                        <div className="font-mono text-[#FF6B35] font-semibold bg-[#FFF0E8] px-2.5 py-1 rounded-md text-xs">
                           {committee.countryList.filter((c) => c.status === 'available').length} Available Allocations
                         </div>
                       </div>
