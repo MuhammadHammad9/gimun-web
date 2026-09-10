@@ -19,11 +19,6 @@ const path = require('path');
 const net = require('net');
 
 const rootDir = process.cwd();
-const dataDir = path.join(rootDir, 'data');
-const submissionsDir = path.join(dataDir, 'submissions');
-const regFile = path.join(submissionsDir, 'registrations.json');
-const contactsFile = path.join(submissionsDir, 'contacts.json');
-const counterFile = path.join(dataDir, 'submission-counter.json');
 const nextBuildDir = path.join(rootDir, '.next');
 const nextBin = path.join(rootDir, 'node_modules', 'next', 'dist', 'bin', 'next');
 
@@ -37,15 +32,9 @@ if (!fs.existsSync(nextBuildDir)) {
   process.exit(1);
 }
 
-// 2. Backup original submission files
-console.log('[Step 1/5] Backing up existing submission data files...');
-const backupReg = fs.existsSync(regFile) ? fs.readFileSync(regFile, 'utf8') : null;
-const backupContacts = fs.existsSync(contactsFile) ? fs.readFileSync(contactsFile, 'utf8') : null;
-const backupCounter = fs.existsSync(counterFile) ? fs.readFileSync(counterFile, 'utf8') : null;
-
-if (!fs.existsSync(submissionsDir)) {
-  fs.mkdirSync(submissionsDir, { recursive: true });
-}
+// 2. The test server uses an explicitly enabled in-memory backend. No
+// production submission files are read or modified by this test.
+console.log('[Step 1/5] Preparing isolated in-memory submission test backend...');
 
 // Helper to get an available port
 function getAvailablePort() {
@@ -90,25 +79,6 @@ function waitForServerReady(port, timeoutMs = 20000) {
     };
     check();
   });
-}
-
-// Helper to rollback files
-function rollbackSubmissions() {
-  console.log('\n[Step 4/5] Restoring original submission files (Rollback Verification)...');
-  try {
-    if (backupReg !== null) fs.writeFileSync(regFile, backupReg, 'utf8');
-    else if (fs.existsSync(regFile)) fs.unlinkSync(regFile);
-
-    if (backupContacts !== null) fs.writeFileSync(contactsFile, backupContacts, 'utf8');
-    else if (fs.existsSync(contactsFile)) fs.unlinkSync(contactsFile);
-
-    if (backupCounter !== null) fs.writeFileSync(counterFile, backupCounter, 'utf8');
-    else if (fs.existsSync(counterFile)) fs.unlinkSync(counterFile);
-
-    console.log('  [PASS] Clean rollback verified: All test records purged, original files intact.');
-  } catch (err) {
-    console.error('  [WARN] Rollback encountered an error:', err.message);
-  }
 }
 
 async function runE2ETests() {
@@ -400,7 +370,7 @@ async function runE2ETests() {
 
   } finally {
     // Teardown
-    rollbackSubmissions();
+    console.log('\n[Step 4/5] In-memory test store discarded with the test server process.');
 
     if (serverProcess) {
       console.log('\n[Step 5/5] Shutting down test Next.js server...');

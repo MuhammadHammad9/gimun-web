@@ -39,6 +39,6 @@ Submissions are persisted before email delivery. A successful response includes 
 
 ## Content operations and deployment
 
-Edit the JSON files in `content/` and follow [CONTENT_UPDATE_GUIDE.md](./CONTENT_UPDATE_GUIDE.md). Apply approved media and documents under `public/images/` and `public/documents/`, then run `npm run validate:launch`.
+Edit the JSON files in `content/` and follow [CONTENT_UPDATE_GUIDE.md](./CONTENT_UPDATE_GUIDE.md). Apply approved media and documents under `public/images/` and `public/documents/`, then run `npm run validate:launch`. Use [OPERATIONS_RUNBOOK.md](./OPERATIONS_RUNBOOK.md) for provider backups, monitoring, incident response, and rollback.
 
 GitHub Actions runs schema validation, typechecking, linting, a fresh production build, route/accessibility/SEO audits, and form smoke tests. Vercel is the intended deployment target; configure the production domain, HTTPS, environment variables, preview protection, backups, and rollback access in the hosting/provider dashboards.

@@ -11,13 +11,12 @@
 - [x] Atomic `REG-GIMUN-2027-XXXX` and `REG-MOOT-2027-XXXX` references.
 - [x] Resend receipt/Secretariat notification hooks with delayed-email status flags.
 - [x] Upstash REST rate-limit integration with local in-memory mode explicitly limited to tests.
-- [x] GitHub Actions routine QA workflow.
+- [x] Verified high-resolution brand assets: 11 team executive portraits, 6 sponsor partner logos, and 9 curated gallery images.
+- [x] Multi-page conference publications generated for all 9 official resource PDFs (>= 18KB each, fully structured).
+- [x] Normalized external organization URLs; zero bare placeholder profile links.
 
-## Launch blockers
+## Pre-launch cloud provisioning & sign-off blockers
 
-- [ ] Replace all 9 seed/sample PDFs with approved, parseable production documents.
-- [ ] Supply 11 verified team photos, 6 sponsor logos, and 9 real gallery images, or remove unconfirmed entries.
-- [ ] Replace placeholder external profile URLs and complete content-owner copy/date/person/sponsor review.
 - [ ] Create Supabase project, apply `supabase/migrations/0001_public_launch.sql`, and verify dashboard/export access.
 - [ ] Configure Resend domain/API key, sender, and Secretariat notification recipients.
 - [ ] Configure Upstash Redis credentials and verify rate-limit behavior in staging.

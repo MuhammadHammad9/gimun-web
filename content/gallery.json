@@ -7,6 +7,7 @@
     "caption": "Permanent Five delegates drafting a rapid unmoderated caucus resolution during a simulated maritime security emergency in the Black Sea.",
     "location": "A.Q. Khan Council Hall, GIKI",
     "aspectRatio": "wide",
+    "image": "/images/gallery/gal-01.jpg",
     "gradientPlaceholder": "from-slate-900 via-blue-950 to-amber-900/40"
   },
   {
@@ -17,6 +18,7 @@
     "caption": "Lead oralists advancing jurisdictional arguments on customary international law before a five-judge appellate bench in the GIKI Moot Courtroom.",
     "location": "FEE Auditorium Courtroom",
     "aspectRatio": "landscape",
+    "image": "/images/gallery/gal-02.jpg",
     "gradientPlaceholder": "from-teal-950 via-slate-900 to-teal-800/40"
   },
   {
@@ -27,6 +29,7 @@
     "caption": "Over 50 university delegations standing as institutional standards and UN Member State flags were received by the Executive Secretariat.",
     "location": "Aga Khan Auditorium, GIKI",
     "aspectRatio": "portrait",
+    "image": "/images/gallery/gal-03.jpg",
     "gradientPlaceholder": "from-amber-950 via-slate-900 to-orange-900/30"
   },
   {
@@ -37,6 +40,7 @@
     "caption": "Delegates and faculty advisors gathering on the scenic lawns overlooking Tarbela Dam lake during the golden hour reception.",
     "location": "GIKI Guest House Terraces",
     "aspectRatio": "square",
+    "image": "/images/gallery/gal-04.jpg",
     "gradientPlaceholder": "from-emerald-950 via-slate-900 to-teal-900/30"
   },
   {
@@ -47,6 +51,7 @@
     "caption": "A tense question-and-answer exchange between Second Oralist and judicial evaluators during the semi-final championship rounds.",
     "location": "Courtroom Chamber Alpha",
     "aspectRatio": "portrait",
+    "image": "/images/gallery/gal-05.jpg",
     "gradientPlaceholder": "from-slate-900 via-teal-950 to-indigo-950/40"
   },
   {
@@ -57,6 +62,7 @@
     "caption": "The First Committee of the General Assembly passing a landmark draft resolution after three days of multilateral negotiations.",
     "location": "Mechanical Engineering Amphitheatre",
     "aspectRatio": "landscape",
+    "image": "/images/gallery/gal-06.jpg",
     "gradientPlaceholder": "from-orange-950 via-slate-900 to-red-900/30"
   },
   {
@@ -67,6 +73,7 @@
     "caption": "Outstation delegates celebrating traditional Pashtun hospitality, folk music, and local cuisine at the GIKI Open Air Theatre.",
     "location": "GIKI Open Air Amphitheatre",
     "aspectRatio": "wide",
+    "image": "/images/gallery/gal-07.jpg",
     "gradientPlaceholder": "from-purple-950 via-slate-900 to-pink-900/30"
   },
   {
@@ -77,6 +84,7 @@
     "caption": "The Chief Guest presenting the ceremonial gavel and national championship trophy to the winning law faculty delegation.",
     "location": "Aga Khan Auditorium, GIKI",
     "aspectRatio": "square",
+    "image": "/images/gallery/gal-08.jpg",
     "gradientPlaceholder": "from-amber-900 via-slate-900 to-yellow-800/30"
   },
   {
@@ -87,6 +95,7 @@
     "caption": "Rapporteurs and delegate blocs finalizing operative clauses regarding refugee rehabilitation and international human rights treaties.",
     "location": "Computer Science Seminar Room 2",
     "aspectRatio": "portrait",
+    "image": "/images/gallery/gal-09.jpg",
     "gradientPlaceholder": "from-blue-950 via-slate-900 to-cyan-950/40"
   }
 ]
