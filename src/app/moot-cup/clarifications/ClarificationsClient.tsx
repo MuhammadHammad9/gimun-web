@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { Clarification } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { HoneypotField } from "@/components/forms/HoneypotField";
 
 interface ClarificationsClientProps {
   initialClarifications: Clarification[];
@@ -29,6 +30,13 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
   const [contactEmail, setContactEmail] = useState("");
   const [questionText, setQuestionText] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [honeypot, setHoneypot] = useState("");
+  const formLoadedAt = useRef(0);
+
+  useEffect(() => {
+    formLoadedAt.current = Date.now();
+  }, []);
 
   const filteredClarifications = initialClarifications.filter((c) => {
     const matchesSearch =
@@ -59,8 +67,9 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
     e.preventDefault();
     if (!teamName || !contactEmail || !questionText) return;
     setSubmitting(true);
+    setSubmitError(null);
     try {
-      await fetch("/api/contact", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -68,13 +77,19 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
           email: contactEmail,
           queryType: "moot-cup",
           message: `[Official GMC Clarification Request]\nTeam: ${teamName}\n\nQuestion / Issue:\n${questionText}`,
+          _hp: honeypot,
+          _ts: formLoadedAt.current,
         }),
       });
-    } catch {
-      // Keep UX smooth
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Unable to submit the clarification inquiry.");
+      }
+      setFormSubmitted(true);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Unable to submit the clarification inquiry.");
     } finally {
       setSubmitting(false);
-      setFormSubmitted(true);
     }
   };
 
@@ -221,6 +236,12 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {submitError && (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs" role="alert">
+                    {submitError}
+                  </div>
+                )}
+                <HoneypotField value={honeypot} onChange={setHoneypot} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs font-mono text-[#5A5A6E] font-medium block">

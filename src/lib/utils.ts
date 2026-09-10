@@ -24,7 +24,7 @@ export function formatTime(timeString: string): string {
 }
 
 export function formatDateRange(startStr?: string, endStr?: string): string {
-  if (!startStr) return 'March 18–21, 2027';
+  if (!startStr) return 'Event dates pending';
   try {
     const start = new Date(startStr);
     if (isNaN(start.getTime())) return startStr;

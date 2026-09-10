@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
 import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
@@ -13,6 +13,11 @@ export function ClarificationForm() {
   const [honeypot, setHoneypot] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [serverError, setServerError] = useState<string | null>(null);
+  const formLoadedAt = useRef(0);
+
+  useEffect(() => {
+    formLoadedAt.current = Date.now();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +36,7 @@ export function ClarificationForm() {
           queryType: 'moot-cup',
           message: `[GMC Compromis Clarification]\nCompromis Citation: ${paragraphRef.trim()}\n\nQuestion:\n${questionText.trim()}`,
           _hp: honeypot,
+          _ts: formLoadedAt.current,
         }),
       });
 

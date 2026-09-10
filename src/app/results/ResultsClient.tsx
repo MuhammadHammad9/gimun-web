@@ -26,12 +26,21 @@ import type { ResultAward, Track } from '@/lib/types';
 interface ResultsClientProps {
   initialResults: ResultAward[];
   resultsPublished?: boolean;
+  eventEndDate: string;
 }
 
 export function ResultsClient({
   initialResults,
   resultsPublished = false,
+  eventEndDate,
 }: ResultsClientProps) {
+  const galaDate = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'Asia/Karachi',
+  }).format(new Date(`${eventEndDate}T12:00:00+05:00`));
   const [organizerPreview, setOrganizerPreview] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -62,7 +71,7 @@ export function ResultsClient({
           <div className="flex items-center gap-2.5 text-amber-900 font-mono">
             <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0" />
             <span>
-              <strong>Pre-Event Adjudication State:</strong> Results are scheduled for promulgation at the Grand Awards Gala (March 21, 2027).
+              <strong>Pre-Event Adjudication State:</strong> Results are scheduled for promulgation at the Grand Awards Gala ({galaDate}).
             </span>
           </div>
           <button
@@ -193,7 +202,7 @@ export function ResultsClient({
                 </div>
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 text-slate-800 font-mono text-xs font-semibold shrink-0">
                   <Calendar className="w-4 h-4 text-[#1E2A78]" />
-                  <span>Sunday, March 21, 2027</span>
+                  <span>{galaDate}</span>
                 </div>
               </div>
 

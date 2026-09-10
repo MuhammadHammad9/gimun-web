@@ -1,6 +1,10 @@
 # Single-Maintainer Content Management & Standard Operating Procedures (SOP)
 ## GIMUN & GMC 2027 Portal
 
+> Production note: public copy remains JSON-managed, but registration and contact submissions are stored by the managed provider configured in the deployment environment. Local in-memory storage is for development and smoke tests only; it is not an operational submission archive.
+>
+> Before launch, run `npm run validate:launch`. The strict gate must pass after approved team photos, sponsor logos, gallery media, and final parseable PDFs replace the seed content.
+
 This document is the official operational guide for the webmaster and organizing directorate of **GIMUN & GMC 2027**. The website is engineered with a **Zero-Code Content Architecture**: every piece of textual data, schedule, announcement, committee list, and result lives in simple JSON files in the `content/` folder.
 
 You **never** need to modify React, HTML, or TypeScript code to update the website.
@@ -141,7 +145,7 @@ On Sunday night (March 21, 2027), when the Grand Awards Gala concludes:
 ```json
 "resultsPublished": true
 ```
-4. Run validation: `node scripts/validate-content.js`.
+4. Run validation: `npm run validate`.
 5. Deploy or commit. The results page will immediately transition to the verified Public Hall of Fame.
 
 ---
@@ -166,9 +170,9 @@ During the live conference, changes often happen late at night (e.g., inclement 
    - Clearly state the updated time and room.
 3. **Run Validation**:
    ```bash
-   node scripts/validate-content.js
+   npm run validate
    ```
-   *Expected output*: `✓ All 10 content files validated successfully! Zero schema or reference errors.`
+   *Expected output*: all 12 content files pass with zero schema, asset, or foreign-key errors.
 4. **Deploy**:
    - Commit the two JSON files to your repository branch. The hosting platform (Vercel/Netlify/Server) will rebuild and deploy in under 90 seconds.
 
@@ -179,18 +183,26 @@ During the live conference, changes often happen late at night (e.g., inclement 
 To safeguard against syntax mistakes (such as missing commas, unclosed brackets, or invalid track values), a pre-configured validation tool is provided:
 
 ```bash
-node scripts/validate-content.js
+npm run validate
 ```
 
 ### What It Verifies:
-- **JSON Syntax**: Confirms valid JSON syntax across all 10 content files.
+- **JSON Syntax**: Confirms valid JSON syntax across all 12 content files.
 - **Required Fields**: Asserts that every committee, schedule item, announcement, and result has an ID, title/name, and track.
 - **Track Enum**: Verifies tracks are strictly `'gimun'`, `'moot-cup'`, or `'shared'` / `'all'`.
-- **Foreign Key Integrity**: Confirms background guide and proposition doc IDs exist in `content/documents.json`.
+- **Foreign Key Integrity**: Confirms background guide and proposition doc IDs exist in `content/resources.json`.
+
+The launch validator additionally checks referenced asset existence and size, PDF structure/size, gallery media, placeholder URLs, event-year/deadline consistency, and content foreign keys. Run it with `npm run validate:launch`.
+
+## 5. Production submission operations
+
+The public form endpoints are `POST /api/register` and `POST /api/contact`. Apply `supabase/migrations/0001_public_launch.sql`, then configure Supabase, Resend, and Upstash variables from `.env.example` in Vercel. Records are persisted before receipt/Secretariat email attempts. The response reports `emailQueued` and `notificationQueued`; a delayed email does not invalidate a durable submission.
+
+Staff should use the managed provider dashboard and scheduled exports for administration. Do not create a public admin panel or store production submissions in `data/submissions/`.
 
 ---
 
-## 5. Emergency Rollback Procedure
+## 6. Emergency Rollback Procedure
 
 If you made a formatting mistake in a JSON file and need to revert immediately:
 
