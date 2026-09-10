@@ -18,6 +18,8 @@
     "test:forms": "node scripts/test-forms-e2e.js",
     "test:browser": "node scripts/run-browser-tests.cjs",
     "audit:lighthouse": "lhci autorun --config=lighthouserc.json",
+    "git:graph": "git log --graph --all --pretty=format:\"%C(bold yellow)%h%Creset -%C(auto)%d%Creset %C(white)%s%Creset %C(dim white)(%cr)%Creset %C(bold blue)<%an>%Creset\" -n 20",
+    "git:tree": "git log --graph --all --oneline --decorate",
     "qa:full": "npm run validate && npm run typecheck && npm run lint && npm run build && npm run audit:links && npm run audit:a11y && npm run audit:seo && npm run audit:submissions && npm run test:forms && npm run test:browser",
     "qa:launch": "npm run validate:launch && npm run qa:full"
   },
