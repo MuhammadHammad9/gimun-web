@@ -159,6 +159,7 @@ console.log('==============================================\n');
 
 let totalErrors = 0;
 let passedCount = 0;
+const parsedContent = new Map();
 
 for (const rule of validationRules) {
   const filePath = path.join(contentDir, rule.file);
@@ -172,6 +173,7 @@ for (const rule of validationRules) {
   try {
     const rawContent = fs.readFileSync(filePath, 'utf8');
     const parsed = JSON.parse(rawContent);
+    parsedContent.set(rule.file, parsed);
     const errors = rule.validate(parsed);
 
     if (errors.length > 0) {
@@ -185,6 +187,68 @@ for (const rule of validationRules) {
   } catch (err) {
     console.error(`[FAIL] ${rule.file}: JSON syntax parsing error - ${err.message}`);
     totalErrors++;
+  }
+}
+
+function collectAssetReferences(value, location, references = []) {
+  if (typeof value === 'string' && (value.startsWith('/images/') || value.startsWith('/documents/'))) {
+    references.push({ value, location });
+    return references;
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => collectAssetReferences(item, `${location}[${index}]`, references));
+  } else if (value && typeof value === 'object') {
+    Object.entries(value).forEach(([key, child]) => {
+      collectAssetReferences(child, location ? `${location}.${key}` : key, references);
+    });
+  }
+
+  return references;
+}
+
+const assetReferences = collectAssetReferences(Object.fromEntries(parsedContent));
+for (const reference of assetReferences) {
+  const assetPath = path.join(process.cwd(), 'public', reference.value.slice(1));
+  if (!fs.existsSync(assetPath)) {
+    totalErrors++;
+    console.error(`[FAIL] Missing asset ${reference.value} referenced at ${reference.location}`);
+  } else if (fs.statSync(assetPath).size === 0) {
+    totalErrors++;
+    console.error(`[FAIL] Empty asset ${reference.value} referenced at ${reference.location}`);
+  }
+}
+
+if (process.env.CONTENT_VALIDATION_STRICT === '1') {
+  const launchErrors = [];
+  const site = parsedContent.get('site.json');
+  const eventYear = site?.eventDates?.start?.slice(0, 4);
+  const team = parsedContent.get('team.json') || [];
+  const sponsors = parsedContent.get('sponsors.json') || [];
+  const gallery = parsedContent.get('gallery.json') || [];
+  const resources = parsedContent.get('resources.json') || [];
+
+  team.forEach((member, index) => {
+    if (!member.photo) launchErrors.push(`team.json[${index}] is missing a verified photo`);
+  });
+  sponsors.forEach((sponsor, index) => {
+    if (!sponsor.logo) launchErrors.push(`sponsors.json[${index}] is missing a verified logo`);
+  });
+  gallery.forEach((item, index) => {
+    if (!item.image) launchErrors.push(`gallery.json[${index}] is missing a verified image`);
+  });
+  resources.forEach((resource, index) => {
+    const assetPath = path.join(process.cwd(), 'public', resource.fileUrl.replace(/^\//, ''));
+    if (fs.existsSync(assetPath) && fs.statSync(assetPath).size < 10_000) {
+      launchErrors.push(`resources.json[${index}] points to a seed/sample document: ${resource.fileUrl}`);
+    }
+  });
+  if (eventYear !== '2027') launchErrors.push(`site.json event year must be 2027, received ${eventYear || 'unknown'}`);
+
+  if (launchErrors.length > 0) {
+    totalErrors += launchErrors.length;
+    console.error('\n[LAUNCH GATE] Production content is not ready:');
+    launchErrors.forEach((error) => console.error(`       - ${error}`));
   }
 }
 

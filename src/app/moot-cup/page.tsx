@@ -22,6 +22,7 @@ export const metadata: Metadata = constructMetadata({
   description:
     'Premier national appellate advocacy championship testing legal research, memorial drafting, and courtroom advocacy before esteemed jurists.',
   path: '/moot-cup',
+  image: '/images/og/moot-cup.jpg',
 });
 
 export default function MootCupOverviewPage() {
@@ -65,9 +66,9 @@ export default function MootCupOverviewPage() {
                 March 2027
               </span>
             </div>
-            <h3 className="font-heading font-bold text-xl text-white">
+            <h2 className="font-heading font-bold text-xl text-white">
               Advocacy Fast Facts
-            </h3>
+            </h2>
             <ul className="space-y-3 text-xs sm:text-sm text-slate-300">
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-[#00B4A6] shrink-0 mt-0.5" />

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -113,6 +114,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
       </div>
 
       {/* Asymmetric Bento Media Grid */}
+      <h2 className="sr-only">Visual Archive Albums and Curated Sessions</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.map((item, index) => {
           const isWide = item.aspectRatio === 'wide';
@@ -136,6 +138,15 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   item.gradientPlaceholder || 'from-slate-900 via-blue-950 to-slate-800'
                 } flex flex-col justify-between p-5 text-white`}
               >
+                {item.image && (
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
+                  />
+                )}
                 {/* Decorative Grid Pattern Overlay */}
                 <div
                   className="absolute inset-0 opacity-10 pointer-events-none"
@@ -165,6 +176,12 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                     <ZoomIn className="w-6 h-6" />
                   </div>
                 </div>
+
+                {!item.image && (
+                  <span className="relative z-10 inline-flex w-fit items-center gap-1.5 rounded-md border border-white/20 bg-black/40 px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-white/80">
+                    Archive artwork pending
+                  </span>
+                )}
 
                 {/* Bottom Canvas Tag */}
                 <div className="relative z-10 space-y-1">

@@ -72,7 +72,8 @@ export default function Home() {
           href: '/register?track=moot-cup',
         }}
         sideContent={
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
+            <h2 className="sr-only">Dual Championship Tracks</h2>
             {/* GIMUN Spotlight Card */}
             <div className="glass-card-dark rounded-2xl p-6 space-y-3 transition-all duration-300 hover:translate-y-[-2px] hover:border-[#FF6B35]/40 group">
               <div className="flex items-center justify-between">

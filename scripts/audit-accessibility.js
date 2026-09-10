@@ -13,8 +13,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const { assertFreshBuild } = require('./assert-fresh-build');
 
 const rootDir = process.cwd();
+assertFreshBuild(rootDir);
 const srcDir = path.join(rootDir, 'src');
 const appDir = path.join(srcDir, 'app');
 const globalsCssPath = path.join(appDir, 'globals.css');
@@ -246,9 +248,9 @@ if (missingLabelButtons.length === 0) {
 }
 
 // ---------------------------------------------------------
-// 5. Semantic Heading Structure (Unique <h1> per page)
+// 5. Semantic Heading Structure (Unique <h1> per page & Logical <h2>/<h3> hierarchy)
 // ---------------------------------------------------------
-console.log('\n[Component 4/5] Auditing semantic heading structure across App Router pages...');
+console.log('\n[Component 4/5] Auditing semantic heading structure across App Router pages & built HTML...');
 
 const pageFiles = allComponentFiles.filter((f) => {
   const rel = path.relative(appDir, f).replace(/\\/g, '/');
@@ -256,6 +258,7 @@ const pageFiles = allComponentFiles.filter((f) => {
 });
 
 let headingErrors = [];
+let hierarchyErrors = [];
 
 for (const pageFile of pageFiles) {
   let content = fs.readFileSync(pageFile, 'utf8');
@@ -287,6 +290,42 @@ for (const pageFile of pageFiles) {
   }
 }
 
+// Inspect actual rendered HTML in .next/server/app if available for logical h2/h3 hierarchy
+const nextAppBuildDir = path.join(rootDir, '.next', 'server', 'app');
+if (fs.existsSync(nextAppBuildDir)) {
+  const buildHtmlFiles = getFilesRecursively(nextAppBuildDir, ['.html']).filter(
+    (f) => !f.includes('_global-error')
+  );
+
+  for (const bFile of buildHtmlFiles) {
+    const relHtmlPath = path.relative(rootDir, bFile);
+    const html = fs.readFileSync(bFile, 'utf8');
+
+    // Extract all heading tags in DOM order
+    const headingMatches = [...html.matchAll(/<h([1-6])\b[^>]*>(.*?)<\/h\1>/gi)].map((m) => ({
+      level: parseInt(m[1], 10),
+      text: m[2].replace(/<[^>]+>/g, '').trim(),
+    }));
+
+    const h1Count = headingMatches.filter((h) => h.level === 1).length;
+    if (h1Count !== 1) {
+      headingErrors.push({ file: relHtmlPath, issue: `Rendered HTML has ${h1Count} <h1> headings (expected exactly 1)` });
+    }
+
+    // Verify logical hierarchy: no skipped levels (e.g. h1 -> h3 or h2 -> h4)
+    let previousLevel = 0;
+    for (const h of headingMatches) {
+      if (previousLevel > 0 && h.level > previousLevel + 1) {
+        hierarchyErrors.push({
+          file: relHtmlPath,
+          issue: `Skipped heading level: <h${previousLevel}> to <h${h.level}> ("${h.text.substring(0, 35)}...")`,
+        });
+      }
+      previousLevel = h.level;
+    }
+  }
+}
+
 totalChecks++;
 if (headingErrors.length === 0) {
   passedChecks++;
@@ -295,6 +334,16 @@ if (headingErrors.length === 0) {
   failedChecks++;
   console.error(`  [FAIL] Found ${headingErrors.length} heading structure issue(s):`);
   headingErrors.forEach((h) => console.error(`    - ${h.file}: ${h.issue}`));
+}
+
+totalChecks++;
+if (hierarchyErrors.length === 0) {
+  passedChecks++;
+  console.log(`  [PASS] Logical heading hierarchy verified: zero skipped levels across all pages.`);
+} else {
+  failedChecks++;
+  console.error(`  [FAIL] Found ${hierarchyErrors.length} heading hierarchy jump(s):`);
+  hierarchyErrors.forEach((h) => console.error(`    - ${h.file}: ${h.issue}`));
 }
 
 // ---------------------------------------------------------

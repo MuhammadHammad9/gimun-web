@@ -145,6 +145,7 @@ export interface GalleryItem {
   location: string;
   aspectRatio: 'landscape' | 'portrait' | 'square' | 'wide';
   gradientPlaceholder: string;
+  image?: string;
 }
 
 // === FORM DATA TYPES (PRD §17.2) ===
@@ -233,6 +234,8 @@ export interface SubmissionResponse {
   referenceId?: string;
   message: string;
   receipt?: SubmissionReceiptDetails;
+  emailQueued?: boolean;
+  notificationQueued?: boolean;
   errors?: Record<string, string>;
 }
 

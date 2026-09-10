@@ -17,8 +17,8 @@ content/
 ├── announcements.json  # Live dispatch bulletins and top pinned banner directive
 ├── schedule.json       # 4-day conference agenda, rooms, timing, updated badges
 ├── committees.json     # GIMUN UN committees, topics, Dais chairs, country lists
-├── moot_problems.json  # GMC problem categories, propositions, areas of law
-├── documents.json      # Resource hub documents, downloadable guides, handbooks
+├── moot-categories.json # GMC problem categories, propositions, areas of law
+├── resources.json      # Resource hub documents, downloadable guides, handbooks
 ├── results.json        # Official award winners, gavels, bench champions
 ├── faq.json            # Frequently asked questions by delegates and advisors
 ├── team.json           # Secretariat and organizing committee profiles

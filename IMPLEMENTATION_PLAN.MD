@@ -1053,46 +1053,46 @@ The navbar follows the **design-taste-frontend "Fluid Island Nav"** pattern:
 
 ### 4.1 FAQ Page (`/about/faq`) — PRD §18.1
 
-- [ ] Five categorized accordion sections: General, Registration & Fees, GIMUN-Specific, Moot Cup-Specific, Logistics
-- [ ] On-page search/filter using `SearchInput`
-- [ ] Closing prompt linking to Contact page
-- [ ] Accordion uses Framer Motion spring height animation
+- [x] Five categorized accordion sections: General, Registration & Fees, GIMUN-Specific, Moot Cup-Specific, Logistics
+- [x] On-page search/filter using `SearchInput`
+- [x] Closing prompt linking to Contact page
+- [x] Accordion uses Framer Motion spring height animation
 
 ### 4.2 Venue & Travel Page (`/about/venue`) — PRD §18.2
 
-- [ ] Embedded map, transport guidance, accommodation info, local essentials
+- [x] Embedded map, transport guidance, accommodation info, local essentials
 
 ### 4.3 Organizing Team Page (`/about/team`) — PRD §15.3
 
-- [ ] Grouped sections: GIMUN Secretariat, Moot Cup Convening Committee, Organizing Committee
-- [ ] Profile cards with Double-Bezel treatment, brand-palette initial avatars (not generic gray icons)
-- [ ] Staggered entrance animation
-- [ ] Data source: `content/team.json`
+- [x] Grouped sections: GIMUN Secretariat, Moot Cup Convening Committee, Organizing Committee
+- [x] Profile cards with Double-Bezel treatment, brand-palette initial avatars (not generic gray icons)
+- [x] Staggered entrance animation
+- [x] Data source: `content/team.json`
 
 ### 4.4 Sponsors & Partners Page (`/about/sponsors`) — PRD §18.3
 
-- [ ] Why Sponsor Us section (data-driven, no AI cliches)
-- [ ] Sponsorship pitch deck download (prominent, never buried)
-- [ ] Tiered sponsor display: logos grayscale by default, color on hover (per brandkit)
-- [ ] Graceful empty state: pure pitch page if no sponsors confirmed
+- [x] Why Sponsor Us section (data-driven, no AI cliches)
+- [x] Sponsorship pitch deck download (prominent, never buried)
+- [x] Tiered sponsor display: logos grayscale by default, color on hover (per brandkit)
+- [x] Graceful empty state: pure pitch page if no sponsors confirmed
 
 ### 4.5 Gallery & Press Page (`/about/gallery`) — PRD §18.4
 
-- [ ] **Masonry/bento grid** using CSS Grid (per stitch-design-taste, NOT uniform grid)
-- [ ] Lightbox with spring-physics entrance
-- [ ] Press mentions as link cards
-- [ ] Images served via Next.js `<Image>` with lazy loading and WebP (per imagegen-frontend-mobile)
+- [x] **Masonry/bento grid** using CSS Grid (per stitch-design-taste, NOT uniform grid)
+- [x] Lightbox with spring-physics entrance
+- [x] Press mentions as link cards
+- [x] Images served via Next.js `<Image>` with lazy loading and WebP (per imagegen-frontend-mobile)
 
 ### 4.6 About Page (`/about`) — PRD §12.2
 
-- [ ] Event story, host institution note, navigation cards to sub-pages
+- [x] Event story, host institution note, navigation cards to sub-pages
 
 ### 4.7 Phase 4 Acceptance Criteria
 
-- [ ] FAQ search works instantly, sponsors page professional even with zero sponsors
-- [ ] Gallery loads fast (lazy loading), all pages responsive
-- [ ] **Team cards use staggered entrance**, **gallery uses masonry/bento layout**
-- [ ] **All icons are Lucide SVGs** — no emoji
+- [x] FAQ search works instantly, sponsors page professional even with zero sponsors
+- [x] Gallery loads fast (lazy loading), all pages responsive
+- [x] **Team cards use staggered entrance**, **gallery uses masonry/bento layout**
+- [x] **All icons are Lucide SVGs** — no emoji
 
 ---
 
@@ -1100,27 +1100,27 @@ The navbar follows the **design-taste-frontend "Fluid Island Nav"** pattern:
 
 ### 5.1 Announcements Page (`/announcements`) — PRD §19.1
 
-- [ ] Reverse-chronological feed with timestamps in `font-mono text-meta`
-- [ ] Pinning support, track filter with sliding highlight
-- [ ] No commenting — one-way broadcast
-- [ ] Staggered `fadeUp` entrance for announcements
-- [ ] Homepage banner integration from single data source
+- [x] Reverse-chronological feed with timestamps in `font-mono text-meta`
+- [x] Pinning support, track filter with sliding highlight
+- [x] No commenting — one-way broadcast
+- [x] Staggered `fadeUp` entrance for announcements
+- [x] Homepage banner integration from single data source
 
 ### 5.2 Results & Awards Page (`/results`) — PRD §19.2
 
-- [ ] Pre-event: placeholder message. Post-event: GIMUN + Moot Cup awards sections
-- [ ] Optional winner photos in masonry gallery
+- [x] Pre-event: placeholder message. Post-event: GIMUN + Moot Cup awards sections
+- [x] Optional winner photos in masonry gallery
 
 ### 5.3 Content Update Workflow Validation (PRD §20, §22.4)
 
-- [ ] "11pm Schedule Change" test — full end-to-end workflow verified
-- [ ] `CONTENT_UPDATE_GUIDE.md` created with step-by-step instructions
+- [x] "11pm Schedule Change" test — full end-to-end workflow verified
+- [x] `CONTENT_UPDATE_GUIDE.md` created with step-by-step instructions
 
 ### 5.4 Phase 5 Acceptance Criteria
 
-- [ ] Announcements appear on both the page and homepage banner from single data entry
-- [ ] Results page handles both pre/post-event states
-- [ ] Content update workflow completes in under 10 minutes
+- [x] Announcements appear on both the page and homepage banner from single data entry
+- [x] Results page handles both pre/post-event states
+- [x] Content update workflow completes in under 10 minutes
 
 ---
 

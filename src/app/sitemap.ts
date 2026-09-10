@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getCommittees } from '@/lib/content';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://gimungiki.org';
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://gimungiki.org').replace(/\/$/, '');
   const currentDate = new Date().toISOString();
   const committees = getCommittees();
 
@@ -30,6 +30,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/announcements',
     '/results',
     '/contact',
+    '/privacy',
+    '/privacy',
   ];
 
   return routes.map((route) => ({

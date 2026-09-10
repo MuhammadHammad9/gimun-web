@@ -210,6 +210,7 @@ export function Footer27({
             aria-label="Footer navigation"
             className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 lg:col-span-8"
           >
+            <h2 className="sr-only">Site Directory &amp; Navigation</h2>
             {defaultFooterColumns.map((col) => (
               <motion.div
                 key={col.title}
@@ -267,6 +268,13 @@ export function Footer27({
               className="hover:text-white transition-colors underline-offset-2 hover:underline"
             >
               Inquiry Desk
+            </Link>
+            <span className="text-neutral-700">&bull;</span>
+            <Link
+              href="/privacy"
+              className="hover:text-white transition-colors underline-offset-2 hover:underline"
+            >
+              Privacy &amp; Data
             </Link>
           </div>
         </motion.div>

@@ -6,15 +6,15 @@
     "awardName": "Best Delegate",
     "winnerName": "TBA (Post-Conference)",
     "institution": "TBA",
-    "photo": "/images/gallery/award-placeholder.jpg"
+    "photo": ""
   },
   {
     "id": "res-02",
     "track": "moot-cup",
-    "categoryOrCommittee": "GIKI Moot Court 2026",
+    "categoryOrCommittee": "GIKI Moot Court 2027",
     "awardName": "Winning Team Bench",
     "winnerName": "TBA (Post-Conference)",
     "institution": "TBA",
-    "photo": "/images/gallery/award-placeholder.jpg"
+    "photo": ""
   }
 ]

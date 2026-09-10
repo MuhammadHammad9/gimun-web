@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 export const metadata: Metadata = constructMetadata({
   title: "Unified Itinerary & Schedule | GIMUN & GMC 2027",
   description:
-    "Full 3-day chronological agenda across GIMUN committee debates, GMC appellate advocacy rounds, and official institutional ceremonies at GIKI.",
+    "Full four-day chronological agenda across GIMUN committee debates, GMC appellate advocacy rounds, and official institutional ceremonies at GIKI.",
   path: "/schedule",
 });
 
@@ -35,7 +35,7 @@ export default function SchedulePage() {
           </h1>
 
           <p className="text-sm sm:text-base text-gray-300 max-w-3xl leading-relaxed">
-            A comprehensive 3-day program spanning bilateral diplomatic negotiations, appellate moot court rounds, and formal campus receptions. Filter by track or day to plan your delegation&apos;s itinerary.
+            A comprehensive four-day program spanning bilateral diplomatic negotiations, appellate moot court rounds, and formal campus receptions. Filter by track or day to plan your delegation&apos;s itinerary.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4">

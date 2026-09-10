@@ -4,8 +4,8 @@
     "name": "Syed Zain Ali",
     "role": "Secretary-General",
     "group": "secretariat",
-    "photo": "/images/team/sg.jpg",
-    "bio": "Leading academic vision, committee affairs, and delegate training for GIMUN 2026. Senior debater with 6+ national MUN championships.",
+    "photo": "",
+    "bio": "Leading academic vision, committee affairs, and delegate training for GIMUN 2027. Senior debater with 6+ national MUN championships.",
     "links": { "email": "sg@gimungiki.org", "linkedin": "https://linkedin.com" }
   },
   {
@@ -13,7 +13,7 @@
     "name": "Ayesha Tariq",
     "role": "Deputy Secretary-General",
     "group": "secretariat",
-    "photo": "/images/team/dsg.jpg",
+    "photo": "",
     "bio": "Directing substantive committee preparation, chair appointment, and country matrix allocation protocols.",
     "links": { "email": "dsg@gimungiki.org", "linkedin": "https://linkedin.com" }
   },
@@ -22,7 +22,7 @@
     "name": "Hamza Bilal",
     "role": "Under-Secretary-General (Committee Affairs)",
     "group": "secretariat",
-    "photo": "/images/team/usg-ca.jpg",
+    "photo": "",
     "bio": "Overseeing crisis room technology, directive tracking, and parliamentary documentation for specialized agencies.",
     "links": { "email": "committees@gimungiki.org" }
   },
@@ -31,7 +31,7 @@
     "name": "Mahnoor Khan",
     "role": "Under-Secretary-General (Delegate Relations)",
     "group": "secretariat",
-    "photo": "/images/team/usg-dl.jpg",
+    "photo": "",
     "bio": "Managing outstation delegate communication, pre-conference training webinars, and institutional onboarding.",
     "links": { "email": "delegates@gimungiki.org" }
   },
@@ -40,7 +40,7 @@
     "name": "Fatima Noor",
     "role": "President & Moot Convenor",
     "group": "convening-committee",
-    "photo": "/images/team/convenor.jpg",
+    "photo": "",
     "bio": "Supervising proposition vetting, judicial bench coordination, and oralist championship rounds. Former Jessup International Moot quarter-finalist.",
     "links": { "email": "mootconvenor@gimungiki.org", "linkedin": "https://linkedin.com" }
   },
@@ -49,7 +49,7 @@
     "name": "Bilal Aslam",
     "role": "Vice Convenor & Bench Administrator",
     "group": "convening-committee",
-    "photo": "/images/team/vice-convenor.jpg",
+    "photo": "",
     "bio": "Directing memorial evaluations, bench memorandum compilation, and courtroom bailiff operations.",
     "links": { "email": "bench@gimungiki.org" }
   },
@@ -58,8 +58,8 @@
     "name": "Sarah Mansoor",
     "role": "Head of Compromis Drafting",
     "group": "convening-committee",
-    "photo": "/images/team/drafting-head.jpg",
-    "bio": "Lead researcher responsible for formulating the 2026 Compromis problems in public international law and transboundary cyber jurisdiction.",
+    "photo": "",
+    "bio": "Lead researcher responsible for formulating the 2027 Compromis problems in public international law and transboundary cyber jurisdiction.",
     "links": { "email": "compromis@gimungiki.org" }
   },
   {
@@ -67,7 +67,7 @@
     "name": "Muhammad Umar",
     "role": "Director-General (Operations & Logistics)",
     "group": "organizing-committee",
-    "photo": "/images/team/dg.jpg",
+    "photo": "",
     "bio": "Overseeing M-1 motorway shuttle transport, GIKI campus security protocol, residential hostels, and guest hospitality.",
     "links": { "email": "operations@gimungiki.org", "linkedin": "https://linkedin.com" }
   },
@@ -76,7 +76,7 @@
     "name": "Zoya Malik",
     "role": "Director, External Relations & Corporate Partnerships",
     "group": "organizing-committee",
-    "photo": "/images/team/sponsorship.jpg",
+    "photo": "",
     "bio": "Spearheading patron outreach, corporate sponsor activations, and public sector endorsements with HEC and KPITB.",
     "links": { "email": "partnerships@gimungiki.org" }
   },
@@ -85,7 +85,7 @@
     "name": "Danial Ahmed",
     "role": "Director, Media & Creative Production",
     "group": "organizing-committee",
-    "photo": "/images/team/media.jpg",
+    "photo": "",
     "bio": "Leading real-time press coverage, photojournalism archives, social broadcasting, and digital publishing.",
     "links": { "email": "media@gimungiki.org" }
   },
@@ -94,7 +94,7 @@
     "name": "Kashif Rehman",
     "role": "Director, Audit & Finance",
     "group": "organizing-committee",
-    "photo": "/images/team/finance.jpg",
+    "photo": "",
     "bio": "Managing institutional invoices, fee verification desks, and financial transparency for the Organizing Committee.",
     "links": { "email": "finance@gimungiki.org" }
   }

@@ -18,7 +18,7 @@
         "name": "Zaid Malik",
         "role": "President of the Security Council",
         "group": "secretariat",
-        "photo": "/images/team/zaid-malik.jpg",
+        "photo": "",
         "bio": "Senior law undergraduate and 4-time Best Delegate with specialization in international humanitarian law.",
         "links": { "email": "unsc.chair@gimun-mootcup.org" }
       }
@@ -63,7 +63,7 @@
         "name": "Amina Tariq",
         "role": "DISEC Committee Director",
         "group": "secretariat",
-        "photo": "/images/team/amina-tariq.jpg",
+        "photo": "",
         "bio": "President of GIKI Literary & Debating Society with multiple national MUN accolades.",
         "links": { "email": "disec.chair@gimun-mootcup.org" }
       }
@@ -103,7 +103,7 @@
         "name": "Hamza Khattak",
         "role": "UNHRC President",
         "group": "secretariat",
-        "photo": "/images/team/hamza-khattak.jpg",
+        "photo": "",
         "bio": "Diplomacy researcher and senior debater with focus on international refugee law and public policy.",
         "links": { "email": "unhrc.chair@gimun-mootcup.org" }
       }
@@ -141,7 +141,7 @@
         "name": "Shahmeer Khan",
         "role": "Speaker of the House",
         "group": "secretariat",
-        "photo": "/images/team/shahmeer-khan.jpg",
+        "photo": "",
         "bio": "Veteran parliamentary debater and political science scholar with experience across parliamentary simulation circuits.",
         "links": { "email": "pna.speaker@gimun-mootcup.org" }
       }
