@@ -5,18 +5,21 @@ import { CategoriesClient } from "./CategoriesClient";
 import { TrackBadge } from "@/components/ui/TrackBadge";
 import { Button } from "@/components/ui/Button";
 import { Download, AlertCircle } from "lucide-react";
+import { getEventYear } from "@/lib/site-config";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Problem Categories & Compromis | GMC 2027",
-  description:
-    "Examine the substantive areas of law, factual propositions, and download the official 2027 GMC Compromis.",
-  path: "/moot-cup/categories",
+  title: `Problem Categories & Compromis | GMC ${eventYear}`,
+  path: '/moot-cup/categories',
+  description: `Examine the substantive areas of law, factual propositions, and download the official ${eventYear} GMC Compromis.`,
 });
 
 export default function MootCategoriesPage() {
   const categories = getMootCategories();
   const documents = getDocuments();
-  const propositionDoc = documents.find((d) => d.type === "proposition") || documents[0];
+  const propositionDoc = documents.find(
+    (document) => document.track === "moot-cup" && document.type === "proposition",
+  );
 
   return (
     <div className="space-y-12">
@@ -38,7 +41,7 @@ export default function MootCategoriesPage() {
           </h1>
 
           <p className="text-sm sm:text-base text-gray-300 max-w-3xl leading-relaxed">
-            The 2027 GIKI Moot Court (GMC) presents multifaceted propositions spanning public international law, transboundary water rights, and extraterritorial digital surveillance. Inspect docket briefs, examine dialectic arguments, and download the official Compromis below.
+            The {eventYear} GIKI Moot Court (GMC) presents multifaceted propositions spanning public international law, transboundary water rights, and extraterritorial digital surveillance. Inspect docket briefs, examine dialectic arguments, and download the official Compromis below.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4">

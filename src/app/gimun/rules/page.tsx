@@ -4,15 +4,21 @@ import { GimunRulesClient } from "./GimunRulesClient";
 import { TrackBadge } from "@/components/ui/TrackBadge";
 import { Button } from "@/components/ui/Button";
 import { Download } from "lucide-react";
+import { getEventYear } from "@/lib/site-config";
+import { getDocuments } from "@/lib/content";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Rules of Procedure (RoP) | GIMUN 2027",
-  description:
-    "Complete parliamentary rules of procedure governing diplomatic debate, motions, caucusing, and resolution adoption at GIMUN 2027.",
-  path: "/gimun/rules",
+  title: `Rules of Procedure (RoP) | GIMUN ${eventYear}`,
+  path: '/gimun/rules',
+  description: `Complete parliamentary rules of procedure governing diplomatic debate, motions, caucusing, and resolution adoption at GIMUN ${eventYear}.`,
 });
 
 export default function GimunRulesPage() {
+  const rulesDocument = getDocuments().find(
+    (document) => document.track === "gimun" && document.type === "rules",
+  );
+
   return (
     <div className="space-y-12">
       {/* Modern Atmospheric Hero Header */}
@@ -37,13 +43,15 @@ export default function GimunRulesPage() {
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4">
-            <Button
-              variant="track-gimun"
-              href="/documents/gimun/GIMUN_Rules_of_Procedure.pdf"
-              icon={<Download className="w-4 h-4" />}
-            >
-              Download Official RoP Handbook (PDF)
-            </Button>
+            {rulesDocument && (
+              <Button
+                variant="track-gimun"
+                href={rulesDocument.fileUrl}
+                icon={<Download className="w-4 h-4" />}
+              >
+                Download Official RoP Handbook (PDF)
+              </Button>
+            )}
             <Button variant="secondary" href="/gimun/committees">
               View Committee Roster
             </Button>
@@ -53,7 +61,7 @@ export default function GimunRulesPage() {
 
       {/* Interactive Main Body */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <GimunRulesClient />
+        <GimunRulesClient rulesDocumentUrl={rulesDocument?.fileUrl} />
       </div>
     </div>
   );

@@ -1,20 +1,25 @@
 import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
-import { getClarifications } from "@/lib/content";
+import { getClarifications, getDocuments } from "@/lib/content";
 import { ClarificationsClient } from "./ClarificationsClient";
 import { TrackBadge } from "@/components/ui/TrackBadge";
 import { Button } from "@/components/ui/Button";
 import { Download } from "lucide-react";
+import { getEventYear } from "@/lib/site-config";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Official Clarifications Log & Rulings | GMC 2027",
+  title: `Official Clarifications Log & Rulings | GMC ${eventYear}`,
+  path: '/moot-cup/clarifications',
   description:
     "Formal questions submitted by participating teams and binding interpretations issued by the Bench Drafting Committee for the GMC Compromis.",
-  path: "/moot-cup/clarifications",
 });
 
 export default function ClarificationsPage() {
   const clarifications = getClarifications();
+  const propositionDocument = getDocuments().find(
+    (document) => document.track === "moot-cup" && document.type === "proposition",
+  );
 
   return (
     <div className="space-y-12">
@@ -40,13 +45,15 @@ export default function ClarificationsPage() {
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4">
-            <Button
-              variant="track-moot"
-              href="/documents/moot-cup/GIKI_Moot_Cup_2027_Proposition.pdf"
-              icon={<Download className="w-4 h-4" />}
-            >
-              Download Official Compromis
-            </Button>
+            {propositionDocument && (
+              <Button
+                variant="track-moot"
+                href={propositionDocument.fileUrl}
+                icon={<Download className="w-4 h-4" />}
+              >
+                Download Official Compromis
+              </Button>
+            )}
             <Button variant="secondary" href="/moot-cup/rules">
               Review Memorial Guidelines
             </Button>

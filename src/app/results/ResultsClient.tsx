@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import type { ResultAward, Track } from '@/lib/types';
+import { getEventYear } from '@/lib/site-config';
 
 interface ResultsClientProps {
   initialResults: ResultAward[];
@@ -32,6 +33,7 @@ export function ResultsClient({
   resultsPublished = false,
   eventEndDate,
 }: ResultsClientProps) {
+  const eventYear = getEventYear();
   const galaDate = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
     month: 'long',
@@ -88,7 +90,7 @@ export function ResultsClient({
         <p className="text-sm sm:text-base text-[#5A5A6E] leading-relaxed">
           {isDisplayingResults
             ? 'Celebrating outstanding parliamentary diplomacy, rigorous legal scholarship, and persuasive advocacy across GIKI Model United Nations and GIKI Moot Court.'
-            : 'Official adjudication criteria, flagship awards prospectus, and promulgation protocols for GIMUN and GMC 2027.'}
+            : `Official adjudication criteria, flagship awards prospectus, and promulgation protocols for GIMUN and GMC ${eventYear}.`}
         </p>
       </header>
 
@@ -104,7 +106,7 @@ export function ResultsClient({
                     Supreme Conclave Honors
                   </span>
                   <h2 className="text-2xl sm:text-3xl font-heading font-bold text-white">
-                    2027 Flagship Champion Trophies
+                    {eventYear} Flagship Champion Trophies
                   </h2>
                 </div>
                 <div className="px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-mono font-bold self-start sm:self-auto flex items-center gap-1.5">
@@ -372,7 +374,7 @@ export function ResultsClient({
               The Conclave Laureate Registry
             </h3>
             <p className="text-xs sm:text-sm text-[#5A5A6E] leading-relaxed">
-              Upon conclusion of the 2027 edition, full names of winning advocates, best delegates, honorable mentions, and university delegations will be permanently archived in the institutional registry accessible on this page.
+              Upon conclusion of the {eventYear} edition, full names of winning advocates, best delegates, honorable mentions, and university delegations will be permanently archived in the institutional registry accessible on this page.
             </p>
           </section>
         </section>
@@ -414,7 +416,7 @@ export function ResultsClient({
                         <div className="flex items-center justify-between gap-2">
                           <TrackBadge track={item.track as Track} size="sm" />
                           <span className="text-[11px] font-mono text-[#5A5A6E]">
-                            Edition 2027
+                            Edition {eventYear}
                           </span>
                         </div>
 
@@ -473,7 +475,7 @@ export function ResultsClient({
               Award FAQ
             </Button>
             <Button variant="primary" href="/register">
-              Apply for 2027
+              Apply for {eventYear}
             </Button>
           </div>
         </div>

@@ -4,12 +4,14 @@ import { getSchedule } from "@/lib/content";
 import { ScheduleClient } from "./ScheduleClient";
 import { TrackBadge } from "@/components/ui/TrackBadge";
 import { Button } from "@/components/ui/Button";
+import { getEventYear } from "@/lib/site-config";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Unified Itinerary & Schedule | GIMUN & GMC 2027",
+  title: `Unified Itinerary & Schedule | GIMUN & GMC ${eventYear}`,
+  path: '/schedule',
   description:
     "Full four-day chronological agenda across GIMUN committee debates, GMC appellate advocacy rounds, and official institutional ceremonies at GIKI.",
-  path: "/schedule",
 });
 
 export default function SchedulePage() {

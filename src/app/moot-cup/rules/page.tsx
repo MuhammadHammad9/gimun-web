@@ -4,15 +4,21 @@ import { MootRulesClient } from "./MootRulesClient";
 import { TrackBadge } from "@/components/ui/TrackBadge";
 import { Button } from "@/components/ui/Button";
 import { Download } from "lucide-react";
+import { getEventYear } from "@/lib/site-config";
+import { getDocuments } from "@/lib/content";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Rules & Memorial Guidelines | GMC 2027",
-  description:
-    "Comprehensive competition rules, memorial drafting specifications, oral pleading rounds structure, and scoring criteria for the 2027 GMC.",
-  path: "/moot-cup/rules",
+  title: `Rules & Memorial Guidelines | GMC ${eventYear}`,
+  path: '/moot-cup/rules',
+  description: `Comprehensive competition rules, memorial drafting specifications, oral pleading rounds structure, and scoring criteria for the ${eventYear} GMC.`,
 });
 
 export default function MootRulesPage() {
+  const rulesDocument = getDocuments().find(
+    (document) => document.track === "moot-cup" && document.type === "rules",
+  );
+
   return (
     <div className="space-y-12">
       {/* Modern Supreme Court Appellate Hero */}
@@ -37,13 +43,15 @@ export default function MootRulesPage() {
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4">
-            <Button
-              variant="track-moot"
-              href="/documents/moot-cup/Moot_Cup_Rules_and_Memorial_Guide.pdf"
-              icon={<Download className="w-4 h-4" />}
-            >
-              Download Official Rules PDF
-            </Button>
+            {rulesDocument && (
+              <Button
+                variant="track-moot"
+                href={rulesDocument.fileUrl}
+                icon={<Download className="w-4 h-4" />}
+              >
+                Download Official Rules PDF
+              </Button>
+            )}
             <Button variant="secondary" href="/moot-cup/clarifications">
               Clarifications Log
             </Button>
@@ -53,7 +61,7 @@ export default function MootRulesPage() {
 
       {/* Main Interactive Body */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <MootRulesClient />
+        <MootRulesClient rulesDocumentUrl={rulesDocument?.fileUrl} />
       </div>
     </div>
   );

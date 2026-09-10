@@ -5,6 +5,13 @@ import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 const contentDir = path.join(process.cwd(), 'content');
 
+function isValidIsoDate(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+}
+
 const VALID_TRACKS = new Set(['gimun', 'moot-cup', 'shared', 'all', 'general']);
 
 const validationRules = [
@@ -14,7 +21,28 @@ const validationRules = [
       if (!data || typeof data !== 'object' || Array.isArray(data)) return ['Must be an object'];
       if (data.version !== 1) return ['version must be 1'];
       if (!data.assets || typeof data.assets !== 'object' || Array.isArray(data.assets)) return ['assets must be an object'];
-      return [];
+      const errs = [];
+      for (const [asset, approval] of Object.entries(data.assets)) {
+        if (!asset.startsWith('/images/') && !asset.startsWith('/documents/')) {
+          errs.push(`Approval manifest key must be a local image/document path: ${asset}`);
+        }
+        if (!approval || typeof approval !== 'object' || Array.isArray(approval)) {
+          errs.push(`Approval manifest entry for ${asset} must be an object`);
+          continue;
+        }
+        if (approval.status !== 'approved') errs.push(`${asset} approval status must be approved`);
+        if (typeof approval.permissionRef !== 'string' || !/^[A-Za-z0-9._:-]{8,128}$/.test(approval.permissionRef)) {
+          errs.push(`${asset} permissionRef must be an opaque reference token`);
+        }
+        if (typeof approval.approvedByRole !== 'string' || approval.approvedByRole.trim().length < 3) {
+          errs.push(`${asset} approvedByRole is required`);
+        }
+        if (!isValidIsoDate(approval.approvedAt)) errs.push(`${asset} approvedAt must be a real ISO calendar date`);
+        if (typeof approval.source !== 'string' || approval.source.trim().length < 3) {
+          errs.push(`${asset} source/credit is required`);
+        }
+      }
+      return errs;
     },
   },
   {
@@ -23,13 +51,22 @@ const validationRules = [
       const errs = [];
       if (!data.eventNames || !data.eventNames.combined) errs.push('Missing eventNames.combined');
       if (!data.eventDates || !data.eventDates.start || !data.eventDates.end) errs.push('Missing eventDates');
-      const eventYear = data.eventDates?.start?.slice(0, 4);
+      const eventStart = data.eventDates?.start;
+      const eventEnd = data.eventDates?.end;
+      const eventYear = typeof eventStart === 'string' ? eventStart.slice(0, 4) : '';
+      if (!isValidIsoDate(eventStart)) errs.push('eventDates.start must be a real ISO calendar date');
+      if (!isValidIsoDate(eventEnd)) errs.push('eventDates.end must be a real ISO calendar date');
+      if (isValidIsoDate(eventStart) && isValidIsoDate(eventEnd) && eventEnd < eventStart) {
+        errs.push('eventDates.end must not be before eventDates.start');
+      }
       if (eventYear && data.eventNames?.combined && !data.eventNames.combined.includes(eventYear)) {
         errs.push(`eventNames.combined must include canonical event year ${eventYear}`);
       }
       for (const [label, value] of Object.entries(data.registrationDeadlines || {})) {
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !Number.isFinite(new Date(`${value}T12:00:00+05:00`).getTime())) {
-          errs.push(`registrationDeadlines.${label} must be a valid ISO date`);
+        if (!isValidIsoDate(value)) {
+          errs.push(`registrationDeadlines.${label} must be a real ISO calendar date`);
+        } else if (isValidIsoDate(eventStart) && value >= eventStart) {
+          errs.push(`registrationDeadlines.${label} must be before eventDates.start`);
         }
       }
       if (!data.venue) errs.push('Missing venue');
@@ -122,6 +159,14 @@ const validationRules = [
       if (!Array.isArray(data) || data.length === 0) return ['Must be a non-empty array'];
       data.forEach((item, index) => {
         if (!item.id || !item.title || !item.fileUrl) errs.push(`Resource [${index}] missing core fields`);
+        if (!VALID_TRACKS.has(item.track)) errs.push(`Resource [${item.id || index}] invalid track: ${item.track}`);
+        if (typeof item.fileUrl !== 'string' || !/^\/documents\/[^/]+\/[^/]+\.pdf$/i.test(item.fileUrl)) {
+          errs.push(`Resource [${item.id || index}] must reference a local PDF under /documents/`);
+        }
+        if (typeof item.fileFormat !== 'string' || item.fileFormat.toUpperCase() !== 'PDF') {
+          errs.push(`Resource [${item.id || index}] fileFormat must be PDF`);
+        }
+        if (!isValidIsoDate(item.versionDate)) errs.push(`Resource [${item.id || index}] versionDate must be a real ISO calendar date`);
       });
       return errs;
     },
@@ -283,6 +328,7 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
   const expectedStart = new Date(`${site?.eventDates?.start}T12:00:00+05:00`);
   const expectedEnd = new Date(`${site?.eventDates?.end}T12:00:00+05:00`);
   const eventDays = Math.floor((expectedEnd.getTime() - expectedStart.getTime()) / 86_400_000) + 1;
+  const eventStartIso = site?.eventDates?.start;
   const schedule = parsedContent.get('schedule.json') || [];
   const scheduleDays = new Set(schedule.map((item) => item.day));
 
@@ -292,9 +338,22 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
     launchErrors.push(`site.json event range must cover four days, received ${eventDays}`);
   }
 
+  for (const [label, deadline] of Object.entries(site?.registrationDeadlines || {})) {
+    const deadlineYear = typeof deadline === 'string' ? deadline.slice(0, 4) : '';
+    if (deadlineYear !== eventYear) launchErrors.push(`site.json registrationDeadlines.${label} must use event year ${eventYear}`);
+    if (typeof deadline === 'string' && eventStartIso && deadline >= eventStartIso) {
+      launchErrors.push(`site.json registrationDeadlines.${label} must be before the event start date`);
+    }
+  }
+
   for (let day = 1; day <= eventDays; day += 1) {
     if (!scheduleDays.has(day)) launchErrors.push(`schedule.json is missing content for Day ${day}`);
   }
+  schedule.forEach((item, index) => {
+    if (!Number.isInteger(item.day) || item.day < 1 || item.day > eventDays) {
+      launchErrors.push(`schedule.json[${index}] has a day outside the canonical event range`);
+    }
+  });
 
   const contentAssetReferences = assetReferences.map((reference) => reference.value);
   const staticReleaseAssets = [
@@ -383,14 +442,31 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
       launchErrors.push(`Referenced image cannot be parsed: ${asset}`);
     }
   }
-  for (const generator of ['scripts/generate-brand-media.mjs', 'scripts/generate-production-pdfs.mjs']) {
+
+  for (const asset of staticReleaseAssets.filter((value) => /\.(?:png|jpe?g)$/i.test(value))) {
+    const assetPath = path.join(process.cwd(), 'public', asset.replace(/^\//, ''));
+    try {
+      const metadata = await sharp(assetPath).metadata();
+      if (!metadata.width || !metadata.height) launchErrors.push(`Release image has no dimensions: ${asset}`);
+    } catch {
+      launchErrors.push(`Release image cannot be parsed: ${asset}`);
+    }
+  }
+  for (const generator of [
+    'scripts/generate-brand-media.mjs',
+    'scripts/generate-sample-pdfs.mjs',
+    'scripts/generate-production-pdfs.mjs',
+  ]) {
     if (fs.existsSync(path.join(process.cwd(), generator))) {
       launchErrors.push(`${generator} is a seed-asset generator; remove it and commit approved human-supplied assets before launch`);
     }
   }
   const allContentText = JSON.stringify(Object.fromEntries(parsedContent));
-  const placeholderUrls = ['https://example.com', 'https://linkedin.com'];
-  if (placeholderUrls.some((url) => allContentText.includes(`"${url}"`))) {
+  const placeholderUrlPatterns = [
+    /https?:\/\/(?:www\.)?example\.com\b/i,
+    /https?:\/\/(?:www\.)?linkedin\.com\/company\/gimun-mootcup\b/i,
+  ];
+  if (placeholderUrlPatterns.some((pattern) => pattern.test(allContentText))) {
     launchErrors.push('Content contains a placeholder external URL');
   }
   if (eventYear !== '2027') launchErrors.push(`site.json event year must be 2027, received ${eventYear || 'unknown'}`);

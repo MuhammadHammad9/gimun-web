@@ -174,15 +174,13 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
               }}
             >
               <div className="relative w-full h-64 sm:h-72 overflow-hidden bg-slate-900 flex flex-col justify-between p-5 text-white">
-                {item.image && (
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover"
-                  />
-                )}
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover"
+                />
                 {/* Decorative Grid Pattern Overlay */}
                 <div
                   className="absolute inset-0 opacity-10 pointer-events-none"
@@ -317,15 +315,13 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
               <div
                 className="relative w-full h-80 sm:h-96 md:h-[420px] bg-slate-900 flex flex-col justify-end p-6 sm:p-8"
               >
-                {activeItem.image && (
-                  <Image
-                    src={activeItem.image}
-                    alt={activeItem.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 896px"
-                    className="object-cover"
-                  />
-                )}
+                <Image
+                  src={activeItem.image}
+                  alt={activeItem.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 896px"
+                  className="object-cover"
+                />
                 <div
                   className="absolute inset-0 opacity-15 pointer-events-none"
                   style={{

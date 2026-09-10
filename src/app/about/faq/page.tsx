@@ -4,12 +4,14 @@ import { getFAQ } from "@/lib/content";
 import { FaqClient } from "./FaqClient";
 import { HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { getEventYear } from "@/lib/site-config";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Frequently Asked Questions | GIMUN & GMC 2027",
+  title: `Frequently Asked Questions | GIMUN & GMC ${eventYear}`,
+  path: '/about/faq',
   description:
     "Official answers to inquiries regarding delegation allocations, OSCOLA memorial standards, zero-payment registration policy, transport shuttles, and GIKI campus hostels.",
-  path: "/about/faq",
 });
 
 export default function FaqPage() {

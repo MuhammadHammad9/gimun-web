@@ -119,6 +119,9 @@ function ContactFormInner() {
           onClick={() => {
             setStatus('idle');
             setFormData({ name: '', email: '', queryType: 'gimun', message: '' });
+            setErrors({});
+            setHoneypot('');
+            formLoadedAt.current = Date.now();
           }}
           className="text-xs font-semibold text-emerald-800 underline hover:text-emerald-950 pt-2"
         >

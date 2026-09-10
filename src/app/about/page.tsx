@@ -20,12 +20,14 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Button } from "@/components/ui/Button";
 
 import { constructMetadata } from "@/lib/metadata";
+import { getEventYear } from "@/lib/site-config";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "About the Symposium | 15 Years of Legacy | GIMUN & GMC 2027",
+  title: `About the Symposium | 15 Years of Legacy | GIMUN & GMC ${eventYear}`,
+  path: '/about',
   description:
     "Discover the legacy, academic mission, and institutional heritage of Pakistan’s premier twin diplomatic and legal advocacy championship hosted at GIKI, Topi.",
-  path: "/about",
 });
 
 export default function AboutOverviewPage() {
@@ -338,7 +340,7 @@ export default function AboutOverviewPage() {
                       Sponsors &amp; Patrons
                     </h3>
                     <p className="text-xs text-[#5A5A6E] leading-relaxed">
-                      Statutory patrons, legal chambers, government boards, and official 2027 Sponsorship Prospectus.
+                      Statutory patrons, legal chambers, government boards, and official {eventYear} Sponsorship Prospectus.
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1E2A78] group-hover:text-[#FF6B35] transition-colors pt-3 border-t border-gray-100">

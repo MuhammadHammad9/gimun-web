@@ -6,7 +6,7 @@
     "group": "secretariat",
     "photo": "/images/team/team-sg.png",
     "bio": "Leading academic vision, committee affairs, and delegate training for GIMUN 2027. Senior debater with 6+ national MUN championships.",
-    "links": { "email": "sg@gimungiki.org", "linkedin": "https://linkedin.com/company/gimun-mootcup" }
+    "links": { "email": "sg@gimungiki.org" }
   },
   {
     "id": "team-dsg",
@@ -15,7 +15,7 @@
     "group": "secretariat",
     "photo": "/images/team/team-dsg.png",
     "bio": "Directing substantive committee preparation, chair appointment, and country matrix allocation protocols.",
-    "links": { "email": "dsg@gimungiki.org", "linkedin": "https://linkedin.com/company/gimun-mootcup" }
+    "links": { "email": "dsg@gimungiki.org" }
   },
   {
     "id": "team-usg-ca",
@@ -42,7 +42,7 @@
     "group": "convening-committee",
     "photo": "/images/team/team-convenor.png",
     "bio": "Supervising proposition vetting, judicial bench coordination, and oralist championship rounds. Former Jessup International Moot quarter-finalist.",
-    "links": { "email": "mootconvenor@gimungiki.org", "linkedin": "https://linkedin.com/company/gimun-mootcup" }
+    "links": { "email": "mootconvenor@gimungiki.org" }
   },
   {
     "id": "team-vice-convenor",
@@ -69,7 +69,7 @@
     "group": "organizing-committee",
     "photo": "/images/team/team-director-gen.png",
     "bio": "Overseeing M-1 motorway shuttle transport, GIKI campus security protocol, residential hostels, and guest hospitality.",
-    "links": { "email": "operations@gimungiki.org", "linkedin": "https://linkedin.com/company/gimun-mootcup" }
+    "links": { "email": "operations@gimungiki.org" }
   },
   {
     "id": "team-sponsorship",

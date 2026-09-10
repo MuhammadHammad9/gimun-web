@@ -16,7 +16,11 @@ import {
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
-export function MootRulesClient() {
+interface MootRulesClientProps {
+  rulesDocumentUrl?: string;
+}
+
+export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
   // Tab switcher for Scoring Rubric
   const [scoringTab, setScoringTab] = useState<"memorial" | "oral">("memorial");
 
@@ -63,7 +67,7 @@ export function MootRulesClient() {
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-gray-100">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#00665C] font-bold">
               Drafting Rigor
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E] mt-0.5">
@@ -79,8 +83,8 @@ export function MootRulesClient() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-6 sm:p-7 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase font-bold text-[#007A70]">Length Limit</span>
-              <FileCheck className="w-4 h-4 text-[#007A70]" />
+              <span className="text-xs font-mono uppercase font-bold text-[#00665C]">Length Limit</span>
+              <FileCheck className="w-4 h-4 text-[#00665C]" />
             </div>
             <h3 className="text-2xl font-heading font-extrabold text-[#1A1A2E]">
               8,000 Words Max
@@ -92,8 +96,8 @@ export function MootRulesClient() {
 
           <div className="p-6 sm:p-7 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase font-bold text-[#007A70]">Typography</span>
-              <Scale className="w-4 h-4 text-[#007A70]" />
+              <span className="text-xs font-mono uppercase font-bold text-[#00665C]">Typography</span>
+              <Scale className="w-4 h-4 text-[#00665C]" />
             </div>
             <h3 className="text-2xl font-heading font-extrabold text-[#1A1A2E]">
               Times New Roman
@@ -105,8 +109,8 @@ export function MootRulesClient() {
 
           <div className="p-6 sm:p-7 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase font-bold text-[#007A70]">Citations</span>
-              <BookOpen className="w-4 h-4 text-[#007A70]" />
+              <span className="text-xs font-mono uppercase font-bold text-[#00665C]">Citations</span>
+              <BookOpen className="w-4 h-4 text-[#00665C]" />
             </div>
             <h3 className="text-2xl font-heading font-extrabold text-[#1A1A2E]">
               OSCOLA 4th Edition
@@ -122,7 +126,7 @@ export function MootRulesClient() {
           <div className="double-bezel-inner p-6 sm:p-8 space-y-5 bg-radial-glow-teal">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="space-y-1">
-                <span className="text-xs font-mono uppercase font-bold text-[#007A70] tracking-wider">
+                <span className="text-xs font-mono uppercase font-bold text-[#00665C] tracking-wider">
                   Interactive Sandbox
                 </span>
                 <h3 className="text-lg sm:text-xl font-heading font-bold text-[#1A1A2E]">
@@ -186,7 +190,7 @@ export function MootRulesClient() {
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-gray-100">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#00665C] font-bold">
               Courtroom Advocacy
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E] mt-0.5">
@@ -200,7 +204,7 @@ export function MootRulesClient() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-6 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2.5">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#007A70]">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#00665C]">
               <Clock className="w-4 h-4" />
               <span>Total Match Time</span>
             </div>
@@ -213,7 +217,7 @@ export function MootRulesClient() {
           </div>
 
           <div className="p-6 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2.5">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#007A70]">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#00665C]">
               <Clock className="w-4 h-4" />
               <span>Advocate Minimum</span>
             </div>
@@ -226,7 +230,7 @@ export function MootRulesClient() {
           </div>
 
           <div className="p-6 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2.5">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#007A70]">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#00665C]">
               <Clock className="w-4 h-4" />
               <span>Rebuttal Protocol</span>
             </div>
@@ -255,7 +259,7 @@ export function MootRulesClient() {
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-gray-100">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#00665C] font-bold">
               Adjudication Standards
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E] mt-0.5">
@@ -303,8 +307,8 @@ export function MootRulesClient() {
             >
               <div className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase font-bold text-[#007A70]">Criterion 1</span>
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700">12 Pts</span>
+                  <span className="text-[10px] font-mono uppercase font-bold text-[#00665C]">Criterion 1</span>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800">12 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
                   Knowledge of Law &amp; Precedent
@@ -316,8 +320,8 @@ export function MootRulesClient() {
 
               <div className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase font-bold text-[#007A70]">Criterion 2</span>
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700">10 Pts</span>
+                  <span className="text-[10px] font-mono uppercase font-bold text-[#00665C]">Criterion 2</span>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800">10 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
                   Logical Structure &amp; Persuasiveness
@@ -329,8 +333,8 @@ export function MootRulesClient() {
 
               <div className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase font-bold text-[#007A70]">Criterion 3</span>
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700">10 Pts</span>
+                  <span className="text-[10px] font-mono uppercase font-bold text-[#00665C]">Criterion 3</span>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800">10 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
                   Depth of Research &amp; Authority
@@ -342,8 +346,8 @@ export function MootRulesClient() {
 
               <div className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase font-bold text-[#007A70]">Criterion 4</span>
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700">8 Pts</span>
+                  <span className="text-[10px] font-mono uppercase font-bold text-[#00665C]">Criterion 4</span>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800">8 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
                   Style &amp; OSCOLA Citation Rigor
@@ -435,14 +439,16 @@ export function MootRulesClient() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <Button
-              variant="track-moot"
-              size="md"
-              href="/documents/moot-cup/Moot_Cup_Rules_and_Memorial_Guide.pdf"
-              icon={<Download className="w-4 h-4" />}
-            >
-              Download PDF Rules
-            </Button>
+            {rulesDocumentUrl && (
+              <Button
+                variant="track-moot"
+                size="md"
+                href={rulesDocumentUrl}
+                icon={<Download className="w-4 h-4" />}
+              >
+                Download PDF Rules
+              </Button>
+            )}
             <Button variant="secondary" size="md" href="/moot-cup/clarifications">
               Clarifications Portal
             </Button>

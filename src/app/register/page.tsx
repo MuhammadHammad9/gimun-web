@@ -2,9 +2,11 @@ import type { Metadata } from 'next';
 import { constructMetadata } from '@/lib/metadata';
 import { getCommittees, getProblemCategories, getSiteConfig } from '@/lib/content';
 import { RegisterPageClient } from './RegisterPageClient';
+import { getEventYear } from '@/lib/site-config';
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: 'Official Registration Portal | GIMUN & GMC 2027',
+  title: `Official Registration Portal | GIMUN & GMC ${eventYear}`,
   description:
     'Official application portal for GIKI Model United Nations (Individual & Delegation) and GMC (GIKI Moot Court). Zero online payment collection.',
   path: '/register',

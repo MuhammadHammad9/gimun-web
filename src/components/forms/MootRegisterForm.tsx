@@ -13,6 +13,7 @@ import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
 import { NonPaymentNotice } from './NonPaymentNotice';
 import { PrivacyStatement } from './PrivacyStatement';
+import { getEventYear } from '@/lib/site-config';
 
 interface MootRegisterFormProps {
   categories: ProblemCategory[];
@@ -48,6 +49,7 @@ const initialMootData: MootCupTeamData = {
 };
 
 export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProps) {
+  const eventYear = getEventYear();
   const [formData, setFormData] = useState<MootCupTeamData>(initialMootData);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [status, setStatus] = useState<'idle' | 'submitting' | 'error'>('idle');
@@ -181,7 +183,13 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         participantCount: data.receipt?.participantCount || formData.members.length,
         timestamp: data.receipt?.submittedAt,
       };
-      onSuccess(data.referenceId || 'REG-MOOT-2027', `${formData.teamName} (${formData.institution})`, details);
+      if (!data.referenceId || !/^REG-MOOT-2027-\d{4}$/.test(data.referenceId)) {
+        setStatus('error');
+        setServerError('The submission was stored but did not return a valid reference number. Please contact the Secretariat before submitting again.');
+        return;
+      }
+
+      onSuccess(data.referenceId, `${formData.teamName} (${formData.institution})`, details);
     } catch {
       console.error('Registration request failed.');
       setStatus('error');
@@ -523,7 +531,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         </FormField>
 
         <FormField
-          label="How did your team hear about GMC 2027?"
+            label={`How did your team hear about GMC ${eventYear}?`}
           required
           track="moot-cup"
           error={errors.referralSource}

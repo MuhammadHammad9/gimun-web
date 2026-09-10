@@ -99,6 +99,8 @@ async function runE2ETests() {
         RATE_LIMIT_HMAC_SECRET: 'test-only-rate-limit-secret',
         SUBMISSIONS_BACKEND: 'memory',
         ALLOW_IN_MEMORY_SUBMISSIONS: '1',
+        SUBMISSIONS_TEST_MODE: '1',
+        SITE_URL: `http://127.0.0.1:${port}`,
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
@@ -149,7 +151,8 @@ async function runE2ETests() {
           phone: '03001234567',
           institution: 'GIKI Faculty of Computer Science',
           yearOfStudy: 'senior',
-          experienceLevel: 'Advanced',
+          hasExperience: true,
+          experienceDetails: 'Experienced in university-level Model United Nations conferences.',
           committeePreference1: 'unsc',
           committeePreference2: 'disec',
           committeePreference3: 'unhrc',

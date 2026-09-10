@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateContactForm } from '@/lib/validation';
+import { normalizeFormStrings, validateContactForm } from '@/lib/validation';
 import { MIN_FILL_TIME_MS } from '@/lib/honeypot';
 import {
   clientIp,
@@ -8,14 +8,18 @@ import {
   SubmissionServiceError,
 } from '@/lib/server/submissions';
 import type { ContactFormData } from '@/lib/types';
+import { JsonBodyError, readJsonBody } from '@/lib/server/request';
 
 export async function POST(req: NextRequest) {
   try {
     let body: unknown;
     try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json({ success: false, message: 'Request body must be valid JSON.' }, { status: 400 });
+      body = await readJsonBody(req);
+    } catch (error) {
+      if (error instanceof JsonBodyError) {
+        return NextResponse.json({ success: false, message: error.message }, { status: error.status });
+      }
+      return NextResponse.json({ success: false, message: 'Request body could not be read.' }, { status: 400 });
     }
 
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
@@ -41,7 +45,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const formData = { name, email, queryType, message } as ContactFormData;
+    const formData = normalizeFormStrings({ name, email, queryType, message }) as ContactFormData;
     const errors = validateContactForm(formData);
     if (Object.keys(errors).length > 0) {
       return NextResponse.json({ success: false, message: 'Please resolve the highlighted issues in the form.', errors }, { status: 422 });

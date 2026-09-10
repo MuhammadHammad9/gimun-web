@@ -5,16 +5,24 @@ import { ResourcesClient } from "./ResourcesClient";
 import { TrackBadge } from "@/components/ui/TrackBadge";
 import { Button } from "@/components/ui/Button";
 import { Download } from "lucide-react";
+import { getEventYear } from "@/lib/site-config";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Resource Hub & Document Archive | GIMUN & GMC 2027",
+  title: `Resource Hub & Document Archive | GIMUN & GMC ${eventYear}`,
+  path: '/resources',
   description:
     "The authoritative digital archive for official delegate handbooks, committee background guides, legal compromises, competition rules, and campus logistical dossiers.",
-  path: "/resources",
 });
 
 export default function ResourcesPage() {
   const documents = getDocuments();
+  const gimunRulesDocument = documents.find(
+    (document) => document.track === "gimun" && document.type === "rules",
+  );
+  const mootRulesDocument = documents.find(
+    (document) => document.track === "moot-cup" && document.type === "rules",
+  );
 
   return (
     <div className="space-y-12">
@@ -36,24 +44,28 @@ export default function ResourcesPage() {
           </h1>
 
           <p className="text-sm sm:text-base text-gray-300 max-w-3xl leading-relaxed">
-            The official repository for all symposium literature: committee background dossiers, the 2027 GMC Compromis, standardized rules of procedure, OSCOLA citation manuals, and campus transit guides.
+            The official repository for all symposium literature: committee background dossiers, the {eventYear} GMC Compromis, standardized rules of procedure, OSCOLA citation manuals, and campus transit guides.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4">
-            <Button
-              variant="track-gimun"
-              href="/documents/gimun/GIMUN_Rules_of_Procedure.pdf"
-              icon={<Download className="w-4 h-4" />}
-            >
-              GIMUN RoP Handbook
-            </Button>
-            <Button
-              variant="track-moot"
-              href="/documents/moot-cup/Moot_Cup_Rules_and_Memorial_Guide.pdf"
-              icon={<Download className="w-4 h-4" />}
-            >
-              GMC Rules &amp; Guide
-            </Button>
+            {gimunRulesDocument && (
+              <Button
+                variant="track-gimun"
+                href={gimunRulesDocument.fileUrl}
+                icon={<Download className="w-4 h-4" />}
+              >
+                GIMUN RoP Handbook
+              </Button>
+            )}
+            {mootRulesDocument && (
+              <Button
+                variant="track-moot"
+                href={mootRulesDocument.fileUrl}
+                icon={<Download className="w-4 h-4" />}
+              >
+                GMC Rules &amp; Guide
+              </Button>
+            )}
             <Button variant="secondary" href="/about/faq">
               Explore FAQs
             </Button>

@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Lock, Mail, Calendar, FileText, ArrowRight, RefreshCw } from 'lucide-react';
+import { getEventYear } from '@/lib/site-config';
 
 interface ClosedRegistrationBannerProps {
   track?: 'gimun' | 'moot-cup' | 'all';
@@ -15,6 +16,7 @@ export function ClosedRegistrationBanner({
   deadline,
   onSwitchTrack,
 }: ClosedRegistrationBannerProps) {
+  const eventYear = getEventYear();
   const isMoot = track === 'moot-cup';
   const isGimun = track === 'gimun';
 
@@ -22,7 +24,7 @@ export function ClosedRegistrationBanner({
     ? 'GIKI Moot Court (GMC)'
     : isGimun
     ? 'GIKI Model United Nations (GIMUN)'
-    : 'GIMUN & GMC 2027';
+    : `GIMUN & GMC ${eventYear}`;
 
   return (
     <div className="max-w-2xl mx-auto p-6 md:p-10 rounded-section bg-surface-elevated border border-whisper-border shadow-card text-center space-y-6">

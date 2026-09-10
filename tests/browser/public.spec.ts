@@ -30,7 +30,8 @@ const publicRoutes = [
 test.describe('public route rendering', () => {
   for (const route of publicRoutes) {
     test(`${route} renders with one accessible heading`, async ({ page }) => {
-      const response = await page.goto(route, { waitUntil: 'networkidle' });
+      test.setTimeout(45_000);
+      const response = await page.goto(route, { waitUntil: 'domcontentloaded' });
       expect(response?.status()).toBe(200);
       await expect(page.locator('h1')).toHaveCount(1);
       await expect(page).toHaveTitle(/GIMUN|GMC/);
@@ -38,10 +39,20 @@ test.describe('public route rendering', () => {
   }
 });
 
-test('rendered public pages pass axe checks', async ({ page }) => {
-  test.setTimeout(120_000);
-  for (const route of publicRoutes) {
-    await page.goto(route, { waitUntil: 'networkidle' });
+for (const route of publicRoutes) {
+  test(`${route} passes rendered axe checks`, async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('h1')).toHaveCount(1);
+    if (route === '/register') {
+      await expect(page.getByText('GIMUN Track', { exact: true }).first()).toBeVisible();
+      await page.waitForFunction(
+        () => Array.from(document.querySelectorAll('.double-bezel.relative')).every((element) => getComputedStyle(element).opacity === '1'),
+        undefined,
+        { timeout: 30_000 },
+      );
+    }
+    await page.waitForTimeout(1_000);
     const results = await new AxeBuilder({ page }).analyze();
     expect(
       results.violations.map((violation) => ({
@@ -52,8 +63,8 @@ test('rendered public pages pass axe checks', async ({ page }) => {
       })),
       `${route} has accessibility violations`,
     ).toEqual([]);
-  }
-});
+  });
+}
 
 test('mobile navigation opens and closes with accessible state', async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith('mobile-'), 'Mobile navigation is covered by mobile viewport projects only.');

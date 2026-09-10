@@ -5,8 +5,10 @@ import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
 import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
 import { validateEmail } from '@/lib/validation';
+import { getEventYear } from '@/lib/site-config';
 
 export function ClarificationForm() {
+  const eventYear = getEventYear();
   const [teamId, setTeamId] = useState('');
   const [teamEmail, setTeamEmail] = useState('');
   const [paragraphRef, setParagraphRef] = useState('');
@@ -78,9 +80,14 @@ export function ClarificationForm() {
         <button
           type="button"
           onClick={() => {
+            setTeamId('');
+            setTeamEmail('');
             setParagraphRef('');
             setQuestionText('');
+            setHoneypot('');
+            setServerError(null);
             setStatus('idle');
+            formLoadedAt.current = Date.now();
           }}
           className="text-xs text-emerald-800 font-semibold underline pt-2 block mx-auto"
         >
@@ -109,7 +116,7 @@ export function ClarificationForm() {
             type="text"
             value={teamId}
             onChange={(e) => setTeamId(e.target.value)}
-            placeholder="e.g. MC-2027-014"
+            placeholder={`e.g. MC-${eventYear}-014`}
             className="w-full px-3.5 py-2 rounded-button border border-whisper-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-secondary/20"
           />
         </FormField>

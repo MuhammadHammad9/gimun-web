@@ -15,6 +15,10 @@ import {
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
+interface GimunRulesClientProps {
+  rulesDocumentUrl?: string;
+}
+
 interface MotionItem {
   name: string;
   category: "point" | "debate" | "resolution" | "closure";
@@ -162,7 +166,7 @@ const DEBATE_STAGES = [
   },
 ];
 
-export function GimunRulesClient() {
+export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
   const [activeStage, setActiveStage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -507,14 +511,16 @@ export function GimunRulesClient() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <Button
-              variant="track-gimun"
-              size="md"
-              href="/documents/gimun/GIMUN_Rules_of_Procedure.pdf"
-              icon={<Download className="w-4 h-4" />}
-            >
-              Download PDF Handbook
-            </Button>
+            {rulesDocumentUrl && (
+              <Button
+                variant="track-gimun"
+                size="md"
+                href={rulesDocumentUrl}
+                icon={<Download className="w-4 h-4" />}
+              >
+                Download PDF Handbook
+              </Button>
+            )}
             <Button variant="secondary" size="md" href="/gimun/committees">
               Explore Committees
             </Button>

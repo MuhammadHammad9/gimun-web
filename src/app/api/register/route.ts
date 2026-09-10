@@ -3,6 +3,7 @@ import {
   validateGimunIndividual,
   validateGimunDelegation,
   validateMootCupTeam,
+  normalizeFormStrings,
   type ValidationErrors,
 } from '@/lib/validation';
 import { getCommittees, getProblemCategories, getSiteConfig } from '@/lib/content';
@@ -19,6 +20,7 @@ import type {
   MootCupTeamData,
 } from '@/lib/types';
 import { formatEventDate, isRegistrationDeadlinePassed } from '@/lib/site-config';
+import { JsonBodyError, readJsonBody } from '@/lib/server/request';
 
 function isTrackOpen(track: 'gimun' | 'moot-cup') {
   const site = getSiteConfig();
@@ -34,9 +36,12 @@ export async function POST(req: NextRequest) {
   try {
     let body: unknown;
     try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json({ success: false, message: 'Request body must be valid JSON.' }, { status: 400 });
+      body = await readJsonBody(req);
+    } catch (error) {
+      if (error instanceof JsonBodyError) {
+        return NextResponse.json({ success: false, message: error.message }, { status: error.status });
+      }
+      return NextResponse.json({ success: false, message: 'Request body could not be read.' }, { status: 400 });
     }
 
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
@@ -75,6 +80,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Form data must be a JSON object.' }, { status: 422 });
     }
 
+    const normalizedFormData = normalizeFormStrings(formData) as GimunIndividualData | GimunDelegationData | MootCupTeamData;
+
     if (!isTrackOpen(track)) {
       return NextResponse.json(
         { success: false, message: 'Registration for this track is currently closed.' },
@@ -95,11 +102,11 @@ export async function POST(req: NextRequest) {
     const categoryIds = getProblemCategories().map((category) => category.id);
 
     if (track === 'gimun' && applicantType === 'individual') {
-      errors = validateGimunIndividual(formData as GimunIndividualData, committeeIds);
+      errors = validateGimunIndividual(normalizedFormData as GimunIndividualData, committeeIds);
     } else if (track === 'gimun' && applicantType === 'delegation') {
-      errors = validateGimunDelegation(formData as GimunDelegationData, committeeIds);
+      errors = validateGimunDelegation(normalizedFormData as GimunDelegationData, committeeIds);
     } else if (track === 'moot-cup' && applicantType === 'team') {
-      errors = validateMootCupTeam(formData as MootCupTeamData, categoryIds);
+      errors = validateMootCupTeam(normalizedFormData as MootCupTeamData, categoryIds);
     } else {
       return NextResponse.json({ success: false, message: 'Invalid applicant type for the selected track.' }, { status: 400 });
     }
@@ -122,7 +129,7 @@ export async function POST(req: NextRequest) {
     const site = getSiteConfig();
 
     if (track === 'gimun' && applicantType === 'individual') {
-      const individual = formData as GimunIndividualData;
+      const individual = normalizedFormData as GimunIndividualData;
       applicantName = individual.fullName;
       institution = individual.institution;
       email = individual.email;
@@ -131,7 +138,7 @@ export async function POST(req: NextRequest) {
       summary = `1st Pref: ${c1}`;
       feeAmount = site.fees.gimunIndividual;
     } else if (track === 'gimun') {
-      const delegation = formData as GimunDelegationData;
+      const delegation = normalizedFormData as GimunDelegationData;
       applicantName = `${delegation.delegationHeadName} (Head Delegate)`;
       institution = delegation.institution;
       email = delegation.delegationHeadEmail;
@@ -140,7 +147,7 @@ export async function POST(req: NextRequest) {
       summary = `Institutional Delegation (${participantCount} Delegates)`;
       feeAmount = `${site.fees.gimunDelegationPerDelegate} × ${participantCount} delegates`;
     } else {
-      const team = formData as MootCupTeamData;
+      const team = normalizedFormData as MootCupTeamData;
       applicantName = team.teamName;
       institution = team.institution;
       email = team.members[0]?.email || '';
@@ -156,7 +163,7 @@ export async function POST(req: NextRequest) {
     const delivery = await createRegistration({
       track,
       applicantType,
-      formData: formData as GimunIndividualData | GimunDelegationData | MootCupTeamData,
+      formData: normalizedFormData,
       applicantName,
       institution,
       email,

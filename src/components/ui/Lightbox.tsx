@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -31,6 +32,15 @@ export function Lightbox({
     previousOverflowRef.current = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     requestAnimationFrame(() => closeButtonRef.current?.focus());
+
+    return () => {
+      document.body.style.overflow = previousOverflowRef.current;
+      requestAnimationFrame(() => previousActiveRef.current?.focus());
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -63,15 +73,11 @@ export function Lightbox({
     };
 
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = previousOverflowRef.current;
-      requestAnimationFrame(() => previousActiveRef.current?.focus());
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, currentIndex, images.length, onClose, onNavigate]);
 
   const currentImage = images[currentIndex];
+  if (!currentImage) return null;
 
   return (
     <AnimatePresence>
@@ -83,6 +89,7 @@ export function Lightbox({
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8"
           onClick={onClose}
+          role="presentation"
         >
           {/* Close button */}
           <button
@@ -130,16 +137,19 @@ export function Lightbox({
             ref={dialogRef}
             className="relative max-w-5xl max-h-[85vh] flex flex-col items-center justify-center"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Image ${currentIndex + 1} of ${images.length}`}
           >
             <div className="relative rounded-2xl overflow-hidden bg-neutral-900 border border-white/10">
-              {/* Fallback image card container */}
-              <div className="min-w-[320px] min-h-[260px] sm:min-w-[600px] sm:min-h-[400px] flex items-center justify-center p-8 text-center">
-                <div className="text-white/80">
-                  <p className="font-heading text-xl font-bold mb-2">{currentImage.alt}</p>
-                  {currentImage.caption && (
-                    <p className="text-sm text-white/60">{currentImage.caption}</p>
-                  )}
-                </div>
+              <div className="relative min-w-[320px] min-h-[260px] sm:min-w-[600px] sm:min-h-[400px]">
+                <Image
+                  src={currentImage.src}
+                  alt={currentImage.alt}
+                  fill
+                  sizes="(max-width: 640px) 90vw, 80vw"
+                  className="object-contain"
+                />
               </div>
             </div>
 

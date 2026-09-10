@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = constructMetadata({
   title: "Venue, Campus Guide & Travel Directions | GIKI Topi",
+  path: '/about/venue',
   description:
     "Detailed visitor guide for GIKI Topi: M-1 motorway driving directions, airport shuttle schedules, student hostel accommodations, and campus security clearance protocols.",
-  path: "/about/venue",
 });
 
 export default function VenuePage() {
