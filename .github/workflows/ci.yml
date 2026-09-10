@@ -53,6 +53,9 @@ jobs:
       - name: Form security smoke tests
         run: npm run test:forms
 
+      - name: Submission architecture contract audit
+        run: npm run audit:submissions
+
       - name: Rendered browser and axe tests
         run: npm run test:browser
 
