@@ -22,6 +22,7 @@ export const metadata: Metadata = constructMetadata({
   description:
     'Experience premier diplomatic negotiation, parliamentary debate, and crisis simulation at GIKI Model United Nations 2027.',
   path: '/gimun',
+  image: '/images/og/gimun.jpg',
 });
 
 export default function GimunOverviewPage() {
@@ -65,9 +66,9 @@ export default function GimunOverviewPage() {
                 March 2027
               </span>
             </div>
-            <h3 className="font-heading font-bold text-xl text-white">
+            <h2 className="font-heading font-bold text-xl text-white">
               Diplomatic Fast Facts
-            </h3>
+            </h2>
             <ul className="space-y-3 text-xs sm:text-sm text-slate-300">
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-[#FF6B35] shrink-0 mt-0.5" />

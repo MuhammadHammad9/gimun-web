@@ -123,6 +123,7 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
       </div>
 
       {/* Team Member Cards Grid */}
+      <h2 className="sr-only">Organizing Committee and Dais Directory</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMembers.map((member, idx) => {
           const groupMeta = GROUP_CONFIG[member.group] || GROUP_CONFIG["organizing-committee"];

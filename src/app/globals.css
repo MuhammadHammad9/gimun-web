@@ -31,9 +31,12 @@
   --color-background: #F8F8FC;
   --color-foreground: #1A1A2E;
 
-  --font-heading: var(--font-outfit), system-ui, -apple-system, sans-serif;
-  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), monospace;
+  /* System stacks keep production builds deterministic when external font
+     providers are unavailable. Approved local fonts can be prepended later
+     without changing any component classes. */
+  --font-heading: "Trebuchet MS", "Arial Narrow", system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --radius-card: 1.25rem;
   --radius-button: 0.75rem;
@@ -232,4 +235,3 @@ h1, h2, h3, h4, h5, h6 {
     scroll-behavior: auto !important;
   }
 }
-

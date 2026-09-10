@@ -164,6 +164,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
 
       {/* Accordion FAQ List */}
       <div className="space-y-3">
+        <h2 className="sr-only">Frequently Asked Questions Directory</h2>
         {filteredFaqs.map((faq) => {
           const isOpen = openIds.has(faq.id);
           return (

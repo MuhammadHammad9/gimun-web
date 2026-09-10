@@ -52,9 +52,9 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-[#FF6B35]" />
-          <span className="text-xs font-mono uppercase font-bold tracking-wider text-[#1E2A78]">
+          <h2 className="text-xs font-mono uppercase font-bold tracking-wider text-[#1E2A78]">
             Curated Literature Bundles
-          </span>
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -139,6 +139,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
 
       {/* 3. SESSIONS TIMELINE */}
       <div className="space-y-4">
+        <h2 className="sr-only">Itinerary Timeline &amp; Session Schedules</h2>
         {filteredSessions.map((session, idx) => {
           const isFeaturedLive = session.id === activeSessionId;
           const isGimun = session.track === "gimun";

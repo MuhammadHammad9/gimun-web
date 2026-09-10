@@ -126,7 +126,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
               <Briefcase className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <span className="text-2xl font-heading font-extrabold text-ink">3 Days</span>
+              <span className="text-2xl font-heading font-extrabold text-ink">4 Days</span>
               <h3 className="text-xs font-mono uppercase font-bold text-ink tracking-wide">
                 Immersive On-Campus Branding
               </h3>

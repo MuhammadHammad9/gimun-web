@@ -215,7 +215,7 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
           </h2>
           <p className="text-xs sm:text-sm text-neutral-gray max-w-2xl">
             Explore the specialized academic arenas, courtrooms, residential hostels, and dining halls
-            utilized during the 3-day competition.
+      utilized during the four-day competition.
           </p>
         </div>
 

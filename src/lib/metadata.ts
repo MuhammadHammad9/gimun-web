@@ -15,9 +15,10 @@ export function constructMetadata({
   path = '',
 }: MetadataProps = {}): Metadata {
   const siteConfig = getSiteConfig();
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://gimungiki.org').replace(/\/$/, '');
   const defaultTitle = `${siteConfig?.eventNames?.combined || 'GIMUN & GMC'} | Official Website`;
   const resolvedTitle = title || defaultTitle;
-  const url = `https://gimungiki.org${path}`;
+  const url = `${siteUrl}${path}`;
 
   return {
     title: {
@@ -25,7 +26,7 @@ export function constructMetadata({
       template: `%s | ${siteConfig?.eventNames?.combined || 'GIMUN & GMC'}`,
     },
     description,
-    metadataBase: new URL('https://gimungiki.org'),
+    metadataBase: new URL(siteUrl),
     openGraph: {
       title: resolvedTitle,
       description,
@@ -49,7 +50,12 @@ export function constructMetadata({
       images: [image],
     },
     icons: {
-      icon: '/favicon.ico',
+      icon: [
+        { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+        { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/favicon.ico' },
+      ],
+      apple: '/apple-icon.png',
     },
   };
 }
