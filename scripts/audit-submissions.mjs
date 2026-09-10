@@ -11,10 +11,11 @@ const contactStart = serviceSource.indexOf('export async function createContactM
 const registrationBlock = serviceSource.slice(registrationStart, contactStart);
 
 const checks = [
-  ['registration allocates atomic sequence reference', /next_submission_reference|create_registration_submission/.test(registrationBlock)],
-  ['registration persists to Supabase storage', /supabaseRequest\(['"]registrations|create_registration_submission/.test(registrationBlock)],
-  ['registration dispatches receipt correspondence', /api\.resend\.com|email_outbox|p_receipt_html/.test(registrationBlock)],
-  ['migration has atomic registration transaction or sequence counter', /create or replace function public\.(?:create_registration_submission|next_submission_reference)/.test(migrationSource)],
+  ['registration uses transactional RPC', /create_registration_submission/.test(registrationBlock)],
+  ['registration does not POST directly to registrations', !/supabaseRequest\(['"]registrations/.test(registrationBlock)],
+  ['registration does not dispatch Resend inline', !/api\.resend\.com/.test(registrationBlock)],
+  ['successful registration reports durable email queue state', /emailQueued: true/.test(registrationBlock)],
+  ['migration has atomic registration transaction', /create or replace function public\.create_registration_submission/.test(migrationSource)],
   ['migration keeps outbox private with RLS', /alter table public\.email_outbox enable row level security/.test(migrationSource)],
   ['migration has safe worker claiming', /claim_email_outbox[\s\S]*for update skip locked/.test(migrationSource)],
   ['migration bounds retry window', /retry_until timestamptz/.test(migrationSource)],
