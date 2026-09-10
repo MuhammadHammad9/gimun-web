@@ -15,6 +15,7 @@ import {
 import LogoIcon from "@/assets/logo-icon";
 import type { SiteConfig, Sponsor } from "@/lib/types";
 import { formatDateRange } from "@/lib/utils";
+import { getEventYear } from "@/lib/site-config";
 
 export interface FooterColumnLink {
   label: string;
@@ -121,7 +122,7 @@ export function Footer27({
   siteConfig,
   brandName,
 }: Footer27Props) {
-  const eventYear = siteConfig?.eventDates?.start.slice(0, 4) || "2027";
+  const eventYear = siteConfig?.eventDates?.start.slice(0, 4) || getEventYear();
   const resolvedBrandName = brandName || siteConfig?.eventNames?.combined || `GIMUN & GMC ${eventYear}`;
   const socialIcons = [
     {
@@ -257,7 +258,7 @@ export function Footer27({
           </p>
 
           <div className="flex flex-wrap items-center gap-4 text-xs text-neutral-400 font-mono">
-            <span className="text-neutral-500">PRD &sect;6.2 Zero-Payment Compliant</span>
+            <span className="text-neutral-400">PRD &sect;6.2 Zero-Payment Compliant</span>
             <span className="text-neutral-700">&bull;</span>
             <Link
               href="/about/faq#fees"

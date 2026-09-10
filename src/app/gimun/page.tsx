@@ -16,12 +16,12 @@ import {
 } from 'lucide-react';
 import { getCommittees, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
-import { formatEventMonth } from '@/lib/site-config';
+import { formatEventMonth, getEventYear } from '@/lib/site-config';
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
   title: 'GIMUN Track | Model United Nations Diplomacy',
-  description:
-    'Experience premier diplomatic negotiation, parliamentary debate, and crisis simulation at GIKI Model United Nations 2027.',
+  description: `Experience premier diplomatic negotiation, parliamentary debate, and crisis simulation at GIKI Model United Nations ${eventYear}.`,
   path: '/gimun',
   image: '/images/og/gimun.jpg',
 });
@@ -330,7 +330,7 @@ export default function GimunOverviewPage() {
               Substantive Bodies
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-bold text-[#1A1A2E] mt-1">
-              GIMUN 2027 Committee Roster
+              GIMUN {eventYear} Committee Roster
             </h2>
           </div>
           <Link

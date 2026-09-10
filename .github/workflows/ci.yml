@@ -12,6 +12,7 @@ jobs:
       SITE_URL: https://gimungiki.org
       SUBMISSIONS_BACKEND: memory
       ALLOW_IN_MEMORY_SUBMISSIONS: '1'
+      SUBMISSIONS_TEST_MODE: '1'
 
     steps:
       - name: Checkout

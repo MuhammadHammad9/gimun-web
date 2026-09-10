@@ -3,12 +3,14 @@ import { constructMetadata } from "@/lib/metadata";
 import { getSiteConfig } from "@/lib/content";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { Mail, MapPin, Clock, Headphones, ShieldCheck } from "lucide-react";
+import { getEventYear } from "@/lib/site-config";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Contact Secretariat & Directorate | GIMUN & GMC 2027",
+  title: `Contact Secretariat & Directorate | GIMUN & GMC ${eventYear}`,
+  path: '/contact',
   description:
     "Reach out to our organizing team for inquiries regarding committee allocations, compromise clarifications, partnerships, or logistics.",
-  path: "/contact",
 });
 
 export default function ContactPage() {
@@ -37,7 +39,7 @@ export default function ContactPage() {
           </h1>
 
           <p className="text-sm sm:text-base text-gray-300 max-w-3xl leading-relaxed">
-            Have an inquiry regarding committee allocations, country matrix preferences, the 2027 GMC Compromis, corporate sponsorship, or campus arrival coordination? Transmit a message to the relevant department below.
+            Have an inquiry regarding committee allocations, country matrix preferences, the {eventYear} GMC Compromis, corporate sponsorship, or campus arrival coordination? Transmit a message to the relevant department below.
           </p>
 
           <div className="flex flex-wrap items-center gap-6 pt-1 text-xs font-mono text-gray-300">

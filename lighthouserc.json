@@ -6,7 +6,6 @@
       "url": ["http://127.0.0.1:3100/", "http://127.0.0.1:3100/register", "http://127.0.0.1:3100/resources"],
       "numberOfRuns": 1,
       "settings": {
-        "preset": "lighthouse:default",
         "formFactor": "mobile",
         "screenEmulation": { "mobile": true, "width": 390, "height": 844, "deviceScaleFactor": 1 },
         "throttling": { "rttMs": 150, "throughputKbps": 1600, "requestLatencyMs": 150, "downloadThroughputKbps": 1600, "uploadThroughputKbps": 750, "cpuSlowdownMultiplier": 4 }

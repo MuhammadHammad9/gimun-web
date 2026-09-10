@@ -28,6 +28,9 @@ export function constructMetadata({
     },
     description,
     metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: resolvedTitle,
       description,

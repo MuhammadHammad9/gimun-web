@@ -658,9 +658,9 @@ export const reducedMotionVariants = {
 
 **Tasks:**
 
-- [ ] **Import Outfit** (weights: 400, 500, 600, 700) as the primary heading/display font
-- [ ] **Import Inter** (weights: 400, 500, 600) as body text — acceptable for body per skill rules, banned only for display/heading use
-- [ ] **Import JetBrains Mono** (weight: 400) for metadata, timestamps, and monospaced content
+- [x] **Import Outfit** (weights: 400–800) as the primary heading/display font from the bundled local WOFF2 file
+- [x] **Import Inter** (weights: 400–700) as body text from the bundled local WOFF2 file — acceptable for body per skill rules, banned only for display/heading use
+- [x] **Import JetBrains Mono** (weights: 400–600) for metadata, timestamps, and monospaced content from the bundled local WOFF2 file
 - [x] Configure in `src/app/layout.tsx` as CSS variables that Tailwind references, using Next.js `next/font/local`
 - [ ] Verify fonts render correctly on both desktop and mid-range Android Chrome
 

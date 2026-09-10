@@ -144,7 +144,7 @@ export interface GalleryItem {
   caption: string;
   location: string;
   aspectRatio: 'landscape' | 'portrait' | 'square' | 'wide';
-  image?: string;
+  image: string;
 }
 
 // === FORM DATA TYPES (PRD §17.2) ===

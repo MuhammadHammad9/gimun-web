@@ -7,6 +7,7 @@ import { AnnouncementBanner } from '@/components/layout/AnnouncementBanner';
 import { getSiteConfig, getAnnouncements, getSponsors } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
+import { ReducedMotionProvider } from '@/components/motion/ReducedMotionProvider';
 import { getAnalyticsMeasurementId } from '@/lib/site-config';
 
 const outfit = localFont({
@@ -47,24 +48,26 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${outfit.variable} ${inter.variable} ${jetbrainsMono.variable} scroll-smooth`}>
       <body className="min-h-screen flex flex-col bg-[#F8F8FC] text-[#1A1A2E] antialiased selection:bg-[#FF6B35]/20 selection:text-[#FF6B35]">
-        <GoogleAnalytics measurementId={getAnalyticsMeasurementId()} />
-        {/* Top Dismissible Announcement Banner */}
-        <div className="print:hidden">
-          <AnnouncementBanner announcement={activeAnnouncement} />
-        </div>
+        <ReducedMotionProvider>
+          <GoogleAnalytics measurementId={getAnalyticsMeasurementId()} />
+          {/* Top Dismissible Announcement Banner */}
+          <div className="print:hidden">
+            <AnnouncementBanner announcement={activeAnnouncement} />
+          </div>
 
-        {/* Fluid Island Persistent Navigation */}
-        <div className="print:hidden">
-          <Navbar siteConfig={siteConfig} />
-        </div>
+          {/* Fluid Island Persistent Navigation */}
+          <div className="print:hidden">
+            <Navbar siteConfig={siteConfig} />
+          </div>
 
-        {/* Main Content Area */}
-        <main className="flex-1 w-full print:p-0 print:m-0">{children}</main>
+          {/* Main Content Area */}
+          <main className="flex-1 w-full print:p-0 print:m-0">{children}</main>
 
-        {/* Global Multi-column Footer */}
-        <div className="print:hidden">
-          <Footer siteConfig={siteConfig} sponsors={sponsors} />
-        </div>
+          {/* Global Multi-column Footer */}
+          <div className="print:hidden">
+            <Footer siteConfig={siteConfig} sponsors={sponsors} />
+          </div>
+        </ReducedMotionProvider>
       </body>
     </html>
   );

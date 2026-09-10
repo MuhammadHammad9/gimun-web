@@ -111,11 +111,15 @@ export function RegistrationSuccess({
     }
   }, [referenceId]);
 
-  const handleCopy = () => {
-    if (referenceId) {
-      navigator.clipboard.writeText(referenceId);
+  const handleCopy = async () => {
+    if (!referenceId || !navigator.clipboard?.writeText) return;
+
+    try {
+      await navigator.clipboard.writeText(referenceId);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
     }
   };
 

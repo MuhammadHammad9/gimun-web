@@ -36,6 +36,17 @@ function asText(value: unknown): string {
   return typeof value === 'string' ? value : '';
 }
 
+export function normalizeFormStrings<T>(value: T): T {
+  if (typeof value === 'string') return value.trim() as T;
+  if (Array.isArray(value)) return value.map((item) => normalizeFormStrings(item)) as T;
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, child]) => [key, normalizeFormStrings(child)]),
+    ) as T;
+  }
+  return value;
+}
+
 function validateChoice(value: unknown, allowed: Set<string>, label: string, required = true): string | null {
   if (typeof value !== 'string' || (required && !value)) {
     return required ? `Please select ${label}` : null;
@@ -55,6 +66,9 @@ export function validateName(value: unknown, fieldLabel: string): string | null 
   }
   if (trimmed.length > 100) {
     return `${fieldLabel} must be 100 characters or less`;
+  }
+  if (/[\u0000-\u001F\u007F]/.test(trimmed)) {
+    return `${fieldLabel} contains unsupported control characters`;
   }
   return null;
 }
@@ -80,6 +94,9 @@ export function validatePhone(value: unknown): string | null {
   if (!trimmed) {
     return 'Phone number is required';
   }
+  if (!/^[+()\d\s.-]+$/.test(trimmed)) {
+    return 'Phone number contains unsupported characters';
+  }
   const digits = trimmed.replace(/\D/g, '');
   if (digits.length < 8) {
     return 'Phone number must have at least 8 digits';
@@ -96,10 +113,23 @@ export function validateSelection(value: unknown, validIds: string[], fieldLabel
   if (!selected) {
     return `Please select a ${fieldLabel}`;
   }
-  if (validIds.length > 0 && !validIds.includes(selected)) {
+  if (!validIds.includes(selected)) {
     return `Invalid ${fieldLabel} selection`;
   }
   return null;
+}
+
+function validateExperienceFields(input: Record<string, unknown>, errors: ValidationErrors) {
+  if (typeof input.hasExperience !== 'boolean') {
+    errors.hasExperience = 'Please indicate whether you have prior experience';
+  }
+
+  const details = asText(input.experienceDetails).trim();
+  if (details.length > 1000) {
+    errors.experienceDetails = 'Experience details must be 1000 characters or less';
+  } else if (input.hasExperience === true && !details) {
+    errors.experienceDetails = 'Please describe your relevant experience';
+  }
 }
 
 /** Committee preferences validation for individual delegate */
@@ -199,6 +229,8 @@ export function validateGimunIndividual(
   const referralErr = validateChoice(input.referralSource, REFERRAL_SOURCES, 'how you heard about GIMUN');
   if (referralErr) errors.referralSource = referralErr;
 
+  validateExperienceFields(input, errors);
+
   return errors;
 }
 
@@ -232,13 +264,21 @@ export function validateGimunDelegation(
   } else if (typeof input.delegateCount === 'number' && input.delegateCount !== delegates.length) {
     errors.delegateCount = 'Delegate count must match the number of delegate records';
   } else {
+    const seenEmails = new Set<string>();
     delegates.forEach((delegate, idx) => {
       const del = asRecord(delegate);
       const delNameErr = validateName(del.name, `Delegate #${idx + 1} Name`);
       if (delNameErr) errors[`delegate_${idx}_name`] = delNameErr;
 
+      const normalizedEmail = asText(del.email).trim().toLowerCase();
       const delEmailErr = validateEmail(del.email);
-      if (delEmailErr) errors[`delegate_${idx}_email`] = delEmailErr;
+      if (delEmailErr) {
+        errors[`delegate_${idx}_email`] = delEmailErr;
+      } else if (seenEmails.has(normalizedEmail)) {
+        errors[`delegate_${idx}_email`] = 'Each delegate must have a unique email address';
+      } else {
+        seenEmails.add(normalizedEmail);
+      }
 
       const pref1Err = validateSelection(
         del.committeePreference1,
@@ -246,6 +286,18 @@ export function validateGimunDelegation(
         `Delegate #${idx + 1} 1st Committee`
       );
       if (pref1Err) errors[`delegate_${idx}_pref1`] = pref1Err;
+
+      const pref2 = asText(del.committeePreference2).trim();
+      if (pref2 && !validCommitteeIds.includes(pref2)) {
+        errors[`delegate_${idx}_pref2`] = `Invalid Delegate #${idx + 1} 2nd Committee selection`;
+      } else if (pref2 && pref2 === asText(del.committeePreference1).trim()) {
+        errors[`delegate_${idx}_pref2`] = '2nd committee preference must differ from 1st';
+      }
+
+      const country = asText(del.countryPreference).trim();
+      if (country.length > 100) {
+        errors[`delegate_${idx}_countryPreference`] = 'Country preference must be 100 characters or less';
+      }
     });
   }
 
@@ -330,6 +382,8 @@ export function validateMootCupTeam(
 
   const referralErr = validateChoice(input.referralSource, REFERRAL_SOURCES, 'how your team heard about GMC');
   if (referralErr) errors.referralSource = referralErr;
+
+  validateExperienceFields(input, errors);
 
   return errors;
 }

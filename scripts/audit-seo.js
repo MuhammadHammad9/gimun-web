@@ -28,6 +28,66 @@ const localSiteUrl = fs.existsSync(localEnvPath)
   : '';
 const siteUrl = (process.env.SITE_URL || localSiteUrl || 'https://gimungiki.org').replace(/\/$/, '');
 
+let canonicalEventYear = 'unknown';
+try {
+  const siteContent = JSON.parse(fs.readFileSync(path.join(contentDir, 'site.json'), 'utf8'));
+  canonicalEventYear = String(siteContent.eventDates?.start || '').slice(0, 4) || canonicalEventYear;
+} catch {
+  // The content validator reports malformed site data; keep this audit deterministic.
+}
+
+function resolveMetadataTemplate(value) {
+  return value
+    .replace(/\$\{eventYear\}/g, canonicalEventYear)
+    .replace(/\$\{[^}]+\}/g, 'content');
+}
+
+function artifactPathForRoute(route) {
+  if (route === '/') return path.join(nextAppBuildDir, 'index.html');
+  return path.join(nextAppBuildDir, `${route.slice(1)}.html`);
+}
+
+function decodeHtml(value) {
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+
+function readRenderedMetadata(html) {
+  const meta = new Map();
+  for (const tagMatch of html.matchAll(/<meta\b[^>]*>/gi)) {
+    const attributes = {};
+    for (const attributeMatch of tagMatch[0].matchAll(/([:\w-]+)\s*=\s*["']([^"']*)["']/g)) {
+      attributes[attributeMatch[1].toLowerCase()] = decodeHtml(attributeMatch[2]);
+    }
+    const key = attributes.name || attributes.property;
+    if (key && attributes.content) meta.set(key.toLowerCase(), attributes.content);
+  }
+
+  const titleMatch = html.match(/<title>([\s\S]*?)<\/title>/i);
+  const canonicalMatch = [...html.matchAll(/<link\b[^>]*>/gi)]
+    .map((match) => match[0])
+    .map((tag) => {
+      const attributes = {};
+      for (const attributeMatch of tag.matchAll(/([:\w-]+)\s*=\s*["']([^"']*)["']/g)) {
+        attributes[attributeMatch[1].toLowerCase()] = decodeHtml(attributeMatch[2]);
+      }
+      return attributes;
+    })
+    .find((attributes) => attributes.rel?.split(/\s+/).includes('canonical'));
+
+  return {
+    title: titleMatch ? decodeHtml(titleMatch[1]) : '',
+    description: meta.get('description') || '',
+    openGraph: Object.fromEntries([...meta.entries()].filter(([key]) => key.startsWith('og:'))),
+    twitter: Object.fromEntries([...meta.entries()].filter(([key]) => key.startsWith('twitter:'))),
+    canonical: canonicalMatch?.href || '',
+  };
+}
+
 console.log('====================================================');
 console.log(' GIMUN & GMC SEO, Meta & Social Preview Audit');
 console.log('====================================================\n');
@@ -114,14 +174,14 @@ for (const { route, file, isDynamic, committee } of publicPageRoutes) {
   let description = '';
 
   if (isDynamic && committee) {
-    title = `${committee.name} | GIMUN 2027 Committee Dossier`;
+    title = `${committee.name} | GIMUN ${canonicalEventYear} Committee Dossier`;
     description = committee.shortDescription;
   } else {
-    const titleMatch = content.match(/title:\s*["'`]([^"'`]+)["'`]/);
-    const descMatch = content.match(/description:\s*["'`]([^"'`]+)["'`]/);
+    const titleMatch = content.match(/title:\s*(['"`])([\s\S]*?)\1/);
+    const descMatch = content.match(/description:\s*(['"`])([\s\S]*?)\1/);
 
-    if (titleMatch) title = titleMatch[1];
-    if (descMatch) description = descMatch[1];
+    if (titleMatch) title = resolveMetadataTemplate(titleMatch[2]);
+    if (descMatch) description = resolveMetadataTemplate(descMatch[2]);
   }
 
   const issues = [];
@@ -173,9 +233,47 @@ for (const { route, file, isDynamic, committee } of publicPageRoutes) {
 }
 
 // ---------------------------------------------------------
-// 2. Audit System & API Endpoints
+// 2. Verify the metadata that Next actually rendered
 // ---------------------------------------------------------
-console.log('\n[Step 2/4] Auditing system & API endpoints...');
+console.log('\n[Step 2/5] Verifying rendered title, canonical, Open Graph, and Twitter metadata...');
+
+for (const { route } of publicPageRoutes) {
+  totalAudited++;
+  const artifactPath = artifactPathForRoute(route);
+  const expectedUrl = route === '/' ? siteUrl : `${siteUrl}${route}`;
+  if (!fs.existsSync(artifactPath)) {
+    failedAudited++;
+    console.error(`  [FAIL] ${route.padEnd(28)} Missing rendered HTML artifact: ${path.relative(rootDir, artifactPath)}`);
+    continue;
+  }
+
+  const rendered = readRenderedMetadata(fs.readFileSync(artifactPath, 'utf8'));
+  const issues = [];
+  if (!rendered.title || rendered.title.length < 10) issues.push('missing rendered title');
+  if (!rendered.description || rendered.description.length < 25) issues.push('missing rendered description');
+  if (rendered.canonical !== expectedUrl) issues.push(`canonical is ${rendered.canonical || 'missing'}, expected ${expectedUrl}`);
+
+  for (const key of ['og:title', 'og:description', 'og:url', 'og:site_name', 'og:image']) {
+    if (!rendered.openGraph[key]) issues.push(`missing ${key}`);
+  }
+  for (const key of ['twitter:card', 'twitter:title', 'twitter:description', 'twitter:image']) {
+    if (!rendered.twitter[key]) issues.push(`missing ${key}`);
+  }
+  if (rendered.openGraph['og:url'] !== expectedUrl) issues.push(`og:url is ${rendered.openGraph['og:url'] || 'missing'}`);
+
+  if (issues.length === 0) {
+    passedAudited++;
+    console.log(`  [PASS] ${route.padEnd(28)} rendered metadata matches ${expectedUrl}`);
+  } else {
+    failedAudited++;
+    console.error(`  [FAIL] ${route.padEnd(28)} ${issues.join('; ')}`);
+  }
+}
+
+// ---------------------------------------------------------
+// 3. Audit System & API Endpoints
+// ---------------------------------------------------------
+console.log('\n[Step 3/5] Auditing system & API endpoints...');
 
 for (const item of systemAndApiRoutes) {
   totalAudited++;
@@ -189,9 +287,9 @@ for (const item of systemAndApiRoutes) {
 }
 
 // ---------------------------------------------------------
-// 3. Validate Sitemap.xml Completeness & XML Format
+// 4. Validate Sitemap.xml Completeness & XML Format
 // ---------------------------------------------------------
-console.log('\n[Step 3/4] Auditing sitemap.xml format & completeness...');
+console.log('\n[Step 4/5] Auditing sitemap.xml format & completeness...');
 totalAudited++;
 
 const sitemapBodyFile = path.join(nextAppBuildDir, 'sitemap.xml.body');
@@ -257,9 +355,9 @@ if (sitemapValid && sitemapIssues.length === 0) {
 }
 
 // ---------------------------------------------------------
-// 4. Social Preview Media Asset Verification
+// 5. Social Preview Media Asset Verification
 // ---------------------------------------------------------
-console.log('\n[Step 4/4] Checking social preview and browser icon assets...');
+console.log('\n[Step 5/5] Checking social preview and browser icon assets...');
 totalAudited += 5;
 
 const ogImagePath = path.join(rootDir, 'public', 'images', 'og', 'default.jpg');
@@ -299,7 +397,7 @@ console.log(` - Failed Checks:              ${failedAudited}`);
 console.log('----------------------------------------------------');
 
 if (failedAudited === 0) {
-  console.log('\nSUCCESS: 100% SEO, social previews, metadata, and sitemap verified across all 31 routes.');
+  console.log(`\nSUCCESS: ${passedAudited}/${totalAudited} SEO, social previews, rendered metadata, and sitemap checks passed.`);
   process.exit(0);
 } else {
   console.error(`\nFAILURE: ${failedAudited} SEO check(s) failed.`);

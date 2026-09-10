@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const managedServer = process.env.PLAYWRIGHT_MANAGED_SERVER === '1';
+
 export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: true,
@@ -9,9 +11,12 @@ export default defineConfig({
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: 'http://127.0.0.1:3100',
-    channel: process.platform === 'win32' ? 'chrome' : undefined,
-    trace: 'retain-on-failure',
-    screenshot: 'only-on-failure',
+    browserName: 'chromium',
+    // Playwright's Windows trace recorder can lose its temporary recording
+    // file while closing a failed Chrome context. CI still retains the
+    // required traces/screenshots; local runs stay deterministic and quiet.
+    trace: process.env.CI ? 'retain-on-failure' : 'off',
+    screenshot: process.env.CI ? 'only-on-failure' : 'off',
   },
   projects: [
     { name: 'mobile-375', use: { ...devices['iPhone SE'], browserName: 'chromium' } },
@@ -20,15 +25,15 @@ export default defineConfig({
     { name: 'desktop-1024', use: { viewport: { width: 1024, height: 900 } } },
     { name: 'desktop-1440', use: { viewport: { width: 1440, height: 900 } } },
   ],
-  webServer: {
-    command: `"${process.execPath}" node_modules/next/dist/bin/next start -p 3100`,
+  webServer: managedServer ? undefined : {
+    command: `"${process.execPath}" scripts/playwright-server.cjs`,
     url: 'http://127.0.0.1:3100',
-    reuseExistingServer: false,
-    gracefulShutdown: { signal: 'SIGINT', timeout: 1000 },
+    reuseExistingServer: true,
     timeout: 120_000,
     env: {
       SUBMISSIONS_BACKEND: 'memory',
       ALLOW_IN_MEMORY_SUBMISSIONS: '1',
+      SUBMISSIONS_TEST_MODE: '1',
       SITE_URL: 'http://127.0.0.1:3100',
     },
   },

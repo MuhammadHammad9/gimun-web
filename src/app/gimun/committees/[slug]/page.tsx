@@ -8,6 +8,7 @@ import { Download, ArrowLeft } from 'lucide-react';
 import { getCommittees, getCommitteeBySlug, getDocuments } from '@/lib/content';
 
 import { constructMetadata } from '@/lib/metadata';
+import { getEventYear } from '@/lib/site-config';
 
 interface CommitteePageProps {
   params: Promise<{ slug: string }>;
@@ -25,13 +26,13 @@ export async function generateMetadata({ params }: CommitteePageProps): Promise<
   const committee = getCommitteeBySlug(slug);
   if (!committee) {
     return constructMetadata({
-      title: 'Committee Not Found | GIMUN 2027',
+      title: `Committee Not Found | GIMUN ${getEventYear()}`,
       path: `/gimun/committees/${slug}`,
     });
   }
 
   return constructMetadata({
-    title: `${committee.name} | GIMUN 2027 Committee Dossier`,
+    title: `${committee.name} | GIMUN ${getEventYear()} Committee Dossier`,
     description: committee.shortDescription,
     path: `/gimun/committees/${slug}`,
   });
@@ -51,7 +52,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
       {/* Breadcrumb Navigation */}
-      <nav className="flex items-center gap-2 text-xs font-mono text-[#5A5A6E]">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-mono text-[#5A5A6E]">
         <Link href="/" className="hover:text-[#1A1A2E]">
           Home
         </Link>

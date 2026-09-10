@@ -1,8 +1,11 @@
+import Link from 'next/link';
 import type { Metadata } from 'next';
 import { constructMetadata } from '@/lib/metadata';
+import { getEventYear } from '@/lib/site-config';
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: 'Privacy & Data Handling | GIMUN & GMC 2027',
+  title: `Privacy & Data Handling | GIMUN & GMC ${eventYear}`,
   description: 'How GIMUN & GMC handles registration, contact, accessibility, and event-operations data.',
   path: '/privacy',
 });
@@ -45,7 +48,7 @@ export default function PrivacyPage() {
           <p className="text-sm leading-relaxed text-neutral-gray">
             Event staff retain records only for the period needed for administration, audit, and required
             institutional reporting. To request correction or deletion of a record, contact the Secretariat
-            through the <a className="font-semibold text-primary underline" href="/contact">Inquiry Desk</a>.
+            through the <Link className="font-semibold text-primary underline" href="/contact">Inquiry Desk</Link>.
           </p>
         </section>
       </div>

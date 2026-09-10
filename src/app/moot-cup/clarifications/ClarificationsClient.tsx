@@ -15,6 +15,7 @@ import {
 import type { Clarification } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { HoneypotField } from "@/components/forms/HoneypotField";
+import { validateEmail } from "@/lib/validation";
 
 interface ClarificationsClientProps {
   initialClarifications: Clarification[];
@@ -65,7 +66,15 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!teamName || !contactEmail || !questionText) return;
+    if (!teamName.trim() || !contactEmail.trim() || !questionText.trim()) {
+      setSubmitError("Team code, contact email, and clarification question are required.");
+      return;
+    }
+    const emailError = validateEmail(contactEmail);
+    if (emailError) {
+      setSubmitError(emailError);
+      return;
+    }
     setSubmitting(true);
     setSubmitError(null);
     try {
@@ -227,7 +236,12 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                   type="button"
                   onClick={() => {
                     setFormSubmitted(false);
+                    setTeamName("");
+                    setContactEmail("");
                     setQuestionText("");
+                    setHoneypot("");
+                    setSubmitError(null);
+                    formLoadedAt.current = Date.now();
                   }}
                   className="text-xs font-semibold text-emerald-800 underline hover:text-emerald-950 pt-2 block cursor-pointer"
                 >
@@ -235,7 +249,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} noValidate className="space-y-4">
                 {submitError && (
                   <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs" role="alert">
                     {submitError}
@@ -244,12 +258,12 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                 <HoneypotField value={honeypot} onChange={setHoneypot} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-mono text-[#5A5A6E] font-medium block">
+                    <label htmlFor="clarification-team-code" className="text-xs font-mono text-[#5A5A6E] font-medium block">
                       Assigned Team Code (e.g. TC-08) *
                     </label>
                     <input
+                      id="clarification-team-code"
                       type="text"
-                      required
                       autoComplete="off"
                       value={teamName}
                       onChange={(e) => setTeamName(e.target.value)}
@@ -259,12 +273,12 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-mono text-[#5A5A6E] font-medium block">
+                    <label htmlFor="clarification-contact-email" className="text-xs font-mono text-[#5A5A6E] font-medium block">
                       Contact Advocate Email *
                     </label>
                     <input
+                      id="clarification-contact-email"
                       type="email"
-                      required
                       autoComplete="email"
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
@@ -275,11 +289,11 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-mono text-[#5A5A6E] font-medium block">
+                  <label htmlFor="clarification-question" className="text-xs font-mono text-[#5A5A6E] font-medium block">
                     Specific Clarification Question (cite Compromis paragraph) *
                   </label>
                   <textarea
-                    required
+                    id="clarification-question"
                     rows={4}
                     value={questionText}
                     onChange={(e) => setQuestionText(e.target.value)}

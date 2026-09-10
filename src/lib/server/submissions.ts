@@ -8,7 +8,7 @@ import type {
 } from '@/lib/types';
 import { RATE_LIMIT } from '@/lib/honeypot';
 import { getSiteConfig } from '@/lib/content';
-import { formatEventDate } from '@/lib/site-config';
+import { formatEventDate, getEventYear } from '@/lib/site-config';
 import { getMissingProductionConfig, getServerConfig } from '@/lib/server/config';
 
 export class SubmissionServiceError extends Error {
@@ -74,6 +74,10 @@ function backendMode() {
     throw new SubmissionServiceError('Submission service has an invalid SUBMISSIONS_BACKEND value.');
   }
   return backend;
+}
+
+function isExplicitMemoryTestBackend() {
+  return backendMode() === 'memory' && process.env.ALLOW_IN_MEMORY_SUBMISSIONS === '1';
 }
 
 function ensureProductionBackend(options: { emailDelivery?: boolean } = {}) {
@@ -146,7 +150,7 @@ function recipientList() {
     .map((recipient) => recipient.trim())
     .filter(Boolean);
 
-  if (process.env.NODE_ENV === 'production' && recipients.length === 0) {
+  if (process.env.NODE_ENV === 'production' && recipients.length === 0 && !isExplicitMemoryTestBackend()) {
     throw new SubmissionServiceError('Submission service is missing NOTIFICATION_EMAIL.');
   }
 
@@ -176,7 +180,7 @@ export async function enforceRateLimit(bucket: string, ip: string) {
 
   if (upstashUrl && upstashToken) {
     try {
-      const response = await fetch(`${upstashUrl.replace(/\/$/, '')}/eval`, {
+      const response = await fetch(upstashUrl.replace(/\/$/, ''), {
         method: 'POST',
         headers: { Authorization: `Bearer ${upstashToken}` },
         body: JSON.stringify([
@@ -224,7 +228,17 @@ export async function enforceRateLimit(bucket: string, ip: string) {
 }
 
 export function clientIp(request: Request) {
-  return request.headers.get('x-real-ip') || request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+  const trustedVercelIp = request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim();
+  const realIp = request.headers.get('x-real-ip')?.trim();
+  const forwarded = request.headers.get('x-forwarded-for')
+    ?.split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  // Vercel's edge header is authoritative in production. For generic reverse
+  // proxies, use the last appended X-Forwarded-For hop so a caller cannot
+  // bypass the limiter by prepending a forged address.
+  return trustedVercelIp || realIp || forwarded?.at(-1) || 'unknown';
 }
 
 function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: string, qrDataUrl?: string | null): string {
@@ -241,6 +255,7 @@ function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: stri
   const feeDisplay = record.feeAmount || (isMoot ? 'PKR 12,000' : record.applicantType === 'individual' ? 'PKR 4,500' : 'PKR 4,000 / delegate');
 
   const site = getSiteConfig();
+  const eventYear = getEventYear();
   const eventDates = `${formatEventDate(site.eventDates.start)}–${formatEventDate(site.eventDates.end, { day: 'numeric' })}`;
   const venueTitle = site.hostInstitution;
   const venueLocation = site.venue;
@@ -358,7 +373,7 @@ function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: stri
         <table style="width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.5;">
           <tr>
             <td style="padding: 4px 0; color: #64748b; width: 26%; font-weight: 500;">Event Name:</td>
-            <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">${trackNameLong} 2027</td>
+            <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">${trackNameLong} ${escapeHtml(eventYear)}</td>
           </tr>
           <tr>
             <td style="padding: 4px 0; color: #64748b; font-weight: 500;">Event Dates:</td>
@@ -407,6 +422,7 @@ function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: stri
 </body>
 </html>`;
 }
+
 
 export async function createRegistration(record: RegistrationRecord): Promise<DeliveryResult> {
   ensureProductionBackend();
@@ -464,6 +480,8 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
     throw new SubmissionServiceError('Submission storage returned an invalid reference.', 503);
   }
 
+  // The transaction created both outbox rows. Delivery is intentionally left
+  // to the protected cron worker so the request never sends mail directly.
   return { referenceId, emailQueued: true, notificationQueued: recipients.length > 0 };
 }
 
@@ -478,7 +496,10 @@ export async function createContactMessage(data: ContactFormData) {
     return { id, notificationQueued: false };
   }
 
-  await supabaseRpc<string>('create_contact_submission', {
+  const notificationSubject = 'New ' + data.queryType + ' inquiry';
+  const notificationHtml = '<p><strong>' + escapeHtml(data.name) + '</strong> submitted a ' + escapeHtml(data.queryType) + ' inquiry.</p><p>' + escapeHtml(data.message).replace(/\n/g, '<br />') + '</p>';
+
+  const persistedId = await supabaseRpc<string>('create_contact_submission', {
     p_id: id,
     p_submitted_at: submittedAt,
     p_name: data.name,
@@ -486,11 +507,15 @@ export async function createContactMessage(data: ContactFormData) {
     p_query_type: data.queryType,
     p_message: data.message,
     p_notification_recipients: recipients,
-    p_notification_subject: 'New ' + data.queryType + ' inquiry',
-    p_notification_html: '<p><strong>' + escapeHtml(data.name) + '</strong> submitted a ' + escapeHtml(data.queryType) + ' inquiry.</p><p>' + escapeHtml(data.message).replace(/\n/g, '<br />') + '</p>',
+    p_notification_subject: notificationSubject,
+    p_notification_html: notificationHtml,
   });
 
-  return { id, notificationQueued: recipients.length > 0 };
+  if (!persistedId || typeof persistedId !== 'string') {
+    throw new SubmissionServiceError('Submission storage returned an invalid inquiry identifier.', 503);
+  }
+
+  return { id: persistedId, notificationQueued: recipients.length > 0 };
 }
 
 async function updateOutbox(id: string, workerId: string, update: Record<string, unknown>) {

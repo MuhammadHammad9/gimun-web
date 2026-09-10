@@ -24,6 +24,7 @@ create index if not exists email_outbox_dispatch_idx
 
 alter table public.email_outbox enable row level security;
 revoke all on public.email_outbox from anon, authenticated;
+grant all on public.email_outbox to service_role, postgres;
 
 -- Keep the migration additive when the table already exists from an earlier
 -- version of this migration, while allowing uncertain provider responses to be
@@ -207,6 +208,26 @@ language sql
 security invoker
 set search_path = public
 as $$
+  with expired_pending as (
+    update public.email_outbox
+    set status = 'failed',
+        last_error = 'Automatic retry window expired before dispatch.',
+        locked_at = null,
+        locked_by = null
+    where status in ('pending', 'retry')
+      and retry_until <= now()
+    returning id
+  ), expired_processing as (
+    update public.email_outbox
+    set status = 'needs_review',
+        last_error = 'A worker lease expired after the automatic retry window; verify provider delivery manually.',
+        locked_at = null,
+        locked_by = null
+    where status = 'processing'
+      and retry_until <= now()
+      and locked_at < now() - interval '10 minutes'
+    returning id
+  )
   update public.email_outbox
   set status = 'processing', locked_at = now(), locked_by = p_worker_id, attempts = attempts + 1
   where id in (
@@ -215,13 +236,15 @@ as $$
     where (
       status in ('pending', 'retry')
       and next_attempt_at <= now()
+      and retry_until > now()
     ) or (
       status = 'processing'
       and locked_at < now() - interval '10 minutes'
+      and retry_until > now()
     )
     order by created_at
     for update skip locked
-    limit greatest(1, least(p_limit, 50))
+    limit greatest(1, least(coalesce(p_limit, 10), 50))
   )
   returning *;
 $$;

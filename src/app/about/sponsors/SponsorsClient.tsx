@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import type { Sponsor } from '@/lib/types';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { getEventYear } from '@/lib/site-config';
 
 interface SponsorsClientProps {
   initialSponsors: Sponsor[];
@@ -52,6 +53,7 @@ const TIER_LABELS: Record<Sponsor['tier'], { label: string; badge: string; color
 };
 
 export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
+  const eventYear = getEventYear();
   // Group sponsors by tier
   const groupedSponsors = TIER_ORDER.map((tier) => ({
     tier,
@@ -147,7 +149,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
             <span>Corporate Partnerships Deck</span>
           </span>
           <h3 className="text-xl sm:text-2xl font-heading font-bold text-ink">
-            Download the 2027 Sponsorship Prospectus
+            Download the {eventYear} Sponsorship Prospectus
           </h3>
           <p className="text-xs sm:text-sm text-neutral-gray max-w-xl leading-relaxed">
             Review detailed tier benefits, stage branding packages, delegate kit inserts, and CSR alignment

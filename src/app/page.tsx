@@ -9,7 +9,7 @@ import { CountdownChip } from '@/components/ui/CountdownChip';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { ArrowRight, CheckCircle2, ChevronRight } from 'lucide-react';
 import { formatDateRange } from '@/lib/utils';
-import { formatEventDate, formatPublishedDate } from '@/lib/site-config';
+import { formatEventDate, formatPublishedDate, getEventYear } from '@/lib/site-config';
 import type { Metadata } from 'next';
 import { constructMetadata } from '@/lib/metadata';
 import {
@@ -21,11 +21,13 @@ import {
   getDocuments,
 } from '@/lib/content';
 
+const eventYear = getEventYear();
+
 export const metadata: Metadata = constructMetadata({
-  title: 'GIMUN & GMC 2027 | Where Diplomacy Meets the Courtroom',
+  title: `GIMUN & GMC ${eventYear} | Where Diplomacy Meets the Courtroom`,
+  path: '/',
   description:
     'Two flagship collegiate student competitions. One unified digital home at Ghulam Ishaq Khan Institute (GIKI), Topi. Model United Nations diplomacy meets appellate moot court advocacy.',
-  path: '',
 });
 
 export default function Home() {
@@ -158,7 +160,7 @@ export default function Home() {
                       <span className="text-xs font-mono text-[#5A5A6E]">Diplomatic Simulation</span>
                     </div>
                     <h3 className="text-2xl sm:text-3xl font-heading font-bold text-[#1A1A2E]">
-                      GIMUN 2027: Multilateral Statecraft
+                      GIMUN {eventYear}: Multilateral Statecraft
                     </h3>
                     <p className="text-[#5A5A6E] text-sm sm:text-base leading-relaxed">
                       Delegates embody diplomats representing member states across the UN Security Council, DISEC, UNHRC, and the Pakistan National Assembly Crisis. Develop persuasive speaking, draft working papers, form multilateral voting blocs, and navigate fast-breaking global developments.

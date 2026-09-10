@@ -20,7 +20,7 @@
         "group": "secretariat",
         "photo": "",
         "bio": "Senior law undergraduate and 4-time Best Delegate with specialization in international humanitarian law.",
-        "links": { "email": "unsc.chair@gimun-mootcup.org" }
+        "links": { "email": "unsc.chair@gimungiki.org" }
       }
     ],
     "backgroundGuideDocId": "doc-bg-unsc",
@@ -65,7 +65,7 @@
         "group": "secretariat",
         "photo": "",
         "bio": "President of GIKI Literary & Debating Society with multiple national MUN accolades.",
-        "links": { "email": "disec.chair@gimun-mootcup.org" }
+        "links": { "email": "disec.chair@gimungiki.org" }
       }
     ],
     "backgroundGuideDocId": "doc-bg-disec",
@@ -105,7 +105,7 @@
         "group": "secretariat",
         "photo": "",
         "bio": "Diplomacy researcher and senior debater with focus on international refugee law and public policy.",
-        "links": { "email": "unhrc.chair@gimun-mootcup.org" }
+        "links": { "email": "unhrc.chair@gimungiki.org" }
       }
     ],
     "backgroundGuideDocId": "doc-bg-unhrc",
@@ -143,7 +143,7 @@
         "group": "secretariat",
         "photo": "",
         "bio": "Veteran parliamentary debater and political science scholar with experience across parliamentary simulation circuits.",
-        "links": { "email": "pna.speaker@gimun-mootcup.org" }
+        "links": { "email": "pna.speaker@gimungiki.org" }
       }
     ],
     "backgroundGuideDocId": "doc-gimun-rop",

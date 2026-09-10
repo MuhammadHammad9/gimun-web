@@ -130,7 +130,8 @@ for (const [route, artifactRel] of Object.entries(routeToBuildArtifact)) {
 }
 
 if (buildArtifactErrors.length > 0) {
-  console.warn('  [WARN] Some build artifacts in .next were missing or empty. Ensure npm run build has completed.');
+  console.error(`  [FAIL] ${buildArtifactErrors.length} build artifact(s) are missing or empty:`);
+  buildArtifactErrors.forEach((error) => console.error(`    - ${error}`));
 } else {
   console.log(`  [OK] All ${Object.keys(routeToBuildArtifact).length} static/prerendered HTML & XML build outputs verified.`);
 }
@@ -309,7 +310,10 @@ for (const { url, sourceFile, isRenderedHtml } of discoveredLinks) {
     continue;
   }
 
-  if (url.startsWith('/images/') || url === '/favicon.ico') {
+  if (
+    url.startsWith('/images/') ||
+    ['/favicon.ico', '/favicon-16x16.png', '/favicon-32x32.png', '/apple-icon.png'].includes(url)
+  ) {
     const localAssetPath = path.join(publicDir, url.slice(1));
     if (fs.existsSync(localAssetPath)) {
       verifiedDocCount++;
@@ -383,7 +387,7 @@ console.log(` - Hash Anchor Links Verified:            ${verifiedHashCount}`);
 console.log(` - Missing Document Assets:               ${missingDocumentCount}`);
 console.log('----------------------------------------------------');
 
-let hasErrors = false;
+let hasErrors = buildArtifactErrors.length > 0;
 
 if (brokenRoutes.length > 0) {
   hasErrors = true;

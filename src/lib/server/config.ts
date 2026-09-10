@@ -34,11 +34,30 @@ export function getServerConfig(): ServerConfig {
   };
 }
 
+function isLoopbackUrl(value?: string) {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' && ['127.0.0.1', 'localhost', '::1'].includes(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
+export function isExplicitMemoryTestBackend(config = getServerConfig()) {
+  return (
+    config.backend === 'memory' &&
+    process.env.ALLOW_IN_MEMORY_SUBMISSIONS === '1' &&
+    process.env.SUBMISSIONS_TEST_MODE === '1' &&
+    isLoopbackUrl(config.siteUrl)
+  );
+}
+
 export function getMissingProductionConfig(options: { emailDelivery?: boolean } = {}) {
   if (process.env.NODE_ENV !== 'production') return [];
 
   const config = getServerConfig();
-  if (config.backend === 'memory' && process.env.ALLOW_IN_MEMORY_SUBMISSIONS === '1') return [];
+  if (isExplicitMemoryTestBackend(config)) return [];
 
   const required: Array<[string, string | undefined]> = [
     ['SITE_URL', config.siteUrl],

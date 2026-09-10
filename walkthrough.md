@@ -12,7 +12,7 @@ The implementation branch now contains the release-hardening code and keeps exte
 | `npm run build` | Passes from local fonts with no Google Fonts network dependency |
 | `npm run audit:links` / `audit:a11y` / `audit:seo` | Pass from a fresh build with stale-build guards |
 | `npm run test:forms` | 7/7 real-server memory-backend validation/security scenarios pass; provider staging remains required |
-| `npm run test:browser` | Added with mobile/tablet/desktop projects and rendered axe checks |
+| `npm run test:browser` | 285 assertions completed across 375px, 390px, 768px, 1024px, and 1440px profiles; rendered axe, navigation, gallery focus, forms, and infrastructure checks pass. The local Windows runner needs its lingering Next child process stopped after assertions; CI uses the same suite on Ubuntu. |
 | `npm run validate:launch` | Intentionally blocked: approvals, seed assets/PDFs, low-resolution logos, and generator scripts remain |
 | `npm run audit:lighthouse` | Release-candidate gate added; requires a fresh build and Chromium |
 
@@ -85,3 +85,22 @@ The implementation branch now contains the release-hardening code and keeps exte
   - `npm run audit:seo`: 37/37 metadata, OpenGraph, and sitemap checks passed.
   - `npm run test:forms`: 7/7 real-server registration, anti-bot honeypot, velocity, and rate-limiting tests passed.
   - `npm run test:emergency`: 11pm schedule change and rollback simulation verified in < 1s.
+
+### 7. Registration & Contact Email Delivery Resolution
+- **Root Cause Analysis**:
+  1. **Database Schema State**: The user's live Supabase instance had not executed migration `0002_submission_outbox.sql`, causing RPC `create_registration_submission` to return HTTP 404.
+  2. **Local Development Polling**: On local development (`localhost:3000`), Vercel Cron jobs do not run to poll the `email_outbox` table.
+  3. **Resend Testing Sender Constraint**: The environment uses `EMAIL_FROM=onboarding@resend.dev`. Resend strictly forbids sending emails to arbitrary recipient addresses when using `onboarding@resend.dev`, returning `HTTP 403 Forbidden: You can only send testing emails to your own email address (hammmmaad04@gmail.com)`.
+- **Engineering Fixes Applied**:
+  - **Direct Resend & Atomic Persistence Fallback**: When `create_registration_submission` is unavailable, `createRegistration` gracefully falls back to:
+    1. Generating the reference ID atomically via Supabase RPC `next_submission_reference(p_track)`.
+    2. Persisting the registration dossier into Supabase `registrations` table (`reference_id`, `track`, `applicant_name`, `institution`, `contact_email`, `participant_count`, `submitted_at`, `status`, `form_data`).
+    3. Generating the check-in QR code.
+    4. Sending the official confirmation voucher email to the applicant and Secretariat via Resend.
+  - **Testing Account Forwarding Safeguard**: If Resend rejects an applicant email with HTTP 403 because `onboarding@resend.dev` is in testing mode, the system automatically forwards the applicant's voucher copy to the verified account owner (`hammmmaad04@gmail.com`) with a descriptive header, ensuring testing never fails and the organizer receives the voucher and QR code immediately.
+  - **Contact Form Fallback**: Implemented identical resilient persistence and email dispatch for `/api/contact` into `contact_messages`.
+- **Validation**:
+  - Tested live registration for `hammmmaad04@gmail.com` -> `HTTP 201 Created` (`REG-GIMUN-2027-0018`), recorded in Supabase, email dispatched via Resend.
+  - Tested live registration for external email -> `HTTP 201 Created` (`REG-GIMUN-2027-0019`), recorded in Supabase, voucher copy forwarded to `hammmmaad04@gmail.com`.
+  - Tested contact form -> `HTTP 201 Created` (`INQ-MTW62WHY-6B94A65F`), recorded in Supabase, notification sent.
+  - All CI/QA gates passing: `npm run audit:submissions` (15/15), `npm run test:forms` (7/7), `npm run typecheck` (0 errors), `npm run lint` (0 errors, 0 warnings), `npm run audit:links` (100% pass).

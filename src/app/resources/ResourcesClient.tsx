@@ -10,12 +10,23 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Download, Sparkles } from "lucide-react";
 import type { Document } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { getEventYear } from "@/lib/site-config";
 
 interface ResourcesClientProps {
   initialDocuments: Document[];
 }
 
 export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
+  const eventYear = getEventYear();
+  const gimunRulesDocument = initialDocuments.find(
+    (document) => document.track === "gimun" && document.type === "rules",
+  );
+  const mootRulesDocument = initialDocuments.find(
+    (document) => document.track === "moot-cup" && document.type === "rules",
+  );
+  const campusMapDocument = initialDocuments.find(
+    (document) => document.track === "shared" && document.type === "map",
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [trackFilter, setTrackFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -73,13 +84,17 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
               </p>
             </div>
             <div className="relative z-10 pt-2 border-t border-white/10">
-              <a
-                href="/documents/gimun/GIMUN_Rules_of_Procedure.pdf"
-                className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#FF6B35] hover:text-[#FF6B35]/80 transition-colors"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Download RoP Handbook</span>
-              </a>
+              {gimunRulesDocument ? (
+                <a
+                  href={gimunRulesDocument.fileUrl}
+                  className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#FF6B35] hover:text-[#FF6B35]/80 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download RoP Handbook</span>
+                </a>
+              ) : (
+                <span className="text-xs font-mono text-gray-400">Handbook pending publication</span>
+              )}
             </div>
           </div>
 
@@ -94,17 +109,21 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
                 GMC Memorial Kit
               </h3>
               <p className="text-xs text-gray-300 leading-relaxed">
-                Includes the 2027 official Compromis case record, OSCOLA citation guidelines, and oral rounds scoring rubric.
+                Includes the {eventYear} official Compromis case record, OSCOLA citation guidelines, and oral rounds scoring rubric.
               </p>
             </div>
             <div className="relative z-10 pt-2 border-t border-white/10">
-              <a
-                href="/documents/moot-cup/Moot_Cup_Rules_and_Memorial_Guide.pdf"
-                className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#00B4A6] hover:text-[#00B4A6]/80 transition-colors"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Download Rules &amp; Guide</span>
-              </a>
+              {mootRulesDocument ? (
+                <a
+                  href={mootRulesDocument.fileUrl}
+                  className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#00B4A6] hover:text-[#00B4A6]/80 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Rules &amp; Guide</span>
+                </a>
+              ) : (
+                <span className="text-xs font-mono text-gray-400">Rules guide pending publication</span>
+              )}
             </div>
           </div>
 
@@ -123,13 +142,17 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
               </p>
             </div>
             <div className="relative z-10 pt-2 border-t border-white/10">
-              <a
-                href="/documents/shared/GIKI_Campus_Map_Venue_Guide.pdf"
-                className="inline-flex items-center gap-2 text-xs font-mono font-bold text-gray-200 hover:text-white transition-colors"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Download Campus Map &amp; Guide</span>
-              </a>
+              {campusMapDocument ? (
+                <a
+                  href={campusMapDocument.fileUrl}
+                  className="inline-flex items-center gap-2 text-xs font-mono font-bold text-gray-200 hover:text-white transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Campus Map &amp; Guide</span>
+                </a>
+              ) : (
+                <span className="text-xs font-mono text-gray-400">Campus guide pending publication</span>
+              )}
             </div>
           </div>
         </div>

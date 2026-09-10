@@ -17,11 +17,14 @@ import {
 import { Button } from "@/components/ui/Button";
 import type { ProblemCategory, Document } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { getEventYear } from "@/lib/site-config";
 
 interface CategoriesClientProps {
   categories: ProblemCategory[];
   propositionDoc?: Document;
 }
+
+const eventYear = getEventYear();
 
 const CATEGORY_LEGAL_ANALYSIS: Record<
   string,
@@ -34,7 +37,7 @@ const CATEGORY_LEGAL_ANALYSIS: Record<
   }
 > = {
   "cat-01": {
-    docketNumber: "ICJ-GMC-2027/01",
+    docketNumber: `ICJ-GMC-${eventYear}/01`,
     applicantCore:
       "State sovereignty breach through state-attributed offensive cyber infrastructure; violation of Article 2(4) of the UN Charter and customary international law on non-intervention.",
     respondentCore:
@@ -70,7 +73,7 @@ const CATEGORY_LEGAL_ANALYSIS: Record<
     ],
   },
   "cat-02": {
-    docketNumber: "ICJ-GMC-2027/02",
+    docketNumber: `ICJ-GMC-${eventYear}/02`,
     applicantCore:
       "Unilateral diversion of international watercourse causing catastrophic downstream ecological depletion, violating equitable utilization and prior notification standards.",
     respondentCore:
@@ -99,7 +102,7 @@ const CATEGORY_LEGAL_ANALYSIS: Record<
     ],
   },
   "cat-03": {
-    docketNumber: "ICJ-GMC-2027/03",
+    docketNumber: `ICJ-GMC-${eventYear}/03`,
     applicantCore:
       "Extraterritorial biometric data harvesting and spyware interception violating International Covenant on Civil and Political Rights (ICCPR) Article 17 and diplomatic premises inviolability.",
     respondentCore:

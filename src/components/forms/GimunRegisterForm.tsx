@@ -15,6 +15,7 @@ import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
 import { NonPaymentNotice } from './NonPaymentNotice';
 import { PrivacyStatement } from './PrivacyStatement';
+import { getEventYear } from '@/lib/site-config';
 
 interface GimunRegisterFormProps {
   committees: Committee[];
@@ -68,6 +69,7 @@ const initialDelegation: GimunDelegationData = {
 };
 
 export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormProps) {
+  const eventYear = getEventYear();
   const [applicantType, setApplicantType] = useState<'individual' | 'delegation'>('individual');
   const [individualData, setIndividualData] = useState<GimunIndividualData>(initialIndividual);
   const [delegationData, setDelegationData] = useState<GimunDelegationData>(initialDelegation);
@@ -263,7 +265,13 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
         timestamp: data.receipt?.submittedAt,
       };
 
-      onSuccess(data.referenceId || 'REG-GIMUN-2027', applicantName, applicantType, details);
+      if (!data.referenceId || !/^REG-GIMUN-2027-\d{4}$/.test(data.referenceId)) {
+        setStatus('error');
+        setServerError('The submission was stored but did not return a valid reference number. Please contact the Secretariat before submitting again.');
+        return;
+      }
+
+      onSuccess(data.referenceId, applicantName, applicantType, details);
     } catch {
       console.error('Registration request failed.');
       setStatus('error');
@@ -649,7 +657,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
               </FormField>
 
               <FormField
-                label="How did you hear about GIMUN 2027?"
+                label={`How did you hear about GIMUN ${eventYear}?`}
                 required
                 error={errors.referralSource}
                 id="field-referralSource"

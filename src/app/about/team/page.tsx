@@ -4,12 +4,14 @@ import { getTeamMembers } from "@/lib/content";
 import { TeamClient } from "./TeamClient";
 import { Users } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { getEventYear } from "@/lib/site-config";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Organizing Team, Secretariat & GMC Convenors | GIMUN & GMC 2027",
+  title: `Organizing Team, Secretariat & GMC Convenors | GIMUN & GMC ${eventYear}`,
+  path: '/about/team',
   description:
     "Meet the GIMUN Secretariat, GMC Convening Committee, and Host Directorate student leadership organizing Pakistan’s premier academic symposium at GIKI Topi.",
-  path: "/about/team",
 });
 
 export default function TeamPage() {
@@ -29,7 +31,7 @@ export default function TeamPage() {
               Executive Leadership
             </span>
             <span className="text-xs font-mono text-gray-400 uppercase tracking-widest">
-              2027 Organizing Directorate
+              {eventYear} Organizing Directorate
             </span>
           </div>
 

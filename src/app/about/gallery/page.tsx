@@ -4,12 +4,14 @@ import { getGallery } from "@/lib/content";
 import { GalleryClient } from "./GalleryClient";
 import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { getEventYear } from "@/lib/site-config";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Media Archive & Gallery | GIMUN & GMC 2027",
+  title: `Media Archive & Gallery | GIMUN & GMC ${eventYear}`,
+  path: '/about/gallery',
   description:
     "Visual archives capturing intense committee debates, judicial advocacy, diplomacy, campus life, and award ceremonies across 15 years of GIMUN and GMC.",
-  path: "/about/gallery",
 });
 
 export default function GalleryPage() {

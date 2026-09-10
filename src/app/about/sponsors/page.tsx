@@ -4,12 +4,14 @@ import { getSponsors } from "@/lib/content";
 import { SponsorsClient } from "./SponsorsClient";
 import { Briefcase, Download } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { getEventYear } from "@/lib/site-config";
 
+const eventYear = getEventYear();
 export const metadata: Metadata = constructMetadata({
-  title: "Institutional Sponsors & Strategic Patrons | GIMUN & GMC 2027",
+  title: `Institutional Sponsors & Strategic Patrons | GIMUN & GMC ${eventYear}`,
+  path: '/about/sponsors',
   description:
     "Our esteemed statutory patrons, government boards, corporate partners, and legal chambers supporting Pakistan’s premier youth diplomatic and legal advocacy championship.",
-  path: "/about/sponsors",
 });
 
 export default function SponsorsPage() {

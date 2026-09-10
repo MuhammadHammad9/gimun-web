@@ -58,7 +58,7 @@ This runbook applies after the production Supabase, Resend, Upstash, and Vercel 
   ```
 
 ### 3. Delegate Badging & Bench Roster Exports
-- Refer to [`supabase/QUERIES_GUIDE.md`](file:///c:/Users/Khaas%20Laptop's/OneDrive%20-%20Higher%20Education%20Commission/Desktop/Sophep/Main%20Website/supabase/QUERIES_GUIDE.md) and [`supabase/useful_queries.sql`](file:///c:/Users/Khaas%20Laptop's/OneDrive%20-%20Higher%20Education%20Commission/Desktop/Sophep/Main%20Website/supabase/useful_queries.sql) for CSV export queries:
+- Refer to [`supabase/QUERIES_GUIDE.md`](./supabase/QUERIES_GUIDE.md) and [`supabase/useful_queries.sql`](./supabase/useful_queries.sql) for CSV export queries:
   - `public.view_gimun_roster`: Individualized delegate roster with school, delegation size, and contact for badge printing.
   - `public.view_moot_roster`: Team members flattened by role (Lead Counsel, Co-Counsel, Researcher).
   - `public.view_submission_stats`: Real-time breakdown of total participants, delegations, and institutions.

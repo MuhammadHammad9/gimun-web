@@ -118,7 +118,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+          <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-1 lg:gap-2">
             {NAV_ITEMS.map((item) => {
               const isActive =
                 item.href === '/'
