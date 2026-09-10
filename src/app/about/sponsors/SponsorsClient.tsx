@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   Download,
@@ -217,11 +218,23 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
                     <div className="double-bezel h-full group">
                       <div className="double-bezel-inner p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
                         <div className="space-y-3">
-                          {/* Logo Simulator Box with Grayscale-to-Color hover */}
+                          {/* Logo Box with Grayscale-to-Color hover */}
                           <div className="h-20 rounded-card bg-slate-50 border border-slate-200/60 flex items-center justify-center p-4 transition-all group-hover:border-primary/40 group-hover:bg-white">
-                            <span className="font-heading font-extrabold text-lg sm:text-xl text-slate-500 transition-colors group-hover:text-primary tracking-tight">
-                              {sp.name.split('(')[0].trim()}
-                            </span>
+                            {sp.logo ? (
+                              <div className="relative w-full h-12">
+                                <Image
+                                  src={sp.logo}
+                                  alt={sp.name}
+                                  fill
+                                  className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                                  sizes="(max-width: 640px) 100vw, 200px"
+                                />
+                              </div>
+                            ) : (
+                              <span className="font-heading font-extrabold text-lg sm:text-xl text-slate-500 transition-colors group-hover:text-primary tracking-tight">
+                                {sp.name.split('(')[0].trim()}
+                              </span>
+                            )}
                           </div>
 
                           <div className="space-y-1">

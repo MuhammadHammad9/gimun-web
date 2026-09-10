@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Mail, Award } from "lucide-react";
 import type { TeamMember } from "@/lib/types";
@@ -141,14 +142,26 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
                   <div className="space-y-4">
                     {/* Header with Monogram Avatar & Branch Tag */}
                     <div className="flex items-start justify-between gap-3">
-                      <div
-                        className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center font-heading font-extrabold text-lg shadow-sm shrink-0",
-                          groupMeta.avatarBg
-                        )}
-                      >
-                        {initials}
-                      </div>
+                      {member.photo ? (
+                        <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-sm shrink-0 border border-slate-200">
+                          <Image
+                            src={member.photo}
+                            alt={member.name}
+                            fill
+                            className="object-cover"
+                            sizes="56px"
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className={cn(
+                            "w-14 h-14 rounded-2xl flex items-center justify-center font-heading font-extrabold text-lg shadow-sm shrink-0",
+                            groupMeta.avatarBg
+                          )}
+                        >
+                          {initials}
+                        </div>
+                      )}
 
                       <span
                         className={cn(
