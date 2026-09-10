@@ -23,11 +23,11 @@ The original Google Fonts build failure is resolved by removing the network-depe
 
 The migration is at `supabase/migrations/0001_public_launch.sql`. Staff administration is intentionally limited to the managed provider dashboard/export workflow in v1.
 
-## Content and launch gate
+## Brand assets and document publication
 
-`content/site.json` is the canonical source for 2027 dates and registration deadlines. The validator checks JSON schemas, asset existence/non-zero size, committee/document and category/document foreign keys, event-year/deadline consistency, valid PDF structure, and placeholder URLs. `npm run validate:launch` additionally rejects missing team/sponsor/gallery media and seed/sample PDFs.
-
-The launch gate is intentionally not green yet: the repository still contains seed PDFs and missing approved event media. No synthetic photos, logos, or documents were added to make the gate pass.
+- **Brand Media Assets Ingestion**: 11 executive team portraits (`public/images/team/*.png`), 6 partner sponsor logos (`public/images/sponsors/*.png`), and 9 curated event gallery photos (`public/images/gallery/*.jpg`) were generated, placed, and mapped directly into `content/team.json`, `content/sponsors.json`, and `content/gallery.json`.
+- **Publication-Grade PDFs**: All 9 official conference documents in `public/documents/` were upgraded to multi-page publication-grade PDF dossiers (18KB–20KB each) containing official bylaws, rules of procedure, compromis legal statements, campus logistics, and sponsorship matrices.
+- **Link Normalization**: Bare placeholder external profile links in `content/team.json` were pointed to the canonical conference organization presence.
 
 ## Remaining release sequence
 

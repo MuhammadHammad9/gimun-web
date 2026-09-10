@@ -3,7 +3,7 @@
     "id": "sp-1",
     "name": "Higher Education Commission (HEC) Pakistan",
     "tier": "title",
-    "logo": "",
+    "logo": "/images/sponsors/hec.png",
     "url": "https://hec.gov.pk",
     "description": "Principal national academic patron promoting tertiary research, youth diplomatic debate, and inter-university intellectual competition across Pakistan."
   },
@@ -11,7 +11,7 @@
     "id": "sp-2",
     "name": "Khyber Pakhtunkhwa Information Technology Board (KPITB)",
     "tier": "gold",
-    "logo": "",
+    "logo": "/images/sponsors/kpitb.png",
     "url": "https://kpitb.gov.pk",
     "description": "Strategic provincial innovation partner supporting digital infrastructure, livestreamed championship rounds, and youth tech leadership."
   },
@@ -19,7 +19,7 @@
     "id": "sp-3",
     "name": "Pakistan Software Export Board (PSEB)",
     "tier": "silver",
-    "logo": "",
+    "logo": "/images/sponsors/pseb.png",
     "url": "https://pseb.org.pk",
     "description": "Official career and technology symposium partner connecting high-achieving student debaters with national industry opportunities."
   },
@@ -27,7 +27,7 @@
     "id": "sp-4",
     "name": "Supreme Court Bar Association Legal Research Wing",
     "tier": "partner",
-    "logo": "",
+    "logo": "/images/sponsors/scba.png",
     "url": "https://scbap.org",
     "description": "Academic adjudicatory partner supporting judicial evaluation bench panels, guest judge delegations, and legal internship awards."
   },
@@ -35,7 +35,7 @@
     "id": "sp-5",
     "name": "Pakistan Law Journal & Jurists Review",
     "tier": "partner",
-    "logo": "",
+    "logo": "/images/sponsors/plj.png",
     "url": "https://pakistanlawsite.com",
     "description": "Publishing partner presenting the Best Memorial Award and publishing winning championship memorials in national legal archives."
   },
@@ -43,7 +43,7 @@
     "id": "sp-6",
     "name": "Youth Diplomatic Herald",
     "tier": "media-partner",
-    "logo": "",
+    "logo": "/images/sponsors/herald.png",
     "url": "https://youthherald.pk",
     "description": "Digital press partner delivering daily committee gazettes, live courtroom dispatch reports, and delegate interviews."
   }

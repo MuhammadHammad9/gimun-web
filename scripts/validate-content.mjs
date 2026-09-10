@@ -276,12 +276,20 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
       return;
     }
     const pdfBuffer = fs.readFileSync(assetPath);
-    if (pdfBuffer.length < 10_000 || !pdfBuffer.subarray(0, 5).equals(Buffer.from('%PDF-')) || !pdfBuffer.toString('latin1').includes('%%EOF')) {
+    const pdfText = pdfBuffer.toString('latin1');
+    const isGeneratedSeed = pdfText.includes('Official Publication | Page') || pdfText.includes('The Secretariat and Bench Directorate establish binding standards');
+    if (pdfBuffer.length < 10_000 || !pdfBuffer.subarray(0, 5).equals(Buffer.from('%PDF-')) || !pdfText.includes('%%EOF') || isGeneratedSeed) {
       launchErrors.push(`resources.json[${index}] points to a seed/sample document: ${resource.fileUrl}`);
     }
   });
+  for (const generator of ['scripts/generate-brand-media.mjs', 'scripts/generate-production-pdfs.mjs']) {
+    if (fs.existsSync(path.join(process.cwd(), generator))) {
+      launchErrors.push(`${generator} is a seed-asset generator; remove it and commit approved human-supplied assets before launch`);
+    }
+  }
   const allContentText = JSON.stringify(Object.fromEntries(parsedContent));
-  if (/https?:\/\/(?:example\.com|linkedin\.com)(?:["'\\]|$)/i.test(allContentText)) {
+  const placeholderUrls = ['https://example.com', 'https://linkedin.com'];
+  if (placeholderUrls.some((url) => allContentText.includes(`"${url}"`))) {
     launchErrors.push('Content contains a placeholder external URL');
   }
   if (eventYear !== '2027') launchErrors.push(`site.json event year must be 2027, received ${eventYear || 'unknown'}`);

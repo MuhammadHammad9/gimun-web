@@ -126,6 +126,7 @@ async function sendEmail({
         html,
         ...(replyTo ? { reply_to: replyTo } : {}),
       }),
+      signal: AbortSignal.timeout(5_000),
       cache: 'no-store',
     });
 
