@@ -29,11 +29,11 @@ export function TrackChooser({
 }: TrackChooserProps) {
   const formattedGimunDeadline = gimunDeadline
     ? new Date(gimunDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    : 'Feb 15, 2027';
+    : 'Deadline pending';
 
   const formattedMootDeadline = mootCupDeadline
     ? new Date(mootCupDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    : 'March 05, 2027';
+    : 'Deadline pending';
 
   return (
     <StaggerChildren className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">

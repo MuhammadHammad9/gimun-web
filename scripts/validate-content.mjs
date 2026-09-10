@@ -150,6 +150,23 @@ const validationRules = [
       return errs;
     },
   },
+  {
+    file: 'gallery.json',
+    validate: (data) => {
+      const errs = [];
+      if (!Array.isArray(data) || data.length === 0) return ['Must be a non-empty array'];
+      const seenIds = new Set();
+      data.forEach((item, index) => {
+        if (!item.id || !item.title || !item.caption) errs.push(`Gallery item [${index}] missing core fields`);
+        if (seenIds.has(item.id)) errs.push(`Duplicate gallery id: ${item.id}`);
+        seenIds.add(item.id);
+        if (!['gimun', 'moot-cup', 'campus', 'ceremonies'].includes(item.category)) {
+          errs.push(`Gallery item [${item.id || index}] invalid category: ${item.category}`);
+        }
+      });
+      return errs;
+    },
+  },
 ];
 
 console.log('==============================================');
@@ -219,6 +236,21 @@ for (const reference of assetReferences) {
   }
 }
 
+const documents = parsedContent.get('resources.json') || [];
+const documentIds = new Set(documents.map((document) => document.id));
+for (const committee of parsedContent.get('committees.json') || []) {
+  if (committee.backgroundGuideDocId && !documentIds.has(committee.backgroundGuideDocId)) {
+    totalErrors++;
+    console.error(`[FAIL] committees.json ${committee.id} references missing document ${committee.backgroundGuideDocId}`);
+  }
+}
+for (const category of parsedContent.get('moot-categories.json') || []) {
+  if (category.propositionDocId && !documentIds.has(category.propositionDocId)) {
+    totalErrors++;
+    console.error(`[FAIL] moot-categories.json ${category.id} references missing document ${category.propositionDocId}`);
+  }
+}
+
 if (process.env.CONTENT_VALIDATION_STRICT === '1') {
   const launchErrors = [];
   const site = parsedContent.get('site.json');
@@ -239,10 +271,19 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
   });
   resources.forEach((resource, index) => {
     const assetPath = path.join(process.cwd(), 'public', resource.fileUrl.replace(/^\//, ''));
-    if (fs.existsSync(assetPath) && fs.statSync(assetPath).size < 10_000) {
+    if (!fs.existsSync(assetPath)) {
+      launchErrors.push(`resources.json[${index}] is missing its PDF asset: ${resource.fileUrl}`);
+      return;
+    }
+    const pdfBuffer = fs.readFileSync(assetPath);
+    if (pdfBuffer.length < 10_000 || !pdfBuffer.subarray(0, 5).equals(Buffer.from('%PDF-')) || !pdfBuffer.toString('latin1').includes('%%EOF')) {
       launchErrors.push(`resources.json[${index}] points to a seed/sample document: ${resource.fileUrl}`);
     }
   });
+  const allContentText = JSON.stringify(Object.fromEntries(parsedContent));
+  if (/https?:\/\/(?:example\.com|linkedin\.com)(?:["'\\]|$)/i.test(allContentText)) {
+    launchErrors.push('Content contains a placeholder external URL');
+  }
   if (eventYear !== '2027') launchErrors.push(`site.json event year must be 2027, received ${eventYear || 'unknown'}`);
 
   if (launchErrors.length > 0) {

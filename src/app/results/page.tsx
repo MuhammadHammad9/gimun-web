@@ -17,7 +17,7 @@ export default function ResultsPage() {
     <ResultsClient
       initialResults={results}
       resultsPublished={siteConfig.resultsPublished ?? false}
+      eventEndDate={siteConfig.eventDates.end}
     />
   );
 }
-

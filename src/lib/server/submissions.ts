@@ -6,6 +6,7 @@ import type {
   RegistrationSubmission,
 } from '@/lib/types';
 import { RATE_LIMIT } from '@/lib/honeypot';
+import { randomUUID } from 'node:crypto';
 
 export class SubmissionServiceError extends Error {
   constructor(
@@ -44,6 +45,16 @@ const memoryContacts: Array<{ id: string; submittedAt: string; data: ContactForm
 
 function backendMode() {
   return process.env.SUBMISSIONS_BACKEND || (process.env.NODE_ENV === 'production' ? 'supabase' : 'memory');
+}
+
+function ensureProductionBackend() {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    backendMode() === 'memory' &&
+    process.env.ALLOW_IN_MEMORY_SUBMISSIONS !== '1'
+  ) {
+    throw new SubmissionServiceError('The in-memory submission backend is disabled in production.');
+  }
 }
 
 function getRequiredEnv(name: string) {
@@ -101,28 +112,33 @@ async function sendEmail({
   const from = process.env.EMAIL_FROM;
   if (!apiKey || !from || to.length === 0) return false;
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      subject,
-      html,
-      ...(replyTo ? { reply_to: replyTo } : {}),
-    }),
-    cache: 'no-store',
-  });
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        subject,
+        html,
+        ...(replyTo ? { reply_to: replyTo } : {}),
+      }),
+      cache: 'no-store',
+    });
 
-  if (!response.ok) {
-    console.error(`[Email delivery failed] Provider status ${response.status}`);
+    if (!response.ok) {
+      console.error(`[Email delivery failed] Provider status ${response.status}`);
+      return false;
+    }
+
+    return true;
+  } catch {
+    console.error('[Email delivery failed] Provider request error');
     return false;
   }
-
-  return true;
 }
 
 function recipientList() {
@@ -178,6 +194,7 @@ async function persistRegistration(record: RegistrationSubmission & { applicantN
 }
 
 export async function enforceRateLimit(bucket: string, ip: string) {
+  ensureProductionBackend();
   const key = `gimun:${bucket}:${ip}`;
   const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
   const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -225,6 +242,7 @@ export function clientIp(request: Request) {
 }
 
 export async function createRegistration(record: RegistrationRecord): Promise<DeliveryResult> {
+  ensureProductionBackend();
   const referenceId = await getRegistrationReference(record.track);
   const submission: RegistrationSubmission = {
     id: referenceId,
@@ -253,7 +271,8 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
 }
 
 export async function createContactMessage(data: ContactFormData) {
-  const id = `INQ-${Date.now().toString(36).toUpperCase()}`;
+  ensureProductionBackend();
+  const id = `INQ-${Date.now().toString(36).toUpperCase()}-${randomUUID().slice(0, 8).toUpperCase()}`;
   const submittedAt = new Date().toISOString();
 
   if (backendMode() === 'memory') {

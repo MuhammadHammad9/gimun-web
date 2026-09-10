@@ -65,7 +65,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
               </span>
             </div>
             <p className="text-xs sm:text-sm text-gray-200">
-              All 3 Days scheduled at GIKI Campus. Delegates must carry valid NFC tags or reference passes at every chamber gate.
+              All four days are scheduled at GIKI Campus. Delegates must carry valid NFC tags or reference passes at every chamber gate.
             </p>
           </div>
         </div>

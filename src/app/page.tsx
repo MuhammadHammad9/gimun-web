@@ -50,8 +50,8 @@ export default function Home() {
               </span>
             </div>
             <CountdownChip
-              startDate={siteConfig?.eventDates?.start || '2027-03-18'}
-              endDate={siteConfig?.eventDates?.end || '2027-03-21'}
+              startDate={siteConfig.eventDates.start}
+              endDate={siteConfig.eventDates.end}
             />
           </div>
         }
@@ -268,7 +268,7 @@ export default function Home() {
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Early Bird Open</div>
                   <div className="text-xs font-mono text-[#FF6B35] font-semibold">
-                    Deadline: {new Date(siteConfig?.registrationDeadlines?.gimun || '2027-02-15').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    Deadline: {new Date(siteConfig.registrationDeadlines.gimun).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                   <p className="text-xs text-[#5A5A6E] leading-relaxed">Priority committee preference & delegation discounts applied.</p>
                 </div>
@@ -292,7 +292,7 @@ export default function Home() {
                   </div>
                   <div className="font-heading font-bold text-lg text-[#1A1A2E]">Memorial Submission</div>
                   <div className="text-xs font-mono text-[#00B4A6] font-semibold">
-                    Deadline: {new Date(siteConfig?.registrationDeadlines?.mootCup || '2027-03-05').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    Deadline: {new Date(siteConfig.registrationDeadlines.mootCup).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                   <p className="text-xs text-[#5A5A6E] leading-relaxed">Final electronic submission deadline for Moot Court memorials.</p>
                 </div>

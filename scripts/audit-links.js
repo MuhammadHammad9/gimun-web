@@ -3,7 +3,7 @@
  * Cross-Route Link & Document Integrity Audit (Phase 6 QA)
  * 
  * Verifies:
- * 1. All 29 prerendered and dynamic application routes exist and are verified
+ * 1. All 31 prerendered and dynamic application routes exist and are verified
  * 2. Prerendered HTML outputs in .next/server/app/ are intact and non-empty
  * 3. Authoritative per-page DOM ID extraction from actual prerendered HTML
  * 4. Every internal Link and href points to an existing valid application route
@@ -41,8 +41,8 @@ if (fs.existsSync(committeesFile)) {
   }
 }
 
-// 2. Define authoritative 29 Next.js application routes
-const all29Routes = [
+// 2. Define authoritative 31 Next.js application routes
+const all31Routes = [
   // 20 Core Public Static Pages
   '/',
   '/gimun',
@@ -79,7 +79,7 @@ const all29Routes = [
   '/sitemap.xml',
 ];
 
-const knownRoutes = new Set(all29Routes);
+const knownRoutes = new Set(all31Routes);
 
 console.log(`[Step 1/5] Verifying all ${knownRoutes.size} application routes against Next.js build output...`);
 
@@ -137,71 +137,6 @@ if (buildArtifactErrors.length > 0) {
 
 // 3. Document Download Verification
 console.log('\n[Step 2/5] Auditing document assets against content/resources.json and public/...');
-
-function createMinimalPdf(title, subtitle) {
-  const content = `BT
-/F1 18 Tf
-50 720 Td
-(${title.replace(/[\(\)]/g, '')}) Tj
-ET
-BT
-/F1 11 Tf
-50 690 Td
-(${subtitle.replace(/[\(\)]/g, '')}) Tj
-ET
-BT
-/F1 10 Tf
-50 640 Td
-(Official Conference Document published by Ghulam Ishaq Khan Institute GIKI.) Tj
-ET
-BT
-/F1 10 Tf
-50 620 Td
-(Society for the Promotion of Higher Education in Pakistan SOPHEP.) Tj
-ET
-BT
-/F1 9 Tf
-50 580 Td
-(This is an official verification document for GIMUN & GIKI Moot Court GMC.) Tj
-ET`;
-
-  const streamLength = Buffer.byteLength(content);
-
-  const pdf = `%PDF-1.4
-1 0 obj
-<< /Type /Catalog /Pages 2 0 R >>
-endobj
-2 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
-endobj
-3 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
-endobj
-4 0 obj
-<< /Length ${streamLength} >>
-stream
-${content}
-endstream
-endobj
-5 0 obj
-<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
-endobj
-xref
-0 6
-0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000115 00000 n 
-0000000234 00000 n 
-0000000${(234 + 40 + streamLength).toString().padStart(3, '0')} 00000 n 
-trailer
-<< /Size 6 /Root 1 0 R >>
-startxref
-${350 + streamLength}
-%%EOF`;
-
-  return Buffer.from(pdf, 'utf-8');
-}
 
 const resourcesFile = path.join(contentDir, 'resources.json');
 let documentLinks = [];

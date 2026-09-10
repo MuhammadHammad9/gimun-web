@@ -3,7 +3,7 @@
  * SEO, Social Previews & Meta Audit (Phase 6 QA)
  * 
  * Verifies:
- * 1. All 29 application routes accounted for across pages, dynamic templates, API endpoints, and sitemap
+ * 1. All 31 application routes accounted for across pages, dynamic templates, API endpoints, and sitemap
  * 2. Every public HTML page has a unique, descriptive title and meta description
  * 3. Open Graph tags (og:title, og:description, og:url, og:image, og:site_name)
  * 4. Twitter Card metadata (summary_large_image, twitter:title, twitter:description, twitter:image)
@@ -47,7 +47,7 @@ if (fs.existsSync(committeesFile)) {
   }
 }
 
-// 2. Define all 29 routes
+// 2. Define all 31 routes
 const publicPageRoutes = [
   { route: '/', file: path.join(appDir, 'page.tsx') },
   { route: '/gimun', file: path.join(appDir, 'gimun', 'page.tsx') },
@@ -82,7 +82,7 @@ committees.forEach((c) => {
   });
 });
 
-// Non-public/system application routes that complete the 29-route total
+// Non-public/system application routes that complete the 31-route total
 const systemAndApiRoutes = [
   { route: '/_not-found', type: 'error-handler', file: path.join(appDir, 'not-found.tsx') },
   { route: '/gimun/committees/[slug]', type: 'dynamic-template', file: path.join(appDir, 'gimun', 'committees', '[slug]', 'page.tsx') },
@@ -94,7 +94,7 @@ const systemAndApiRoutes = [
 
 const totalApplicationRouteCount = publicPageRoutes.length + systemAndApiRoutes.length;
 
-console.log(`[Step 1/4] Auditing all ${totalApplicationRouteCount} application routes (24 public pages + 5 system/API routes)...\n`);
+console.log(`[Step 1/4] Auditing all ${totalApplicationRouteCount} application routes (25 public pages + 6 system/API routes)...\n`);
 
 const seenTitles = new Map();
 const seenDescriptions = new Map();
@@ -259,8 +259,8 @@ if (sitemapValid && sitemapIssues.length === 0) {
 // ---------------------------------------------------------
 // 4. Social Preview Media Asset Verification
 // ---------------------------------------------------------
-console.log('\n[Step 4/4] Checking default Open Graph social image asset...');
-totalAudited++;
+console.log('\n[Step 4/4] Checking social preview and browser icon assets...');
+totalAudited += 5;
 
 const ogImagePath = path.join(rootDir, 'public', 'images', 'og', 'default.jpg');
 if (fs.existsSync(ogImagePath)) {
@@ -277,6 +277,17 @@ if (fs.existsSync(ogImagePath)) {
   console.error('  [FAIL] Missing social preview image at public/images/og/default.jpg.');
 }
 
+for (const icon of ['favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-icon.png']) {
+  const iconPath = path.join(rootDir, 'public', icon);
+  if (fs.existsSync(iconPath) && fs.statSync(iconPath).size > 0) {
+    passedAudited++;
+    console.log(`  [PASS] Browser icon verified at public/${icon}.`);
+  } else {
+    failedAudited++;
+    console.error(`  [FAIL] Missing browser icon at public/${icon}.`);
+  }
+}
+
 // ---------------------------------------------------------
 // Final Summary & Exit
 // ---------------------------------------------------------
@@ -288,7 +299,7 @@ console.log(` - Failed Checks:              ${failedAudited}`);
 console.log('----------------------------------------------------');
 
 if (failedAudited === 0) {
-  console.log('\nSUCCESS: 100% SEO, social previews, metadata, and sitemap verified across all 29 routes.');
+  console.log('\nSUCCESS: 100% SEO, social previews, metadata, and sitemap verified across all 31 routes.');
   process.exit(0);
 } else {
   console.error(`\nFAILURE: ${failedAudited} SEO check(s) failed.`);

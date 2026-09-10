@@ -123,7 +123,7 @@ async function runE2ETests() {
 
     serverProcess = spawn(process.execPath, [nextBin, 'start', '-p', String(port)], {
       cwd: rootDir,
-      env: { ...process.env, RATE_LIMIT_MAX: '5', SUBMISSIONS_BACKEND: 'memory' },
+      env: { ...process.env, RATE_LIMIT_MAX: '5', SUBMISSIONS_BACKEND: 'memory', ALLOW_IN_MEMORY_SUBMISSIONS: '1' },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
 

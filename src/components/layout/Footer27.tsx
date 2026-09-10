@@ -14,6 +14,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import LogoIcon from "@/assets/logo-icon";
 import type { SiteConfig, Sponsor } from "@/lib/types";
+import { formatDateRange } from "@/lib/utils";
 
 export interface FooterColumnLink {
   label: string;
@@ -54,7 +55,7 @@ const defaultFooterColumns: FooterColumn[] = [
   {
     title: "EVENT HUB",
     links: [
-      { label: "3-Day Schedule", href: "/schedule" },
+      { label: "Four-Day Schedule", href: "/schedule" },
       { label: "Resource Archive", href: "/resources" },
       { label: "Announcements Feed", href: "/announcements" },
       { label: "Results & Awards", href: "/results" },
@@ -179,7 +180,7 @@ export function Footer27({
             <div className="flex flex-col gap-2 pt-1 text-xs text-neutral-400 font-mono">
               <div className="flex items-center gap-2">
                 <HugeiconsIcon icon={Calendar03Icon} className="size-3.5 text-accent shrink-0" />
-                <span>March 18–21, 2027</span>
+                <span>{formatDateRange(siteConfig?.eventDates?.start, siteConfig?.eventDates?.end)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <HugeiconsIcon icon={MapPinIcon} className="size-3.5 text-secondary shrink-0" />

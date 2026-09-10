@@ -11,6 +11,7 @@ jobs:
     env:
       NEXT_PUBLIC_SITE_URL: https://gimungiki.org
       SUBMISSIONS_BACKEND: memory
+      ALLOW_IN_MEMORY_SUBMISSIONS: '1'
 
     steps:
       - name: Checkout
@@ -49,8 +50,5 @@ jobs:
       - name: Form security smoke tests
         run: npm run test:forms
 
-      # This is intentionally separate from routine CI until verified event
-      # media and final PDFs are committed.
       - name: Report production content gate
-        if: ${{ github.ref == 'refs/heads/main' }}
         run: npm run validate:launch
