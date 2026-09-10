@@ -48,6 +48,7 @@ type OutboxMessage = {
   subject: string;
   html: string;
   attempts: number;
+  retry_until: string;
   locked_by?: string | null;
 };
 
@@ -68,7 +69,11 @@ const memoryRegistrations: RegistrationSubmission[] = [];
 const memoryContacts: Array<{ id: string; submittedAt: string; data: ContactFormData }> = [];
 
 function backendMode() {
-  return getServerConfig().backend;
+  const backend = getServerConfig().backend;
+  if (backend !== 'memory' && backend !== 'supabase') {
+    throw new SubmissionServiceError('Submission service has an invalid SUBMISSIONS_BACKEND value.');
+  }
+  return backend;
 }
 
 function ensureProductionBackend(options: { emailDelivery?: boolean } = {}) {
@@ -421,66 +426,45 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
     return { referenceId, emailQueued: false, notificationQueued: false };
   }
 
-  // 1. Generate guaranteed atomic sequence reference ID
-  let referenceId: string;
-  try {
-    const generated = await supabaseRpc<string>('next_submission_reference', {
-      p_track: record.track,
-    });
-    referenceId = generated && typeof generated === 'string' ? generated : buildRegistrationReference(record.track);
-  } catch (rpcErr) {
-    console.warn('next_submission_reference RPC fallback:', rpcErr);
-    referenceId = buildRegistrationReference(record.track);
-  }
+  // Allocate the reference, persist the submission, and create both private
+  // outbox rows in one database transaction. The reference placeholder is
+  // replaced inside the transaction once the atomic counter is allocated.
+  const receiptHtml = buildApplicantReceiptHtml(record, '{{REFERENCE_ID}}');
+  const notificationHtml = `<!DOCTYPE html>
+<html lang="en">
+<body style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.5;">
+  <h2>New ${escapeHtml(trackName)} registration received</h2>
+  <p><strong>Reference:</strong> {{REFERENCE_ID}}</p>
+  <p><strong>Applicant:</strong> ${escapeHtml(record.applicantName)}</p>
+  <p><strong>Institution:</strong> ${escapeHtml(record.institution)}</p>
+  <p><strong>Email:</strong> ${escapeHtml(record.email)}</p>
+  <p><strong>Applicant type:</strong> ${escapeHtml(record.applicantType)}</p>
+  <p><strong>Participants:</strong> ${record.participantCount}</p>
+</body>
+</html>`;
 
-  // 2. Persist record directly to Supabase registrations table
-  await supabaseRequest('registrations', {
-    method: 'POST',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({
-      reference_id: referenceId,
-      track: record.track,
-      applicant_type: record.applicantType,
-      applicant_name: record.applicantName,
-      institution: record.institution,
-      contact_email: record.email,
-      participant_count: record.participantCount,
-      submitted_at: record.submittedAt,
-      status: 'received',
-      form_data: record.formData,
-    }),
+  const referenceId = await supabaseRpc<string>('create_registration_submission', {
+    p_track: record.track,
+    p_applicant_type: record.applicantType,
+    p_applicant_name: record.applicantName,
+    p_institution: record.institution,
+    p_email: record.email,
+    p_participant_count: record.participantCount,
+    p_submitted_at: record.submittedAt,
+    p_status: 'received',
+    p_form_data: record.formData,
+    p_receipt_subject: `SOPHEP Application Received — ${trackName}`,
+    p_receipt_html: receiptHtml,
+    p_notification_recipients: recipients,
+    p_notification_subject: `New ${trackName} registration received`,
+    p_notification_html: notificationHtml,
   });
 
-  // 3. Dispatch official receipt email via Resend with graceful resilience
-  const applicantHtml = buildApplicantReceiptHtml(record, referenceId);
-  let emailSent = false;
-  try {
-    const apiKey = getRequiredEnv('RESEND_API_KEY');
-    const from = getRequiredEnv('EMAIL_FROM');
-    if (apiKey && from && record.email) {
-      const emailRes = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-          'Idempotency-Key': `gimun-receipt/${referenceId}`,
-        },
-        body: JSON.stringify({
-          from,
-          to: [record.email],
-          subject: `SOPHEP Application Received — ${trackName} (Ref: ${referenceId})`,
-          html: applicantHtml,
-        }),
-        signal: AbortSignal.timeout(8_000),
-        cache: 'no-store',
-      });
-      emailSent = emailRes.ok;
-    }
-  } catch (emailErr) {
-    console.warn('Direct applicant email dispatch note:', emailErr);
+  if (!referenceId || typeof referenceId !== 'string') {
+    throw new SubmissionServiceError('Submission storage returned an invalid reference.', 503);
   }
 
-  return { referenceId, emailQueued: emailSent, notificationQueued: recipients.length > 0 };
+  return { referenceId, emailQueued: true, notificationQueued: recipients.length > 0 };
 }
 
 export async function createContactMessage(data: ContactFormData) {
@@ -593,7 +577,10 @@ export async function dispatchEmailOutbox() {
       const dispatchError = error instanceof OutboxDispatchError
         ? error
         : new OutboxDispatchError('Unknown provider failure.', false, true);
-      const exhausted = message.attempts >= 5;
+      const retryUntil = message.retry_until
+        ? new Date(message.retry_until).getTime()
+        : Date.now() + 24 * 60 * 60 * 1000;
+      const exhausted = message.attempts >= 20 || !Number.isFinite(retryUntil) || Date.now() >= retryUntil;
       const status = dispatchError.uncertain
         ? 'needs_review'
         : dispatchError.retryable && !exhausted
@@ -601,7 +588,7 @@ export async function dispatchEmailOutbox() {
         : 'failed';
       await updateOutbox(message.id, workerId, {
         status,
-        next_attempt_at: new Date(Date.now() + Math.min(60 * 60 * 1000, 2 ** message.attempts * 60_000)).toISOString(),
+        next_attempt_at: new Date(Date.now() + Math.min(60 * 60 * 1000, 2 ** Math.min(message.attempts, 10) * 60_000)).toISOString(),
         locked_at: null,
         locked_by: null,
         last_error: dispatchError.message.slice(0, 240),

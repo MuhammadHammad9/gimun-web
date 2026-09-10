@@ -14,10 +14,11 @@
     "audit:links": "node scripts/audit-links.js",
     "audit:a11y": "node scripts/audit-accessibility.js",
     "audit:seo": "node scripts/audit-seo.js",
+    "audit:submissions": "node scripts/audit-submissions.mjs",
     "test:forms": "node scripts/test-forms-e2e.js",
     "test:browser": "playwright test",
     "audit:lighthouse": "lhci autorun --config=lighthouserc.json",
-    "qa:full": "npm run validate && npm run typecheck && npm run lint && npm run build && npm run audit:links && npm run audit:a11y && npm run audit:seo && npm run test:forms && npm run test:browser",
+    "qa:full": "npm run validate && npm run typecheck && npm run lint && npm run build && npm run audit:links && npm run audit:a11y && npm run audit:seo && npm run audit:submissions && npm run test:forms && npm run test:browser",
     "qa:launch": "npm run validate:launch && npm run qa:full"
   },
   "dependencies": {
