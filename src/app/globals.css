@@ -1,58 +1,148 @@
 @import "tailwindcss";
 
+/* ==============================================================================
+   GIMUN & GMC 2027 — DESIGN TOKENS
+   Single source of truth. Components consume these as Tailwind v4 utilities
+   (bg-canvas, text-text-2, border-line, font-display, text-h1 ...).
+   Do not reintroduce arbitrary hex classNames.
+   ============================================================================== */
 @theme {
-  --color-primary: #1E2A78;
-  --color-primary-dark: #141D54;
-  --color-primary-light: #283796;
-  
-  --color-accent: #C84815;
-  --color-accent-hover: #A83A11;
-  --color-accent-muted: #FFF0E8;
-  --color-accent-accessible: #C84815;
+  /* --- Canvas ramp -----------------------------------------------------------
+     Reconciles the two conflicting dark families that used to split the site:
+     #140302/#190504/#1c0504 (home, tracks, forms) and
+     #2a0602/#340802/#450c04 (about, schedule, contact, results).
+     One ramp, six steps, deepest to highest. */
+  --color-void: #0d0201;
+  --color-canvas: #140302;
+  --color-raised: #1c0504;
+  --color-elevated: #260806;
+  --color-overlay: #340802;
+  --color-crest: #450c04;
 
-  --color-secondary: #007A70;
-  --color-secondary-hover: #00665C;
-  --color-secondary-muted: #E6F9F7;
-  --color-secondary-accessible: #007A70;
+  /* --- Brand ---------------------------------------------------------------- */
+  --color-brand: #5e1205;
+  --color-brand-hi: #8e5950;
+  --color-brand-deep: #4b0e04;
 
-  --color-ink: #1A1A2E;
-  --color-neutral-gray: #5A5A6E;
-  --color-surface: #F8F8FC;
-  --color-surface-elevated: #FFFFFF;
-  --color-whisper-border: rgba(226, 232, 240, 0.8);
+  --color-champagne: #ecd8b7;
+  --color-champagne-hi: #fff5e6;
+  --color-champagne-lo: #cca876;
 
-  --color-obsidian: #070B19;
-  --color-obsidian-card: #0D1527;
-  --color-obsidian-border: rgba(255, 255, 255, 0.08);
+  --color-crimson: #e11d48;
+  --color-crimson-hi: #f43f5e;
+  --color-crimson-lo: #991b1b;
 
-  --color-primary-foreground: #FFFFFF;
-  --color-muted: #F1F1F8;
-  --color-muted-foreground: #64748B;
-  --color-background: #F8F8FC;
-  --color-foreground: #1A1A2E;
+  --color-brand-lit: #7b1d0e;
+  --color-brand-soft: #ae8882;
 
-  --font-heading: var(--font-outfit), "Trebuchet MS", system-ui, sans-serif;
-  --font-body: var(--font-inter), system-ui, sans-serif;
+  --color-crimson-deep: #be123c;
+  --color-crimson-soft: #fda4af;
+  --color-clay: #c93b1e;
+
+  /* Warm off-white used across the about/schedule cluster as the primary
+     reading colour. Distinct from --color-text, which is the brighter ink. */
+  --color-cream: #fcf6ed;
+  --color-ink-warm: #474137;
+
+  /* Track accents. Crimson = GIMUN, champagne = GMC. No exceptions. */
+  --color-gimun: #e11d48;
+  --color-moot: #ecd8b7;
+
+  /* --- Text ----------------------------------------------------------------
+     Opacity is baked in so the /70 /80 /85 guesswork across 40 files stops. */
+  --color-text: #fffdf9;
+  --color-text-2: rgba(236, 216, 183, 0.82);
+  --color-text-3: rgba(236, 216, 183, 0.58);
+  --color-text-4: rgba(236, 216, 183, 0.38);
+
+  /* --- Lines ---------------------------------------------------------------- */
+  --color-line: rgba(236, 216, 183, 0.18);
+  --color-line-2: rgba(236, 216, 183, 0.38);
+  --color-line-3: rgba(236, 216, 183, 0.6);
+
+  /* --- Status (tone + shape carry meaning, never hue alone) ----------------- */
+  --color-ok: #ecd8b7;
+  --color-warn: #cca876;
+  --color-err: #f43f5e;
+
+  /* --- Typography ----------------------------------------------------------- */
+  --font-display: var(--font-display), "Satoshi", system-ui, sans-serif;
+  --font-body: var(--font-body-sans), "General Sans", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
+  /* Fluid scale. Replaces the flat xs/sm to 2xl jump the audit flagged. */
+  --text-display: clamp(2.75rem, 8vw, 7.5rem);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.04em;
+
+  --text-h1: clamp(2.25rem, 5vw, 4.5rem);
+  --text-h1--line-height: 1.02;
+  --text-h1--letter-spacing: -0.035em;
+
+  --text-h2: clamp(1.75rem, 3.2vw, 3rem);
+  --text-h2--line-height: 1.08;
+  --text-h2--letter-spacing: -0.025em;
+
+  --text-h3: clamp(1.25rem, 2vw, 1.75rem);
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.015em;
+
+  --text-lead: clamp(1.0625rem, 1.4vw, 1.375rem);
+  --text-lead--line-height: 1.6;
+
+  --text-meta: 0.6875rem;
+  --text-meta--line-height: 1.4;
+  --text-meta--letter-spacing: 0.14em;
+
+  /* --- Shape ---------------------------------------------------------------- */
   --radius-card: 1.25rem;
   --radius-button: 0.75rem;
   --radius-pill: 9999px;
   --radius-section: 2rem;
 
-  --shadow-card: 0 4px 24px -4px rgba(30, 42, 120, 0.06);
-  --shadow-card-hover: 0 16px 40px -8px rgba(30, 42, 120, 0.14);
-  --shadow-button: 0 2px 12px -2px rgba(255, 107, 53, 0.35);
-  --shadow-inner-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  /* --- Elevation (tinted to the brand hue, never flat gray) ----------------- */
+  --shadow-card: 0 8px 32px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(236, 216, 183, 0.18);
+  --shadow-card-hover: 0 18px 48px -6px rgba(0, 0, 0, 0.8), 0 0 28px -4px rgba(225, 29, 72, 0.25);
+  --shadow-brand-diffusion: 0 20px 40px -15px rgba(94, 18, 5, 0.16);
+  --shadow-button: 0 4px 18px -2px rgba(236, 216, 183, 0.4);
+  --shadow-lift: 0 24px 60px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(236, 216, 183, 0.14);
+
+  /* --- Motion --------------------------------------------------------------- */
+  --ease-brand: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* ==============================================================================
+   BASE
+   ============================================================================== */
 :root {
-  --background: #F8F8FC;
-  --foreground: #1A1A2E;
+  --background: #140302;
+  --foreground: #fffdf9;
+  /* Live height of the sticky chrome, kept in sync by SiteChrome.
+     Used by scroll-margin-top so anchor links never land under the navbar. */
+  --chrome-h: 4.5rem;
+}
+
+/* `overflow-x: hidden` on `body` alone propagates to the viewport and leaves
+   body itself non-clipping, so on mobile Chromium the layout viewport expands
+   to fit the widest content on the page — the sponsor marquee's intrinsic
+   width (~6600px) pushed `innerWidth` to 539 on a 390px device, shifting every
+   fixed overlay off-screen. Clipping on `html` prevents that expansion without
+   creating a scroll container. */
+html {
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 body {
   background-color: var(--background);
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(225, 29, 72, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 82% 18%, rgba(236, 216, 183, 0.14) 0%, transparent 42%),
+    radial-gradient(circle at 50% 80%, rgba(153, 27, 27, 0.28) 0%, transparent 55%),
+    radial-gradient(circle at 30% 60%, rgba(185, 28, 28, 0.15) 0%, transparent 40%);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
@@ -60,13 +150,11 @@ body {
   overflow-x: hidden;
 }
 
+/* Film grain. Sits above content but never intercepts pointer events. */
 body::before {
   content: "";
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   pointer-events: none;
   z-index: 9999;
   opacity: 0.02;
@@ -74,85 +162,214 @@ body::before {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
+  font-family: var(--font-display);
 }
 
-/* Atmospheric Grids & Glows */
+/* Anchor targets clear the sticky chrome. */
+:target {
+  scroll-margin-top: calc(var(--chrome-h) + 1.5rem);
+}
+
+/* ==============================================================================
+   ATMOSPHERE
+   ============================================================================== */
 .bg-tech-grid {
   background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(236, 216, 183, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(236, 216, 183, 0.06) 1px, transparent 1px);
 }
 
 .bg-tech-grid-light {
   background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(30, 42, 120, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 42, 120, 0.04) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(225, 29, 72, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(225, 29, 72, 0.05) 1px, transparent 1px);
 }
 
+.bg-radial-glow,
 .bg-radial-glow-dual {
-  background-image: 
-    radial-gradient(circle at 15% 10%, rgba(255, 107, 53, 0.16) 0%, transparent 45%),
-    radial-gradient(circle at 85% 10%, rgba(0, 180, 166, 0.16) 0%, transparent 45%),
-    radial-gradient(circle at 50% 60%, rgba(30, 42, 120, 0.25) 0%, transparent 70%);
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(225, 29, 72, 0.25) 0%, transparent 45%),
+    radial-gradient(circle at 85% 10%, rgba(236, 216, 183, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 50% 60%, rgba(18, 3, 2, 0.50) 0%, transparent 70%);
 }
 
+/* GIMUN track glow (crimson) */
+.bg-glow-crimson,
 .bg-radial-glow-orange {
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(255, 107, 53, 0.18) 0%, transparent 60%),
-    radial-gradient(circle at 20% 40%, rgba(255, 107, 53, 0.08) 0%, transparent 40%);
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(225, 29, 72, 0.35) 0%, transparent 60%),
+    radial-gradient(circle at 20% 40%, rgba(244, 63, 94, 0.18) 0%, transparent 40%);
 }
 
+/* GMC track glow (champagne). Renamed from the pre-rebrand `-teal`, which was
+   never teal; the old class name is kept as an alias so nothing breaks. */
+.bg-glow-champagne,
 .bg-radial-glow-teal {
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(0, 180, 166, 0.18) 0%, transparent 60%),
-    radial-gradient(circle at 80% 40%, rgba(0, 180, 166, 0.08) 0%, transparent 40%);
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(236, 216, 183, 0.28) 0%, transparent 60%),
+    radial-gradient(circle at 80% 40%, rgba(204, 168, 118, 0.18) 0%, transparent 40%);
 }
 
-/* Modern Gradient Text */
+/* ==============================================================================
+   GRADIENT TEXT
+   ============================================================================== */
+.text-gradient-crimson,
 .text-gradient-orange {
-  background: linear-gradient(135deg, #FFA27B 0%, #FF6B35 50%, #FF8C61 100%);
+  background: linear-gradient(135deg, #fecdd3 0%, #f43f5e 45%, #e11d48 80%, #991b1b 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+.text-gradient-champagne,
 .text-gradient-teal {
-  background: linear-gradient(135deg, #5EEAD4 0%, #00B4A6 50%, #2DD4BF 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #fff0dc 30%, #ecd8b7 65%, #cca876 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-silver {
-  background: linear-gradient(180deg, #FFFFFF 0%, #CBD5E1 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #ecd8b7 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Glassmorphism Classes */
+/* ==============================================================================
+   SURFACES
+   ============================================================================== */
 .glass-card-dark {
-  background: rgba(13, 21, 39, 0.75);
+  background: rgba(22, 5, 4, 0.84);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(236, 216, 183, 0.16);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(236, 216, 183, 0.15);
 }
 
 .glass-card-dark:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(236, 216, 183, 0.32);
+  box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(236, 216, 183, 0.25);
 }
 
 .glass-card-light {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  box-shadow: 0 10px 30px -5px rgba(30, 42, 120, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(153, 27, 27, 0.1);
+  box-shadow: 0 10px 30px -5px rgba(153, 27, 27, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-/* Custom marquee animation */
+/* The signature frame-inside-a-frame card. */
+.double-bezel {
+  background: rgba(236, 216, 183, 0.08);
+  box-shadow: 0 0 0 1px rgba(236, 216, 183, 0.16);
+  padding: 0.375rem;
+  border-radius: var(--radius-section);
+  transition: background 0.4s var(--ease-brand), box-shadow 0.4s var(--ease-brand),
+    transform 0.4s var(--ease-brand);
+}
+
+.double-bezel:hover {
+  background: rgba(236, 216, 183, 0.14);
+  box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(236, 216, 183, 0.35);
+  transform: translateY(-2px);
+}
+
+.double-bezel-inner {
+  background: linear-gradient(145deg, rgba(32, 6, 5, 0.85) 0%, rgba(18, 3, 2, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: calc(var(--radius-section) - 0.375rem);
+  box-shadow: inset 0 1px 0 rgba(236, 216, 183, 0.2);
+  border: 1px solid rgba(236, 216, 183, 0.16);
+  color: #fffdf9;
+}
+
+.card-glass-luxury {
+  background: linear-gradient(145deg, rgba(36, 7, 6, 0.75) 0%, rgba(18, 3, 2, 0.92) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(236, 216, 183, 0.18);
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(236, 216, 183, 0.18);
+  transition: border-color 0.4s var(--ease-brand), box-shadow 0.4s var(--ease-brand),
+    transform 0.4s var(--ease-brand);
+}
+
+.card-glass-luxury:hover {
+  border-color: rgba(236, 216, 183, 0.45);
+  box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.8), 0 0 28px -4px rgba(225, 29, 72, 0.25),
+    inset 0 1px 0 rgba(236, 216, 183, 0.3);
+  transform: translateY(-3px);
+}
+
+/* Cursor spotlight. --mx/--my are written by SpotlightCard as percentages;
+   the gradient is painted on a pseudo-element so it never repaints the card's
+   own background and never triggers a React re-render. */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-brand);
+  background: radial-gradient(
+    22rem circle at var(--mx, 50%) var(--my, 50%),
+    rgba(236, 216, 183, 0.14),
+    transparent 60%
+  );
+}
+
+.spotlight:hover::before,
+.spotlight:focus-within::before {
+  opacity: 1;
+}
+
+/* ==============================================================================
+   BUTTONS
+   ============================================================================== */
+.btn-shimmer-gold {
+  background: linear-gradient(135deg, #ffffff 0%, #fff3e0 25%, #ecd8b7 60%, #cca876 100%);
+  color: #140302;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 20px -2px rgba(236, 216, 183, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.btn-shimmer-gold:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 40%, #ecd8b7 100%);
+  box-shadow: 0 6px 28px rgba(236, 216, 183, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.btn-crimson-glow {
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #be123c 100%);
+  color: #ffffff;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 20px -2px rgba(225, 29, 72, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.btn-crimson-glow:hover {
+  background: linear-gradient(135deg, #fb7185 0%, #f43f5e 50%, #e11d48 100%);
+  box-shadow: 0 6px 28px rgba(225, 29, 72, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* ==============================================================================
+   KEYFRAMES
+   ============================================================================== */
 @keyframes marquee {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
@@ -168,7 +385,6 @@ h1, h2, h3, h4, h5, h6 {
   animation-play-state: paused;
 }
 
-/* Shimmer animation for skeleton loader */
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
@@ -181,47 +397,94 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-shimmer::after {
   position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
+  inset: 0;
   transform: translateX(-100%);
   background-image: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.4) 20%,
-    rgba(255, 255, 255, 0.6) 60%,
+    rgba(236, 216, 183, 0.3) 20%,
+    rgba(236, 216, 183, 0.5) 60%,
     rgba(255, 255, 255, 0)
   );
   animation: shimmer 2s infinite;
-  content: '';
+  content: "";
 }
 
-/* Double-Bezel Card Utility */
-.double-bezel {
-  background: rgba(30, 42, 120, 0.03);
-  box-shadow: 0 0 0 1px rgba(226, 232, 240, 0.8);
-  padding: 0.375rem;
-  border-radius: var(--radius-section);
-  transition: all 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+/* Slow ambient drift for hero glow orbs. Transform-only, GPU-composited. */
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -2.5rem, 0) scale(1.06); }
 }
 
-.double-bezel:hover {
-  background: rgba(30, 42, 120, 0.06);
-  box-shadow: 0 16px 36px -6px rgba(30, 42, 120, 0.12), 0 0 0 1px rgba(226, 232, 240, 1);
-  transform: translateY(-2px);
+.animate-float-slow {
+  animation: float-slow 14s var(--ease-brand) infinite;
 }
 
-.double-bezel-inner {
-  background: #FFFFFF;
-  border-radius: calc(var(--radius-section) - 0.375rem);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
+.animate-float-slower {
+  animation: float-slow 22s var(--ease-brand) infinite reverse;
 }
 
-/* Accessibility & Focus Visible (WCAG 2.1 AA) */
+/* ==============================================================================
+   TEXT REVEAL
+   Masked per-word entrance. The overflow clip lives in CSS so a no-JS or
+   reduced-motion render still shows the finished text.
+   ============================================================================== */
+/* Above-the-fold word reveal, driven entirely by CSS.
+   The hero headline is usually the LCP element, so it must be painted from the
+   server HTML rather than waiting for framer-motion to hydrate. A CSS
+   animation starts at first paint; the global prefers-reduced-motion rule
+   collapses it to its final state. */
+@keyframes word-rise {
+  from {
+    transform: translate3d(0, 110%, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.word-rise {
+  display: inline-block;
+  animation: word-rise 0.8s var(--ease-out-expo) both;
+  will-change: transform, opacity;
+}
+
+.reveal-line {
+  /* No `display` here on purpose: TextReveal clips per word and needs
+     inline-block, ScrollReveal's mask variant clips a whole block. Setting it
+     here would override the utility class the consumer picked. */
+  overflow: hidden;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+
+/* ==============================================================================
+   SMOOTH SCROLL (Lenis)
+   ============================================================================== */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ==============================================================================
+   ACCESSIBILITY
+   ============================================================================== */
 :focus-visible {
-  outline: 2px solid #FF6B35;
+  outline: 2px solid #ecd8b7;
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
-/* Reduced Motion Support (WCAG 2.1 AA) */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -230,6 +493,11 @@ h1, h2, h3, h4, h5, h6 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .animate-marquee {
+    animation: none !important;
+    transform: none !important;
   }
 }
 
@@ -297,7 +565,8 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   /* Ensure the voucher container expands to full width and resets margins */
-  #sophep-registration-voucher {
+  #gimun-registration-voucher,
+  #gimun-registration-voucher {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
@@ -352,7 +621,8 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   /* Ensure SVG elements never overflow containers in print mode */
-  #sophep-registration-voucher svg {
+  #gimun-registration-voucher svg,
+  #gimun-registration-voucher svg {
     max-width: 100% !important;
     max-height: 100% !important;
     display: block !important;
@@ -364,3 +634,7 @@ h1, h2, h3, h4, h5, h6 {
     gap: 6px !important;
   }
 }
+
+.mask-gradient { mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); }
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
