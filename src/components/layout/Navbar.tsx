@@ -181,7 +181,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
           </nav>
 
           {/* Right Action: Register Split-Dropdown + Mobile Toggle */}
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             {/* Desktop: split-dropdown register button */}
             <div
               className="relative hidden md:block"
@@ -234,12 +234,14 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
               </>
             </div>
 
-            {/* Mobile: plain register link */}
+            {/* Mobile: short register link. The long "Registration status"
+                label overflowed the 375px row and squeezed the menu button out
+                of its own hit area, which made the menu untappable. */}
             <Link
               href="/register"
-              className="btn-shimmer-gold md:hidden inline-flex min-h-11 items-center rounded-full px-5 text-xs font-bold uppercase tracking-wider"
+              className="btn-shimmer-gold md:hidden inline-flex min-h-11 shrink items-center whitespace-nowrap rounded-full px-4 text-xs font-bold uppercase tracking-wider"
             >
-              {registrationOpen?'Register':'Registration status'}
+              {registrationOpen ? 'Register' : 'Status'}
             </Link>
 
             {/* Hamburger Button that morphs to X */}
@@ -247,7 +249,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
               ref={mobileToggleRef}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
-              className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
+              className="md:hidden inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
               aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileMenuOpen}
             >

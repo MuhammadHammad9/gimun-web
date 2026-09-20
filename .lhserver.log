@@ -1,6 +1,6 @@
 ▲ Next.js 16.3.4
 - Local:         http://localhost:3100
 - Network:       http://10.1.201.43:3100
-✓ Ready in 509ms
-✓ Running next.config.ts took 78ms
+✓ Ready in 366ms
+✓ Running next.config.ts took 69ms
 [Configuration] Missing or invalid: RATE_LIMIT_HMAC_SECRET, CRON_SECRET, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY. Public seed content remains available; affected submission/admin services require configuration. See OPERATIONS_RUNBOOK.md.
