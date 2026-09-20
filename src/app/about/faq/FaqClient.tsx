@@ -12,6 +12,8 @@ import {
 import type { FAQItem } from '@/lib/types';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { CtaBanner } from '@/components/ui/CtaBanner';
+import { FilterBar } from '@/components/ui/FilterBar';
 
 interface FaqClientProps {
   initialFaqs: FAQItem[];
@@ -88,15 +90,15 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
   const getCategoryBadgeClass = (cat: FAQItem['category']) => {
     switch (cat) {
       case 'gimun-specific':
-        return 'bg-orange-50 text-accent border border-orange-200/80';
+        return 'bg-champagne/20 text-cream border border-champagne/40';
       case 'moot-cup-specific':
-        return 'bg-teal-50 text-secondary border border-teal-200/80';
+        return 'bg-brand text-cream border border-champagne/30';
       case 'registration-fees':
-        return 'bg-emerald-50 text-emerald-800 border border-emerald-200/80';
+        return 'bg-crest text-champagne border border-champagne/30';
       case 'logistics':
-        return 'bg-indigo-50 text-indigo-800 border border-indigo-200/80';
+        return 'bg-overlay text-champagne border border-champagne/30';
       default:
-        return 'bg-slate-100 text-neutral-gray border border-slate-200';
+        return 'bg-crest text-champagne border border-champagne/30';
     }
   };
 
@@ -117,14 +119,14 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
             <button
               type="button"
               onClick={handleExpandAll}
-              className="text-xs font-semibold text-neutral-gray hover:text-ink px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200/70 transition-colors"
+              className="text-xs font-semibold text-champagne hover:text-cream px-3 py-1.5 rounded-lg bg-overlay hover:bg-crest border border-champagne/30 transition-colors shadow-xs"
             >
               Expand All
             </button>
             <button
               type="button"
               onClick={handleCollapseAll}
-              className="text-xs font-semibold text-neutral-gray hover:text-ink px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200/70 transition-colors"
+              className="text-xs font-semibold text-champagne hover:text-cream px-3 py-1.5 rounded-lg bg-overlay hover:bg-crest border border-champagne/30 transition-colors shadow-xs"
             >
               Collapse All
             </button>
@@ -132,38 +134,24 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
         </div>
 
         {/* Category Pills with Count Chips */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 border-b border-slate-100 pb-3">
-          {(Object.keys(CATEGORY_LABELS) as FaqCategory[]).map((cat) => {
-            const isActive = activeCategory === cat;
-            return (
-              <span key={cat} id={cat === 'registration-fees' ? 'fees' : undefined}>
-                <button
-                  id={cat}
-                  type="button"
-                  onClick={() => setActiveCategory(cat)}
-                  className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-button text-xs font-semibold transition-all ${
-                    isActive
-                      ? 'bg-primary text-white shadow-xs'
-                      : 'bg-white text-neutral-gray hover:text-ink border border-whisper-border hover:border-slate-300'
-                  }`}
-                >
-                  <span>{CATEGORY_LABELS[cat]}</span>
-                  <span
-                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                      isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-neutral-gray'
-                    }`}
-                  >
-                    {counts[cat]}
-                  </span>
-                </button>
-              </span>
-            );
-          })}
+        <div className="pt-1 border-b border-line pb-3">
+          <FilterBar
+            label="Filter questions by category"
+            activeValue={activeCategory}
+            onChange={setActiveCategory}
+            options={(Object.keys(CATEGORY_LABELS) as FaqCategory[]).map((cat) => ({
+              value: cat,
+              id: cat,
+              anchorId: cat === 'registration-fees' ? 'fees' : undefined,
+              label: CATEGORY_LABELS[cat],
+              count: counts[cat],
+            }))}
+          />
         </div>
       </div>
 
-      {/* Accordion FAQ List */}
-      <div className="space-y-3">
+      {/* Accordion FAQ List - Clean minimalist border-b divider architecture */}
+      <div className="divide-y divide-champagne/15 border-y border-champagne/15">
         <h2 className="sr-only">Frequently Asked Questions Directory</h2>
         {filteredFaqs.map((faq) => {
           const isOpen = openIds.has(faq.id);
@@ -171,17 +159,13 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
             <div
               key={faq.id}
               id={faq.id}
-              className={`rounded-card border transition-all duration-200 scroll-mt-24 ${
-                isOpen
-                  ? 'bg-surface-elevated border-slate-300/80 shadow-card'
-                  : 'bg-white border-whisper-border hover:border-slate-300'
-              }`}
+              className="py-5 scroll-mt-24 transition-colors duration-150"
             >
               <button
                 type="button"
                 onClick={() => toggleItem(faq.id)}
                 aria-expanded={isOpen}
-                className="w-full p-5 text-left flex items-start justify-between gap-4 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-card"
+                className="w-full text-left flex items-start justify-between gap-4 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-champagne/40 rounded-lg group"
               >
                 <div className="space-y-1.5 pr-2">
                   <div className="flex items-center gap-2">
@@ -193,14 +177,16 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                       {faq.category.replace('-', ' ')}
                     </span>
                   </div>
-                  <h3 className="text-sm sm:text-base font-heading font-bold text-ink leading-snug">
+                  <h3 className="text-base sm:text-lg font-heading font-semibold text-cream group-hover:text-champagne transition-colors leading-snug">
                     {faq.question}
                   </h3>
                 </div>
 
                 <div
-                  className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all ${
-                    isOpen ? 'bg-primary text-white' : 'bg-slate-100 text-neutral-gray'
+                  className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all mt-1 ${
+                    isOpen
+                      ? 'bg-champagne text-crest'
+                      : 'bg-overlay text-champagne/80 border border-champagne/20 group-hover:border-champagne/50'
                   }`}
                 >
                   <motion.div
@@ -222,7 +208,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                     transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                     className="overflow-hidden"
                   >
-                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-neutral-gray leading-relaxed border-t border-slate-100/80">
+                    <div className="pt-3 pb-2 text-sm text-champagne/85 leading-relaxed">
                       {faq.answer}
                     </div>
                   </motion.div>
@@ -246,16 +232,18 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
       </div>
 
       {/* Still Have Questions CTA Banner */}
-      <div className="p-6 md:p-8 rounded-card bg-surface border border-whisper-border shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
+      <CtaBanner variant="slab">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+
         <div className="space-y-1.5 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-primary">
-            <HelpCircle className="w-4 h-4 text-primary" />
+          <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-champagne">
+            <HelpCircle className="w-4 h-4 text-champagne" />
             <span>Unanswered Inquiries?</span>
           </div>
-          <h3 className="text-lg font-heading font-bold text-ink">
+          <h3 className="text-lg font-heading font-bold text-cream">
             Can&apos;t find what you&apos;re looking for?
           </h3>
-          <p className="text-xs text-neutral-gray max-w-xl">
+          <p className="text-xs text-champagne/80 max-w-xl">
             Our Secretariat and Moot Court Bench are available to clarify delegation accommodations,
             observer passes, or specialized committee rules.
           </p>
@@ -264,20 +252,21 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
         <div className="flex flex-wrap items-center gap-3 shrink-0">
           <Link
             href="/contact?type=other"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-button bg-primary text-white text-xs font-semibold hover:bg-primary-light transition-colors shadow-button"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest text-xs font-bold hover:brightness-110 transition-all shadow-md"
           >
             <MessageSquare className="w-3.5 h-3.5" />
             <span>Contact Secretariat</span>
           </Link>
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-button bg-white border border-slate-200 text-xs font-semibold text-ink hover:bg-slate-50 transition-colors shadow-xs"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-crest border border-champagne/40 text-xs font-semibold text-champagne hover:bg-brand transition-colors"
           >
             <span>Register Now</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
-      </div>
+        </div>
+      </CtaBanner>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import type { Track } from '@/lib/types';
 
 export interface TrackBadgeProps {
-  track: Track | 'all';
+  track: Track | 'all' | 'general';
   size?: 'sm' | 'md';
   className?: string;
 }
@@ -12,25 +12,25 @@ export function TrackBadge({ track, size = 'sm', className }: TrackBadgeProps) {
   const configs = {
     gimun: {
       label: 'GIMUN',
-      styles: 'bg-[#FFF0E8] text-[#A83A11] border border-[#FF6B35]/30',
-      dot: 'bg-[#FF6B35]',
+      styles: 'bg-brand text-champagne-hi border border-crest font-bold shadow-xs',
+      dot: 'bg-champagne',
     },
     'moot-cup': {
       label: 'GMC',
-      styles: 'bg-[#E6F9F7] text-[#007A70] border border-[#00B4A6]/30',
-      dot: 'bg-[#00B4A6]',
+      styles: 'bg-champagne text-brand border border-brand-soft/40 font-bold shadow-xs',
+      dot: 'bg-brand',
     },
     shared: {
       label: 'SHARED',
-      styles: 'bg-[#F2F2F7] text-[#5A5A6E] border border-gray-300',
-      dot: 'bg-[#5A5A6E]',
+      styles: 'bg-champagne-hi text-ink-warm border border-champagne-hi font-medium',
+      dot: 'bg-brand-hi',
     },
     all: {
       label: 'ALL TRACKS',
-      styles: 'bg-[#1E2A78]/10 text-[#1E2A78] border border-[#1E2A78]/20',
-      dot: 'bg-[#1E2A78]',
+      styles: 'bg-champagne text-brand border border-champagne font-semibold',
+      dot: 'bg-brand',
     },
-  }[track];
+  }[track === 'general' ? 'shared' : track];
 
   const sizeStyles = {
     sm: 'px-2.5 py-0.5 text-[11px] tracking-wider',

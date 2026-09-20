@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { after, NextRequest, NextResponse } from 'next/server';
 import { normalizeFormStrings, validateContactForm } from '@/lib/validation';
 import { MIN_FILL_TIME_MS } from '@/lib/honeypot';
 import {
+  dispatchEmailOutbox,
   clientIp,
   createContactMessage,
   enforceRateLimit,
@@ -9,6 +10,8 @@ import {
 } from '@/lib/server/submissions';
 import type { ContactFormData } from '@/lib/types';
 import { JsonBodyError, readJsonBody } from '@/lib/server/request';
+
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,15 +29,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Request body must be a JSON object.' }, { status: 400 });
     }
 
-    const { name, email, queryType, message, _hp, _ts } = body as Record<string, unknown>;
+    const { name, email, queryType, message, kind, _hp, _ts } = body as Record<string, unknown>;
 
-    if (_hp && String(_hp).trim().length > 0) {
-      return NextResponse.json({ success: false, message: 'Automated inquiry blocked by anti-bot honeypot filter.' }, { status: 400 });
-    }
-
-    const submittedAt = _ts === undefined || _ts === null || _ts === '' ? null : Number(_ts);
-    if (submittedAt !== null && (!Number.isFinite(submittedAt) || Date.now() - submittedAt < MIN_FILL_TIME_MS)) {
-      return NextResponse.json({ success: false, message: 'Submission velocity too fast. Automated submissions are blocked.' }, { status: 400 });
+    const loadedAt = Number(_ts);
+    if ((_hp && String(_hp).trim()) || (process.env.NODE_ENV === 'production' && !_ts) || (_ts && (!Number.isFinite(loadedAt) || Date.now() - loadedAt < MIN_FILL_TIME_MS))) {
+      return NextResponse.json({ success: true, message: 'Thank you for reaching out. The Secretariat has received your message.' }, { status: 201 });
     }
 
     const rateLimit = await enforceRateLimit('contact', clientIp(req));
@@ -51,7 +50,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Please resolve the highlighted issues in the form.', errors }, { status: 422 });
     }
 
-    const delivery = await createContactMessage(formData);
+    const delivery = await createContactMessage({ ...formData, kind: kind === 'clarification' ? 'clarification' : 'contact' });
+    after(async () => { try { await dispatchEmailOutbox(); } catch { console.error('[Outbox] Dispatch deferred to next worker.'); } });
     return NextResponse.json(
       {
         success: true,

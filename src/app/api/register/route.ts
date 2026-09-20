@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { randomUUID } from 'node:crypto';
+import { after, NextRequest, NextResponse } from 'next/server';
 import {
   validateGimunIndividual,
   validateGimunDelegation,
@@ -8,6 +9,7 @@ import {
 } from '@/lib/validation';
 import { getCommittees, getProblemCategories, getSiteConfig } from '@/lib/content';
 import {
+  dispatchEmailOutbox,
   clientIp,
   createRegistration,
   enforceRateLimit,
@@ -22,8 +24,8 @@ import type {
 import { formatEventDate, isRegistrationDeadlinePassed } from '@/lib/site-config';
 import { JsonBodyError, readJsonBody } from '@/lib/server/request';
 
-function isTrackOpen(track: 'gimun' | 'moot-cup') {
-  const site = getSiteConfig();
+async function isTrackOpen(track: 'gimun' | 'moot-cup') {
+  const site = (await getSiteConfig());
   const manuallyOpen = track === 'gimun'
     ? site.registrationStatus?.gimunOpen !== false
     : site.registrationStatus?.mootCupOpen !== false;
@@ -31,6 +33,8 @@ function isTrackOpen(track: 'gimun' | 'moot-cup') {
   const deadlinePassed = isRegistrationDeadlinePassed(deadline);
   return manuallyOpen && !deadlinePassed;
 }
+
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   try {
@@ -51,25 +55,17 @@ export async function POST(req: NextRequest) {
     const payload = body as Record<string, unknown>;
     const { track: trackValue, applicantType: applicantTypeValue, formData, _hp, _ts } = payload;
 
-    if (_hp && String(_hp).trim().length > 0) {
-      return NextResponse.json(
-        { success: false, referenceId: 'REG-BOT-BLOCKED', message: 'Automated submission blocked by anti-bot honeypot filter.' },
-        { status: 400 },
-      );
-    }
-
-    const formLoadedAt = _ts === undefined || _ts === null || _ts === '' ? null : Number(_ts);
-    if (formLoadedAt !== null && (!Number.isFinite(formLoadedAt) || Date.now() - formLoadedAt < MIN_FILL_TIME_MS)) {
-      return NextResponse.json(
-        { success: false, referenceId: 'REG-BOT-SPEED', message: 'Submission velocity too fast. Automated submissions are blocked.' },
-        { status: 400 },
-      );
+    const loadedAt = Number(_ts);
+    if ((_hp && String(_hp).trim()) || (process.env.NODE_ENV === 'production' && !_ts) || (_ts && (!Number.isFinite(loadedAt) || Date.now() - loadedAt < MIN_FILL_TIME_MS))) {
+      return NextResponse.json({ success: true, referenceId: `REG-${trackValue === 'moot-cup' ? 'MOOT' : 'GIMUN'}-${new Date().getFullYear()}-0000`, message: 'Application received successfully.' }, { status: 201 });
     }
 
     if (trackValue !== 'gimun' && trackValue !== 'moot-cup') {
       return NextResponse.json({ success: false, message: 'Invalid track specified.' }, { status: 400 });
     }
     const track = trackValue;
+    const submissionKey = payload.submission_key === undefined && process.env.NODE_ENV !== 'production' ? randomUUID() : payload.submission_key;
+    if (typeof submissionKey !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(submissionKey)) return NextResponse.json({ success:false, message:'A valid submission key is required.' }, { status:400 });
 
     if (applicantTypeValue !== 'individual' && applicantTypeValue !== 'delegation' && applicantTypeValue !== 'team') {
       return NextResponse.json({ success: false, message: 'Invalid applicant type specified.' }, { status: 400 });
@@ -82,7 +78,7 @@ export async function POST(req: NextRequest) {
 
     const normalizedFormData = normalizeFormStrings(formData) as GimunIndividualData | GimunDelegationData | MootCupTeamData;
 
-    if (!isTrackOpen(track)) {
+    if (!(await isTrackOpen(track))) {
       return NextResponse.json(
         { success: false, message: 'Registration for this track is currently closed.' },
         { status: 409 },
@@ -98,8 +94,8 @@ export async function POST(req: NextRequest) {
     }
 
     let errors: ValidationErrors = {};
-    const committeeIds = getCommittees().flatMap((committee) => [committee.id, committee.slug]);
-    const categoryIds = getProblemCategories().map((category) => category.id);
+    const committeeIds = (await getCommittees()).flatMap((committee) => [committee.id, committee.slug]);
+    const categoryIds = (await getProblemCategories()).map((category) => category.id);
 
     if (track === 'gimun' && applicantType === 'individual') {
       errors = validateGimunIndividual(normalizedFormData as GimunIndividualData, committeeIds);
@@ -126,7 +122,7 @@ export async function POST(req: NextRequest) {
     let feeAmount = '';
     let participantCount = 1;
 
-    const site = getSiteConfig();
+    const site = (await getSiteConfig());
 
     if (track === 'gimun' && applicantType === 'individual') {
       const individual = normalizedFormData as GimunIndividualData;
@@ -134,7 +130,7 @@ export async function POST(req: NextRequest) {
       institution = individual.institution;
       email = individual.email;
       phone = individual.phone || '';
-      const c1 = getCommittees().find((c) => c.id === individual.committeePreference1 || c.slug === individual.committeePreference1)?.name || individual.committeePreference1;
+      const c1 = (await getCommittees()).find((c) => c.id === individual.committeePreference1 || c.slug === individual.committeePreference1)?.name || individual.committeePreference1;
       summary = `1st Pref: ${c1}`;
       feeAmount = site.fees.gimunIndividual;
     } else if (track === 'gimun') {
@@ -153,7 +149,7 @@ export async function POST(req: NextRequest) {
       email = team.members[0]?.email || '';
       phone = team.members[0]?.phone || '';
       participantCount = team.members.length;
-      const cat = getProblemCategories().find((c) => c.id === team.problemCategoryPreference)?.name || team.problemCategoryPreference;
+      const cat = (await getProblemCategories()).find((c) => c.id === team.problemCategoryPreference)?.name || team.problemCategoryPreference;
       summary = `${cat} (${participantCount} Advocates)`;
       feeAmount = site.fees.mootCupTeam;
     }
@@ -161,6 +157,8 @@ export async function POST(req: NextRequest) {
     const submittedAt = new Date().toISOString();
     const eventDates = `${formatEventDate(site.eventDates.start)}–${formatEventDate(site.eventDates.end, { day: 'numeric' })}`;
     const delivery = await createRegistration({
+      submissionKey,
+      amountDue: Number((applicantType === 'delegation' ? site.fees.gimunDelegationPerDelegate : feeAmount).replace(/[^0-9.]/g, '')) * (applicantType === 'delegation' ? participantCount : 1),
       track,
       applicantType,
       formData: normalizedFormData,
@@ -174,10 +172,12 @@ export async function POST(req: NextRequest) {
       summary,
     });
 
+    after(async () => { try { await dispatchEmailOutbox(); } catch { console.error('[Outbox] Dispatch deferred to next worker.'); } });
     return NextResponse.json(
       {
         success: true,
         referenceId: delivery.referenceId,
+        checkinToken: delivery.checkinToken,
         message: delivery.emailQueued
           ? 'Application received successfully. An official receipt has been dispatched to your email.'
           : 'Application received successfully. Preserve your reference number for correspondence.',

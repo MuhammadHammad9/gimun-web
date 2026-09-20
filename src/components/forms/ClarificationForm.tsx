@@ -1,5 +1,7 @@
 'use client';
 
+import { useSiteConfig } from '@/components/SiteConfigProvider';
+
 import React, { useEffect, useRef, useState } from 'react';
 import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
@@ -8,7 +10,7 @@ import { validateEmail } from '@/lib/validation';
 import { getEventYear } from '@/lib/site-config';
 
 export function ClarificationForm() {
-  const eventYear = getEventYear();
+  const eventYear = getEventYear(useSiteConfig());
   const [teamId, setTeamId] = useState('');
   const [teamEmail, setTeamEmail] = useState('');
   const [paragraphRef, setParagraphRef] = useState('');
@@ -68,12 +70,12 @@ export function ClarificationForm() {
 
   if (status === 'success') {
     return (
-      <div className="p-6 rounded-card bg-emerald-50 border border-emerald-200 text-center space-y-3">
-        <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
+      <div className="p-6 rounded-2xl bg-raised/95 border border-champagne-lo/40 text-center space-y-3 text-text shadow-xl">
+        <div className="w-10 h-10 rounded-full bg-elevated/80 text-champagne border border-champagne-lo/60 flex items-center justify-center mx-auto">
           <CheckCircle2 className="w-6 h-6" />
         </div>
-        <h3 className="text-lg font-heading font-bold text-emerald-900">Query Submitted to Bench</h3>
-        <p className="text-xs text-emerald-700 leading-relaxed max-w-sm mx-auto">
+        <h3 className="text-lg font-heading font-extrabold text-text">Query Submitted to Bench</h3>
+        <p className="text-xs text-champagne/80 leading-relaxed max-w-sm mx-auto">
           Your question regarding Compromis section <strong>{paragraphRef}</strong> has been logged.
           Official clarifications are reviewed and published to the public Clarifications Log.
         </p>
@@ -89,7 +91,7 @@ export function ClarificationForm() {
             setStatus('idle');
             formLoadedAt.current = Date.now();
           }}
-          className="text-xs text-emerald-800 font-semibold underline pt-2 block mx-auto"
+          className="text-xs text-champagne font-semibold underline pt-2 block mx-auto hover:text-text cursor-pointer"
         >
           Submit another clarification
         </button>
@@ -98,11 +100,11 @@ export function ClarificationForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-6 rounded-card bg-surface-elevated border border-whisper-border shadow-card">
+    <form onSubmit={handleSubmit} className="space-y-4 p-6 rounded-2xl bg-raised/90 border border-champagne/25 shadow-xl backdrop-blur-md text-text">
       <HoneypotField value={honeypot} onChange={setHoneypot} />
 
       {status === 'error' && (
-        <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+        <div className="p-3 rounded-xl bg-brand-deep/80 border border-brand text-crimson-soft text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{serverError || 'An error occurred. Please try again.'}</span>
         </div>
@@ -117,18 +119,18 @@ export function ClarificationForm() {
             value={teamId}
             onChange={(e) => setTeamId(e.target.value)}
             placeholder={`e.g. MC-${eventYear}-014`}
-            className="w-full px-3.5 py-2 rounded-button border border-whisper-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-secondary/20"
+            className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
           />
         </FormField>
 
-          <FormField label="Contact Email" required id="clar-email">
+        <FormField label="Contact Email" required id="clar-email">
           <input
             id="clar-email"
             type="email"
             value={teamEmail}
             onChange={(e) => setTeamEmail(e.target.value)}
             placeholder="advocate@university.edu.pk"
-            className="w-full px-3.5 py-2 rounded-button border border-whisper-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-secondary/20"
+            className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
           />
         </FormField>
       </div>
@@ -141,7 +143,7 @@ export function ClarificationForm() {
           value={paragraphRef}
           onChange={(e) => setParagraphRef(e.target.value)}
           placeholder="e.g. Paragraph 18, Line 4"
-          className="w-full px-3.5 py-2 rounded-button border border-whisper-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-secondary/20"
+          className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
         />
       </FormField>
 
@@ -153,14 +155,14 @@ export function ClarificationForm() {
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
           placeholder="State the ambiguity clearly without introducing extraneous factual assumptions..."
-          className="w-full px-3.5 py-2 rounded-button border border-whisper-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-secondary/20"
+          className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
         />
       </FormField>
 
       <button
         type="submit"
         disabled={status === 'submitting'}
-        className="w-full py-2.5 rounded-button bg-secondary text-white font-medium hover:bg-secondary-hover transition-colors text-sm flex items-center justify-center gap-2"
+        className="btn-shimmer-gold w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer disabled:opacity-50 text-canvas"
       >
         <Send className="w-4 h-4" />
         <span>{status === 'submitting' ? 'Submitting Question...' : 'Submit to Bench'}</span>

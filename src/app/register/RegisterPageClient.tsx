@@ -33,12 +33,13 @@ interface SuccessState {
     venue?: string;
     participantCount?: number;
     timestamp?: string;
+    checkinToken?: string;
   };
 }
 
 function RegisterContent({ committees, categories, siteConfig }: RegisterPageClientProps) {
   const searchParams = useSearchParams();
-  const trackQuery = searchParams.get('track');
+  const trackQuery = searchParams.get('track') || (searchParams.has('committee') ? 'gimun' : searchParams.has('category') ? 'moot-cup' : null);
 
   const [overrideTrack, setOverrideTrack] = useState<'gimun' | 'moot-cup' | null | undefined>(undefined);
   const selectedTrack: 'gimun' | 'moot-cup' | null =
@@ -86,16 +87,16 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
           <button
             type="button"
             onClick={() => setOverrideTrack(null)}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-neutral-gray hover:text-ink transition-colors px-3 py-1.5 rounded-button bg-white border border-whisper-border shadow-xs"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-champagne hover:text-cream transition-colors px-3.5 py-1.5 rounded-xl bg-overlay/90 border border-champagne/25 shadow-md hover:bg-crest"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="w-3.5 h-3.5 text-champagne" />
             <span>Change Competition Track</span>
           </button>
 
-          <span className="text-xs font-mono text-neutral-gray">
+          <span className="text-xs font-mono text-champagne/80">
             Active Track:{' '}
-            <strong className={selectedTrack === 'gimun' ? 'text-accent' : 'text-secondary'}>
-              {selectedTrack === 'gimun' ? 'Model United Nations' : 'GIKI Moot Court'}
+            <strong className={selectedTrack === 'gimun' ? 'text-crimson-soft' : 'text-champagne'}>
+              {selectedTrack === 'gimun' ? 'Model United Nations (GIMUN)' : 'Moot Court (GMC)'}
             </strong>
           </span>
         </div>
@@ -207,7 +208,7 @@ export function RegisterPageClient(props: RegisterPageClientProps) {
   return (
     <Suspense
       fallback={
-        <div className="max-w-4xl mx-auto p-12 text-center text-sm font-mono text-neutral-gray animate-pulse">
+        <div className="max-w-4xl mx-auto p-12 text-center text-sm font-mono text-champagne/70 animate-pulse">
           Loading Official Registration Portal…
         </div>
       }

@@ -14,6 +14,7 @@ import {
   ZoomIn,
 } from 'lucide-react';
 import type { GalleryItem } from '@/lib/types';
+import { FilterBar } from '@/components/ui/FilterBar';
 
 interface GalleryClientProps {
   initialItems: GalleryItem[];
@@ -111,37 +112,23 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
   return (
     <div className="space-y-10">
       {/* Category Filter Navigation */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4">
-        {CATEGORY_TABS.map((tab) => {
-          const count = tab.id === 'all'
-            ? initialItems.length
-            : initialItems.filter((i) => i.category === tab.id).length;
-          const isActive = selectedCategory === tab.id;
-
-          return (
-            <button
-              key={tab.id}
-              onClick={() => {
-                setSelectedCategory(tab.id);
-                setActiveLightboxIndex(null);
-              }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                isActive
-                  ? 'bg-primary text-white shadow-sm ring-2 ring-primary/20'
-                  : 'bg-white text-ink-light hover:bg-slate-100 border border-slate-200/80 hover:text-ink'
-              }`}
-            >
-              <span>{tab.label}</span>
-              <span
-                className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
-                  isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-neutral-gray'
-                }`}
-              >
-                {count}
-              </span>
-            </button>
-          );
-        })}
+      <div className="border-b border-line pb-4">
+        <FilterBar
+          label="Filter gallery by category"
+          activeValue={selectedCategory}
+          onChange={(value) => {
+            setSelectedCategory(value);
+            setActiveLightboxIndex(null);
+          }}
+          options={CATEGORY_TABS.map((tab) => ({
+            value: tab.id,
+            label: tab.label,
+            count:
+              tab.id === 'all'
+                ? initialItems.length
+                : initialItems.filter((i) => i.category === tab.id).length,
+          }))}
+        />
       </div>
 
       {/* Asymmetric Bento Media Grid */}
@@ -158,7 +145,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.3 }}
-              className={`group relative overflow-hidden rounded-2xl border border-whisper-border bg-surface-elevated shadow-card hover:shadow-card-hover transition-all duration-300 cursor-pointer ${
+              className={`group relative overflow-hidden rounded-2xl border border-champagne/25 bg-overlay/90 shadow-xl hover:border-champagne/45 transition-all duration-300 cursor-pointer ${
                 isWide ? 'sm:col-span-2' : 'col-span-1'
               }`}
               role="button"
@@ -173,64 +160,64 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                 }
               }}
             >
-              <div className="relative w-full h-64 sm:h-72 overflow-hidden bg-slate-900 flex flex-col justify-between p-5 text-white">
+              <div className="relative w-full h-64 sm:h-72 overflow-hidden bg-elevated flex flex-col justify-between p-5 text-white">
                 <Image
                   src={item.image}
                   alt={item.title}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 {/* Decorative Grid Pattern Overlay */}
                 <div
                   className="absolute inset-0 opacity-10 pointer-events-none"
                   style={{
                     backgroundImage:
-                      'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+                      'radial-gradient(circle at 1px 1px, #ecd8b7 1px, transparent 0)',
                     backgroundSize: '24px 24px',
                   }}
                 />
 
                 {/* Top Badges */}
                 <div className="relative z-10 flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-black/60 text-white border border-white/20">
-                    <Calendar className="w-3 h-3 text-accent" />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-black/60 text-champagne border border-champagne/30 backdrop-blur-sm">
+                    <Calendar className="w-3 h-3 text-champagne" />
                     <span>{item.edition}</span>
                   </span>
 
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase bg-black/50 text-white/90 border border-white/20">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase bg-black/50 text-champagne/90 border border-champagne/30 backdrop-blur-sm">
                     <Layers className="w-3 h-3" />
                     <span>{item.category.replace('-', ' ')}</span>
                   </span>
                 </div>
 
                 {/* Zoom Hint Icon in Center (Hover State) */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
-                  <div className="w-12 h-12 rounded-full bg-black/50 border border-white/30 flex items-center justify-center text-white transform group-hover:scale-110 transition-transform">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+                  <div className="w-12 h-12 rounded-full bg-crest/80 border border-champagne/40 flex items-center justify-center text-champagne transform group-hover:scale-110 transition-transform shadow-lg">
                     <ZoomIn className="w-6 h-6" />
                   </div>
                 </div>
 
                 {/* Bottom Canvas Tag */}
                 <div className="relative z-10 space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs text-white/80 font-mono">
-                    <MapPin className="w-3.5 h-3.5 text-accent shrink-0" />
+                  <div className="flex items-center gap-1.5 text-xs text-champagne/90 font-mono">
+                    <MapPin className="w-3.5 h-3.5 text-champagne shrink-0" />
                     <span className="truncate">{item.location}</span>
                   </div>
                 </div>
               </div>
 
               {/* Information Panel Below Media */}
-              <div className="p-5 space-y-2 bg-surface-elevated">
-                <h3 className="text-base font-heading font-bold text-ink group-hover:text-primary transition-colors leading-snug">
+              <div className="p-5 space-y-2 bg-overlay">
+                <h3 className="text-base font-heading font-bold text-cream group-hover:text-champagne transition-colors leading-snug">
                   {item.title}
                 </h3>
-                <p className="text-xs text-neutral-gray line-clamp-2 leading-relaxed">
+                <p className="text-xs text-champagne/80 line-clamp-2 leading-relaxed">
                   {item.caption}
                 </p>
-                <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-neutral-gray border-t border-slate-100">
+                <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-champagne/70 border-t border-champagne/15">
                   <span className="capitalize">{item.aspectRatio} format</span>
-                  <span className="text-primary font-semibold group-hover:underline">
+                  <span className="text-champagne font-semibold group-hover:text-cream transition-colors">
                     View in High Resolution &rarr;
                   </span>
                 </div>
@@ -247,10 +234,10 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/85 backdrop-blur-md"
-              role="presentation"
-              onClick={closeLightbox}
-            >
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/90 backdrop-blur-md"
+            role="presentation"
+            onClick={closeLightbox}
+          >
             {/* Modal Container */}
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -262,15 +249,15 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
               role="dialog"
               aria-modal="true"
               aria-labelledby="gallery-lightbox-title"
-              className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl bg-surface-elevated border border-slate-700/50 shadow-2xl flex flex-col text-white"
+              className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl bg-overlay border border-champagne/30 shadow-2xl flex flex-col text-champagne"
             >
               {/* Modal Top Control Bar */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-20">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-champagne/15 bg-elevated/95 sticky top-0 z-20">
                 <div className="flex items-center gap-3">
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-primary/30 text-accent border border-accent/30">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-cream border border-champagne/40">
                     {activeItem.edition}
                   </span>
-                  <span className="text-xs font-mono text-slate-400">
+                  <span className="text-xs font-mono text-champagne/70">
                     {activeLightboxIndex + 1} of {filteredItems.length}
                   </span>
                 </div>
@@ -282,7 +269,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                         prev !== null ? (prev - 1 + filteredItems.length) % filteredItems.length : null
                       )
                     }
-                    className="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    className="p-2 rounded-full hover:bg-crest text-champagne hover:text-cream transition-colors cursor-pointer"
                     aria-label="Previous image"
                   >
                     <ChevronLeft className="w-5 h-5" />
@@ -294,7 +281,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                         prev !== null ? (prev + 1) % filteredItems.length : null
                       )
                     }
-                    className="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    className="p-2 rounded-full hover:bg-crest text-champagne hover:text-cream transition-colors cursor-pointer"
                     aria-label="Next image"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -303,7 +290,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   <button
                     ref={closeButtonRef}
                     onClick={closeLightbox}
-                    className="p-2 ml-2 rounded-full hover:bg-rose-500/20 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    className="p-2 ml-2 rounded-full hover:bg-brand text-champagne hover:text-cream transition-colors cursor-pointer"
                     aria-label="Close modal"
                   >
                     <X className="w-5 h-5" />
@@ -313,7 +300,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
 
               {/* Full Art Canvas Display */}
               <div
-                className="relative w-full h-80 sm:h-96 md:h-[420px] bg-slate-900 flex flex-col justify-end p-6 sm:p-8"
+                className="relative w-full h-80 sm:h-96 md:h-[420px] bg-canvas flex flex-col justify-end p-6 sm:p-8"
               >
                 <Image
                   src={activeItem.image}
@@ -326,50 +313,50 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   className="absolute inset-0 opacity-15 pointer-events-none"
                   style={{
                     backgroundImage:
-                      'radial-gradient(circle at 1px 1px, white 1.5px, transparent 0)',
+                      'radial-gradient(circle at 1px 1px, #ecd8b7 1.5px, transparent 0)',
                     backgroundSize: '28px 28px',
                   }}
                 />
 
                 <div className="relative z-10 space-y-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/70 text-xs font-mono text-white/90 border border-white/20">
-                    <Camera className="w-3.5 h-3.5 text-accent" />
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/70 text-xs font-mono text-champagne border border-champagne/30 backdrop-blur-sm">
+                    <Camera className="w-3.5 h-3.5 text-champagne" />
                     <span>Official Symposium Photographic Archive</span>
                   </div>
-                  <h2 id="gallery-lightbox-title" className="text-xl sm:text-3xl font-heading font-extrabold text-white tracking-tight">
+                  <h2 id="gallery-lightbox-title" className="text-xl sm:text-3xl font-heading font-extrabold text-cream tracking-tight">
                     {activeItem.title}
                   </h2>
                 </div>
               </div>
 
               {/* Detailed Captions & Metadata Drawer */}
-              <div className="p-6 sm:p-8 bg-slate-900 space-y-4">
-                <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400">
+              <div className="p-6 sm:p-8 bg-elevated space-y-4">
+                <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-champagne/70">
                   <div className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-accent" />
-                    <span className="text-white font-medium">{activeItem.location}</span>
+                    <MapPin className="w-4 h-4 text-champagne" />
+                    <span className="text-cream font-medium">{activeItem.location}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4 text-accent" />
-                    <span className="text-white font-medium">{activeItem.edition}</span>
+                    <Calendar className="w-4 h-4 text-champagne" />
+                    <span className="text-cream font-medium">{activeItem.edition}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Layers className="w-4 h-4 text-accent" />
+                    <Layers className="w-4 h-4 text-champagne" />
                     <span className="capitalize">{activeItem.category.replace('-', ' ')}</span>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-800">
-                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                <div className="pt-2 border-t border-champagne/15">
+                  <p className="text-sm sm:text-base text-champagne/90 leading-relaxed">
                     {activeItem.caption}
                   </p>
                 </div>
 
-                <div className="pt-4 flex items-center justify-between text-xs font-mono text-slate-500">
+                <div className="pt-4 flex items-center justify-between text-xs font-mono text-champagne/60">
                   <span>Use &larr; / &rarr; keys to cycle through records &bull; ESC to exit</span>
                   <button
                     onClick={closeLightbox}
-                    className="text-accent hover:underline font-semibold"
+                    className="text-champagne hover:text-cream hover:underline font-semibold cursor-pointer"
                   >
                     Close Preview
                   </button>

@@ -142,16 +142,16 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
   return (
     <div className="space-y-12">
       {/* Top Hero Banner & Coordinates Card */}
-      <div className="p-6 md:p-10 rounded-section bg-surface-elevated border border-whisper-border shadow-card space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+      <div className="p-6 md:p-10 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-champagne/15">
           <div className="space-y-2">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-accent">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
               Campus Headquarters
             </span>
-            <h2 className="text-2xl md:text-3xl font-heading font-bold text-ink">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-cream">
               Ghulam Ishaq Khan Institute (GIKI)
             </h2>
-            <p className="text-xs sm:text-sm text-neutral-gray max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-champagne/80 max-w-xl leading-relaxed">
               Nestled in the tranquil foothills of Topi, Swabi, GIKI is one of Pakistan&apos;s most prestigious
               engineering and research universities, offering a world-class academic environment.
             </p>
@@ -162,18 +162,18 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
               href="https://maps.google.com/?q=Ghulam+Ishaq+Khan+Institute+of+Engineering+Sciences+and+Technology"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-button bg-primary text-white text-xs font-semibold hover:bg-primary-light transition-colors shadow-button"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest text-xs font-bold hover:brightness-110 transition-all shadow-md"
             >
               <Navigation className="w-3.5 h-3.5" />
               <span>Open in Google Maps</span>
               <ExternalLink className="w-3 h-3 opacity-70" />
             </a>
 
-            <div className="p-3 rounded-button bg-surface border border-slate-200/80 text-center">
-              <span className="text-[10px] font-mono uppercase text-neutral-gray block">
+            <div className="p-3 rounded-xl bg-crest border border-champagne/30 text-center">
+              <span className="text-[10px] font-mono uppercase text-champagne/70 block">
                 GPS Coordinates
               </span>
-              <span className="text-xs font-mono font-bold text-ink">
+              <span className="text-xs font-mono font-bold text-cream">
                 34.0700° N, 72.6450° E
               </span>
             </div>
@@ -182,21 +182,21 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
 
         {/* Quick Highlights Row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-          <div className="p-3 rounded-card bg-surface border border-slate-100 space-y-1">
-            <span className="text-[11px] font-mono uppercase text-neutral-gray block">Travel From ISB</span>
-            <span className="text-sm font-heading font-bold text-ink">~90 Minutes</span>
+          <div className="p-3.5 rounded-xl bg-crest/70 border border-champagne/20 space-y-1">
+            <span className="text-[11px] font-mono uppercase text-champagne/70 block">Travel From ISB</span>
+            <span className="text-sm font-heading font-bold text-cream">~90 Minutes</span>
           </div>
-          <div className="p-3 rounded-card bg-surface border border-slate-100 space-y-1">
-            <span className="text-[11px] font-mono uppercase text-neutral-gray block">Motorway Route</span>
-            <span className="text-sm font-heading font-bold text-ink">M-1 Swabi Exit</span>
+          <div className="p-3.5 rounded-xl bg-crest/70 border border-champagne/20 space-y-1">
+            <span className="text-[11px] font-mono uppercase text-champagne/70 block">Motorway Route</span>
+            <span className="text-sm font-heading font-bold text-cream">M-1 Swabi Exit</span>
           </div>
-          <div className="p-3 rounded-card bg-surface border border-slate-100 space-y-1">
-            <span className="text-[11px] font-mono uppercase text-neutral-gray block">Campus Security</span>
-            <span className="text-sm font-heading font-bold text-ink">24/7 Gated Access</span>
+          <div className="p-3.5 rounded-xl bg-crest/70 border border-champagne/20 space-y-1">
+            <span className="text-[11px] font-mono uppercase text-champagne/70 block">Campus Security</span>
+            <span className="text-sm font-heading font-bold text-cream">24/7 Gated Access</span>
           </div>
-          <div className="p-3 rounded-card bg-surface border border-slate-100 space-y-1">
-            <span className="text-[11px] font-mono uppercase text-neutral-gray block">Outstation Boarding</span>
-            <span className="text-sm font-heading font-bold text-ink">Included On-Campus</span>
+          <div className="p-3.5 rounded-xl bg-crest/70 border border-champagne/20 space-y-1">
+            <span className="text-[11px] font-mono uppercase text-champagne/70 block">Outstation Boarding</span>
+            <span className="text-sm font-heading font-bold text-cream">Included On-Campus</span>
           </div>
         </div>
       </div>
@@ -205,22 +205,22 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
       <section className="space-y-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-primary" />
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-primary">
+            <Building2 className="w-4 h-4 text-champagne" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
               Facility Walkthrough
             </span>
           </div>
-          <h2 className="text-2xl font-heading font-bold text-ink">
-            Interactive Venue & Chamber Directory
+          <h2 className="text-2xl font-heading font-bold text-cream">
+            Interactive Venue &amp; Chamber Directory
           </h2>
-          <p className="text-xs sm:text-sm text-neutral-gray max-w-2xl">
+          <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
             Explore the specialized academic arenas, courtrooms, residential hostels, and dining halls
-      utilized during the four-day competition.
+            utilized during the four-day competition.
           </p>
         </div>
 
         {/* Facility Segmented Tabs */}
-        <div className="flex flex-wrap gap-2 p-1.5 rounded-card bg-slate-100/90 border border-slate-200">
+        <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-overlay/90 border border-champagne/20 shadow-inner">
           {(
             [
               { key: 'auditorium', label: 'Main Auditorium' },
@@ -237,10 +237,10 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
                 key={key}
                 type="button"
                 onClick={() => setActiveFacility(key)}
-                className={`px-4 py-2 text-xs font-semibold rounded-button transition-all ${
+                className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-white text-ink shadow-xs font-bold'
-                    : 'text-neutral-gray hover:text-ink'
+                    ? 'bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest font-bold shadow-md'
+                    : 'text-champagne/70 hover:text-cream'
                 }`}
               >
                 {label}
@@ -257,51 +257,51 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="p-6 md:p-8 rounded-section bg-surface-elevated border border-whisper-border shadow-card space-y-6"
+            className="p-6 md:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-6"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-champagne/15">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                    className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md border ${
                       currentFacility.track === 'gimun'
-                        ? 'bg-orange-100 text-accent'
+                        ? 'bg-champagne/20 text-cream border-champagne/40'
                         : currentFacility.track === 'moot-cup'
-                        ? 'bg-teal-100 text-secondary'
-                        : 'bg-slate-100 text-primary'
+                        ? 'bg-brand text-cream border-champagne/30'
+                        : 'bg-crest text-champagne border-champagne/30'
                     }`}
                   >
                     {currentFacility.badge}
                   </span>
-                  <span className="text-xs font-mono text-neutral-gray">
-                    Capacity: <strong className="text-ink">{currentFacility.capacity}</strong>
+                  <span className="text-xs font-mono text-champagne/70">
+                    Capacity: <strong className="text-cream">{currentFacility.capacity}</strong>
                   </span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-heading font-bold text-ink">
+                <h3 className="text-xl sm:text-2xl font-heading font-bold text-cream">
                   {currentFacility.title}
                 </h3>
-                <p className="text-xs text-neutral-gray">{currentFacility.subtitle}</p>
+                <p className="text-xs text-champagne/80">{currentFacility.subtitle}</p>
               </div>
 
-              <div className="text-xs font-mono text-neutral-gray bg-surface px-3 py-2 rounded-card border border-slate-200/80">
-                <span className="block text-[10px] uppercase text-neutral-gray font-bold">Campus Wing</span>
-                <span className="text-ink font-semibold">{currentFacility.locationDetails}</span>
+              <div className="text-xs font-mono text-champagne/80 bg-crest px-3.5 py-2 rounded-xl border border-champagne/25">
+                <span className="block text-[10px] uppercase text-champagne/70 font-bold">Campus Wing</span>
+                <span className="text-cream font-semibold">{currentFacility.locationDetails}</span>
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-neutral-gray leading-relaxed">
+            <p className="text-xs sm:text-sm text-champagne/90 leading-relaxed">
               {currentFacility.description}
             </p>
 
             {/* Key Amenities Checklist */}
             <div className="space-y-3 pt-2">
-              <span className="text-xs font-mono uppercase font-bold text-ink tracking-wider block">
-                Chamber Specifications & Features
+              <span className="text-xs font-mono uppercase font-bold text-champagne tracking-wider block">
+                Chamber Specifications &amp; Features
               </span>
               <div className="grid sm:grid-cols-2 gap-2.5">
                 {currentFacility.features.map((feat, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5 text-xs text-neutral-gray">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <div key={idx} className="flex items-start gap-2.5 text-xs text-champagne/90">
+                    <CheckCircle2 className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
                     <span>{feat}</span>
                   </div>
                 ))}
@@ -315,15 +315,15 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
       <section className="space-y-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Compass className="w-4 h-4 text-primary" />
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-primary">
+            <Compass className="w-4 h-4 text-champagne" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
               Travel Directions
             </span>
           </div>
-          <h2 className="text-2xl font-heading font-bold text-ink">
+          <h2 className="text-2xl font-heading font-bold text-cream">
             Reaching GIKI Topi from Outstation
           </h2>
-          <p className="text-xs sm:text-sm text-neutral-gray max-w-2xl">
+          <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
             Detailed guidance for national and international delegations arriving by air, motorway, or intercity coaches.
           </p>
         </div>
@@ -333,73 +333,73 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
           <button
             type="button"
             onClick={() => setActiveTransit('air')}
-            className={`p-4 rounded-card border text-left flex items-start gap-3 transition-all ${
+            className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all cursor-pointer ${
               activeTransit === 'air'
-                ? 'bg-surface-elevated border-primary shadow-xs ring-1 ring-primary/20'
-                : 'bg-white border-whisper-border hover:border-slate-300'
+                ? 'bg-overlay border-champagne shadow-lg ring-1 ring-champagne/40 text-cream'
+                : 'bg-overlay/60 border-champagne/20 hover:border-champagne/40 text-champagne'
             }`}
           >
-            <div className="w-8 h-8 rounded-full bg-blue-50 text-primary flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-full bg-crest text-champagne flex items-center justify-center shrink-0 border border-champagne/25">
               <Plane className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-xs font-bold text-ink block">By Commercial Flight</span>
-              <span className="text-[11px] text-neutral-gray">Via Islamabad Airport (ISB)</span>
+              <span className="text-xs font-bold text-cream block">By Commercial Flight</span>
+              <span className="text-[11px] text-champagne/70">Via Islamabad Airport (ISB)</span>
             </div>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTransit('bus')}
-            className={`p-4 rounded-card border text-left flex items-start gap-3 transition-all ${
+            className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all cursor-pointer ${
               activeTransit === 'bus'
-                ? 'bg-surface-elevated border-primary shadow-xs ring-1 ring-primary/20'
-                : 'bg-white border-whisper-border hover:border-slate-300'
+                ? 'bg-overlay border-champagne shadow-lg ring-1 ring-champagne/40 text-cream'
+                : 'bg-overlay/60 border-champagne/20 hover:border-champagne/40 text-champagne'
             }`}
           >
-            <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-full bg-crest text-champagne flex items-center justify-center shrink-0 border border-champagne/25">
               <Bus className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-xs font-bold text-ink block">By Intercity Coach</span>
-              <span className="text-[11px] text-neutral-gray">Daewoo / Faisal Terminal</span>
+              <span className="text-xs font-bold text-cream block">By Intercity Coach</span>
+              <span className="text-[11px] text-champagne/70">Daewoo / Faisal Terminal</span>
             </div>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTransit('road')}
-            className={`p-4 rounded-card border text-left flex items-start gap-3 transition-all ${
+            className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all cursor-pointer ${
               activeTransit === 'road'
-                ? 'bg-surface-elevated border-primary shadow-xs ring-1 ring-primary/20'
-                : 'bg-white border-whisper-border hover:border-slate-300'
+                ? 'bg-overlay border-champagne shadow-lg ring-1 ring-champagne/40 text-cream'
+                : 'bg-overlay/60 border-champagne/20 hover:border-champagne/40 text-champagne'
             }`}
           >
-            <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-full bg-crest text-champagne flex items-center justify-center shrink-0 border border-champagne/25">
               <Car className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-xs font-bold text-ink block">By Motorway / Car</span>
-              <span className="text-[11px] text-neutral-gray">M-1 Swabi Interchange</span>
+              <span className="text-xs font-bold text-cream block">By Motorway / Car</span>
+              <span className="text-[11px] text-champagne/70">M-1 Swabi Interchange</span>
             </div>
           </button>
         </div>
 
         {/* Transit Detail Card */}
-        <div className="p-6 md:p-8 rounded-card bg-surface-elevated border border-whisper-border shadow-card space-y-4">
+        <div className="p-6 md:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-4">
           {activeTransit === 'air' && (
             <div className="space-y-3">
-              <h3 className="text-base font-heading font-bold text-ink flex items-center gap-2">
-                <Plane className="w-4 h-4 text-primary" />
+              <h3 className="text-base font-heading font-bold text-cream flex items-center gap-2">
+                <Plane className="w-4 h-4 text-champagne" />
                 <span>Flight Arrival Protocol — Islamabad International Airport (ISB)</span>
               </h3>
-              <p className="text-xs sm:text-sm text-neutral-gray leading-relaxed">
+              <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
                 Islamabad International Airport (ISB) is the closest commercial airport, located approximately 110 km
                 from campus. Delegations arriving by air must forward their confirmed flight itinerary to the Transport
                 Directorate at least 5 business days in advance.
               </p>
-              <div className="p-4 rounded-card bg-surface border border-slate-100 space-y-2 text-xs text-neutral-gray">
-                <div className="font-bold text-ink">Official Airport Shuttle Pickup:</div>
+              <div className="p-4 rounded-xl bg-crest/70 border border-champagne/20 space-y-2 text-xs text-champagne/90">
+                <div className="font-bold text-cream">Official Airport Shuttle Pickup:</div>
                 <div>• Day 1 Morning Window: Shuttles depart ISB at 09:00 AM and 01:00 PM.</div>
                 <div>• Delegations are received by student liaison officers at the Domestic/International Arrival lounge.</div>
                 <div>• Travel time to GIKI Topi is approx. 90 minutes via Islamabad-Peshawar M-1 Motorway.</div>
@@ -409,16 +409,16 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
 
           {activeTransit === 'bus' && (
             <div className="space-y-3">
-              <h3 className="text-base font-heading font-bold text-ink flex items-center gap-2">
-                <Bus className="w-4 h-4 text-amber-700" />
-                <span>Intercity Bus & Coach Terminals</span>
+              <h3 className="text-base font-heading font-bold text-cream flex items-center gap-2">
+                <Bus className="w-4 h-4 text-champagne" />
+                <span>Intercity Bus &amp; Coach Terminals</span>
               </h3>
-              <p className="text-xs sm:text-sm text-neutral-gray leading-relaxed">
+              <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
                 Delegations traveling via Daewoo Express, Faisal Movers, or Bilal Travels can arrive at Rawalpindi/Islamabad
                 terminals or direct Swabi feeder coaches.
               </p>
-              <div className="p-4 rounded-card bg-surface border border-slate-100 space-y-2 text-xs text-neutral-gray">
-                <div className="font-bold text-ink">Bus Terminal Shuttle Points:</div>
+              <div className="p-4 rounded-xl bg-crest/70 border border-champagne/20 space-y-2 text-xs text-champagne/90">
+                <div className="font-bold text-cream">Bus Terminal Shuttle Points:</div>
                 <div>• Daewoo Express 26 Number Terminal, Rawalpindi (Morning Pickup: 09:30 AM).</div>
                 <div>• Swabi Motorway Interchange Bus Stop (On-call pickup every 60 minutes).</div>
                 <div>• Direct local coasters to Topi run regularly from Pirwadhai Terminal, Rawalpindi.</div>
@@ -428,16 +428,16 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
 
           {activeTransit === 'road' && (
             <div className="space-y-3">
-              <h3 className="text-base font-heading font-bold text-ink flex items-center gap-2">
-                <Car className="w-4 h-4 text-emerald-700" />
+              <h3 className="text-base font-heading font-bold text-cream flex items-center gap-2">
+                <Car className="w-4 h-4 text-champagne" />
                 <span>Driving Directions via M-1 Motorway</span>
               </h3>
-              <p className="text-xs sm:text-sm text-neutral-gray leading-relaxed">
+              <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
                 From Islamabad/Rawalpindi or Peshawar, take the M-1 Motorway. Take the <strong>Swabi Interchange (Exit 5)</strong>.
                 From the toll plaza, head east on Topi-Swabi Road for 14 km directly to the GIKI Main Security Gate.
               </p>
-              <div className="p-4 rounded-card bg-surface border border-slate-100 space-y-2 text-xs text-neutral-gray">
-                <div className="font-bold text-ink">Self-Drive & Private Vehicle Instructions:</div>
+              <div className="p-4 rounded-xl bg-crest/70 border border-champagne/20 space-y-2 text-xs text-champagne/90">
+                <div className="font-bold text-cream">Self-Drive &amp; Private Vehicle Instructions:</div>
                 <div>• All vehicles must stop at the outer security checkpoint for registration check.</div>
                 <div>• University vans and hired coasters must submit driver CNIC and vehicle number beforehand.</div>
                 <div>• Dedicated visitor parking is allocated inside Gate 1 near the Sports Complex.</div>
@@ -447,27 +447,27 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
         </div>
       </section>
 
-      {/* SECTION 3: Security & Checkpoint Protocols (PRD §18.2) */}
-      <section className="p-6 md:p-8 rounded-card bg-amber-50/70 border border-amber-200/80 space-y-4 text-left">
-        <div className="flex items-center gap-2 text-amber-900 font-bold font-heading text-base">
-          <ShieldAlert className="w-5 h-5 text-amber-700" />
-          <span>Campus Security Protocols & Identification Clearance</span>
+      {/* SECTION 3: Security & Checkpoint Protocols */}
+      <section className="p-6 md:p-8 rounded-2xl bg-overlay/90 border border-champagne/30 shadow-xl space-y-4 text-left">
+        <div className="flex items-center gap-2 text-champagne font-bold font-heading text-base">
+          <ShieldAlert className="w-5 h-5 text-champagne" />
+          <span>Campus Security Protocols &amp; Identification Clearance</span>
         </div>
-        <p className="text-xs sm:text-sm text-amber-950 leading-relaxed">
+        <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
           GIKI maintains rigorous perimeter and gate protocols to ensure maximum security for all visiting students.
           Please review the following entry mandates prior to arrival:
         </p>
-        <div className="grid sm:grid-cols-3 gap-4 pt-1 text-xs text-amber-900">
-          <div className="p-3.5 rounded-button bg-white/80 border border-amber-200/70 space-y-1">
-            <strong className="block text-ink">Original Photo CNIC</strong>
+        <div className="grid sm:grid-cols-3 gap-4 pt-1 text-xs text-champagne/90">
+          <div className="p-4 rounded-xl bg-crest/80 border border-champagne/25 space-y-1">
+            <strong className="block text-cream">Original Photo CNIC</strong>
             <span>All delegates aged 18+ must present original CNIC; delegates under 18 must present NADRA B-Form.</span>
           </div>
-          <div className="p-3.5 rounded-button bg-white/80 border border-amber-200/70 space-y-1">
-            <strong className="block text-ink">Official Reference Pass</strong>
+          <div className="p-4 rounded-xl bg-crest/80 border border-champagne/25 space-y-1">
+            <strong className="block text-cream">Official Reference Pass</strong>
             <span>Print and carry your official GIMUN / GMC Registration Reference confirmation slip.</span>
           </div>
-          <div className="p-3.5 rounded-button bg-white/80 border border-amber-200/70 space-y-1">
-            <strong className="block text-ink">Student ID Verification</strong>
+          <div className="p-4 rounded-xl bg-crest/80 border border-champagne/25 space-y-1">
+            <strong className="block text-cream">Student ID Verification</strong>
             <span>Carry your current school, college, or university student identity card for pass validation.</span>
           </div>
         </div>
@@ -475,46 +475,46 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
 
       {/* SECTION 4: Emergency Contacts & Local Essentials */}
       <section className="space-y-4 pt-2">
-        <h2 className="text-xl font-heading font-bold text-ink">
-          On-Campus Essentials & Emergency Contacts
+        <h2 className="text-xl font-heading font-bold text-cream">
+          On-Campus Essentials &amp; Emergency Contacts
         </h2>
         <div className="grid sm:grid-cols-3 gap-4">
-          <div className="p-5 rounded-card bg-surface-elevated border border-whisper-border shadow-xs space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold font-mono text-primary uppercase">
-              <PhoneCall className="w-4 h-4 text-primary" />
+          <div className="p-5 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold font-mono text-champagne uppercase">
+              <PhoneCall className="w-4 h-4 text-champagne" />
               <span>Campus Medical Centre</span>
             </div>
-            <p className="text-xs text-neutral-gray">
+            <p className="text-xs text-champagne/80">
               Fully equipped 24/7 clinic with resident medical officers, emergency ambulance, and basic pharmacy.
             </p>
-            <div className="text-xs font-mono font-bold text-ink pt-1">
-              Ext: 2222 · Mobile: +92 300 5551212
+            <div className="text-xs font-mono font-bold text-cream pt-1">
+              {siteConfig.contactPhone || 'Contact the Secretariat by email'}
             </div>
           </div>
 
-          <div className="p-5 rounded-card bg-surface-elevated border border-whisper-border shadow-xs space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold font-mono text-primary uppercase">
-              <Building2 className="w-4 h-4 text-primary" />
-              <span>Banking & ATM Facilities</span>
+          <div className="p-5 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold font-mono text-champagne uppercase">
+              <Building2 className="w-4 h-4 text-champagne" />
+              <span>Banking &amp; ATM Facilities</span>
             </div>
-            <p className="text-xs text-neutral-gray">
+            <p className="text-xs text-champagne/80">
               Habib Bank Limited (HBL) and Allied Bank branches located inside campus with 24/7 1Link cash ATMs.
             </p>
-            <div className="text-xs font-mono font-bold text-ink pt-1">
+            <div className="text-xs font-mono font-bold text-cream pt-1">
               Location: Commercial Centre GIKI
             </div>
           </div>
 
-          <div className="p-5 rounded-card bg-surface-elevated border border-whisper-border shadow-xs space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold font-mono text-primary uppercase">
-              <Bus className="w-4 h-4 text-primary" />
+          <div className="p-5 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold font-mono text-champagne uppercase">
+              <Bus className="w-4 h-4 text-champagne" />
               <span>Transport Directorate Desk</span>
             </div>
-            <p className="text-xs text-neutral-gray">
+            <p className="text-xs text-champagne/80">
               For emergency shuttle delays, flight rescheduled notifications, or luggage transit queries.
             </p>
-            <div className="text-xs font-mono font-bold text-ink pt-1">
-              {siteConfig.contactEmails?.general || 'operations@gimungiki.org'}
+            <div className="text-xs font-mono font-bold text-cream pt-1">
+              {siteConfig.contactEmails.general}
             </div>
           </div>
         </div>

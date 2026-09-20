@@ -6,33 +6,20 @@ interface NonPaymentNoticeProps {
 }
 
 export function NonPaymentNotice({ track }: NonPaymentNoticeProps) {
-  const isMoot = track === 'moot-cup';
-
   return (
-    <div
-      className={`p-4.5 rounded-card border transition-colors ${
-        isMoot
-          ? 'bg-teal-50/60 border-teal-200/80 text-teal-950'
-          : 'bg-orange-50/60 border-orange-200/80 text-orange-950'
-      }`}
-    >
+    <div data-track={track} className="p-4.5 rounded-xl border border-champagne/25 bg-crest/70 backdrop-blur-sm text-champagne">
       <div className="flex gap-3.5 items-start">
-        <div
-          className={`p-2 rounded-xl shrink-0 mt-0.5 ${
-            isMoot ? 'bg-teal-100 text-secondary' : 'bg-orange-100 text-accent'
-          }`}
-        >
+        <div className="p-2 rounded-xl shrink-0 mt-0.5 bg-champagne/15 text-champagne border border-champagne/20">
           <ShieldCheck className="w-5 h-5" />
         </div>
         <div className="space-y-1">
-          <h4 className="text-xs font-heading font-bold uppercase tracking-wider">
+          <h4 className="text-xs font-heading font-bold uppercase tracking-wider text-cream">
             Zero Online Payment Collection Policy
           </h4>
-          <p className="text-xs text-neutral-gray leading-relaxed">
+          <p className="text-xs text-champagne/80 leading-relaxed">
             Submitting this application does not charge you anything. GIMUN & GMC does not
             collect payments online. Our Secretariat / Bench will review your credentials and contact
-            you within 2–3 business days with allocation status and manual bank transfer instructions for
-            seat confirmation.
+            you with allocation status and official bank transfer instructions for seat confirmation.
           </p>
         </div>
       </div>

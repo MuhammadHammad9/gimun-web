@@ -103,15 +103,15 @@ function ContactFormInner() {
         variants={scaleIn}
         initial="hidden"
         animate="visible"
-        className="p-8 rounded-card bg-emerald-50/90 border border-emerald-200 text-center space-y-4"
+        className="p-8 rounded-2xl bg-raised/95 border border-champagne/30 text-center space-y-4 shadow-xl"
       >
-        <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+        <div className="w-12 h-12 rounded-full bg-elevated text-champagne flex items-center justify-center mx-auto border border-champagne/30">
           <CheckCircle2 className="w-7 h-7" />
         </div>
         <div className="space-y-1.5">
-          <h3 className="text-xl font-heading font-bold text-emerald-900">Message Dispatched</h3>
-          <p className="text-xs text-emerald-800 max-w-sm mx-auto leading-relaxed">
-            {serverMessage || 'Thank you for reaching out. The Secretariat has received your dispatch and will respond via email within 24 hours.'}
+          <h3 className="text-xl font-heading font-bold text-text">Message Dispatched</h3>
+          <p className="text-xs text-champagne/85 max-w-sm mx-auto leading-relaxed">
+            {serverMessage || 'Thank you for reaching out. The Secretariat has received your dispatch and will respond via email.'}
           </p>
         </div>
         <button
@@ -123,7 +123,7 @@ function ContactFormInner() {
             setHoneypot('');
             formLoadedAt.current = Date.now();
           }}
-          className="text-xs font-semibold text-emerald-800 underline hover:text-emerald-950 pt-2"
+          className="text-xs font-semibold text-champagne underline hover:text-text pt-2 cursor-pointer"
         >
           Send another message
         </button>
@@ -135,18 +135,18 @@ function ContactFormInner() {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="space-y-5 p-6 md:p-8 rounded-card bg-surface-elevated border border-whisper-border shadow-card"
+      className="space-y-5 p-6 md:p-8 rounded-2xl bg-raised/90 border border-champagne/25 shadow-xl"
     >
-      <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-        <MessageSquare className="w-4 h-4 text-primary" />
-        <h2 className="text-sm font-mono uppercase font-bold text-ink tracking-wide">
+      <div className="flex items-center gap-2 pb-2 border-b border-champagne/15">
+        <MessageSquare className="w-4 h-4 text-champagne" />
+        <h2 className="text-sm font-mono uppercase font-bold text-text tracking-wide">
           Direct Inquiry Dispatch
         </h2>
       </div>
 
       {serverMessage && status === 'error' && (
-        <div className="p-3.5 rounded-button bg-rose-50 border border-rose-200 text-rose-900 flex items-start gap-2.5 text-xs">
-          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+        <div className="p-3.5 rounded-xl bg-brand-deep/80 border border-crimson/50 text-crimson-soft flex items-start gap-2.5 text-xs">
+          <AlertCircle className="w-4 h-4 text-crimson-hi shrink-0 mt-0.5" />
           <span>{serverMessage}</span>
         </div>
       )}
@@ -160,7 +160,7 @@ function ContactFormInner() {
             value={formData.name}
             onChange={(e) => handleChange('name', e.target.value)}
             placeholder="e.g. Ayesha Tariq"
-            className="w-full px-4 py-2.5 rounded-button border border-whisper-border bg-white text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder:text-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
           />
         </FormField>
 
@@ -172,7 +172,7 @@ function ContactFormInner() {
             value={formData.email}
             onChange={(e) => handleChange('email', e.target.value)}
             placeholder="ayesha@institution.edu.pk"
-            className="w-full px-4 py-2.5 rounded-button border border-whisper-border bg-white text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder:text-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
           />
         </FormField>
       </div>
@@ -182,13 +182,13 @@ function ContactFormInner() {
           id="field-queryType"
           value={formData.queryType}
           onChange={(e) => handleChange('queryType', e.target.value)}
-          className="w-full px-4 py-2.5 rounded-button border border-whisper-border bg-white text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
         >
-          <option value="gimun">GIMUN Secretariat (Committees, Country Matrix, Delegations)</option>
-          <option value="moot-cup">Moot Court Bench (Compromis, Rules, Memorials)</option>
-          <option value="sponsorship">Corporate Sponsorship & Brand Partnerships</option>
-          <option value="media">Media, Press & Campus Ambassador Inquiries</option>
-          <option value="other">General Logistics, Travel & Campus Security</option>
+          <option value="gimun" className="bg-canvas text-text">GIMUN Secretariat (Committees, Country Matrix, Delegations)</option>
+          <option value="moot-cup" className="bg-canvas text-text">Moot Court Bench (Compromis, Rules, Memorials)</option>
+          <option value="sponsorship" className="bg-canvas text-text">Corporate Sponsorship &amp; Brand Partnerships</option>
+          <option value="media" className="bg-canvas text-text">Media, Press &amp; Campus Ambassador Inquiries</option>
+          <option value="other" className="bg-canvas text-text">General Logistics, Travel &amp; Campus Security</option>
         </select>
       </FormField>
 
@@ -205,7 +205,7 @@ function ContactFormInner() {
           value={formData.message}
           onChange={(e) => handleChange('message', e.target.value)}
           placeholder="State your question regarding committee allocation, compromise clarification, or travel coordination..."
-          className="w-full px-4 py-2.5 rounded-button border border-whisper-border bg-white text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder:text-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
         />
       </FormField>
 
@@ -214,10 +214,10 @@ function ContactFormInner() {
       <button
         type="submit"
         disabled={status === 'submitting'}
-        className={`w-full py-3 rounded-button font-semibold text-xs text-white flex items-center justify-center gap-2 transition-all shadow-button ${
+        className={`w-full py-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
           status === 'submitting'
-            ? 'bg-primary/80 cursor-wait animate-pulse'
-            : 'bg-primary hover:bg-primary-light active:scale-[0.99]'
+            ? 'btn-shimmer-gold opacity-80 cursor-wait animate-pulse'
+            : 'btn-shimmer-gold hover:brightness-110 active:scale-[0.99]'
         }`}
       >
         {status === 'submitting' ? (
@@ -237,7 +237,7 @@ export function ContactForm() {
   return (
     <Suspense
       fallback={
-        <div className="p-8 rounded-card bg-surface text-center text-xs font-mono text-neutral-gray animate-pulse">
+        <div className="p-8 rounded-2xl bg-raised/90 border border-champagne/20 text-center text-xs font-mono text-champagne/70 animate-pulse">
           Loading contact form…
         </div>
       }

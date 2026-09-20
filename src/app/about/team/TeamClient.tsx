@@ -9,6 +9,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { cn } from "@/lib/utils";
+import { CtaBanner } from '@/components/ui/CtaBanner';
 
 interface TeamClientProps {
   initialMembers: TeamMember[];
@@ -23,20 +24,20 @@ const GROUP_CONFIG: Record<
   secretariat: {
     label: "GIMUN Executive Secretariat",
     badge: "Model UN Secretariat",
-    badgeColor: "bg-[#FFF0E8] text-[#A83A11] border-[#FF6B35]/20",
-    avatarBg: "bg-gradient-to-br from-[#FF6B35] to-[#FF8C61] text-white",
+    badgeColor: "bg-champagne/20 text-cream border-champagne/40",
+    avatarBg: "bg-linear-to-br from-brand to-brand-lit text-champagne border border-champagne/30",
   },
   "convening-committee": {
     label: "GMC Convening Bench",
     badge: "GMC Bench Directorate",
-    badgeColor: "bg-[#E6F9F7] text-[#00B4A6] border-[#00B4A6]/20",
-    avatarBg: "bg-gradient-to-br from-[#00B4A6] to-[#00897B] text-white",
+    badgeColor: "bg-brand text-cream border-champagne/30",
+    avatarBg: "bg-linear-to-br from-champagne-lo to-brand text-champagne border border-champagne/30",
   },
   "organizing-committee": {
     label: "Host Directorate & Operations",
     badge: "Logistics & Host Directorate",
-    badgeColor: "bg-[#EEF2FF] text-[#1E2A78] border-[#1E2A78]/20",
-    avatarBg: "bg-gradient-to-br from-[#1E2A78] to-[#2E3C98] text-white",
+    badgeColor: "bg-overlay text-champagne border-champagne/30",
+    avatarBg: "bg-linear-to-br from-brand to-overlay text-champagne border border-champagne/30",
   },
 };
 
@@ -56,7 +57,7 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
   return (
     <div className="space-y-10">
       {/* Search & Filter Suite */}
-      <div className="space-y-4 pb-2 border-b border-gray-100">
+      <div className="space-y-4 pb-2 border-b border-champagne/15">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="w-full sm:w-80">
             <SearchInput
@@ -65,21 +66,21 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
               placeholder="Search by name, role, or department..."
             />
           </div>
-          <div className="text-xs font-mono text-[#5A5A6E]">
+          <div className="text-xs font-mono text-champagne/70">
             Showing {filteredMembers.length} of {initialMembers.length} Officers
           </div>
         </div>
 
         {/* Category Filter Tabs */}
-        <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-gray-100/90 border border-gray-200">
+        <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-overlay/90 border border-champagne/20 shadow-inner">
           <button
             type="button"
             onClick={() => setActiveGroup("all")}
             className={cn(
               "px-4 py-2 text-xs font-mono font-bold rounded-xl transition-all cursor-pointer",
               activeGroup === "all"
-                ? "bg-[#070B19] text-white shadow-xs"
-                : "text-[#5A5A6E] hover:text-[#1A1A2E]"
+                ? "bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest shadow-md font-bold"
+                : "text-champagne/70 hover:text-cream"
             )}
           >
             All Leadership ({initialMembers.length})
@@ -90,8 +91,8 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
             className={cn(
               "px-4 py-2 text-xs font-mono font-bold rounded-xl transition-all cursor-pointer",
               activeGroup === "secretariat"
-                ? "bg-[#FF6B35] text-white shadow-xs"
-                : "text-[#5A5A6E] hover:text-[#1A1A2E]"
+                ? "bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest shadow-md font-bold"
+                : "text-champagne/70 hover:text-cream"
             )}
           >
             GIMUN Secretariat ({initialMembers.filter((m) => m.group === "secretariat").length})
@@ -102,8 +103,8 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
             className={cn(
               "px-4 py-2 text-xs font-mono font-bold rounded-xl transition-all cursor-pointer",
               activeGroup === "convening-committee"
-                ? "bg-[#00B4A6] text-white shadow-xs"
-                : "text-[#5A5A6E] hover:text-[#1A1A2E]"
+                ? "bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest shadow-md font-bold"
+                : "text-champagne/70 hover:text-cream"
             )}
           >
             Moot Convening Bench ({initialMembers.filter((m) => m.group === "convening-committee").length})
@@ -114,8 +115,8 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
             className={cn(
               "px-4 py-2 text-xs font-mono font-bold rounded-xl transition-all cursor-pointer",
               activeGroup === "organizing-committee"
-                ? "bg-[#1E2A78] text-white shadow-xs"
-                : "text-[#5A5A6E] hover:text-[#1A1A2E]"
+                ? "bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest shadow-md font-bold"
+                : "text-champagne/70 hover:text-cream"
             )}
           >
             Host Directorate ({initialMembers.filter((m) => m.group === "organizing-committee").length})
@@ -137,13 +138,13 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
 
           return (
             <ScrollReveal key={member.id} delay={idx * 0.04}>
-              <div className="double-bezel h-full group hover:translate-y-[-2px] transition-transform duration-300">
-                <div className="double-bezel-inner p-6 sm:p-7 flex flex-col justify-between h-full space-y-5 bg-white">
+              <div className="rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group hover:translate-y-[-2px]">
+                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-5">
                   <div className="space-y-4">
                     {/* Header with Monogram Avatar & Branch Tag */}
                     <div className="flex items-start justify-between gap-3">
                       {member.photo ? (
-                        <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-sm shrink-0 border border-slate-200">
+                        <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-sm shrink-0 border border-champagne/30">
                           <Image
                             src={member.photo}
                             alt={member.name}
@@ -175,25 +176,25 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
 
                     {/* Name & Role */}
                     <div className="space-y-1">
-                      <h3 className="text-lg font-heading font-bold text-[#1A1A2E] leading-snug group-hover:text-[#1E2A78] transition-colors">
+                      <h3 className="text-lg font-heading font-bold text-cream leading-snug group-hover:text-champagne transition-colors">
                         {member.name}
                       </h3>
-                      <div className="text-xs font-mono font-semibold text-[#5A5A6E]">
+                      <div className="text-xs font-mono font-semibold text-champagne/85">
                         {member.role}
                       </div>
                     </div>
 
                     {/* Bio */}
                     {member.bio && (
-                      <p className="text-xs text-[#5A5A6E] leading-relaxed">
+                      <p className="text-xs text-champagne/75 leading-relaxed">
                         {member.bio}
                       </p>
                     )}
                   </div>
 
                   {/* Footer Actions */}
-                  <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-mono uppercase text-[#5A5A6E]">
+                  <div className="pt-4 border-t border-champagne/15 flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-mono uppercase text-champagne/60">
                       Official Contact
                     </span>
 
@@ -202,7 +203,7 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
                         <a
                           href={`mailto:${member.links.email}`}
                           title={`Email ${member.name}`}
-                          className="p-1.5 rounded-xl bg-gray-50 border border-gray-200 text-[#5A5A6E] hover:text-[#1E2A78] hover:bg-gray-100 transition-colors"
+                          className="p-1.5 rounded-xl bg-crest border border-champagne/30 text-champagne hover:bg-brand hover:text-cream transition-colors"
                         >
                           <Mail className="w-3.5 h-3.5" />
                         </a>
@@ -213,7 +214,7 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
                           target="_blank"
                           rel="noopener noreferrer"
                           title="LinkedIn Profile"
-                          className="p-1.5 rounded-xl bg-gray-50 border border-gray-200 text-[#5A5A6E] hover:text-blue-600 hover:bg-gray-100 transition-colors"
+                          className="p-1.5 rounded-xl bg-crest border border-champagne/30 text-champagne hover:bg-brand hover:text-cream transition-colors"
                         >
                           <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
@@ -244,28 +245,31 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
       </div>
 
       {/* Institutional Responsibility Pledge Banner */}
-      <section className="p-6 md:p-8 rounded-2xl bg-[#070B19] text-white border border-white/10 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+      <CtaBanner variant="slab">
+        <div className="text-champagne relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+
         <div className="absolute inset-0 bg-radial-glow-dual opacity-25 pointer-events-none" />
         <div className="relative z-10 space-y-1 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#FF6B35]">
-            <Award className="w-4 h-4 text-[#FF6B35]" />
+          <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-champagne">
+            <Award className="w-4 h-4 text-champagne" />
             <span>Academic Rigor &amp; Student Leadership</span>
           </div>
-          <h3 className="text-lg font-heading font-extrabold text-white">
+          <h3 className="text-lg font-heading font-extrabold text-cream">
             Governed by GIKI Student Debating &amp; Law Societies
           </h3>
-          <p className="text-xs text-gray-300 max-w-xl">
+          <p className="text-xs text-champagne/80 max-w-xl">
             Our student directors, committee chairs, and bench evaluators are bound by institutional codes of strict neutrality, substantive integrity, and academic rigor.
           </p>
         </div>
 
         <Link
           href="/about"
-          className="relative z-10 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-xs font-mono font-bold text-white hover:bg-white/20 transition-colors shrink-0"
+          className="relative z-10 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand border border-champagne/30 text-xs font-mono font-bold text-champagne hover:bg-crest hover:text-cream transition-colors shrink-0 shadow-md"
         >
           <span>About GIKI Heritage</span>
         </Link>
-      </section>
+        </div>
+      </CtaBanner>
     </div>
   );
 }
