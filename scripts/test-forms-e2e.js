@@ -7,8 +7,8 @@
  * 2. GIMUN Delegation registration -> 201 Created, multi-delegate roster accepted
  * 3. GMC Team registration -> 201 Created, 3-member team accepted
  * 4. Contact form submission -> 201 Created
- * 5. Anti-bot honeypot trap -> blocked (400 Bad Request)
- * 6. Fast fill-time velocity trap (< 2000ms) -> blocked (400 Bad Request)
+ * 5. Anti-bot honeypot trap -> blocked (201 decoy success)
+ * 6. Fast fill-time velocity trap (< 2000ms) -> blocked (201 decoy success)
  * 7. Rate limit burst -> 429 Too Many Requests
  * 8. Memory backend leaves no disk records behind
  */
@@ -128,7 +128,7 @@ async function runE2ETests() {
           'x-forwarded-for': ip,
           ...customHeaders,
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, ...(endpoint === '/api/register' ? { submission_key: payload.submission_key || require('node:crypto').randomUUID() } : {}) }),
       });
       let data = {};
       try {
@@ -302,9 +302,9 @@ async function runE2ETests() {
 
       const res = await postJson('/api/register', botPayload);
 
-      if (res.status === 400 && !res.data.success) {
+      if (res.status === 201 && res.data.success) {
         passedCount++;
-        console.log('  [PASS] Test 5: Honeypot Trap -> 400 Bad Request');
+        console.log('  [PASS] Test 5: Honeypot Trap -> 201 decoy success');
       } else {
         failedCount++;
         console.error('  [FAIL] Test 5: Honeypot trap failed to block properly:', res);
@@ -327,9 +327,9 @@ async function runE2ETests() {
 
       const res = await postJson('/api/register', speedPayload);
 
-      if (res.status === 400 && !res.data.success) {
+      if (res.status === 201 && res.data.success) {
         passedCount++;
-        console.log('  [PASS] Test 6: Velocity Trap (< 2000ms) -> 400 Bad Request');
+        console.log('  [PASS] Test 6: Velocity Trap (< 2000ms) -> 201 decoy success');
       } else {
         failedCount++;
         console.error('  [FAIL] Test 6: Velocity trap failed to block:', res);

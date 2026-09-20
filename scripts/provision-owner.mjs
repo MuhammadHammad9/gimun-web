@@ -1,0 +1,13 @@
+import { loadEnvConfig } from '@next/env';
+import { createClient } from '@supabase/supabase-js';
+loadEnvConfig(process.cwd());
+const email=process.env.ADMIN_OWNER_EMAIL,password=process.env.ADMIN_OWNER_TEMP_PASSWORD;
+if(!email||!password||password.length<12)throw new Error('Set ADMIN_OWNER_EMAIL and ADMIN_OWNER_TEMP_PASSWORD (12+ characters) in your shell.');
+const url=process.env.SUPABASE_URL||process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY;
+if(!url||!key)throw new Error('Configure Supabase.');
+const db=createClient(url,key,{auth:{persistSession:false}});
+const {count,error:countError}=await db.from('admin_users').select('*',{count:'exact',head:true}).eq('role','owner').eq('active',true);
+if(countError)throw countError;if(count)throw new Error('An active owner already exists. Manage additional users in /admin/users.');
+const {data,error}=await db.auth.admin.createUser({email,password,email_confirm:true});if(error)throw error;
+const {error:profileError}=await db.from('admin_users').insert({user_id:data.user.id,email,display_name:'Event owner',role:'owner',must_change_password:true});if(profileError)throw new Error(`Owner auth account created (${data.user.id}), but profile failed. Repair it before retrying.`);
+console.log('First owner provisioned. Password change is required at first login.');
