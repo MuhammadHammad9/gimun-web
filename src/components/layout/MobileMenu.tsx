@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { X, ArrowRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { eventPhase } from '@/lib/phase';
 import { navigationTree } from '@/lib/navigation';
 import { useSiteConfig } from '@/components/SiteConfigProvider';
@@ -62,20 +61,19 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
     }
   }, [isOpen, onClose]);
 
+  // No exit animation: the overlay unmounts on close. Keeping AnimatePresence
+  // for a 200ms fade-out is not worth shipping framer-motion in the chrome
+  // bundle on every route.
+  if (!isOpen) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          ref={menuRef}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 bg-canvas/98 backdrop-blur-2xl flex flex-col md:hidden text-white"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mobile menu"
-        >
+    <div
+      ref={menuRef}
+      className="pop-in fixed inset-0 z-50 flex flex-col bg-canvas/98 text-white backdrop-blur-xl md:hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Mobile menu"
+    >
           {/* Header Bar inside Mobile Menu */}
           <div className="px-6 py-4 flex items-center justify-between border-b border-white/10">
             <Link
@@ -124,8 +122,6 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
               {eventPhase(site)==='registration-open'?'Register Now (No Payment)':'Registration status'}
             </Button>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </div>
   );
 }

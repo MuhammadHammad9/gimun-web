@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   ChevronLeft,
@@ -138,14 +137,8 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
           const isWide = item.aspectRatio === 'wide';
 
           return (
-            <motion.div
-              key={item.id}
-              layout
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.3 }}
-              className={`group relative overflow-hidden rounded-2xl border border-champagne/25 bg-overlay/90 shadow-xl hover:border-champagne/45 transition-all duration-300 cursor-pointer ${
+            <div
+              key={item.id}className={`group relative overflow-hidden rounded-2xl border border-champagne/25 bg-overlay/90 shadow-xl hover:border-champagne/45 transition-all duration-300 cursor-pointer ${
                 isWide ? 'sm:col-span-2' : 'col-span-1'
               }`}
               role="button"
@@ -222,28 +215,21 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   </span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           );
         })}
       </div>
 
       {/* Lightbox Modal */}
-      <AnimatePresence>
+      <>
         {activeItem && activeLightboxIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/90 backdrop-blur-md"
             role="presentation"
             onClick={closeLightbox}
           >
             {/* Modal Container */}
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+            <div
               onClick={(e) => e.stopPropagation()}
               ref={dialogRef}
               role="dialog"
@@ -362,10 +348,10 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

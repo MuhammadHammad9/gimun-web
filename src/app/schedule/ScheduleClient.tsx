@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   Clock,
   MapPin,
@@ -108,10 +107,8 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                 )}
               >
                 {isSelected && (
-                  <motion.div
-                    layoutId="activeScheduleDay"
+                  <div
                     className="absolute inset-0 bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo rounded-xl shadow-md"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
                 <span

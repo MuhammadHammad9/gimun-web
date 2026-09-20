@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import type { SiteConfig } from '@/lib/types';
 import { eventPhase } from '@/lib/phase';
@@ -74,7 +73,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
           {/* Logo / Brand Name */}
           <Link
             href="/"
-            className="flex items-center gap-2 text-white font-heading font-bold text-base tracking-tight shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne rounded-lg"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg pr-2 text-base font-bold tracking-tight text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
           >
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded-full bg-crimson" title="GIMUN Track" />
@@ -121,15 +120,10 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                         : 'text-white/80 hover:text-champagne hover:bg-white/10'
                     }`}
                   >
-                    {/* Shared layout id: the pill slides between sections on
-                        navigation rather than cutting, which makes the change
-                        of place legible on a 23-route site. */}
                     {isActive && (
-                      <motion.span
-                        layoutId="nav-active-pill"
+                      <span
                         aria-hidden="true"
-                        className="absolute inset-0 -z-10 rounded-xl bg-white/15 shadow-sm"
-                        transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                        className="absolute inset-0 -z-10 rounded-xl bg-white/15"
                       />
                     )}
                     <span>{item.label}</span>
@@ -144,15 +138,9 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
 
                   {/* Dropdown Menu with Spring Scale-in */}
                   {hasDropdown && (
-                    <AnimatePresence>
+                    <>
                       {activeDropdown === item.label && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.96, y: 6 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.96, y: 6 }}
-                          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                          className="absolute left-0 mt-2 w-64 bg-raised/95 backdrop-blur-2xl border border-champagne/25 rounded-xl shadow-2xl p-2 z-50 overflow-hidden"
-                        >
+                        <div className="pop-in absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-line-2 bg-raised/95 p-2 backdrop-blur-xl">
                           <div className="space-y-1">
                             {item.dropdown?.map((sub) => (
                               <Link
@@ -183,9 +171,9 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                               </Link>
                             ))}
                           </div>
-                        </motion.div>
+                        </div>
                       )}
-                    </AnimatePresence>
+                    </>
                   )}
                 </div>
               );
@@ -213,15 +201,9 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                 />
               </button>
 
-              <AnimatePresence>
+              <>
                 {registerOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.96, y: 6 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.96, y: 6 }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                    className="absolute right-0 mt-2 w-52 bg-raised/95 backdrop-blur-2xl border border-champagne/25 rounded-xl shadow-2xl p-2 z-50"
-                  >
+                  <div className="pop-in absolute right-0 z-50 mt-2 w-52 rounded-xl border border-line-2 bg-raised/95 p-2 backdrop-blur-xl">
                     <p className="text-[10px] font-mono text-champagne/60 uppercase tracking-wider px-3 pt-1 pb-2">
                       Choose your track
                     </p>
@@ -247,15 +229,15 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                         <div className="text-[10px] text-white/50">{site.registrationStatus.mootCupOpen&&registrationOpen?'Legal advocacy':'Registration closed'}</div>
                       </div>
                     </Link>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              </>
             </div>
 
             {/* Mobile: plain register link */}
             <Link
               href="/register"
-              className="btn-shimmer-gold md:hidden px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all"
+              className="btn-shimmer-gold md:hidden inline-flex min-h-11 items-center rounded-full px-5 text-xs font-bold uppercase tracking-wider"
             >
               {registrationOpen?'Register':'Registration status'}
             </Link>
@@ -265,7 +247,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
               ref={mobileToggleRef}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
-              className="md:hidden p-2 rounded-xl text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
+              className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
               aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileMenuOpen}
             >

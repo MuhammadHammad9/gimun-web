@@ -135,30 +135,34 @@
   --chrome-h: 4.5rem;
 }
 
-/* `overflow-x: hidden` on `body` alone propagates to the viewport and leaves
-   body itself non-clipping, so on mobile Chromium the layout viewport expands
-   to fit the widest content on the page — the sponsor marquee's intrinsic
-   width (~6600px) pushed `innerWidth` to 539 on a 390px device, shifting every
-   fixed overlay off-screen. Clipping on `html` prevents that expansion without
-   creating a scroll container. */
-html {
-  overflow-x: clip;
-  max-width: 100%;
-}
+/* Horizontal overflow is contained per-component (see `.marquee-clip`), not by
+   clipping the document. Setting `overflow-x` on `html` turns it into a scroll
+   container, which silently disables `position: sticky` for every descendant —
+   it took out the navbar and the section rail at once. */
 
 body {
   background-color: var(--background);
-  background-image:
-    radial-gradient(circle at 18% 12%, rgba(225, 29, 72, 0.22) 0%, transparent 45%),
-    radial-gradient(circle at 82% 18%, rgba(236, 216, 183, 0.14) 0%, transparent 42%),
-    radial-gradient(circle at 50% 80%, rgba(153, 27, 27, 0.28) 0%, transparent 55%),
-    radial-gradient(circle at 30% 60%, rgba(185, 28, 28, 0.15) 0%, transparent 40%);
-  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* Ambient atmosphere. A single fixed, composited layer rather than a
+   fixed-attachment body background: `background-attachment: fixed` repaints
+   the whole viewport on every scroll frame, and iOS Safari ignores it. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(225, 29, 72, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 82% 18%, rgba(236, 216, 183, 0.14) 0%, transparent 42%),
+    radial-gradient(circle at 50% 80%, rgba(153, 27, 27, 0.28) 0%, transparent 55%),
+    radial-gradient(circle at 30% 60%, rgba(185, 28, 28, 0.15) 0%, transparent 40%);
 }
 
 /* Film grain. Sits above content but never intercepts pointer events. */
@@ -501,6 +505,19 @@ h1, h2, h3, h4, h5, h6 {
   100% { transform: translateX(-50%); }
 }
 
+/* The marquee track is intrinsically thousands of pixels wide. Left in normal
+   flow that width leaks into the layout: on mobile Chromium it stretched the
+   layout viewport to 539px on a 390px device, which pushed every fixed overlay
+   off-screen. `contain` plus a zero-basis flex track keeps the intrinsic width
+   from reaching the page, without clipping the document. */
+.marquee-clip {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  contain: layout paint;
+}
+
 .animate-marquee {
   display: flex;
   width: max-content;
@@ -620,43 +637,41 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (min-width: 1024px) {
-  .warp-grid { grid-template-columns: repeat(6, 1fr); }
+  .warp-grid { grid-template-columns: repeat(5, 1fr); }
 }
 
-/* A delegate name card: warm stock, a printed rule under the chamber, and the
-   delegation set in the display face. Sized as texture, not as content. */
+/* A delegate name card. Deliberately cheap to style: flat rgba fills rather
+   than gradients or color-mix(), and the body font rather than the display
+   face, because this block is repeated across the whole field and it sits
+   ahead of the headline in the style pass. Profiling an earlier version with
+   gradients and color-mix on 48 tiles put ~1.2s of style/layout in front of
+   LCP on a throttled mobile profile. */
 .wtile {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.25rem;
-  min-height: 4.25rem;
+  gap: 0.1875rem;
+  min-height: 4.5rem;
   padding: 0.75rem 0.875rem;
   border-radius: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--color-champagne) 16%, transparent);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--color-champagne) 9%, transparent),
-    color-mix(in srgb, var(--color-champagne) 4%, transparent)
-  );
+  border: 1px solid rgba(236, 216, 183, 0.14);
+  background: rgba(236, 216, 183, 0.055);
   overflow: hidden;
 }
 
 .wtile-chamber {
-  font-family: var(--font-mono);
   font-size: 0.5rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-crimson) 70%, var(--color-champagne));
+  color: rgba(225, 29, 72, 0.75);
 }
 
 .wtile-name {
-  font-family: var(--font-display);
   font-size: 0.8125rem;
   font-weight: 500;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  color: color-mix(in srgb, var(--color-champagne) 78%, transparent);
+  color: rgba(236, 216, 183, 0.72);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -721,7 +736,130 @@ h1, h2, h3, h4, h5, h6 {
     animation: rise-in 0.7s var(--ease-out-expo) both;
     animation-timeline: view();
     animation-range: entry 0% cover 30%;
-    animation-delay: calc(var(--i, 0) * 60ms);
+    animation-delay: calc(var(--i, 0) * var(--stagger, 60ms));
+  }
+}
+
+/* Menus and overlays enter with a short scale-and-lift. Mount-only: closing is
+   an unmount, which reads as responsive rather than sluggish. */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pop-in {
+  animation: pop-in 0.22s var(--ease-out-expo) both;
+}
+
+/* ==============================================================================
+   SCROLL PROGRESS
+   A scroll-driven animation rather than a subscribed motion value: no React,
+   no listener, and the compositor owns the whole thing.
+   ============================================================================== */
+.scroll-progress {
+  display: none;
+}
+
+@keyframes progress-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    display: block;
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 50;
+    height: 2px;
+    transform-origin: 0 50%;
+    background: linear-gradient(to right, var(--color-crimson), var(--color-champagne));
+    animation: progress-grow linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* The announcement bar expands once on mount and unmounts on dismiss. */
+@keyframes banner-open {
+  from { grid-template-rows: 0fr; opacity: 0; }
+  to { grid-template-rows: 1fr; opacity: 1; }
+}
+
+.banner-collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: banner-open 0.3s var(--ease-brand) both;
+}
+
+.banner-collapse > * {
+  min-height: 0;
+}
+
+/* Validation errors announce themselves with a short shake. Keyed on the
+   message so a new error replays it. Suppressed under reduced motion by the
+   global reduce rule. */
+@keyframes field-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-5px); }
+  30% { transform: translateX(5px); }
+  45% { transform: translateX(-3px); }
+  60% { transform: translateX(3px); }
+  75% { transform: translateX(-1px); }
+}
+
+.field-error {
+  animation: field-shake 0.4s ease-in-out both;
+}
+
+/* `content-visibility: auto` was tried on the page bands to keep offscreen
+   style and layout off the critical path. It is not used: these sections vary
+   a lot in height, so realising them against a fixed `contain-intrinsic-size`
+   produced layout shifts as bad as 0.94 CLS, and it bought no measurable LCP.
+   Left documented so it is not retried blind. */
+
+/* ==============================================================================
+   SCROLL REVEALS
+
+   Driven by CSS scroll-driven animation rather than an IntersectionObserver
+   per element. The resting state is the finished state, so browsers without
+   `animation-timeline` — and anyone with reduced motion — see the content
+   immediately rather than a blank box.
+   ============================================================================== */
+@keyframes reveal-up { from { opacity: 0; transform: translate3d(0, 1.5rem, 0); } }
+@keyframes reveal-down { from { opacity: 0; transform: translate3d(0, -1.5rem, 0); } }
+@keyframes reveal-left { from { opacity: 0; transform: translate3d(1.5rem, 0, 0); } }
+@keyframes reveal-right { from { opacity: 0; transform: translate3d(-1.5rem, 0, 0); } }
+@keyframes reveal-scale { from { opacity: 0; transform: scale(1.03) translate3d(0, 0.75rem, 0); } }
+@keyframes reveal-blur { from { opacity: 0; filter: blur(10px); transform: translate3d(0, 0.75rem, 0); } }
+@keyframes reveal-mask { from { opacity: 0; transform: translate3d(0, 100%, 0); } }
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation-duration: 0.7s;
+    animation-timing-function: var(--ease-out-expo);
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 28%;
+  }
+
+  .reveal-up { animation-name: reveal-up; }
+  .reveal-down { animation-name: reveal-down; }
+  .reveal-left { animation-name: reveal-left; }
+  .reveal-right { animation-name: reveal-right; }
+  .reveal-scale { animation-name: reveal-scale; }
+  .reveal-blur { animation-name: reveal-blur; }
+
+  .reveal-mask {
+    display: block;
+    overflow: hidden;
+    animation-name: reveal-mask;
   }
 }
 

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface FormFieldProps {
   label: string;
@@ -14,14 +13,6 @@ interface FormFieldProps {
   className?: string;
 }
 
-const shakeVariants = {
-  idle: { x: 0 },
-  shake: {
-    x: [0, -6, 6, -4, 4, -2, 2, 0],
-    transition: { duration: 0.4, ease: 'easeInOut' as const },
-  },
-};
-
 export function FormField({
   label,
   error,
@@ -32,9 +23,7 @@ export function FormField({
   className = '',
 }: FormFieldProps) {
   return (
-    <motion.div
-      variants={shakeVariants}
-      animate={error ? 'shake' : 'idle'}
+    <div
       className={`space-y-1.5 text-left ${className}`}
     >
       <div className="flex items-baseline justify-between gap-2">
@@ -57,20 +46,17 @@ export function FormField({
 
       {children}
 
-      <AnimatePresence mode="wait">
+      <>
         {error && (
-          <motion.p
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="text-xs text-crimson-soft font-medium flex items-center gap-1.5 pt-0.5"
+          <p
+            key={error}
+            className="field-error flex items-center gap-1.5 pt-0.5 text-xs font-medium text-crimson-soft"
           >
-            <span className="inline-block w-1 h-1 rounded-full bg-crimson-hi" />
+            <span aria-hidden="true" className="inline-block h-1 w-1 rounded-full bg-crimson-hi" />
             {error}
-          </motion.p>
+          </p>
         )}
-      </AnimatePresence>
-    </motion.div>
+      </>
+    </div>
   );
 }

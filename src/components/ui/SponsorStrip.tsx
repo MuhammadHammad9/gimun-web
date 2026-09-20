@@ -37,7 +37,7 @@ export function SponsorStrip({ sponsors, title, className }: SponsorStripProps) 
         </p>
       )}
 
-      <div className="relative w-full overflow-hidden mask-gradient">
+      <div className="marquee-clip mask-gradient">
         <div className="animate-marquee flex items-center gap-14 sm:gap-20">
           {lane.map((sponsor, idx) => {
             const isDuplicate = idx >= sponsors.length;
@@ -55,8 +55,8 @@ export function SponsorStrip({ sponsors, title, className }: SponsorStripProps) 
                 <Image
                   src={sponsor.logo}
                   alt={isDuplicate ? '' : sponsor.name}
-                  width={160}
-                  height={44}
+                  width={400}
+                  height={140}
                   loading="lazy"
                   className="h-8 w-auto opacity-45 transition-opacity duration-300 group-hover:opacity-90 sm:h-9"
                 />

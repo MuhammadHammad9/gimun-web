@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { MagneticButton } from '@/components/motion/MagneticButton';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'track-gimun' | 'track-moot' | 'ghost';
@@ -14,8 +13,6 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   href?: string;
   icon?: React.ReactNode;
   fullWidth?: boolean;
-  /** Leans toward the cursor on hover. Reserve for the one primary CTA. */
-  magnetic?: boolean;
   /** Swaps the icon for a spinner and blocks interaction. */
   loading?: boolean;
 }
@@ -46,7 +43,6 @@ export function Button({
   href,
   icon,
   fullWidth = false,
-  magnetic = false,
   loading = false,
   disabled,
   ...props
@@ -121,7 +117,7 @@ export function Button({
     </>
   );
 
-  const element = href ? (
+  return href ? (
     <Link
       {...(props as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       href={href}
@@ -146,13 +142,6 @@ export function Button({
     </button>
   );
 
-  if (!magnetic) return element;
-
-  return (
-    <MagneticButton strength={8} className={fullWidth ? 'w-full' : undefined}>
-      {element}
-    </MagneticButton>
-  );
 }
 
 export default Button;

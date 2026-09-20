@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export interface LightboxProps {
   isOpen: boolean;
@@ -80,13 +79,9 @@ export function Lightbox({
   if (!currentImage) return null;
 
   return (
-    <AnimatePresence>
+    <>
       {isOpen && currentImage && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8"
           onClick={onClose}
           role="presentation"
@@ -157,8 +152,8 @@ export function Lightbox({
               Image {currentIndex + 1} of {images.length}
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }

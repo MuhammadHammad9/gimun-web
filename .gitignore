@@ -58,3 +58,6 @@ data/submissions/*.json
 test-results/
 playwright-report/
 .claude/launch.json
+artifacts/
+.tmp-dbg/
+.lhserver.log

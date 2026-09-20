@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown,
   HelpCircle,
@@ -189,31 +188,25 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                       : 'bg-overlay text-champagne/80 border border-champagne/20 group-hover:border-champagne/50'
                   }`}
                 >
-                  <motion.div
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                  <div
                   >
                     <ChevronDown className="w-4 h-4" />
-                  </motion.div>
+                  </div>
                 </div>
               </button>
 
-              <AnimatePresence initial={false}>
+              <>
                 {isOpen && (
-                  <motion.div
+                  <div
                     key="content"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                     className="overflow-hidden"
                   >
                     <div className="pt-3 pb-2 text-sm text-champagne/85 leading-relaxed">
                       {faq.answer}
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              </>
             </div>
           );
         })}

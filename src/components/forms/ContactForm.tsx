@@ -2,13 +2,11 @@
 
 import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { Send, CheckCircle2, AlertCircle, MessageSquare } from 'lucide-react';
 import type { ContactFormData, SubmissionResponse } from '@/lib/types';
 import { validateContactForm, type ValidationErrors } from '@/lib/validation';
 import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
-import { scaleIn } from '@/lib/motion';
 
 function ContactFormInner() {
   const searchParams = useSearchParams();
@@ -99,10 +97,7 @@ function ContactFormInner() {
 
   if (status === 'success') {
     return (
-      <motion.div
-        variants={scaleIn}
-        initial="hidden"
-        animate="visible"
+      <div
         className="p-8 rounded-2xl bg-raised/95 border border-champagne/30 text-center space-y-4 shadow-xl"
       >
         <div className="w-12 h-12 rounded-full bg-elevated text-champagne flex items-center justify-center mx-auto border border-champagne/30">
@@ -127,7 +122,7 @@ function ContactFormInner() {
         >
           Send another message
         </button>
-      </motion.div>
+      </div>
     );
   }
 

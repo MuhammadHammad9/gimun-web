@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Download,
   Search,
@@ -109,7 +108,7 @@ const MOTIONS_DATA: MotionItem[] = [
     second: "Yes",
     vote: "2/3 Majority Required",
     precedence: 8,
-    proTip: "Once passed, committee doors lock, all note passing ceases, and no one may enter or exit the chamber.",
+    proTip: "Once passed, committee doors lock, all note passing ceases, and no one may enter orthe chamber.",
   },
 ];
 
@@ -260,13 +259,9 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
         </div>
 
         {/* Active Stage Deep-Dive Showcase Box */}
-        <AnimatePresence mode="wait">
-          <motion.div
+        <>
+          <div
             key={activeStage}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
             className="double-bezel"
           >
             <div className="double-bezel-inner p-6 sm:p-8 space-y-5">
@@ -319,8 +314,8 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
                 </div>
               </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        </>
       </section>
 
       {/* 2. SEARCHABLE PARLIAMENTARY MOTIONS CHEAT SHEET */}

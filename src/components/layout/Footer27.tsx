@@ -1,10 +1,8 @@
-"use client";
 
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React from "react";
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
 import {
   MapPin,
   Calendar,
@@ -32,48 +30,6 @@ export interface Footer27Props {
   brandName?: string;
 }
 
-
-const staggerContainer: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.04 },
-  },
-};
-
-const riseUp: Variants = {
-  hidden: { opacity: 0, y: 14, filter: "blur(4px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { type: "spring", stiffness: 240, damping: 26, mass: 0.8 },
-  },
-};
-
-const linkCascade: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.03, delayChildren: 0.03 },
-  },
-};
-
-const linkTrickle: Variants = {
-  hidden: { opacity: 0, x: -6, filter: "blur(4px)" },
-  visible: {
-    opacity: 1,
-    x: 0,
-    filter: "blur(0px)",
-    transition: { type: "spring", stiffness: 350, damping: 30, mass: 0.6 },
-  },
-};
-
-const fadeIn: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
-  },
-};
 
 export function Footer27({
   siteConfig,
@@ -114,16 +70,11 @@ export function Footer27({
       {/* ── Main Footer Content ─────────────────────────────────────────── */}
       <div className="mx-auto w-full max-w-[1400px] px-6 sm:px-8 md:px-12 lg:px-16">
         {/* Main Grid: 4 cols for Brand | 8 cols for Nav */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.12 }}
+        <div
           className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12"
         >
           {/* Brand block — 4 cols */}
-          <motion.div
-            variants={riseUp}
+          <div
             className="flex flex-col gap-5 lg:col-span-4"
           >
             <div className="flex items-center gap-3">
@@ -164,51 +115,44 @@ export function Footer27({
                 </a>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Navigation columns — 8 cols */}
-          <motion.nav
-            variants={staggerContainer}
+          <nav
             aria-label="Footer navigation"
             className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 lg:col-span-8"
           >
             <h2 className="sr-only">Site Directory &amp; Navigation</h2>
             {defaultFooterColumns.map((col) => (
-              <motion.div
+              <div
                 key={col.title}
-                variants={riseUp}
                 className="flex flex-col gap-3.5"
               >
                 <h3 className="text-xs font-bold tracking-[0.1em] text-champagne uppercase font-mono">
                   {col.title}
                 </h3>
 
-                <motion.ul
-                  variants={linkCascade}
+                <ul
                   className="flex flex-col gap-2.5"
                 >
                   {col.links.map((link) => (
-                    <motion.li key={link.label} variants={linkTrickle}>
+                    <li key={link.label}>
                       <Link
                         href={link.href}
                         className="inline-block text-xs sm:text-[13px] leading-snug text-text-3 transition-colors duration-150 hover:text-champagne focus-visible:text-champagne focus-visible:outline-none"
                       >
                         {link.label}
                       </Link>
-                    </motion.li>
+                    </li>
                   ))}
-                </motion.ul>
-              </motion.div>
+                </ul>
+              </div>
             ))}
-          </motion.nav>
-        </motion.div>
+          </nav>
+        </div>
 
         {/* ── Meta & Legal Section ─────────────────────────────────────── */}
-        <motion.div
-          variants={fadeIn}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
+        <div
           className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-champagne/10 pt-6 pb-6 text-xs text-text-3 sm:flex-row sm:items-center"
         >
           <p className="leading-relaxed">
@@ -239,7 +183,7 @@ export function Footer27({
               Privacy &amp; Data
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* ── Massive Wordmark (With Brand Heading Font Outfit) ─────────── */}

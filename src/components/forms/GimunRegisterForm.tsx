@@ -4,7 +4,6 @@ import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import { useSearchParams } from 'next/navigation';
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, ArrowRight, User, Users, AlertCircle } from 'lucide-react';
 import type {
   Committee,
@@ -335,14 +334,12 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
               <Users className="w-3.5 h-3.5" />
               <span>Delegation (Group)</span>
             </button>
-            <motion.div
-              layoutId="gimun-type-indicator"
+            <div
               className="absolute top-1 bottom-1 rounded-lg bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo shadow-md"
               style={{
                 left: applicantType === 'individual' ? '4px' : '50%',
                 right: applicantType === 'individual' ? '50%' : '4px',
               }}
-              transition={{ type: 'spring', stiffness: 350, damping: 30 }}
             />
           </div>
         </div>
@@ -365,14 +362,10 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
       )}
 
       {/* INDIVIDUAL FORM FIELDS */}
-      <AnimatePresence mode="wait">
+      <>
         {applicantType === 'individual' ? (
-          <motion.div
+          <div
             key="individual-fields"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
             className="space-y-6"
           >
             {/* Personal Details */}
@@ -696,15 +689,11 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                 </select>
               </FormField>
             </div>
-          </motion.div>
+          </div>
         ) : (
           /* DELEGATION FORM FIELDS */
-          <motion.div
+          <div
             key="delegation-fields"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
             className="space-y-6"
           >
             {/* Delegation Head Details */}
@@ -1001,9 +990,9 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                 </select>
               </FormField>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Honeypot anti-bot trap */}
       <HoneypotField value={honeypot} onChange={setHoneypot} />

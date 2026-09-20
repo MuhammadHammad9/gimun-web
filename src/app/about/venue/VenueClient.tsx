@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plane,
   Bus,
@@ -250,13 +249,9 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
         </div>
 
         {/* Facility Detail Showcase Card */}
-        <AnimatePresence mode="wait">
-          <motion.div
+        <>
+          <div
             key={activeFacility}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
             className="p-6 md:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-6"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-champagne/15">
@@ -307,8 +302,8 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
                 ))}
               </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        </>
       </section>
 
       {/* SECTION 2: Travel & Transit Guidelines */}

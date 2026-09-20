@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { ArrowRight, Users, Award, BookOpen, Scale, CheckCircle2, Lock } from 'lucide-react';
 import { StaggerChildren } from '@/components/motion/StaggerChildren';
 import { formatEventDate } from '@/lib/site-config';
@@ -39,11 +38,7 @@ export function TrackChooser({
   return (
     <StaggerChildren className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
       {/* GIMUN Track Card */}
-      <motion.div
-        variants={{
-          hidden: { opacity: 0, y: 20 },
-          visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-        }}
+      <div
         className="relative group rounded-2xl bg-raised/90 border border-champagne/25 p-6 md:p-8 shadow-xl backdrop-blur-md flex flex-col justify-between space-y-6 hover:border-crimson/50 transition-all"
       >
         <div className="space-y-4">
@@ -122,14 +117,10 @@ export function TrackChooser({
             </Link>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* GMC Track Card */}
-      <motion.div
-        variants={{
-          hidden: { opacity: 0, y: 20 },
-          visible: { opacity: 1, y: 0, transition: { duration: 0.4, delay: 0.1 } },
-        }}
+      <div
         className="relative group rounded-2xl bg-raised/90 border border-champagne/25 p-6 md:p-8 shadow-xl backdrop-blur-md flex flex-col justify-between space-y-6 hover:border-champagne/50 transition-all"
       >
         <div className="space-y-4">
@@ -207,7 +198,7 @@ export function TrackChooser({
             </Link>
           </div>
         </div>
-      </motion.div>
+      </div>
     </StaggerChildren>
   );
 }

@@ -4,7 +4,6 @@ import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Scale,
   Download,
@@ -180,13 +179,9 @@ export function CategoriesClient({ categories, documents }: CategoriesClientProp
       </div>
 
       {/* Main Active Case File Showcase */}
-      <AnimatePresence mode="wait">
-        <motion.div
+      <>
+        <div
           key={currentCategory.id}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25 }}
           className="space-y-8"
         >
           {/* Dossier Header Card */}
@@ -321,13 +316,9 @@ export function CategoriesClient({ categories, documents }: CategoriesClientProp
                       />
                     </button>
 
-                    <AnimatePresence initial={false}>
+                    <>
                       {isOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.2 }}
+                        <div
                           className="overflow-hidden"
                         >
                           <div className="px-6 pb-6 pt-1 space-y-3 border-t border-champagne/20">
@@ -343,9 +334,9 @@ export function CategoriesClient({ categories, documents }: CategoriesClientProp
                               ))}
                             </ul>
                           </div>
-                        </motion.div>
+                        </div>
                       )}
-                    </AnimatePresence>
+                    </>
                   </div>
                 );
               })}
@@ -370,8 +361,8 @@ export function CategoriesClient({ categories, documents }: CategoriesClientProp
               ))}
             </div>
           </div>
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      </>
 
       {/* Bottom Information Notice */}
       <section className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">

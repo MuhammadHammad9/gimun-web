@@ -106,7 +106,6 @@ export function CtaBanner({
             href={action.href}
             size={isFeature ? 'lg' : 'md'}
             variant={action.variant ?? (i === 0 ? 'primary' : 'secondary')}
-            magnetic={isFeature && i === 0}
           >
             {action.label}
           </Button>

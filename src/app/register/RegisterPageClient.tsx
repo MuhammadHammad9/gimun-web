@@ -2,7 +2,6 @@
 
 import React, { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import type { Committee, ProblemCategory, SiteConfig } from '@/lib/types';
 import { TrackChooser } from '@/components/forms/TrackChooser';
@@ -103,14 +102,10 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
       )}
 
       {/* Main View Transition */}
-      <AnimatePresence mode="wait">
+      <>
         {successData ? (
-          <motion.div
+          <div
             key="success-view"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.3 }}
           >
             <RegistrationSuccess
               referenceId={successData.referenceId}
@@ -120,14 +115,10 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
               details={successData.details}
               onReset={handleReset}
             />
-          </motion.div>
+          </div>
         ) : selectedTrack === null ? (
-          <motion.div
+          <div
             key="chooser-view"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
           >
             <TrackChooser
               onSelectTrack={handleSelectTrack}
@@ -137,14 +128,10 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
               mootCupOpen={isMootOpen()}
               fees={siteConfig.fees}
             />
-          </motion.div>
+          </div>
         ) : selectedTrack === 'gimun' ? (
-          <motion.div
+          <div
             key="gimun-view"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
           >
             {isGimunOpen() ? (
               <GimunRegisterForm
@@ -167,14 +154,10 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
                 onSwitchTrack={() => setOverrideTrack('moot-cup')}
               />
             )}
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
+          <div
             key="moot-view"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
           >
             {isMootOpen() ? (
               <MootRegisterForm
@@ -197,9 +180,9 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
                 onSwitchTrack={() => setSelectedTrack('gimun')}
               />
             )}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

@@ -34,9 +34,11 @@ export function HeroMosaic({
 }) {
   if (placards.length === 0) return null;
 
-  // Enough to fill the field at desktop width without visible repetition.
+  // Twelve fills the field at desktop width once the veil is accounted for.
+  // Every tile costs a style pass that lands ahead of the headline, so the
+  // count is kept to what actually reads.
   const filled = Array.from(
-    { length: 24 },
+    { length: 12 },
     (_, i) => placards[i % placards.length]
   );
 

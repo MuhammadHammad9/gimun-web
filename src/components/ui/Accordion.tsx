@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export interface AccordionItem {
   id: string;
@@ -57,21 +56,17 @@ export function Accordion({ items, allowMultiple = false, className }: Accordion
               </span>
             </button>
 
-            <AnimatePresence initial={false}>
+            <>
               {isOpen && (
-                <motion.div
+                <div
                   id={`accordion-content-${item.id}`}
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
                 >
                   <div className="px-5 pb-5 text-sm sm:text-base text-champagne/80 leading-relaxed border-t border-champagne/20 pt-4">
                     {item.answer}
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
+            </>
           </div>
         );
       })}

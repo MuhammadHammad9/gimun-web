@@ -2,7 +2,6 @@
 
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Scale,
   Download,
@@ -252,7 +251,7 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
             <span>Bench Interventions &amp; Courtroom Decorum</span>
           </div>
           <p className="text-xs sm:text-sm text-champagne/90 leading-relaxed">
-            Judges are permitted to interrupt counsel at any juncture to test legal reasoning. The speaking clock DOES NOT pause during judicial questions. Address the bench as <em>&ldquo;Your Honour&rdquo;</em> or <em>&ldquo;May it please the Court&rdquo;</em>. When concluding answers, transition seamlessly back to your roadmap: <em>&ldquo;If that satisfies the Court, I shall now turn to my second submission…&rdquo;</em>
+            Judges are permitted to interrupt counsel at any juncture to test legal reasoning. The speaking clock DOES NOT pause during judicial questions. Address the bench as <em>&ldquo;Your Honour&rdquo;</em> or <em>&ldquo;May it please the Court&rdquo;</em>. When concluding answers,seamlessly back to your roadmap: <em>&ldquo;If that satisfies the Court, I shall now turn to my second submission…&rdquo;</em>
           </p>
         </div>
       </section>
@@ -297,14 +296,10 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
         </div>
 
         {/* Rubric Cards */}
-        <AnimatePresence mode="wait">
+        <>
           {scoringTab === "memorial" ? (
-            <motion.div
+            <div
               key="memorial"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             >
               <div className="p-5 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl space-y-2">
@@ -358,14 +353,10 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
                   Immaculate footnote formatting, flawless cross-referencing, grammar, and typography discipline.
                 </p>
               </div>
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
+            <div
               key="oral"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             >
               <div className="p-5 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl space-y-2">
@@ -419,9 +410,9 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
                   Strict adherence to time limits, elegant prayer delivery, and targeted counter-advocacy.
                 </p>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </>
       </section>
 
       {/* 5. BOTTOM ACTION CALLOUT */}

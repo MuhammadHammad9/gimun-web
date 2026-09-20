@@ -4,7 +4,6 @@ import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import QRCode from 'qrcode';
 import {
   Copy,
@@ -16,7 +15,6 @@ import {
   Calendar,
   AlertCircle,
 } from 'lucide-react';
-import { scaleIn } from '@/lib/motion';
 import { getCanonicalEventDateRange, getCanonicalVenue, getEventYear } from '@/lib/site-config';
 
 function escapeHtml(value: unknown) {
@@ -752,10 +750,7 @@ export function RegistrationSuccess({
   };
 
   return (
-    <motion.div
-      variants={scaleIn}
-      initial="hidden"
-      animate="visible"
+    <div
       className="max-w-3xl mx-auto space-y-6 print:m-0 print:p-0 print:max-w-none print:w-full"
     >
       {/* Action Toolbar (Screen Only) */}
@@ -1071,6 +1066,6 @@ export function RegistrationSuccess({
           </Link>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
