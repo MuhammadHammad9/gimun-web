@@ -1,4 +1,7 @@
-import { createHmac, randomUUID } from 'node:crypto';
+import 'server-only';
+import QRCode from 'qrcode';
+import { database } from './supabase';
+import { createHash, createHmac, randomUUID } from 'node:crypto';
 import type {
   ContactFormData,
   GimunDelegationData,
@@ -9,7 +12,7 @@ import type {
 import { RATE_LIMIT } from '@/lib/honeypot';
 import { getSiteConfig } from '@/lib/content';
 import { formatEventDate, getEventYear } from '@/lib/site-config';
-import { getMissingProductionConfig, getServerConfig } from '@/lib/server/config';
+import { getMissingProductionConfig, getServerConfig, isExplicitMemoryTestBackend } from '@/lib/server/config';
 
 export class SubmissionServiceError extends Error {
   constructor(message: string, public readonly status = 503) {
@@ -22,6 +25,8 @@ type Track = RegistrationSubmission['track'];
 type RegistrationData = GimunIndividualData | GimunDelegationData | MootCupTeamData;
 
 export type RegistrationRecord = {
+  submissionKey: string;
+  amountDue: number;
   track: Track;
   applicantType: RegistrationSubmission['applicantType'];
   formData: RegistrationData;
@@ -36,12 +41,15 @@ export type RegistrationRecord = {
 };
 
 type DeliveryResult = {
+  checkinToken: string;
   referenceId: string;
   emailQueued: boolean;
   notificationQueued: boolean;
 };
 
 type OutboxMessage = {
+  attachments: unknown[];
+  from_address?: string;
   id: string;
   to_addresses: string[];
   reply_to: string | null;
@@ -63,6 +71,7 @@ class OutboxDispatchError extends Error {
   }
 }
 
+const memoryReceipts = new Map<string, { hash: string; delivery: DeliveryResult }>();
 const memoryRateLimits = new Map<string, { count: number; resetAt: number }>();
 const memoryCounters: Record<Track, number> = { gimun: 0, 'moot-cup': 0 };
 const memoryRegistrations: RegistrationSubmission[] = [];
@@ -76,15 +85,13 @@ function backendMode() {
   return backend;
 }
 
-function isExplicitMemoryTestBackend() {
-  return backendMode() === 'memory' && process.env.ALLOW_IN_MEMORY_SUBMISSIONS === '1';
-}
+// isExplicitMemoryTestBackend is imported from config.ts — do not redefine locally.
 
 function ensureProductionBackend(options: { emailDelivery?: boolean } = {}) {
   if (
     process.env.NODE_ENV === 'production' &&
     backendMode() === 'memory' &&
-    process.env.ALLOW_IN_MEMORY_SUBMISSIONS !== '1'
+    !isExplicitMemoryTestBackend()
   ) {
     throw new SubmissionServiceError('The in-memory submission backend is disabled in production.');
   }
@@ -101,37 +108,10 @@ function getRequiredEnv(name: string): string {
   return value;
 }
 
-function supabaseHeaders() {
-  const key = getRequiredEnv('SUPABASE_SECRET_KEY');
-  return {
-    apikey: key,
-    Authorization: `Bearer ${key}`,
-    'Content-Type': 'application/json',
-  };
-}
-
-async function supabaseRequest(path: string, init: RequestInit = {}) {
-  const baseUrl = getRequiredEnv('SUPABASE_URL').replace(/\/$/, '');
-  const response = await fetch(`${baseUrl}/rest/v1/${path}`, {
-    ...init,
-    headers: { ...supabaseHeaders(), ...(init.headers || {}) },
-    cache: 'no-store',
-  });
-
-  if (!response.ok) {
-    throw new SubmissionServiceError(`Submission storage rejected the request (${response.status}).`);
-  }
-
-  return response;
-}
-
-async function supabaseRpc<T>(functionName: string, body: Record<string, unknown>) {
-  const response = await supabaseRequest(`rpc/${functionName}`, {
-    method: 'POST',
-    headers: { Prefer: 'return=representation' },
-    body: JSON.stringify(body),
-  });
-  return (await response.json()) as T;
+async function supabaseRpc<T>(functionName: string, body: Record<string, unknown>): Promise<T> {
+  const { data, error } = await database().rpc(functionName, body);
+  if (error) throw new SubmissionServiceError(error.message.includes('payload mismatch') ? 'Submission key was already used for different details. Reload the form.' : 'Submission storage is unavailable.', error.message.includes('payload mismatch') ? 409 : 503);
+  return data as T;
 }
 
 function escapeHtml(value: string) {
@@ -157,16 +137,16 @@ function recipientList() {
   return recipients;
 }
 
-function buildRegistrationReference(track: Track) {
+function buildRegistrationReference(track: Track, year: string) {
   memoryCounters[track] += 1;
-  const prefix = track === 'gimun' ? 'REG-GIMUN-2027' : 'REG-MOOT-2027';
+  const prefix = `REG-${track === 'gimun' ? 'GIMUN' : 'MOOT'}-${year}`;
   return `${prefix}-${String(memoryCounters[track]).padStart(4, '0')}`;
 }
 
 export async function enforceRateLimit(bucket: string, ip: string) {
   ensureProductionBackend();
   const usingExplicitMemoryTestBackend =
-    backendMode() === 'memory' && process.env.ALLOW_IN_MEMORY_SUBMISSIONS === '1';
+    backendMode() === 'memory' && (process.env.NODE_ENV !== 'production' || isExplicitMemoryTestBackend());
   const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
   const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
   const hmacSecret = process.env.RATE_LIMIT_HMAC_SECRET;
@@ -184,6 +164,7 @@ export async function enforceRateLimit(bucket: string, ip: string) {
         method: 'POST',
         headers: { Authorization: `Bearer ${upstashToken}` },
         body: JSON.stringify([
+          'EVAL',
           "local count = redis.call('INCR', KEYS[1]); if count == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]); end; return count",
           1,
           key,
@@ -194,7 +175,8 @@ export async function enforceRateLimit(bucket: string, ip: string) {
       });
       if (response.ok) {
         const result = (await response.json()) as { result?: number };
-        const count = Number(result.result || 0);
+        const count = Number(result.result);
+        if (!Number.isInteger(count) || count < 1) throw new Error('Invalid rate-limit response');
 
         return { allowed: count <= RATE_LIMIT.maxRequests, retryAfterSeconds: Math.ceil(RATE_LIMIT.windowMs / 1000) };
       }
@@ -241,7 +223,7 @@ export function clientIp(request: Request) {
   return trustedVercelIp || realIp || forwarded?.at(-1) || 'unknown';
 }
 
-function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: string, qrDataUrl?: string | null): string {
+async function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: string, qrDataUrl?: string | null): Promise<string> {
   const isMoot = record.track === 'moot-cup';
   const trackNameShort = isMoot ? 'GMC' : 'GIMUN';
   const trackNameLong = isMoot ? 'GIKI Moot Court (GMC)' : 'GIKI Model United Nations (GIMUN)';
@@ -252,11 +234,10 @@ function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: stri
       ? `Institutional Delegation (${record.participantCount} Delegates)`
       : `Advocacy Team (${record.participantCount} Advocates)`;
 
-  const feeDisplay = record.feeAmount || (isMoot ? 'PKR 12,000' : record.applicantType === 'individual' ? 'PKR 4,500' : 'PKR 4,000 / delegate');
+  const feeDisplay = record.feeAmount || 'Fee pending confirmation';
 
-  const site = getSiteConfig();
-  const eventYear = getEventYear();
-  const eventDates = `${formatEventDate(site.eventDates.start)}–${formatEventDate(site.eventDates.end, { day: 'numeric' })}`;
+  const site = (await getSiteConfig());
+    const eventDates = `${formatEventDate(site.eventDates.start)}–${formatEventDate(site.eventDates.end, { day: 'numeric' })}`;
   const venueTitle = site.hostInstitution;
   const venueLocation = site.venue;
   const safeReferenceId = escapeHtml(referenceId);
@@ -272,16 +253,16 @@ function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: stri
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SOPHEP Application Received — Ref #${safeReferenceId}</title>
+  <title>GIMUN Application Received — Ref #${safeReferenceId}</title>
 </head>
 <body style="margin: 0; padding: 28px 12px; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
   <div style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04); border: 1px solid #e2e8f0;">
 
     <!-- Dark Card Header (Matching User Reference Image) -->
     <div style="background-color: #111827; padding: 36px 24px 28px; text-align: center;">
-      <!-- SOPHEP Golden Badge -->
+      <!-- GIMUN Golden Badge -->
       <div style="display: inline-block; background-color: #fbbf24; color: #000000; font-size: 15px; font-weight: 900; letter-spacing: 5px; padding: 7px 22px; border-radius: 4px; text-transform: uppercase;">
-        SOPHEP
+        GIMUN
       </div>
       <div style="margin-top: 14px;">
         <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 9999px; padding: 4px 14px; color: #e0e7ff; font-size: 10px; font-family: -apple-system, BlinkMacSystemFont, monospace; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">
@@ -373,7 +354,7 @@ function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: stri
         <table style="width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.5;">
           <tr>
             <td style="padding: 4px 0; color: #64748b; width: 26%; font-weight: 500;">Event Name:</td>
-            <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">${trackNameLong} ${escapeHtml(eventYear)}</td>
+            <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">${trackNameLong} ${escapeHtml(getEventYear(site))}</td>
           </tr>
           <tr>
             <td style="padding: 4px 0; color: #64748b; font-weight: 500;">Event Dates:</td>
@@ -390,7 +371,7 @@ function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: stri
           <tr>
             <td style="padding: 4px 0; color: #64748b; font-weight: 500;">Check-in:</td>
             <td style="padding: 4px 0; color: #475569;">
-              Registration desk opens at 09:00 AM PKT on Day 1. Please bring your original student ID, CNIC/B-Form, and this confirmation.
+              ${escapeHtml(site.checkinDesk || 'Check-in details will be announced.')} ${escapeHtml(site.entryRequirement || '')}
             </td>
           </tr>
         </table>
@@ -399,7 +380,7 @@ function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: stri
       <!-- What Happens Next Notice -->
       <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 14px 18px; margin-bottom: 24px; font-size: 12px; color: #166534; line-height: 1.55;">
         <strong style="display: block; margin-bottom: 4px; font-size: 13px;">What Happens Next:</strong>
-        1. <strong>Dossier Evaluation:</strong> Secretariat reviews allocations &amp; credentials within 2–3 business days.<br>
+        1. <strong>Dossier Evaluation:</strong> ${escapeHtml(site.replyTime || 'The Secretariat will review your application.')}<br>
         2. <strong>Bank Transfer Invoice:</strong> Official invoice with university bank account details will be emailed.<br>
         3. <strong>Seat Confirmation:</strong> Upon payment verification, your status will be updated to <strong>Confirmed</strong> and your final badge credentials will be released.
       </div>
@@ -412,7 +393,7 @@ function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: stri
     <!-- Branded Footer (Matching User Reference Image) -->
     <div style="background-color: #fafaf9; border-top: 1px solid #f1f5f9; padding: 22px 24px; text-align: center;">
       <div style="font-size: 11px; font-weight: 800; color: #b45309; letter-spacing: 1px; text-transform: uppercase;">
-        SOPHEP — GIK Institute of Engineering Sciences &amp; Technology
+        GIMUN — GIK Institute of Engineering Sciences &amp; Technology
       </div>
       <div style="font-size: 10px; color: #94a3b8; margin-top: 5px;">
         This is an automated message. Please do not reply directly to this email.
@@ -427,10 +408,18 @@ function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: stri
 export async function createRegistration(record: RegistrationRecord): Promise<DeliveryResult> {
   ensureProductionBackend();
   const recipients = recipientList();
+  const site = await getSiteConfig();
+  const checkinToken = randomUUID();
+  const hash = createHash('sha256').update(JSON.stringify({ track: record.track, applicantType: record.applicantType, formData: record.formData })).digest('hex');
   const trackName = record.track === 'gimun' ? 'GIMUN' : 'GMC';
 
   if (backendMode() === 'memory') {
-    const referenceId = buildRegistrationReference(record.track);
+    const existing = memoryReceipts.get(record.submissionKey);
+    if (existing) {
+      if (existing.hash !== hash) throw new SubmissionServiceError('Submission key was already used for different details.', 409);
+      return existing.delivery;
+    }
+    const referenceId = buildRegistrationReference(record.track, getEventYear(site));
     memoryRegistrations.push({
       id: referenceId,
       track: record.track,
@@ -439,13 +428,16 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
       status: 'received',
       formData: record.formData,
     });
-    return { referenceId, emailQueued: false, notificationQueued: false };
+    const delivery = { referenceId, checkinToken, emailQueued: false, notificationQueued: false };
+    memoryReceipts.set(record.submissionKey, { hash, delivery });
+    return delivery;
   }
 
   // Allocate the reference, persist the submission, and create both private
   // outbox rows in one database transaction. The reference placeholder is
   // replaced inside the transaction once the atomic counter is allocated.
-  const receiptHtml = buildApplicantReceiptHtml(record, '{{REFERENCE_ID}}');
+  const receiptHtml = await buildApplicantReceiptHtml(record, '{{REFERENCE_ID}}', 'cid:ticket');
+  const png = await QRCode.toBuffer(checkinToken, { width: 280, margin: 2 });
   const notificationHtml = `<!DOCTYPE html>
 <html lang="en">
 <body style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.5;">
@@ -459,7 +451,10 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
 </body>
 </html>`;
 
-  const referenceId = await supabaseRpc<string>('create_registration_submission', {
+  const persisted = await supabaseRpc<{ referenceId: string; checkinToken: string }>('create_registration_v2', {
+    p_year: Number(getEventYear(site)), p_submission_key: record.submissionKey, p_submission_hash: hash, p_checkin_token: checkinToken,
+    p_attachments: [{ filename: 'ticket.png', content: png.toString('base64'), content_id: 'ticket' }],
+    p_fee_display: record.feeAmount, p_amount_due: record.amountDue, p_from_address: getServerConfig().emailFrom,
     p_track: record.track,
     p_applicant_type: record.applicantType,
     p_applicant_name: record.applicantName,
@@ -469,20 +464,21 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
     p_submitted_at: record.submittedAt,
     p_status: 'received',
     p_form_data: record.formData,
-    p_receipt_subject: `SOPHEP Application Received — ${trackName}`,
+    p_receipt_subject: `GIMUN Application Received — ${trackName}`,
     p_receipt_html: receiptHtml,
     p_notification_recipients: recipients,
     p_notification_subject: `New ${trackName} registration received`,
     p_notification_html: notificationHtml,
   });
 
+  const { referenceId, checkinToken: persistedToken } = persisted;
   if (!referenceId || typeof referenceId !== 'string') {
     throw new SubmissionServiceError('Submission storage returned an invalid reference.', 503);
   }
 
   // The transaction created both outbox rows. Delivery is intentionally left
   // to the protected cron worker so the request never sends mail directly.
-  return { referenceId, emailQueued: true, notificationQueued: recipients.length > 0 };
+  return { referenceId, checkinToken: persistedToken, emailQueued: true, notificationQueued: recipients.length > 0 };
 }
 
 export async function createContactMessage(data: ContactFormData) {
@@ -499,7 +495,8 @@ export async function createContactMessage(data: ContactFormData) {
   const notificationSubject = 'New ' + data.queryType + ' inquiry';
   const notificationHtml = '<p><strong>' + escapeHtml(data.name) + '</strong> submitted a ' + escapeHtml(data.queryType) + ' inquiry.</p><p>' + escapeHtml(data.message).replace(/\n/g, '<br />') + '</p>';
 
-  const persistedId = await supabaseRpc<string>('create_contact_submission', {
+  const persistedId = await supabaseRpc<string>('create_contact_v2', {
+    p_kind: data.kind || 'contact', p_from_address: getServerConfig().emailFrom,
     p_id: id,
     p_submitted_at: submittedAt,
     p_name: data.name,
@@ -519,19 +516,13 @@ export async function createContactMessage(data: ContactFormData) {
 }
 
 async function updateOutbox(id: string, workerId: string, update: Record<string, unknown>) {
-  await supabaseRequest(
-    'email_outbox?id=eq.' + encodeURIComponent(id) + '&locked_by=eq.' + encodeURIComponent(workerId),
-    {
-    method: 'PATCH',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify(update),
-    },
-  );
+  const { error } = await database().from('email_outbox').update(update).eq('id',id).eq('locked_by',workerId);
+  if (error) throw new Error('Unable to update outbox lease');
 }
 
 async function sendOutboxMessage(message: OutboxMessage) {
   const apiKey = getRequiredEnv('RESEND_API_KEY');
-  const from = getRequiredEnv('EMAIL_FROM');
+  const from = message.from_address || getRequiredEnv('EMAIL_FROM');
   let response: Response;
   try {
     response = await fetch('https://api.resend.com/emails', {
@@ -546,6 +537,7 @@ async function sendOutboxMessage(message: OutboxMessage) {
         to: message.to_addresses,
         subject: message.subject,
         html: message.html,
+        attachments: message.attachments || [],
         ...(message.reply_to ? { reply_to: message.reply_to } : {}),
       }),
       signal: AbortSignal.timeout(10_000),
@@ -556,7 +548,9 @@ async function sendOutboxMessage(message: OutboxMessage) {
   }
 
   if (!response.ok) {
-    const retryable = response.status === 408 || response.status === 429 || response.status >= 500;
+    const detail = await response.json().catch(() => null) as { name?: string } | null;
+    const retryable = response.status === 408 || response.status === 429 || response.status >= 500 ||
+      (response.status === 409 && detail?.name === 'concurrent_idempotent_requests');
     throw new OutboxDispatchError(`Resend returned HTTP ${response.status}.`, retryable);
   }
 
@@ -564,22 +558,22 @@ async function sendOutboxMessage(message: OutboxMessage) {
   try {
     provider = (await response.json()) as { id?: string };
   } catch {
-    throw new OutboxDispatchError('Resend returned an unreadable response.', false, true);
+    throw new OutboxDispatchError('Resend returned an unreadable response.', true, true);
   }
   if (!provider.id) {
-    throw new OutboxDispatchError('Resend response did not include a message ID.', false, true);
+    throw new OutboxDispatchError('Resend response did not include a message ID.', true, true);
   }
   return provider;
 }
 
-export async function dispatchEmailOutbox() {
+export async function dispatchEmailOutbox(limit = 4) {
   ensureProductionBackend({ emailDelivery: true });
   if (backendMode() === 'memory') return { claimed: 0, sent: 0, retried: 0, failed: 0, needsReview: 0 };
 
   const workerId = `vercel-cron-${randomUUID()}`;
   const claimed = await supabaseRpc<OutboxMessage[]>('claim_email_outbox', {
     p_worker_id: workerId,
-    p_limit: 10,
+    p_limit: Math.max(1, Math.min(4, limit)),
   });
   let sent = 0;
   let retried = 0;
@@ -587,8 +581,20 @@ export async function dispatchEmailOutbox() {
   let needsReview = 0;
 
   for (const message of claimed || []) {
+    let providerAccepted = false;
     try {
+      if (!message.from_address) {
+        // Old rows did not snapshot their sender. Never guess the original
+        // payload after an attempt: Resend requires identical retry payloads.
+        if(message.attempts>1){
+          await updateOutbox(message.id,workerId,{status:'needs_review',locked_at:null,locked_by:null,last_error:'Legacy message has no recorded sender; verify provider delivery before recovery.'});
+          needsReview+=1;continue;
+        }
+        message.from_address=getRequiredEnv('EMAIL_FROM');
+        await updateOutbox(message.id,workerId,{from_address:message.from_address});
+      }
       const provider = await sendOutboxMessage(message);
+      providerAccepted = true;
       await updateOutbox(message.id, workerId, {
         status: 'sent',
         provider_message_id: provider.id || null,
@@ -599,18 +605,17 @@ export async function dispatchEmailOutbox() {
       });
       sent += 1;
     } catch (error) {
+      // Preserve the lease if delivery succeeded but recording it failed. The
+      // next worker retries the immutable payload under the same provider key.
+      if (providerAccepted) { needsReview += 1; continue; }
       const dispatchError = error instanceof OutboxDispatchError
         ? error
         : new OutboxDispatchError('Unknown provider failure.', false, true);
       const retryUntil = message.retry_until
         ? new Date(message.retry_until).getTime()
-        : Date.now() + 24 * 60 * 60 * 1000;
+        : 0;
       const exhausted = message.attempts >= 20 || !Number.isFinite(retryUntil) || Date.now() >= retryUntil;
-      const status = dispatchError.uncertain
-        ? 'needs_review'
-        : dispatchError.retryable && !exhausted
-        ? 'retry'
-        : 'failed';
+      const status = !exhausted && (dispatchError.retryable || dispatchError.uncertain) ? 'retry' : dispatchError.uncertain ? 'needs_review' : 'failed';
       await updateOutbox(message.id, workerId, {
         status,
         next_attempt_at: new Date(Date.now() + Math.min(60 * 60 * 1000, 2 ** Math.min(message.attempts, 10) * 60_000)).toISOString(),
@@ -625,4 +630,18 @@ export async function dispatchEmailOutbox() {
   }
 
   return { claimed: claimed?.length || 0, sent, retried, failed, needsReview };
+}
+
+// Claim one message at a time so a slow provider cannot strand a large batch
+// when the hosting function reaches its duration limit. Pending rows stay durable.
+export async function drainEmailOutbox() {
+  const deadline = Date.now() + 35_000;
+  const total = { claimed: 0, sent: 0, retried: 0, failed: 0, needsReview: 0 };
+  do {
+    const result = await dispatchEmailOutbox(1);
+    for (const key of Object.keys(total) as (keyof typeof total)[]) total[key] += result[key];
+    if (!result.claimed) break;
+    await new Promise(resolve => setTimeout(resolve, 600));
+  } while (Date.now() < deadline);
+  return total;
 }

@@ -249,11 +249,11 @@ as $$
   returning *;
 $$;
 
-revoke all on function public.create_registration_submission(text, text, text, text, text, integer, timestamptz, text, jsonb, text, text, text[], text, text[]) from public, anon, authenticated;
+revoke all on function public.create_registration_submission(text, text, text, text, text, integer, timestamptz, text, jsonb, text, text, text[], text, text) from public, anon, authenticated;
 revoke all on function public.create_contact_submission(text, timestamptz, text, text, text, text, text[], text, text) from public, anon, authenticated;
 revoke all on function public.claim_email_outbox(text, integer) from public, anon, authenticated;
 revoke all on function public.next_submission_reference(text) from public, anon, authenticated;
-grant execute on function public.create_registration_submission(text, text, text, text, text, integer, timestamptz, text, jsonb, text, text, text[], text, text[]) to service_role;
+grant execute on function public.create_registration_submission(text, text, text, text, text, integer, timestamptz, text, jsonb, text, text, text[], text, text) to service_role;
 grant execute on function public.create_contact_submission(text, timestamptz, text, text, text, text, text[], text, text) to service_role;
 grant execute on function public.claim_email_outbox(text, integer) to service_role;
 grant execute on function public.next_submission_reference(text) to service_role;

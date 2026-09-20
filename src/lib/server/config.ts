@@ -21,9 +21,9 @@ export type ServerConfig = {
 export function getServerConfig(): ServerConfig {
   return {
     backend: process.env.SUBMISSIONS_BACKEND || (process.env.NODE_ENV === 'production' ? 'supabase' : 'memory'),
-    siteUrl: process.env.SITE_URL,
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseSecretKey: process.env.SUPABASE_SECRET_KEY,
+    siteUrl: process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL,
+    supabaseUrl: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseSecretKey: process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY,
     resendApiKey: process.env.RESEND_API_KEY,
     emailFrom: process.env.EMAIL_FROM,
     notificationEmail: process.env.NOTIFICATION_EMAIL,

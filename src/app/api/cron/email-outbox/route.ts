@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { dispatchEmailOutbox, SubmissionServiceError } from '@/lib/server/submissions';
+import { drainEmailOutbox, SubmissionServiceError } from '@/lib/server/submissions';
 
+export const maxDuration = 60;
 export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await dispatchEmailOutbox();
+    const result = await drainEmailOutbox();
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
     if (error instanceof SubmissionServiceError) {

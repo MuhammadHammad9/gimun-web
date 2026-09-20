@@ -1,0 +1,7 @@
+.admin{background:#f1f5f9;color:#172033;font-family:Arial,sans-serif;color-scheme:light}
+.admin h1{font-size:1.8rem;font-weight:700;margin-bottom:1rem}.admin h2{font-size:1.25rem;font-weight:700;margin:1rem 0}.admin h3{font-weight:700}
+.admin a{color:#1d4ed8;text-decoration:underline}.admin nav{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.admin-card{background:white;border:1px solid #cbd5e1;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.admin label{display:block;font-weight:600;margin-bottom:.8rem}.admin input:not([type=checkbox]),.admin select,.admin textarea{display:block;background:white;color:#172033;border:1px solid #64748b;border-radius:6px;padding:.65rem;width:100%;margin-top:.25rem;font-weight:400}
+.admin input[type=checkbox]{margin:.5rem}.admin textarea{min-height:100px}.admin button{background:#1e40af;color:white;border-radius:6px;padding:.65rem 1rem;cursor:pointer;margin:.25rem}.admin button:disabled{opacity:.5;cursor:wait}.admin button.secondary{background:#475569}
+.admin fieldset{padding:1rem;border:1px solid #cbd5e1;border-radius:8px;margin:.7rem 0}.admin legend{padding:0 .4rem;font-weight:700}.admin table{width:100%;border-collapse:collapse}.admin th,.admin td{text-align:left;padding:.65rem;border-bottom:1px solid #cbd5e1;vertical-align:top}.admin [role=alert]{background:#fff7ed;color:#9a3412;padding:1rem;border:1px solid #fdba74}.admin :focus-visible{outline:3px solid #2563eb;outline-offset:3px}
