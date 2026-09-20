@@ -1,0 +1,7 @@
+'use client';
+import { useState,useTransition } from 'react';
+import { queuePostEvent } from './post-event-actions';
+export function PostEventMail({kind,people}:{kind:'survey'|'certificate';people:{id:string;name:string;registration_ref:string}[]}){
+  const [ids,setIds]=useState<string[]>([]),[confirmed,setConfirmed]=useState(false),[message,setMessage]=useState('');const [pending,start]=useTransition();
+  return <form className="admin-card" onSubmit={e=>{e.preventDefault();start(async()=>{const r=await queuePostEvent({kind,ids,confirm:confirmed});setMessage(r.error||r.message||'Queued.');if(!r.error){setIds([]);setConfirmed(false);}});}}><h2>{kind==='survey'?'Send private feedback invitations':'Issue and email participation certificates'}</h2><p>Select up to 25 checked-in participants per batch. Sending again queues another email; certificate serials remain unchanged.</p><label>Recipients<select multiple size={8} value={ids} onChange={e=>{setIds(Array.from(e.target.selectedOptions,o=>o.value));setConfirmed(false);}}>{people.map(p=><option value={p.id} key={p.id}>{p.name} · {p.registration_ref}</option>)}</select></label><label><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>I reviewed these {ids.length} recipients and authorize these emails.</label><button disabled={pending||!confirmed||ids.length<1||ids.length>25}>Queue {kind} emails</button><p role="status">{message}</p></form>;
+}
