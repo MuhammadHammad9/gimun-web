@@ -35,26 +35,26 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
       <header className="space-y-4 max-w-3xl">
         <div className="flex items-center gap-2">
           <TrackBadge track="gimun" />
-          <span className="text-xs font-mono text-[#5A5A6E] uppercase tracking-wider">
-            Substantive Organs
+          <span className="text-xs font-mono text-champagne/70 uppercase tracking-wider">
+            Committees &amp; Councils
           </span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-heading font-extrabold text-[#1A1A2E] tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-heading font-extrabold text-cream tracking-tight">
           GIMUN Committee Roster &amp; Agendas
         </h1>
-        <p className="text-sm sm:text-base text-[#5A5A6E] leading-relaxed">
-          Explore our simulation bodies ranging from multilateral security councils to fast-breaking national crisis cabinets. Select a committee to inspect its agenda topics, dais leadership, and country allocation matrix.
+        <p className="text-sm sm:text-base text-champagne/80 leading-relaxed">
+          Explore our simulation bodies ranging from multilateral security councils to fast-breaking national crisis cabinets. Select a committee to inspect its agenda topics, committee chairs, and available country allocations.
         </p>
       </header>
 
       {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-100">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-champagne/30">
         <FilterBar
           options={filterOptions}
           activeValue={selectedType}
           onChange={setSelectedType}
         />
-        <div className="text-xs font-mono text-[#5A5A6E]">
+        <div className="text-xs font-mono text-champagne/70">
           Showing {filteredCommittees.length} of {initialCommittees.length} Committees
         </div>
       </div>
@@ -80,28 +80,28 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
                       {/* Top Badges */}
                       <div className="flex items-center justify-between gap-2 flex-wrap">
                         <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono uppercase font-semibold bg-[#FFF0E8] text-[#A83A11] border border-[#FF6B35]/20">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono uppercase font-semibold bg-champagne/20 text-cream border border-champagne/30">
                             {committee.type.replace('-', ' ')}
                           </span>
                           {isFeaturedSpan && (
-                            <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-[#1E2A78]/10 text-[#1E2A78]">
-                              Featured Organ
+                            <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-brand border border-champagne/30 text-champagne">
+                              Featured Committee
                             </span>
                           )}
                         </div>
-                        <span className="text-xs font-mono text-[#5A5A6E]">
+                        <span className="text-xs font-mono text-champagne/70">
                           Capacity: {committee.capacity ? `${committee.capacity} Delegates` : 'Open'}
                         </span>
                       </div>
 
                       {/* Title & Short Description */}
                       <div>
-                        <h2 className="text-2xl sm:text-3xl font-heading font-bold text-[#1A1A2E] group-hover:text-[#FF6B35] transition-colors leading-snug">
+                        <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream group-hover:text-champagne transition-colors leading-snug">
                           <Link href={`/gimun/committees/${committee.slug}`}>
                             {committee.name}
                           </Link>
                         </h2>
-                        <p className="text-sm text-[#5A5A6E] mt-2 leading-relaxed">
+                        <p className="text-sm text-champagne/80 mt-2 leading-relaxed">
                           {committee.shortDescription}
                         </p>
                       </div>
@@ -109,18 +109,18 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
                       {/* Agenda Topics Preview */}
                       <div
                         className={cn(
-                          'p-5 rounded-xl bg-[#F8F8FC] border border-gray-100 space-y-2.5',
+                          'p-5 rounded-xl bg-overlay/80 border border-champagne/20 space-y-2.5',
                           isFeaturedSpan && 'sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0'
                         )}
                       >
                         <div className={isFeaturedSpan ? 'sm:col-span-2' : ''}>
-                          <span className="text-[11px] font-mono uppercase font-bold text-[#1E2A78] tracking-wider block">
-                            Substantive Agenda Topics
+                          <span className="text-[11px] font-mono uppercase font-bold text-champagne tracking-wider block">
+                            Agenda Topics
                           </span>
                         </div>
                         {committee.topics.map((topic, i) => (
-                          <div key={i} className="flex items-start gap-2.5 text-xs text-[#1A1A2E]">
-                            <span className="w-5 h-5 rounded-full bg-[#FFF0E8] text-[#A83A11] font-mono font-bold flex items-center justify-center shrink-0 text-[10px]">
+                          <div key={i} className="flex items-start gap-2.5 text-xs text-cream">
+                            <span className="w-5 h-5 rounded-full bg-brand text-champagne border border-champagne/30 font-mono font-bold flex items-center justify-center shrink-0 text-[10px]">
                               {i + 1}
                             </span>
                             <span className="leading-snug pt-0.5">{topic}</span>
@@ -129,22 +129,22 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
                       </div>
 
                       {/* Chairs & Country Matrix Stats */}
-                      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-[#5A5A6E] pt-2 border-t border-gray-100">
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-champagne/80 pt-2 border-t border-champagne/20">
                         <div className="flex items-center gap-1.5">
-                          <Users2 className="w-4 h-4 text-[#1E2A78]" />
-                          <span>Dais: {committee.chairs.map((c) => c.name).join(', ')}</span>
+                          <Users2 className="w-4 h-4 text-champagne" />
+                          <span>Chairs: {committee.chairs.map((c) => c.name).join(', ')}</span>
                         </div>
-                        <div className="font-mono text-[#A83A11] font-semibold bg-[#FFF0E8] px-2.5 py-1 rounded-md text-xs">
-                          {committee.countryList.filter((c) => c.status === 'available').length} Available Allocations
+                        <div className="font-mono text-champagne font-semibold bg-crest/70 border border-champagne/20 px-2.5 py-1 rounded-md text-xs">
+                          {committee.countryList.filter((c) => c.status === 'available').length} Available Country Slots
                         </div>
                       </div>
                     </div>
 
                     {/* Card Action Footer */}
-                    <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-4 flex-wrap">
+                    <div className="pt-4 border-t border-champagne/20 flex items-center justify-between gap-4 flex-wrap">
                       <Link
                         href={`/gimun/committees/${committee.slug}`}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1E2A78] hover:text-[#FF6B35] transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-champagne hover:text-cream transition-colors"
                       >
                         <span>View Country Matrix &amp; Background Guide</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -168,12 +168,12 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
 
       {/* Bottom CTA */}
       <section className="pt-8">
-        <div className="p-8 rounded-2xl bg-[#F8F8FC] border border-gray-200/80 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="space-y-1">
-            <h3 className="font-heading font-bold text-lg text-[#1A1A2E]">
+            <h3 className="font-heading font-bold text-lg text-cream">
               Have questions regarding country matrix policies?
             </h3>
-            <p className="text-xs sm:text-sm text-[#5A5A6E]">
+            <p className="text-xs sm:text-sm text-champagne/80">
               Consult our Rules of Procedure or explore the Resource Hub for background guides.
             </p>
           </div>

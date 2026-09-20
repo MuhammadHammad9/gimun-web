@@ -22,9 +22,9 @@ export function SponsorStrip({
   const marqueeItems = [...sponsors, ...sponsors, ...sponsors];
 
   return (
-    <div className={cn('py-10 border-y border-gray-200/80 bg-white/80 overflow-hidden', className)}>
+    <div className={cn('py-10 border-y border-champagne/20 bg-overlay/90 backdrop-blur-md overflow-hidden', className)}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 text-center">
-        <p className="text-xs font-mono uppercase tracking-widest text-[#5A5A6E] font-medium">
+        <p className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
           {title}
         </p>
       </div>
@@ -35,13 +35,15 @@ export function SponsorStrip({
             <Link
               key={`${sponsor.id}-${idx}`}
               href={sponsor.url}
+              tabIndex={idx >= sponsors.length ? -1 : undefined}
+              aria-hidden={idx >= sponsors.length ? true : undefined}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 shrink-0 grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-all duration-300 group"
+              className="flex items-center gap-3 shrink-0 opacity-80 hover:opacity-100 transition-all duration-300 group"
               title={sponsor.name}
             >
-              <div className="px-4 py-2 rounded-xl bg-white border border-gray-200/60 shadow-xs flex items-center justify-center min-w-[140px] h-[52px]">
-                <span className="font-heading font-bold text-sm tracking-tight text-[#1E2A78] group-hover:text-[#FF6B35] transition-colors">
+              <div className="px-5 py-2.5 rounded-xl bg-crest/80 border border-champagne/25 shadow-md flex items-center justify-center min-w-[140px] h-[52px] group-hover:border-champagne/50 transition-all">
+                <span className="font-heading font-bold text-sm tracking-tight text-cream group-hover:text-champagne transition-colors">
                   {sponsor.name}
                 </span>
               </div>

@@ -27,7 +27,6 @@ export function FormField({
   error,
   required,
   description,
-  track,
   children,
   id,
   className = '',
@@ -41,15 +40,11 @@ export function FormField({
       <div className="flex items-baseline justify-between gap-2">
         <label
           htmlFor={id}
-          className="block text-xs font-semibold uppercase tracking-wider text-ink/80"
+          className="block text-xs font-semibold uppercase tracking-wider text-champagne"
         >
           {label}{' '}
           {required && (
-            <span
-              className={
-                track === 'moot-cup' ? 'text-secondary font-bold' : 'text-accent font-bold'
-              }
-            >
+            <span className="text-champagne font-bold">
               *
             </span>
           )}
@@ -57,7 +52,7 @@ export function FormField({
       </div>
 
       {description && (
-        <p className="text-[11px] text-neutral-gray leading-snug">{description}</p>
+        <p className="text-[11px] text-champagne/70 leading-snug">{description}</p>
       )}
 
       {children}
@@ -69,9 +64,9 @@ export function FormField({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
-            className="text-xs text-[#E11D48] font-medium flex items-center gap-1.5 pt-0.5"
+            className="text-xs text-crimson-soft font-medium flex items-center gap-1.5 pt-0.5"
           >
-            <span className="inline-block w-1 h-1 rounded-full bg-[#E11D48]" />
+            <span className="inline-block w-1 h-1 rounded-full bg-crimson-hi" />
             {error}
           </motion.p>
         )}

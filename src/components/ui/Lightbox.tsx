@@ -141,7 +141,7 @@ export function Lightbox({
             aria-modal="true"
             aria-label={`Image ${currentIndex + 1} of ${images.length}`}
           >
-            <div className="relative rounded-2xl overflow-hidden bg-neutral-900 border border-white/10">
+            <div className="relative rounded-2xl overflow-hidden bg-elevated border border-white/10">
               <div className="relative min-w-[320px] min-h-[260px] sm:min-w-[600px] sm:min-h-[400px]">
                 <Image
                   src={currentImage.src}

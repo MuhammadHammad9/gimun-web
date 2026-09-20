@@ -105,16 +105,16 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
   return (
     <div className="space-y-12">
       {/* Equal-Footing Binding Status Banner */}
-      <div className="p-4.5 rounded-2xl bg-[#E6F9F7] border border-[#00B4A6]/30 flex items-start gap-3.5">
-        <AlertCircle className="w-5 h-5 text-[#00B4A6] shrink-0 mt-0.5" />
-        <div className="space-y-1 text-xs sm:text-sm text-[#1A1A2E]">
-          <strong className="font-bold">Rule 2.4 — Equal Footing &amp; Binding Determination:</strong>{" "}
+      <div className="p-4.5 rounded-2xl bg-crest/80 border border-champagne/30 flex items-start gap-3.5 shadow-xl">
+        <AlertCircle className="w-5 h-5 text-champagne shrink-0 mt-0.5" />
+        <div className="space-y-1 text-xs sm:text-sm text-champagne/90">
+          <strong className="font-bold text-cream">Rule 2.4 — Equal Footing &amp; Binding Determination:</strong>{" "}
           All published clarifications constitute official and binding addenda to the Compromis. No private determinations are issued to individual teams. Clarifications may be relied upon and cited during written memorial drafting and oral pleadings.
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-100">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-champagne/30">
         <div className="w-full sm:w-80">
           <SearchInput
             value={searchQuery}
@@ -133,16 +133,16 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
               key={tab.id}
               onClick={() => setSelectedFilter(tab.id)}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-colors cursor-pointer",
+                "px-3 py-1.5 rounded-xl text-xs font-mono transition-colors cursor-pointer",
                 selectedFilter === tab.id
-                  ? "bg-[#007A70] text-white shadow-xs font-bold"
-                  : "bg-gray-100 text-[#5A5A6E] hover:bg-gray-200"
+                  ? "bg-champagne text-brand shadow-xs font-bold"
+                  : "bg-overlay/80 border border-champagne/20 text-champagne/80 hover:bg-brand/60 hover:text-cream"
               )}
             >
               {tab.label}
             </button>
           ))}
-          <span className="text-xs font-mono text-[#5A5A6E] ml-2">
+          <span className="text-xs font-mono text-champagne/70 ml-2">
             Showing {filteredClarifications.length} of {initialClarifications.length}
           </span>
         </div>
@@ -153,39 +153,39 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
         {filteredClarifications.map((item) => (
           <ScrollReveal key={item.id}>
             <div className="double-bezel">
-              <div className="double-bezel-inner p-6 sm:p-8 space-y-4 bg-white border-l-4 border-l-[#00B4A6]">
+              <div className="double-bezel-inner p-6 sm:p-8 space-y-4 border-l-4 border-l-champagne">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-[#E6F9F7] text-[#007A70] border border-[#00B4A6]/30">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-cream border border-champagne/30">
                       Clarification #{item.number}
                     </span>
-                    <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-700">
+                    <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded bg-overlay/80 border border-champagne/20 text-champagne">
                       Binding Addendum
                     </span>
                   </div>
-                  <div className="text-xs font-mono text-[#5A5A6E] flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-[#00B4A6]" />
+                  <div className="text-xs font-mono text-champagne/70 flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-champagne" />
                     <span>Promulgated: {item.submittedAt}</span>
                   </div>
                 </div>
 
                 {/* Question */}
-                <div className="p-4 rounded-xl bg-[#F8F8FC] border border-gray-100 space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase font-bold text-[#1E2A78] tracking-wider block">
+                <div className="p-4 rounded-xl bg-overlay/80 border border-champagne/20 space-y-1.5">
+                  <span className="text-[10px] font-mono uppercase font-bold text-champagne tracking-wider block">
                     Team Inquiry on Compromis:
                   </span>
-                  <p className="text-xs sm:text-sm font-medium text-[#1A1A2E] leading-relaxed">
+                  <p className="text-xs sm:text-sm font-medium text-cream leading-relaxed">
                     &ldquo;{item.question}&rdquo;
                   </p>
                 </div>
 
                 {/* Ruling */}
-                <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase font-bold text-emerald-800 tracking-wider">
-                    <FileCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <div className="p-4 rounded-xl bg-elevated/60 border border-champagne-lo/40 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase font-bold text-champagne tracking-wider">
+                    <FileCheck className="w-3.5 h-3.5 text-champagne" />
                     <span>Bench Determination:</span>
                   </div>
-                  <p className="text-xs sm:text-sm text-[#1A1A2E] leading-relaxed">
+                  <p className="text-xs sm:text-sm text-champagne-hi leading-relaxed">
                     {item.answer}
                   </p>
                 </div>
@@ -210,26 +210,26 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
       {/* Formal Inquiry Submission Box (PRD §16.2) */}
       <section className="pt-4">
         <div className="double-bezel">
-          <div className="double-bezel-inner p-6 sm:p-10 space-y-6 bg-radial-glow-teal">
+          <div className="double-bezel-inner p-6 sm:p-10 space-y-6">
             <div className="space-y-1">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
+              <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
                 Direct Submission
               </span>
-              <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E]">
+              <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
                 Submit Clarification Inquiry to the Bench
               </h2>
-              <p className="text-xs sm:text-sm text-[#5A5A6E] max-w-2xl">
+              <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
                 Registered teams may formulate concise questions identifying specific factual ambiguities in the Compromis. All inquiries are evaluated confidentially and published for all teams simultaneously.
               </p>
             </div>
 
             {formSubmitted ? (
-              <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2">
-                <div className="flex items-center gap-2 font-heading font-bold text-base">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              <div className="p-6 rounded-2xl bg-elevated/80 border border-champagne-lo/40 text-champagne-hi space-y-2">
+                <div className="flex items-center gap-2 font-heading font-bold text-base text-champagne-hi">
+                  <CheckCircle2 className="w-5 h-5 text-champagne" />
                   <span>Inquiry Transmitted to the Bench Drafting Committee</span>
                 </div>
-                <p className="text-xs text-emerald-800 leading-relaxed">
+                <p className="text-xs text-champagne-hi/90 leading-relaxed">
                   Your question has been logged for judicial consideration. Rulings are issued periodically on this dispatch board.
                 </p>
                 <button
@@ -243,7 +243,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                     setSubmitError(null);
                     formLoadedAt.current = Date.now();
                   }}
-                  className="text-xs font-semibold text-emerald-800 underline hover:text-emerald-950 pt-2 block cursor-pointer"
+                  className="text-xs font-semibold text-champagne underline hover:text-cream pt-2 block cursor-pointer"
                 >
                   Submit another inquiry
                 </button>
@@ -251,14 +251,14 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
             ) : (
               <form onSubmit={handleSubmit} noValidate className="space-y-4">
                 {submitError && (
-                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs" role="alert">
+                  <div className="p-3 rounded-xl bg-brand-deep/80 border border-crimson/40 text-crimson-soft text-xs" role="alert">
                     {submitError}
                   </div>
                 )}
                 <HoneypotField value={honeypot} onChange={setHoneypot} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label htmlFor="clarification-team-code" className="text-xs font-mono text-[#5A5A6E] font-medium block">
+                    <label htmlFor="clarification-team-code" className="text-xs font-mono text-champagne/80 font-medium block">
                       Assigned Team Code (e.g. TC-08) *
                     </label>
                     <input
@@ -268,12 +268,12 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                       value={teamName}
                       onChange={(e) => setTeamName(e.target.value)}
                       placeholder="e.g. TC-08"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base sm:text-xs bg-white text-[#1A1A2E] focus:outline-hidden focus:ring-2 focus:ring-[#00B4A6]/20 focus:border-[#00B4A6]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 text-base sm:text-xs bg-overlay/90 text-cream placeholder-champagne/40 focus:outline-hidden focus:ring-2 focus:ring-champagne/30 focus:border-champagne"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label htmlFor="clarification-contact-email" className="text-xs font-mono text-[#5A5A6E] font-medium block">
+                    <label htmlFor="clarification-contact-email" className="text-xs font-mono text-champagne/80 font-medium block">
                       Contact Advocate Email *
                     </label>
                     <input
@@ -283,13 +283,13 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
                       placeholder="advocate@university.edu.pk"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base sm:text-xs bg-white text-[#1A1A2E] focus:outline-hidden focus:ring-2 focus:ring-[#00B4A6]/20 focus:border-[#00B4A6]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 text-base sm:text-xs bg-overlay/90 text-cream placeholder-champagne/40 focus:outline-hidden focus:ring-2 focus:ring-champagne/30 focus:border-champagne"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="clarification-question" className="text-xs font-mono text-[#5A5A6E] font-medium block">
+                  <label htmlFor="clarification-question" className="text-xs font-mono text-champagne/80 font-medium block">
                     Specific Clarification Question (cite Compromis paragraph) *
                   </label>
                   <textarea
@@ -298,7 +298,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
                     value={questionText}
                     onChange={(e) => setQuestionText(e.target.value)}
                     placeholder="e.g. In reference to Paragraph 14 of the Compromis, does the multilateral communique imply..."
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-base sm:text-xs bg-white text-[#1A1A2E] focus:outline-hidden focus:ring-2 focus:ring-[#00B4A6]/20 focus:border-[#00B4A6]"
+                    className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 text-base sm:text-xs bg-overlay/90 text-cream placeholder-champagne/40 focus:outline-hidden focus:ring-2 focus:ring-champagne/30 focus:border-champagne"
                   />
                 </div>
 

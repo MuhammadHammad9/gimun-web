@@ -1,3 +1,4 @@
+import { getSiteConfig } from '@/lib/content';
 import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
 import { MootRulesClient } from "./MootRulesClient";
@@ -6,58 +7,57 @@ import { Button } from "@/components/ui/Button";
 import { Download } from "lucide-react";
 import { getEventYear } from "@/lib/site-config";
 import { getDocuments } from "@/lib/content";
+import { PageHero } from '@/components/ui/PageHero';
 
-const eventYear = getEventYear();
-export const metadata: Metadata = constructMetadata({
-  title: `Rules & Memorial Guidelines | GMC ${eventYear}`,
+export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
+  title: `Rules & Memorial Guidelines | GMC ${getEventYear(await getSiteConfig())}`,
   path: '/moot-cup/rules',
-  description: `Comprehensive competition rules, memorial drafting specifications, oral pleading rounds structure, and scoring criteria for the ${eventYear} GMC.`,
-});
+  description: `Comprehensive competition rules, memorial drafting specifications, oral pleading rounds structure, and scoring criteria for the ${getEventYear(await getSiteConfig())} GMC.`,
+}); }
 
-export default function MootRulesPage() {
-  const rulesDocument = getDocuments().find(
+export default async function MootRulesPage() {
+  const rulesDocument = (await getDocuments()).find(
     (document) => document.track === "moot-cup" && document.type === "rules",
   );
 
   return (
     <div className="space-y-12">
       {/* Modern Supreme Court Appellate Hero */}
-      <section className="relative overflow-hidden bg-[#070B19] text-white py-14 sm:py-20 border-b border-white/10">
-        <div className="absolute inset-0 bg-radial-glow-teal opacity-40 pointer-events-none" />
-        <div className="absolute inset-0 bg-tech-grid opacity-20 pointer-events-none" />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <PageHero
+        variant="moot"
+        breadcrumbs={[{ label: 'GMC', href: '/moot-cup' }, { label: 'Rules & Memorials' }]}
+        title={'Rules & Written Arguments (Memorials)'}
+        eyebrow={
           <div className="flex items-center gap-2">
-            <TrackBadge track="moot-cup" />
-            <span className="text-xs font-mono text-gray-400 uppercase tracking-widest">
-              Codified Competition Handbook
-            </span>
-          </div>
+                      <TrackBadge track="moot-cup" />
+                      <span className="text-xs font-mono text-text-3 uppercase tracking-widest">
+                        Competition Rules &amp; Standards
+                      </span>
+                    </div>
+        }
+        actionsSlot={
+          <>
+            <p className="text-sm sm:text-base text-text-2 max-w-3xl leading-relaxed">
+                        The GIKI Moot Court (GMC) follows national standards of appellate advocacy and courtroom argument. Review brief length limits, courtroom timing allocations, citation guidelines, and scoring criteria below.
+                      </p>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold text-white tracking-tight leading-tight max-w-4xl">
-            Rules &amp; Memorial <span className="text-gradient-teal">Guidelines</span>
-          </h1>
-
-          <p className="text-sm sm:text-base text-gray-300 max-w-3xl leading-relaxed">
-            The GIKI Moot Court (GMC) adheres to strict national standards of appellate advocacy, OSCOLA legal citations, and rigorous oral argument procedures. Review memorial length limits, oral round timing allocations, and the composite adjudication scoring rubric below.
-          </p>
-
-          <div className="pt-2 flex flex-wrap items-center gap-4">
-            {rulesDocument && (
-              <Button
-                variant="track-moot"
-                href={rulesDocument.fileUrl}
-                icon={<Download className="w-4 h-4" />}
-              >
-                Download Official Rules PDF
-              </Button>
-            )}
-            <Button variant="secondary" href="/moot-cup/clarifications">
-              Clarifications Log
-            </Button>
-          </div>
-        </div>
-      </section>
+                      <div className="pt-2 flex flex-wrap items-center gap-4">
+                        {rulesDocument && (
+                          <Button
+                            variant="track-moot"
+                            href={rulesDocument.fileUrl}
+                            icon={<Download className="w-4 h-4" />}
+                          >
+                            Download Official Rules PDF
+                          </Button>
+                        )}
+                        <Button variant="secondary" href="/moot-cup/clarifications">
+                          Clarifications Log
+                        </Button>
+                      </div>
+          </>
+        }
+      />
 
       {/* Main Interactive Body */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">

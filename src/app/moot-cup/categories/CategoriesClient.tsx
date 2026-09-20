@@ -1,5 +1,7 @@
 "use client";
 
+import { useSiteConfig } from '@/components/SiteConfigProvider';
+
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,12 +23,10 @@ import { getEventYear } from "@/lib/site-config";
 
 interface CategoriesClientProps {
   categories: ProblemCategory[];
-  propositionDoc?: Document;
+  documents: Document[];
 }
 
-const eventYear = getEventYear();
-
-const CATEGORY_LEGAL_ANALYSIS: Record<
+const categoryLegalAnalysis = (eventYear: string): Record<
   string,
   {
     docketNumber: string;
@@ -35,8 +35,8 @@ const CATEGORY_LEGAL_ANALYSIS: Record<
     governingTreaties: string[];
     substantiveIssues: { title: string; questions: string[] }[];
   }
-> = {
-  "cat-01": {
+> => ({
+  "moot-cat-01": {
     docketNumber: `ICJ-GMC-${eventYear}/01`,
     applicantCore:
       "State sovereignty breach through state-attributed offensive cyber infrastructure; violation of Article 2(4) of the UN Charter and customary international law on non-intervention.",
@@ -72,7 +72,7 @@ const CATEGORY_LEGAL_ANALYSIS: Record<
       },
     ],
   },
-  "cat-02": {
+  "moot-cat-02": {
     docketNumber: `ICJ-GMC-${eventYear}/02`,
     applicantCore:
       "Unilateral diversion of international watercourse causing catastrophic downstream ecological depletion, violating equitable utilization and prior notification standards.",
@@ -101,7 +101,7 @@ const CATEGORY_LEGAL_ANALYSIS: Record<
       },
     ],
   },
-  "cat-03": {
+  "moot-cat-03": {
     docketNumber: `ICJ-GMC-${eventYear}/03`,
     applicantCore:
       "Extraterritorial biometric data harvesting and spyware interception violating International Covenant on Civil and Political Rights (ICCPR) Article 17 and diplomatic premises inviolability.",
@@ -130,21 +130,23 @@ const CATEGORY_LEGAL_ANALYSIS: Record<
       },
     ],
   },
-};
+});
 
-export function CategoriesClient({ categories, propositionDoc }: CategoriesClientProps) {
-  const [selectedCatId, setSelectedCatId] = useState<string>(categories[0]?.id || "cat-01");
+export function CategoriesClient({ categories, documents }: CategoriesClientProps) {
+  const CATEGORY_LEGAL_ANALYSIS = categoryLegalAnalysis(getEventYear(useSiteConfig()));
+  const [selectedCatId, setSelectedCatId] = useState<string>(categories[0]?.id || "moot-cat-01");
   const [openIssueIdx, setOpenIssueIdx] = useState<number | null>(0);
 
   const currentCategory =
     categories.find((c) => c.id === selectedCatId) || categories[0];
+  const propositionDoc = documents.find(doc => doc.id === currentCategory?.propositionDocId);
   const currentAnalysis =
-    CATEGORY_LEGAL_ANALYSIS[currentCategory?.id] || CATEGORY_LEGAL_ANALYSIS["cat-01"];
+    CATEGORY_LEGAL_ANALYSIS[currentCategory?.id] || CATEGORY_LEGAL_ANALYSIS["moot-cat-01"];
 
   return (
     <div className="space-y-12">
       {/* Category Navigation Pills */}
-      <div className="flex flex-wrap gap-2.5 p-1.5 rounded-2xl bg-gray-100/90 border border-gray-200">
+      <div className="flex flex-wrap gap-2.5 p-2 rounded-2xl bg-overlay/80 border border-champagne/25">
         {categories.map((cat, idx) => {
           const isSelected = cat.id === selectedCatId;
           return (
@@ -157,16 +159,16 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
               className={cn(
                 "flex items-center gap-2.5 px-4 py-3 rounded-xl font-heading font-bold text-xs sm:text-sm transition-all duration-200 cursor-pointer text-left",
                 isSelected
-                  ? "bg-[#070B19] text-white shadow-md ring-1 ring-[#00B4A6]/50"
-                  : "bg-white text-[#5A5A6E] hover:text-[#1A1A2E] hover:bg-white/90 border border-gray-200/60"
+                  ? "bg-champagne text-brand shadow-lg ring-1 ring-champagne/60"
+                  : "bg-crest/60 text-champagne/80 hover:text-cream hover:bg-brand/60 border border-champagne/20"
               )}
             >
               <span
                 className={cn(
                   "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono font-bold shrink-0",
                   isSelected
-                    ? "bg-[#00B4A6] text-[#070B19]"
-                    : "bg-gray-100 text-[#5A5A6E]"
+                    ? "bg-brand text-champagne"
+                    : "bg-overlay text-champagne/80"
                 )}
               >
                 0{idx + 1}
@@ -189,30 +191,30 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
         >
           {/* Dossier Header Card */}
           <div className="double-bezel">
-            <div className="double-bezel-inner p-6 sm:p-10 space-y-6 bg-radial-glow-teal border-l-4 border-l-[#00B4A6]">
+            <div className="double-bezel-inner p-6 sm:p-10 space-y-6 border-l-4 border-l-champagne">
               {/* Meta row */}
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-3 py-1 rounded-full text-xs font-mono uppercase font-bold bg-[#E6F9F7] text-[#007A70] border border-[#00B4A6]/30">
+                  <span className="px-3 py-1 rounded-full text-xs font-mono uppercase font-bold bg-champagne/20 text-cream border border-champagne/30">
                     {currentCategory.areaOfLaw}
                   </span>
-                  <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-gray-100 text-[#1E2A78]">
+                  <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-overlay/80 text-champagne border border-champagne/20">
                     Docket: {currentAnalysis.docketNumber}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs font-mono text-[#5A5A6E]">
-                  <Calendar className="w-3.5 h-3.5 text-[#00B4A6]" />
-                  <span>Promulgated: {currentCategory.lastUpdated}</span>
+                <div className="flex items-center gap-2 text-xs font-mono text-champagne/70">
+                  <Calendar className="w-3.5 h-3.5 text-champagne" />
+                  <span>Released: {currentCategory.lastUpdated}</span>
                 </div>
               </div>
 
               {/* Title & Factual Synopsis */}
               <div className="space-y-3">
-                <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-[#1A1A2E] leading-tight">
+                <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream leading-tight">
                   {currentCategory.name}
                 </h2>
-                <p className="text-sm sm:text-base text-[#5A5A6E] leading-relaxed">
+                <p className="text-sm sm:text-base text-champagne/80 leading-relaxed">
                   {currentCategory.description}
                 </p>
               </div>
@@ -225,7 +227,7 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
                     href={propositionDoc.fileUrl}
                     icon={<Download className="w-4 h-4" />}
                   >
-                    Download Official Compromis (PDF)
+                    Download Case Problem (PDF)
                   </Button>
                 )}
                 <Button
@@ -236,9 +238,9 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
                 </Button>
                 <Link
                   href="/moot-cup/clarifications"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-[#007A70] hover:underline ml-auto"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-champagne hover:text-cream hover:underline ml-auto transition-colors"
                 >
-                  <span>Submit Factual Inquiry to Bench</span>
+                  <span>Submit Question to Judges</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -247,28 +249,28 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
 
           {/* Substantive Pleading Dialectic: Applicant vs Respondent */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 sm:p-7 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#1E2A78]">
-                <Scale className="w-4 h-4 text-[#1E2A78]" />
+            <div className="p-6 sm:p-7 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl space-y-3">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-champagne">
+                <Scale className="w-4 h-4 text-champagne" />
                 <span>Applicant Core Thesis</span>
               </div>
-              <h3 className="font-heading font-bold text-lg text-[#1A1A2E]">
+              <h3 className="font-heading font-bold text-lg text-cream">
                 State Claims &amp; Inviolability
               </h3>
-              <p className="text-xs sm:text-sm text-[#5A5A6E] leading-relaxed">
+              <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
                 {currentAnalysis.applicantCore}
               </p>
             </div>
 
-            <div className="p-6 sm:p-7 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#007A70]">
-                <Shield className="w-4 h-4 text-[#00B4A6]" />
+            <div className="p-6 sm:p-7 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl space-y-3">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-champagne">
+                <Shield className="w-4 h-4 text-champagne" />
                 <span>Respondent Defense Line</span>
               </div>
-              <h3 className="font-heading font-bold text-lg text-[#1A1A2E]">
+              <h3 className="font-heading font-bold text-lg text-cream">
                 Sovereignty &amp; Threshold Defense
               </h3>
-              <p className="text-xs sm:text-sm text-[#5A5A6E] leading-relaxed">
+              <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
                 {currentAnalysis.respondentCore}
               </p>
             </div>
@@ -276,11 +278,11 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
 
           {/* Substantive Questions Accordion */}
           <div className="space-y-4">
-            <div className="border-b border-gray-100 pb-3">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#007A70] font-bold">
+            <div className="border-b border-champagne/30 pb-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
                 Appellate Inquiries
               </span>
-              <h3 className="text-xl sm:text-2xl font-heading font-bold text-[#1A1A2E] mt-0.5">
+              <h3 className="text-xl sm:text-2xl font-heading font-bold text-cream mt-0.5">
                 Core Legal Issues for Memorial Submission
               </h3>
             </div>
@@ -294,8 +296,8 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
                     className={cn(
                       "rounded-2xl border transition-all duration-200",
                       isOpen
-                        ? "bg-white border-[#00B4A6]/50 shadow-md"
-                        : "bg-[#F8F8FC] border-gray-200/80 hover:border-gray-300"
+                        ? "bg-overlay/95 border-champagne/50 shadow-xl"
+                        : "bg-overlay/60 border-champagne/20 hover:border-champagne/40"
                     )}
                   >
                     <button
@@ -304,17 +306,17 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
                       className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer select-none"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="w-7 h-7 rounded-lg bg-[#E6F9F7] text-[#007A70] font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                        <span className="w-7 h-7 rounded-lg bg-champagne/20 text-cream font-mono font-bold text-xs flex items-center justify-center shrink-0 border border-champagne/30">
                           0{idx + 1}
                         </span>
-                        <h4 className="font-heading font-bold text-base sm:text-lg text-[#1A1A2E]">
+                        <h4 className="font-heading font-bold text-base sm:text-lg text-cream">
                           {issue.title}
                         </h4>
                       </div>
                       <ChevronRight
                         className={cn(
-                          "w-5 h-5 text-[#5A5A6E] transition-transform duration-200",
-                          isOpen && "rotate-90 text-[#00B4A6]"
+                          "w-5 h-5 text-champagne/70 transition-transform duration-200",
+                          isOpen && "rotate-90 text-champagne"
                         )}
                       />
                     </button>
@@ -328,14 +330,14 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
                           transition={{ duration: 0.2 }}
                           className="overflow-hidden"
                         >
-                          <div className="px-6 pb-6 pt-1 space-y-3 border-t border-gray-100">
-                            <span className="text-[11px] font-mono uppercase font-bold text-[#1E2A78] block">
+                          <div className="px-6 pb-6 pt-1 space-y-3 border-t border-champagne/20">
+                            <span className="text-[11px] font-mono uppercase font-bold text-champagne block">
                               Points for Oral Advocacy &amp; Written Submissions:
                             </span>
-                            <ul className="space-y-2 text-xs sm:text-sm text-[#5A5A6E]">
+                            <ul className="space-y-2 text-xs sm:text-sm text-champagne/80">
                               {issue.questions.map((q, qIdx) => (
                                 <li key={qIdx} className="flex items-start gap-2.5">
-                                  <CheckCircle2 className="w-4 h-4 text-[#00B4A6] shrink-0 mt-0.5" />
+                                  <CheckCircle2 className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
                                   <span className="leading-relaxed">{q}</span>
                                 </li>
                               ))}
@@ -351,8 +353,8 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
           </div>
 
           {/* Governing Legal Authorities Strip */}
-          <div className="p-6 rounded-2xl bg-[#070B19] text-white border border-white/10 space-y-4">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#00B4A6]">
+          <div className="p-6 rounded-2xl bg-overlay/90 text-champagne border border-champagne/25 shadow-xl space-y-4">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-champagne">
               <BookOpen className="w-4 h-4" />
               <span>Mandatory Governing Treaties &amp; Authorities</span>
             </div>
@@ -360,9 +362,9 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
               {currentAnalysis.governingTreaties.map((treaty, tIdx) => (
                 <div
                   key={tIdx}
-                  className="p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-gray-200 flex items-start gap-2"
+                  className="p-3.5 rounded-xl bg-crest/70 border border-champagne/20 text-xs font-mono text-champagne/90 flex items-start gap-2"
                 >
-                  <FileCheck className="w-4 h-4 text-[#00B4A6] shrink-0 mt-0.5" />
+                  <FileCheck className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
                   <span className="leading-snug">{treaty}</span>
                 </div>
               ))}
@@ -372,12 +374,12 @@ export function CategoriesClient({ categories, propositionDoc }: CategoriesClien
       </AnimatePresence>
 
       {/* Bottom Information Notice */}
-      <section className="p-6 sm:p-8 rounded-2xl bg-[#F8F8FC] border border-gray-200/80 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <section className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="space-y-1">
-          <h3 className="font-heading font-bold text-lg text-[#1A1A2E]">
+          <h3 className="font-heading font-bold text-lg text-cream">
             Have inquiries regarding memorial citation standards?
           </h3>
-          <p className="text-xs sm:text-sm text-[#5A5A6E]">
+          <p className="text-xs sm:text-sm text-champagne/80">
             Inspect our comprehensive Rules of Procedure detailing the OSCOLA citation system and Rule 1.1 anonymity safeguards.
           </p>
         </div>

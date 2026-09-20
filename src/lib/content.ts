@@ -1,3 +1,6 @@
+import 'server-only';
+import { readCollection, readSite, readCountryAssignments } from './content/repository';
+import { defaultNavigation } from './navigation';
 import type {
   SiteConfig,
   Announcement,
@@ -27,85 +30,91 @@ import clarificationsData from '../../content/clarifications.json';
 import resultsData from '../../content/results.json';
 import galleryData from '../../content/gallery.json';
 
-export function getSiteConfig(): SiteConfig {
-  return siteConfigData as SiteConfig;
+export async function getSiteConfig(): Promise<SiteConfig > {
+  const [site,navigation] = await Promise.all([readSite(siteConfigData),readCollection('navigation',defaultNavigation)]);
+  return {...site,navigation};
 }
 
-function resolveCanonicalTokens(value: string) {
-  const site = siteConfigData as SiteConfig;
+function resolveCanonicalTokens(value: string, site: SiteConfig) {
   return value
     .replaceAll('{{GIMUN_DEADLINE}}', formatEventDate(site.registrationDeadlines.gimun))
     .replaceAll('{{GMC_DEADLINE}}', formatEventDate(site.registrationDeadlines.mootCup));
 }
 
-export function getAnnouncements(): Announcement[] {
-  return (announcementsData as Announcement[]).map((announcement) => ({
+export async function getAnnouncements(): Promise<Announcement[] > {
+  const site = await getSiteConfig();
+  return (await readCollection<Announcement>('announcements', announcementsData as Announcement[])).sort((a,b) => b.timestamp.localeCompare(a.timestamp)).map((announcement) => ({
     ...announcement,
-    body: resolveCanonicalTokens(announcement.body),
+    body: resolveCanonicalTokens(announcement.body, site),
   }));
 }
 
-export function getCommittees(): Committee[] {
-  return committeesData as Committee[];
+export async function getCommittees(): Promise<Committee[] > {
+  const committees = await readCollection<Committee>('committees', committeesData as Committee[]);
+  const assigned = await readCountryAssignments();
+  if (!assigned) return committees;
+  return committees.map(c => ({ ...c, countryList: c.countryList.map(country => ({ ...country, status: assigned.allocations.some(a => a.committee_slug === c.slug && a.country === country.country) ? 'assigned' : assigned.reservations.some(a => a.committee_slug === c.slug && a.country === country.country) ? 'reserved' : 'available' })) }));
 }
 
-export function getCommitteeBySlug(slug: string): Committee | undefined {
-  const committees = committeesData as Committee[];
+export async function getCommitteeBySlug(slug: string): Promise<Committee | undefined > {
+  const committees = await getCommittees();
   return committees.find((c) => c.slug === slug || c.id === slug);
 }
 
-export function getProblemCategories(): ProblemCategory[] {
-  return mootCategoriesData as ProblemCategory[];
+export async function getProblemCategories(): Promise<ProblemCategory[] > {
+  return await readCollection<ProblemCategory>('moot-categories', mootCategoriesData as ProblemCategory[]);
 }
 
 export const getMootCategories = getProblemCategories;
 
-export function getDocuments(): Document[] {
-  return resourcesData as Document[];
+export async function getDocuments(): Promise<Document[] > {
+  return await readCollection<Document>('resources', resourcesData as Document[]);
 }
 
 export const getResources = getDocuments;
 
-export function getSchedule(): ScheduleItem[] {
-  const site = siteConfigData as SiteConfig;
+export async function getSchedule(): Promise<ScheduleItem[] > {
+  const site = await getSiteConfig();
   const [year, month, day] = site.eventDates.start.split('-').map(Number);
 
-  return (scheduleData as ScheduleItem[]).map((item) => {
+  return (await readCollection<ScheduleItem>('schedule', scheduleData as ScheduleItem[])).map((item) => {
     const date = new Date(Date.UTC(year, month - 1, day + item.day - 1));
     const dateString = date.toISOString().slice(0, 10);
     return { ...item, dayLabel: `Day ${item.day} — ${formatScheduleDay(dateString)}` };
   });
 }
 
-export function getFAQ(): FAQItem[] {
-  return (faqData as FAQItem[]).map((faq) => ({
+export async function getFAQ(): Promise<FAQItem[] > {
+  const site = await getSiteConfig();
+  return (await readCollection<FAQItem>('faq', faqData as FAQItem[])).map((faq) => ({
     ...faq,
-    answer: resolveCanonicalTokens(faq.answer),
+    answer: resolveCanonicalTokens(faq.answer, site),
   }));
 }
 
-export function getTeam(): TeamMember[] {
-  return teamData as TeamMember[];
+export async function getTeam(): Promise<TeamMember[] > {
+  return await readCollection<TeamMember>('team', teamData as TeamMember[]);
 }
 
 export const getTeamMembers = getTeam;
 
-export function getSponsors(): Sponsor[] {
-  return sponsorsData as Sponsor[];
+export async function getSponsors(): Promise<Sponsor[] > {
+  return await readCollection<Sponsor>('sponsors', sponsorsData as Sponsor[]);
 }
 
-export function getClarifications(): Clarification[] {
-  return clarificationsData as Clarification[];
+export async function getClarifications(): Promise<Clarification[] > {
+  return await readCollection<Clarification>('clarifications', clarificationsData as Clarification[]);
 }
 
-export function getResults(): ResultAward[] {
-  return resultsData as ResultAward[];
+export async function getResults(): Promise<ResultAward[] > {
+  if (!(await getSiteConfig()).resultsPublished) return [];
+  return await readCollection<ResultAward>('results', resultsData as ResultAward[]);
 }
 
-export function getGallery(): GalleryItem[] {
-  return galleryData as GalleryItem[];
+export async function getGallery(): Promise<GalleryItem[] > {
+  return await readCollection<GalleryItem>('gallery', galleryData as GalleryItem[]);
 }
 
-export function getGalleryByCategory(category: GalleryItem['category']): GalleryItem[] {
-  return (galleryData as GalleryItem[]).filter((item) => item.category === category);
+export async function getGalleryByCategory(category: GalleryItem['category']): Promise<GalleryItem[] > {
+  return (await readCollection<GalleryItem>('gallery', galleryData as GalleryItem[])).filter((item) => item.category === category);
 }

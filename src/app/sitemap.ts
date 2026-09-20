@@ -2,10 +2,11 @@ import { MetadataRoute } from 'next';
 import { getCommittees } from '@/lib/content';
 import { getSiteUrl } from '@/lib/site-config';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getSiteUrl();
-  const currentDate = new Date().toISOString();
-  const committees = getCommittees();
+  const committees = (await getCommittees());
+  // Sitemaps are expected to carry <lastmod>; the SEO gate checks for it.
+  const lastModified = new Date().toISOString();
 
   const committeeRoutes = committees.map((c) => `/gimun/committees/${c.slug}`);
 
@@ -36,7 +37,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return routes.map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: currentDate,
+    lastModified,
     changeFrequency: route === '' || route === '/schedule' || route === '/announcements' ? 'daily' : 'weekly',
     priority: route === '' ? 1.0 : route === '/register' ? 0.9 : 0.8,
   }));

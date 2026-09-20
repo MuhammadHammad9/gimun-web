@@ -184,16 +184,16 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
     <div className="space-y-16">
       {/* 1. INTERACTIVE PARLIAMENTARY LIFECYCLE FLOW */}
       <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-gray-100">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-champagne/20">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#C84815] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
               Procedural Blueprint
             </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E] mt-0.5">
+            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream mt-0.5">
               The 5 Stages of Parliamentary Debate
             </h2>
           </div>
-          <span className="text-xs font-mono text-[#5A5A6E]">
+          <span className="text-xs font-mono text-champagne/70">
             Click any phase to inspect rules &amp; delegate strategy
           </span>
         </div>
@@ -211,15 +211,15 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
                 className={cn(
                   "p-3.5 sm:p-4 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 group relative",
                   isSelected
-                    ? "bg-[#070B19] border-[#FF6B35] text-white shadow-lg ring-1 ring-[#FF6B35]/40"
-                    : "bg-white border-gray-200 hover:border-gray-300 text-[#1A1A2E] hover:bg-gray-50/80"
+                    ? "bg-brand border-champagne text-cream shadow-lg ring-1 ring-champagne/60"
+                    : "bg-overlay/85 border-champagne/25 hover:border-champagne/60 text-champagne hover:bg-crest"
                 )}
               >
                 <div className="flex items-center justify-between w-full">
                   <span
                     className={cn(
                       "text-xs font-mono font-bold",
-                      isSelected ? "text-[#FFA27B]" : "text-[#5A5A6E]"
+                      isSelected ? "text-cream" : "text-champagne/70"
                     )}
                   >
                     {stg.step}
@@ -228,8 +228,8 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
                     className={cn(
                       "w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
                       isSelected
-                        ? "bg-[#FF6B35]/20 text-[#FFA27B]"
-                        : "bg-gray-100 text-[#5A5A6E] group-hover:text-[#1A1A2E]"
+                        ? "bg-champagne/20 text-cream"
+                        : "bg-crest text-champagne/80 group-hover:text-cream"
                     )}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -240,7 +240,7 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
                   <h3
                     className={cn(
                       "text-xs sm:text-sm font-heading font-bold leading-tight",
-                      isSelected ? "text-white" : "text-[#1A1A2E]"
+                      isSelected ? "text-cream" : "text-champagne"
                     )}
                   >
                     {stg.title}
@@ -248,7 +248,7 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
                   <span
                     className={cn(
                       "text-[10px] font-mono block mt-1",
-                      isSelected ? "text-gray-300" : "text-[#5A5A6E]"
+                      isSelected ? "text-champagne/80" : "text-champagne/60"
                     )}
                   >
                     {stg.badge}
@@ -269,42 +269,42 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
             transition={{ duration: 0.2 }}
             className="double-bezel"
           >
-            <div className="double-bezel-inner p-6 sm:p-8 space-y-5 bg-radial-glow-orange">
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-gray-100">
+            <div className="double-bezel-inner p-6 sm:p-8 space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-champagne/20">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#FFF0E8] text-[#A83A11] font-mono font-extrabold flex items-center justify-center text-sm">
+                  <div className="w-10 h-10 rounded-xl bg-brand text-cream font-mono font-extrabold flex items-center justify-center text-sm border border-champagne/40 shadow-xs">
                     {DEBATE_STAGES[activeStage].step}
                   </div>
                   <div>
-                    <h3 className="text-xl sm:text-2xl font-heading font-extrabold text-[#1A1A2E]">
+                    <h3 className="text-xl sm:text-2xl font-heading font-extrabold text-cream">
                       {DEBATE_STAGES[activeStage].title}
                     </h3>
-                    <p className="text-xs font-mono text-[#C84815] font-bold uppercase">
+                    <p className="text-xs font-mono text-champagne font-bold uppercase">
                       {DEBATE_STAGES[activeStage].badge}
                     </p>
                   </div>
                 </div>
-                <span className="text-xs font-mono px-3 py-1 rounded-full bg-gray-100 text-[#5A5A6E]">
+                <span className="text-xs font-mono px-3 py-1 rounded-full bg-overlay/80 border border-champagne/20 text-champagne">
                   Official GIMUN Harvard Protocol
                 </span>
               </div>
 
               <div className="grid md:grid-cols-12 gap-6 items-start">
                 <div className="md:col-span-8 space-y-3">
-                  <span className="text-xs font-mono uppercase font-bold text-[#1E2A78] block">
+                  <span className="text-xs font-mono uppercase font-bold text-champagne block">
                     Procedural Standard:
                   </span>
-                  <p className="text-sm text-[#1A1A2E] leading-relaxed">
+                  <p className="text-sm text-champagne/90 leading-relaxed">
                     {DEBATE_STAGES[activeStage].details}
                   </p>
                 </div>
 
-                <div className="md:col-span-4 p-4 rounded-xl bg-white border border-gray-200/80 shadow-xs space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#C84815] uppercase font-mono">
-                    <Sparkles className="w-4 h-4" />
+                <div className="md:col-span-4 p-4 rounded-xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-champagne uppercase font-mono">
+                    <Sparkles className="w-4 h-4 text-champagne" />
                     <span>Secretariat Pro-Tip</span>
                   </div>
-                  <p className="text-xs text-[#5A5A6E] leading-relaxed">
+                  <p className="text-xs text-champagne/80 leading-relaxed">
                     {activeStage === 0 &&
                       "If you plan to abstain during substantive resolutions to safeguard neutrality, declare yourself 'Present'. If you say 'Present and Voting', abstention is forfeited."}
                     {activeStage === 1 &&
@@ -325,16 +325,16 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
 
       {/* 2. SEARCHABLE PARLIAMENTARY MOTIONS CHEAT SHEET */}
       <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-gray-100">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-champagne/20">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#C84815] font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
               Floor Motions Reference
             </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#1A1A2E] mt-0.5">
+            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream mt-0.5">
               Motions &amp; Points Precedence Matrix
             </h2>
           </div>
-          <div className="text-xs font-mono text-[#5A5A6E]">
+          <div className="text-xs font-mono text-champagne/70">
             {filteredMotions.length} Motions Available
           </div>
         </div>
@@ -342,13 +342,13 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
         {/* Filter and Search Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-champagne/60" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search motions (e.g., caucus, order, yield)..."
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-base sm:text-xs bg-white text-[#1A1A2E] placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-[#FF6B35]/20 focus:border-[#FF6B35]"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-champagne/30 text-base sm:text-xs bg-overlay/90 text-cream placeholder:text-champagne/40 focus:outline-hidden focus:ring-2 focus:ring-champagne/30 focus:border-champagne"
             />
           </div>
 
@@ -366,8 +366,8 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
                 className={cn(
                   "px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-colors cursor-pointer",
                   categoryFilter === tab.id
-                    ? "bg-[#1E2A78] text-white shadow-xs"
-                    : "bg-gray-100 text-[#5A5A6E] hover:bg-gray-200"
+                    ? "bg-champagne text-brand shadow-xs font-bold"
+                    : "bg-overlay/80 border border-champagne/20 text-champagne/80 hover:bg-brand/60 hover:text-cream"
                 )}
               >
                 {tab.label}
@@ -381,14 +381,14 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
           {filteredMotions.map((item) => (
             <div
               key={item.name}
-              className="p-5 sm:p-6 rounded-2xl bg-white border border-gray-200/80 shadow-xs hover:border-[#FF6B35]/40 transition-all space-y-4"
+              className="p-5 sm:p-6 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl hover:border-champagne/60 transition-all space-y-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-md bg-[#FFF0E8] text-[#A83A11] border border-[#FF6B35]/20">
+                  <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-md bg-champagne/20 text-cream border border-champagne/30">
                     Precedence Rank #{item.precedence}
                   </span>
-                  <h3 className="font-heading font-extrabold text-base sm:text-lg text-[#1A1A2E] mt-1.5 leading-snug">
+                  <h3 className="font-heading font-extrabold text-base sm:text-lg text-cream mt-1.5 leading-snug">
                     {item.name}
                   </h3>
                 </div>
@@ -396,29 +396,29 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
                   className={cn(
                     "text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded",
                     item.interrupt.startsWith("Yes")
-                      ? "bg-rose-50 text-rose-700 border border-rose-200"
-                      : "bg-gray-100 text-gray-600"
+                      ? "bg-brand-deep/70 text-crimson-soft border border-crimson/40"
+                      : "bg-crest/70 text-champagne border border-champagne/20"
                   )}
                 >
                   {item.interrupt.startsWith("Yes") ? "Interrupts" : "No Interrupt"}
                 </span>
               </div>
 
-              <p className="text-xs text-[#5A5A6E] leading-relaxed">{item.purpose}</p>
+              <p className="text-xs text-champagne/80 leading-relaxed">{item.purpose}</p>
 
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100 text-[11px] font-mono">
-                <div className="p-2 rounded-lg bg-gray-50">
-                  <span className="text-gray-500 block text-[9px] uppercase">Second Required</span>
-                  <strong className="text-[#1A1A2E] font-bold">{item.second}</strong>
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-champagne/15 text-[11px] font-mono">
+                <div className="p-2 rounded-lg bg-crest/60 border border-champagne/15">
+                  <span className="text-champagne/70 block text-[9px] uppercase">Second Required</span>
+                  <strong className="text-cream font-bold">{item.second}</strong>
                 </div>
-                <div className="p-2 rounded-lg bg-gray-50">
-                  <span className="text-gray-500 block text-[9px] uppercase">Vote Required</span>
-                  <strong className="text-[#C84815] font-bold">{item.vote}</strong>
+                <div className="p-2 rounded-lg bg-crest/60 border border-champagne/15">
+                  <span className="text-champagne/70 block text-[9px] uppercase">Vote Required</span>
+                  <strong className="text-champagne font-bold">{item.vote}</strong>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-lg bg-[#F8F8FC] border border-gray-100 text-xs text-[#5A5A6E] flex items-start gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-[#C84815] shrink-0 mt-0.5" />
+              <div className="p-2.5 rounded-lg bg-crest/50 border border-champagne/20 text-xs text-champagne/90 flex items-start gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-champagne shrink-0 mt-0.5" />
                 <span className="text-[11px] leading-snug">{item.proTip}</span>
               </div>
             </div>
@@ -428,14 +428,14 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
 
       {/* 3. YIELD PROTOCOL BLUEPRINT */}
       <section className="space-y-6">
-        <div className="border-b border-gray-100 pb-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#C84815] font-bold">
+        <div className="border-b border-champagne/20 pb-3">
+          <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
             Floor Management
           </span>
-          <h2 className="text-2xl font-heading font-bold text-[#1A1A2E] mt-0.5">
+          <h2 className="text-2xl font-heading font-bold text-cream mt-0.5">
             The Three Yield Protocols (GSL Speeches)
           </h2>
-          <p className="text-xs text-[#5A5A6E] mt-1">
+          <p className="text-xs text-champagne/80 mt-1">
             When concluding your substantive speech on the General Speakers List before time expires, you must formally yield the floor in one of three ways:
           </p>
         </div>
@@ -443,16 +443,16 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="double-bezel">
             <div className="double-bezel-inner p-6 space-y-3">
-              <div className="w-8 h-8 rounded-xl bg-[#FFF0E8] text-[#A83A11] flex items-center justify-center font-bold text-xs font-mono">
+              <div className="w-8 h-8 rounded-xl bg-brand text-champagne border border-champagne/30 flex items-center justify-center font-bold text-xs font-mono">
                 01
               </div>
-              <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
+              <h3 className="font-heading font-bold text-base text-cream">
                 Yield to the Chair
               </h3>
-              <p className="text-xs text-[#5A5A6E] leading-relaxed">
+              <p className="text-xs text-champagne/80 leading-relaxed">
                 Relinquishes any remaining seconds back to the Dais. The floor reopens immediately for new motions or the next country on the GSL. No questions or rebuttals may be directed to you.
               </p>
-              <div className="pt-2 text-[11px] font-mono text-[#C84815] font-semibold">
+              <div className="pt-2 text-[11px] font-mono text-champagne font-semibold">
                 &ldquo;Delegate of France yields remaining time to the Chair.&rdquo;
               </div>
             </div>
@@ -460,16 +460,16 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
 
           <div className="double-bezel">
             <div className="double-bezel-inner p-6 space-y-3">
-              <div className="w-8 h-8 rounded-xl bg-[#FFF0E8] text-[#A83A11] flex items-center justify-center font-bold text-xs font-mono">
+              <div className="w-8 h-8 rounded-xl bg-brand text-champagne border border-champagne/30 flex items-center justify-center font-bold text-xs font-mono">
                 02
               </div>
-              <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
+              <h3 className="font-heading font-bold text-base text-cream">
                 Yield to Another Delegate
               </h3>
-              <p className="text-xs text-[#5A5A6E] leading-relaxed">
+              <p className="text-xs text-champagne/80 leading-relaxed">
                 Transfers remaining seconds directly to an allied nation. The recipient must accept or decline. If accepted, they may speak for the remainder of your time but CANNOT yield again.
               </p>
-              <div className="pt-2 text-[11px] font-mono text-[#C84815] font-semibold">
+              <div className="pt-2 text-[11px] font-mono text-champagne font-semibold">
                 &ldquo;Yields remaining time to the distinguished delegate of Japan.&rdquo;
               </div>
             </div>
@@ -477,16 +477,16 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
 
           <div className="double-bezel">
             <div className="double-bezel-inner p-6 space-y-3">
-              <div className="w-8 h-8 rounded-xl bg-[#FFF0E8] text-[#A83A11] flex items-center justify-center font-bold text-xs font-mono">
+              <div className="w-8 h-8 rounded-xl bg-brand text-champagne border border-champagne/30 flex items-center justify-center font-bold text-xs font-mono">
                 03
               </div>
-              <h3 className="font-heading font-bold text-base text-[#1A1A2E]">
+              <h3 className="font-heading font-bold text-base text-cream">
                 Yield to Points of Information
               </h3>
-              <p className="text-xs text-[#5A5A6E] leading-relaxed">
+              <p className="text-xs text-champagne/80 leading-relaxed">
                 Invites questions from the committee floor. The Dais recognizes delegates who pose non-argumentative questions. Answers are deducted from your remaining time pool until depleted.
               </p>
-              <div className="pt-2 text-[11px] font-mono text-[#C84815] font-semibold">
+              <div className="pt-2 text-[11px] font-mono text-champagne font-semibold">
                 &ldquo;Yields remaining time to Points of Information.&rdquo;
               </div>
             </div>
@@ -495,17 +495,16 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
       </section>
 
       {/* 4. BOTTOM ACTION CALLOUT */}
-      <section className="p-8 sm:p-10 rounded-2xl bg-[#070B19] text-white border border-white/10 relative overflow-hidden">
-        <div className="absolute inset-0 bg-radial-glow-orange opacity-40 pointer-events-none" />
+      <section className="p-8 sm:p-10 rounded-2xl bg-overlay/90 text-champagne border border-champagne/25 shadow-2xl relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-center md:text-left">
-          <span className="text-xs font-mono uppercase text-[#FFA27B] font-bold tracking-wider">
+            <span className="text-xs font-mono uppercase text-champagne font-bold tracking-wider">
               Official Literature
             </span>
-            <h3 className="text-xl sm:text-3xl font-heading font-extrabold text-white">
+            <h3 className="text-xl sm:text-3xl font-heading font-extrabold text-cream">
               Download the Full GIMUN RoP Handbook
             </h3>
-            <p className="text-xs sm:text-sm text-gray-300 max-w-xl">
+            <p className="text-xs sm:text-sm text-champagne/80 max-w-xl">
               Contains complete codified clauses on working paper formatting, committee caucusing etiquette, and resolution amendment precedence.
             </p>
           </div>

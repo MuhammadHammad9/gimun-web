@@ -1,5 +1,7 @@
 'use client';
 
+import { useSiteConfig } from '@/components/SiteConfigProvider';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -42,6 +44,7 @@ interface RegistrationSuccessProps {
     venue?: string;
     participantCount?: number;
     timestamp?: string;
+    checkinToken?: string;
   };
   onReset?: () => void;
 }
@@ -57,6 +60,7 @@ export function RegistrationSuccess({
   const [copied, setCopied] = useState(false);
   const [qrSvg, setQrSvg] = useState<string>('');
 
+  const site = useSiteConfig();
   const isMoot = track === 'moot-cup';
   const trackLabel = isMoot ? 'GIKI Moot Court (GMC)' : 'GIKI Model United Nations (GIMUN)';
   const trackNameShort = isMoot ? 'GMC' : 'GIMUN';
@@ -69,11 +73,11 @@ export function RegistrationSuccess({
 
   const feeDisplay =
     details?.feeAmount ||
-    (isMoot ? 'PKR 12,000' : applicantType === 'individual' ? 'PKR 4,500' : 'PKR 4,000 / delegate');
+    (isMoot ? site.fees.mootCupTeam : applicantType === 'individual' ? site.fees.gimunIndividual : site.fees.gimunDelegationPerDelegate);
 
-  const eventDates = details?.eventDates || getCanonicalEventDateRange();
-  const venueTitle = details?.venue || getCanonicalVenue();
-  const eventYear = getEventYear();
+  const eventDates = details?.eventDates || getCanonicalEventDateRange(site);
+  const venueTitle = details?.venue || getCanonicalVenue(site);
+  const eventYear = getEventYear(site);
   const submittedDate = details?.timestamp ? new Date(details.timestamp) : null;
 
   const formattedDate = submittedDate && Number.isFinite(submittedDate.getTime())
@@ -90,7 +94,7 @@ export function RegistrationSuccess({
 
   useEffect(() => {
     if (referenceId) {
-      const qrReference = /^[A-Z0-9-]{1,100}$/.test(referenceId) ? referenceId : 'INVALID-REFERENCE';
+      const qrReference = details?.checkinToken || referenceId;
       QRCode.toString(
         qrReference,
         {
@@ -109,7 +113,7 @@ export function RegistrationSuccess({
         }
       );
     }
-  }, [referenceId]);
+  }, [referenceId, details?.checkinToken]);
 
   const handleCopy = async () => {
     if (!referenceId || !navigator.clipboard?.writeText) return;
@@ -134,7 +138,7 @@ export function RegistrationSuccess({
       iframe.style.width = '0';
       iframe.style.height = '0';
       iframe.style.border = '0';
-      iframe.title = `SOPHEP_Voucher_${referenceId}`;
+      iframe.title = `GIMUN_Voucher_${referenceId}`;
       document.body.appendChild(iframe);
 
       const iframeDoc = iframe.contentWindow?.document;
@@ -184,7 +188,7 @@ export function RegistrationSuccess({
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SOPHEP_Voucher_${safeReferenceId}</title>
+  <title>GIMUN_Voucher_${safeReferenceId}</title>
   <style>
     @page {
       size: A4 portrait;
@@ -640,7 +644,7 @@ export function RegistrationSuccess({
   <div class="top-action-bar">
     <div class="top-bar-badge">
       <span class="pulse-dot"></span>
-      <span>OFFICIAL SOPHEP DIGITAL CREDENTIAL · VERIFIED DOSSIER</span>
+      <span>OFFICIAL GIMUN DIGITAL CREDENTIAL · VERIFIED DOSSIER</span>
     </div>
     <div class="top-bar-actions">
       <button class="btn-copy" onclick="navigator.clipboard.writeText('${safeReferenceId}'); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='📋 Copy Reference', 2000);">
@@ -657,7 +661,7 @@ export function RegistrationSuccess({
   <div class="page-wrap">
     <div class="voucher-card">
       <div class="dark-header">
-        <div class="gold-badge">S O P H E P</div><br>
+        <div class="gold-badge">G I M U N & G M C</div><br>
         <div class="pill">/ APPLICATION RECEIVED</div>
         <div class="track-title">${safeTrackLabel} ${eventYear}</div>
         <div class="track-sub">Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, KP, Pakistan</div>
@@ -702,7 +706,7 @@ export function RegistrationSuccess({
         <div class="event-card">
           <div class="event-card-title">Event Schedule &amp; Venue Details (${safeTrackShort} ${eventYear})</div>
           <div><strong>Event Dates:</strong> ${safeEventDates} &nbsp;·&nbsp; <strong>Venue:</strong> ${safeVenueTitle}</div>
-          <div><strong>Registration Desk:</strong> Opens at <strong>09:00 AM PKT on Day 1</strong> in Main Auditorium Foyer. Bring original student ID, CNIC/B-Form, and this physical voucher.</div>
+          <div><strong>Registration Desk:</strong> ${escapeHtml(site.checkinDesk || 'Check-in details will be announced.')} ${escapeHtml(site.entryRequirement || '')}</div>
         </div>
 
         <div class="notice-box">
@@ -723,7 +727,7 @@ export function RegistrationSuccess({
         </div>
 
         <div class="footer-stamp">
-          Official Conference Admission Voucher · SOPHEP — GIK Institute of Engineering Sciences and Technology · Topi, KP, Pakistan
+          Official Conference Admission Voucher · GIMUN — GIK Institute of Engineering Sciences and Technology · Topi, KP, Pakistan
         </div>
       </div>
     </div>
@@ -740,7 +744,7 @@ export function RegistrationSuccess({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `SOPHEP_Voucher_${safeFileReference}.html`;
+    a.download = `GIMUN_Voucher_${safeFileReference}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -755,13 +759,13 @@ export function RegistrationSuccess({
       className="max-w-3xl mx-auto space-y-6 print:m-0 print:p-0 print:max-w-none print:w-full"
     >
       {/* Action Toolbar (Screen Only) */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl bg-white border border-slate-200/80 shadow-xs print:hidden">
+      <div className="card-glass-luxury flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border border-[#ecd8b7]/30 shadow-lg print:hidden">
         <div className="flex items-center gap-2.5">
           <span className="flex h-3 w-3 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
           </span>
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">
             Dossier Successfully Logged
           </span>
         </div>
@@ -770,7 +774,7 @@ export function RegistrationSuccess({
           <button
             type="button"
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors shadow-xs cursor-pointer"
+            className="btn-shimmer-gold inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[#140302] text-xs font-bold shadow-sm cursor-pointer"
             title="Print or Save as PDF (Guaranteed 1-Page A4)"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -780,10 +784,10 @@ export function RegistrationSuccess({
           <button
             type="button"
             onClick={handleDownloadHtml}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-surface border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1c0504]/80 border border-[#ecd8b7]/30 text-xs font-semibold text-[#ecd8b7] hover:bg-[#1c0504] hover:text-[#fffdf9] transition-colors cursor-pointer"
             title="Download offline receipt voucher"
           >
-            <Download className="w-3.5 h-3.5 text-neutral-gray" />
+            <Download className="w-3.5 h-3.5 text-[#ecd8b7]" />
             <span>Download Voucher</span>
           </button>
         </div>
@@ -791,7 +795,7 @@ export function RegistrationSuccess({
 
       {/* Main Official Document Container */}
       <div
-        id="sophep-registration-voucher"
+        id="gimun-registration-voucher"
         className="voucher-container rounded-2xl bg-white border border-slate-300 shadow-lg overflow-hidden print:border-2 print:border-slate-900 print:shadow-none print:rounded-none print:w-full print:m-0"
       >
         {/* Dark Branded Header (Matching Reference Design) */}
@@ -800,12 +804,12 @@ export function RegistrationSuccess({
           style={{ backgroundColor: '#0b0f19', color: '#ffffff', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
         >
           <div className="relative z-10 space-y-2.5 print:space-y-1.5">
-            {/* Golden SOPHEP Badge */}
+            {/* Golden GIMUN Badge */}
             <div
               className="voucher-gold-badge inline-block bg-amber-400 text-slate-950 font-black text-sm tracking-[5px] px-5 py-1.5 rounded-sm uppercase shadow-sm print:text-xs print:px-3 print:py-1"
               style={{ backgroundColor: '#fbbf24', color: '#000000', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
             >
-              SOPHEP
+              {trackNameShort}
             </div>
 
             <div>
@@ -960,7 +964,7 @@ export function RegistrationSuccess({
               </div>
               <div className="sm:col-span-2 pt-1 border-t border-amber-200/60 print:pt-0.5">
                 <span className="text-slate-500 font-medium">Arrival Desk: </span>
-                <span className="text-slate-700">Opens <strong>09:00 AM PKT on Day 1</strong> in Main Auditorium Foyer. Bring original student ID, CNIC/B-Form, and this printed voucher.</span>
+                <span className="text-slate-700">{site.checkinDesk || 'Check-in details will be announced.'} {site.entryRequirement}</span>
               </div>
             </div>
           </div>
@@ -1039,19 +1043,19 @@ export function RegistrationSuccess({
             </div>
 
             <p className="text-[8px] text-center text-slate-400 font-mono pt-1">
-              Official Conference Admission Voucher · SOPHEP — Ghulam Ishaq Khan Institute of Engineering Sciences and Technology
+              Official Conference Admission Voucher · GIMUN — Ghulam Ishaq Khan Institute of Engineering Sciences and Technology
             </p>
           </div>
         </div>
 
         {/* Footer Actions (Screen Only) */}
-        <div className="bg-slate-50 px-6 py-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 print:hidden">
+        <div className="bg-[#1c0504]/95 px-6 py-4 border-t border-[#ecd8b7]/20 flex flex-wrap items-center justify-between gap-4 print:hidden">
           <div className="flex items-center gap-2">
             {onReset && (
               <button
                 type="button"
                 onClick={onReset}
-                className="text-xs text-slate-600 hover:text-slate-900 font-medium px-3 py-2 underline cursor-pointer"
+                className="text-xs text-[#ecd8b7]/80 hover:text-[#fffdf9] font-medium px-3 py-2 underline cursor-pointer"
               >
                 Submit another application
               </button>
@@ -1060,7 +1064,7 @@ export function RegistrationSuccess({
 
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-light transition-colors shadow-button"
+            className="btn-shimmer-gold inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[#140302] text-xs font-bold shadow-md"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Return to Homepage</span>
