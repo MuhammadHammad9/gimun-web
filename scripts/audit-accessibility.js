@@ -58,72 +58,16 @@ function getContrastRatio(hex1, hex2) {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-const colorAuditPairs = [
-  {
-    name: 'Ink on Light Surface',
-    fg: '#1A1A2E',
-    bg: '#F8F8FC',
-    target: 4.5,
-    context: 'Primary body text on default background (WCAG AA & AAA Pass)',
-    mandatoryPass: true,
-  },
-  {
-    name: 'Muted Gray on Pure White',
-    fg: '#5A5A6E',
-    bg: '#FFFFFF',
-    target: 4.5,
-    context: 'Secondary copy, metadata, and descriptors (WCAG AA Pass)',
-    mandatoryPass: true,
-  },
-  {
-    name: 'Accessible Accent Orange on White',
-    fg: '#C84815', // --color-accent-accessible
-    bg: '#FFFFFF',
-    target: 4.5,
-    context: 'GIMUN high-contrast accessible text token (WCAG AA Pass)',
-    mandatoryPass: true,
-  },
-  {
-    name: 'Accessible Judicial Teal on White',
-    fg: '#007A70', // --color-secondary-accessible
-    bg: '#FFFFFF',
-    target: 4.5,
-    context: 'GMC high-contrast accessible text token (WCAG AA Pass)',
-    mandatoryPass: true,
-  },
-  {
-    name: 'Dark Ink on Accent Orange',
-    fg: '#1A1A2E',
-    bg: '#FF6B35',
-    target: 4.5,
-    context: 'GIMUN high-contrast badge alternative (WCAG AA Pass)',
-    mandatoryPass: true,
-  },
-  {
-    name: 'Dark Ink on Judicial Teal',
-    fg: '#1A1A2E',
-    bg: '#00B4A6',
-    target: 4.5,
-    context: 'GMC high-contrast badge alternative (WCAG AA Pass)',
-    mandatoryPass: true,
-  },
-  {
-    name: 'White on Accent Orange',
-    fg: '#FFFFFF',
-    bg: '#FF6B35',
-    target: 2.8,
-    context: 'GIMUN brand action buttons (bold large UI CTA components)',
-    mandatoryPass: false,
-  },
-  {
-    name: 'White on Judicial Teal',
-    fg: '#FFFFFF',
-    bg: '#00B4A6',
-    target: 2.5,
-    context: 'GMC brand action buttons (bold large UI CTA components)',
-    mandatoryPass: false,
-  },
-];
+// Read the actual installed theme, rather than auditing an obsolete palette.
+const theme = fs.readFileSync(globalsCssPath, 'utf8');
+const token = name => {
+  const value=theme.match(new RegExp(`--color-${name}:\\s*([^;]+)`))?.[1].trim();
+  if(/^#[0-9a-fA-F]{6}$/.test(value||''))return value;
+  const rgba=value?.match(/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/);
+  if(rgba){const bg=hexToRgb(token('canvas'));return '#'+[bg.r,bg.g,bg.b].map((v,i)=>Math.round(Number(rgba[i+1])*Number(rgba[4])+v*(1-Number(rgba[4]))).toString(16).padStart(2,'0')).join('');}
+  throw new Error(`Missing or unsupported theme color: ${name}`);
+};
+const colorAuditPairs = ['text','text-2','text-3','champagne','cream'].map(name => ({name:`${name} on canvas`,fg:token(name),bg:token('canvas'),target:4.5,context:'Theme token; rendered axe tests check actual combinations.',mandatoryPass:true}));
 
 for (const pair of colorAuditPairs) {
   totalChecks++;
@@ -254,7 +198,8 @@ console.log('\n[Component 4/5] Auditing semantic heading structure across App Ro
 
 const pageFiles = allComponentFiles.filter((f) => {
   const rel = path.relative(appDir, f).replace(/\\/g, '/');
-  return rel.endsWith('page.tsx') || rel.endsWith('page.ts');
+  // Authenticated conditional/composed pages are checked in test:admin.
+  return !rel.startsWith('admin/') && (rel.endsWith('page.tsx') || rel.endsWith('page.ts'));
 });
 
 let headingErrors = [];
@@ -390,7 +335,7 @@ console.log(` - Failed Checks:              ${failedChecks}`);
 console.log('----------------------------------------------------');
 
 if (failedChecks === 0) {
-  console.log('\nSUCCESS: 100% WCAG 2.1 AA Accessibility & Contrast verification passed.');
+  console.log('\nSUCCESS: Static accessibility checks passed. Rendered axe and manual interaction checks are separate; this is not a WCAG conformance certification.');
   process.exit(0);
 } else {
   console.error(`\nFAILURE: ${failedChecks} accessibility requirement(s) failed.`);

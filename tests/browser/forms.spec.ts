@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-function runOnDesktopOnly(testInfo: { project: { name: string } }) {
-  test.skip(testInfo.project.name !== 'desktop-1440', 'Form interaction coverage runs once on the desktop release profile; API and route behavior run across the full matrix.');
+function runOnRepresentativeViewports(testInfo: { project: { name: string } }) {
+  test.skip(!['desktop-1440','mobile-375'].includes(testInfo.project.name), 'Forms run on desktop and phone profiles; route rendering runs across the full matrix.');
 }
 
 test.describe('public form interaction coverage', () => {
   test('switches between both registration tracks', async ({ page }, testInfo) => {
-    runOnDesktopOnly(testInfo);
+    runOnRepresentativeViewports(testInfo);
 
     await page.goto('/register');
     await page.getByRole('button', { name: 'Apply for GIMUN' }).click();
@@ -17,7 +17,7 @@ test.describe('public form interaction coverage', () => {
   });
 
   test('shows client validation for every registration mode', async ({ page }, testInfo) => {
-    runOnDesktopOnly(testInfo);
+    runOnRepresentativeViewports(testInfo);
 
     await page.goto('/register?track=gimun');
     await page.getByRole('button', { name: 'Submit Individual Application' }).click();
@@ -33,7 +33,7 @@ test.describe('public form interaction coverage', () => {
   });
 
   test('shows contact and clarification validation feedback', async ({ page }, testInfo) => {
-    runOnDesktopOnly(testInfo);
+    runOnRepresentativeViewports(testInfo);
 
     await page.goto('/contact');
     await page.getByRole('button', { name: 'Send Direct Message' }).click();
@@ -51,7 +51,7 @@ test.describe('public form interaction coverage', () => {
   });
 
   test('renders with reduced motion enabled', async ({ page }, testInfo) => {
-    runOnDesktopOnly(testInfo);
+    runOnRepresentativeViewports(testInfo);
 
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/register');

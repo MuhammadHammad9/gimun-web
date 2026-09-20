@@ -1,44 +1,27 @@
-# GIMUN & GMC 2027 Website
+# GIMUN & GMC website and event operations
 
-The public website for GIKI Model United Nations (GIMUN) and GIKI Moot Court (GMC). Content is managed in `content/`; public submissions use Supabase/Postgres durable storage, an email outbox delivered by Resend, and Upstash Redis rate limiting.
+Next.js 16 / React 19 public website with a Supabase-backed CMS and private `/admin` operations panel. JSON in `content/` is seed data and an outage fallback. Admin publication invalidates tagged public caches; timed publication is evaluated on the next cache refresh (normally within 60 seconds).
 
-## Local development
+## Run locally
 
-```bash
-npm ci
-copy .env.example .env.local
-npm run dev
-```
+Use Node 24, run `npm ci`, copy `.env.example` to `.env.local`, configure a staging Supabase project, then run `npm run dev`. Without a configured database, the public site can display bundled content; admin and durable submissions need provider setup. Never put service credentials in a `NEXT_PUBLIC_` variable.
 
-Local development defaults to the in-memory submission backend. It is suitable for form tests only; it must never be used for production submissions.
+Apply migrations in numeric order, seed with `npm run content:seed`, then provision the first owner with `npm run admin:owner`. Follow [OPERATIONS_RUNBOOK.md](OPERATIONS_RUNBOOK.md) before using those commands against a real project. They write to the configured database. Seeding inserts missing entries without replacing existing admin edits.
 
-## Verification
+## Operations
 
-```bash
-npm run validate
-npm run typecheck
-npm run lint
-npm run build
-npm run qa:full
-npm run validate:launch
-```
+- CMS: announcements, emergency schedule updates, committees, resources, categories, FAQs, clarifications, people, sponsors, gallery, results, navigation and settings; drafts, timed visibility, revision restore and conflict checks.
+- Registrations: durable references, request idempotency, normalized participants, payments, review status, duplicate flags, history, CSV exports and bulk status updates.
+- Event day: country allocation/reservation, attendance by QR token or manual reference, eligibility checks and recorded registrar overrides.
+- Email: durable outbox, immutable payloads, CID QR attachment, provider idempotency, status messages, templates, test/broadcast composition and manual queue processing.
+- Post-event: certificate verification/PDFs, private survey links and summaries, archive snapshots and owner-only retention dry run/anonymization.
 
-`qa:full` is the routine engineering gate and always rebuilds before audits. `validate:launch` is the stricter content gate; it remains blocked until the approved asset manifest, verified team/sponsor/gallery media, and final parseable PDFs replace the current seed content.
+See [CONTENT_UPDATE_GUIDE.md](CONTENT_UPDATE_GUIDE.md) for the no-code workflow. Interactive rulebook layouts remain code; organizer-approved headline scoring weights are settings.
 
-## Production submission setup
+## Verify
 
-The public interfaces remain `POST /api/register` and `POST /api/contact`. Before launch:
+`npm run qa:full` runs seed validation, unit tests, PostgreSQL migration tests, typecheck, lint, build, link/accessibility/SEO/architecture audits, form tests, public Playwright tests and the admin integration test. `npm run test:admin` builds separately in `.next-admin-test`, uses local fixture credentials and disables real mail delivery. It requires free local ports 54329 and 3101. Do not run two builds into the same output directory.
 
-1. Apply `supabase/migrations/0001_public_launch.sql` and `supabase/migrations/0002_submission_outbox.sql` to the production project.
-2. Configure `SUPABASE_URL` and `SUPABASE_SECRET_KEY` as server-only deployment variables.
-3. Verify the sending domain in Resend and configure `RESEND_API_KEY`, `EMAIL_FROM`, and `NOTIFICATION_EMAIL`.
-4. Configure `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` for distributed rate limiting.
-5. Set `SUBMISSIONS_BACKEND=supabase`, `SITE_URL`, `RATE_LIMIT_HMAC_SECRET`, and `CRON_SECRET`.
+`npm run validate:launch` is a separate content-approval gate. Passing engineering tests does not approve event facts, media, PDFs, privacy terms or production services. [VERIFICATION.md](VERIFICATION.md) records actual checks and remaining limits.
 
-Submissions and email outbox rows are created in one database transaction. A successful response includes the stable reference ID and reports durable queue status separately; Vercel Cron retries Resend delivery independently.
-
-## Content operations and deployment
-
-Edit the JSON files in `content/` and follow [CONTENT_UPDATE_GUIDE.md](./CONTENT_UPDATE_GUIDE.md). Apply approved media and documents under `public/images/` and `public/documents/`, then run `npm run validate:launch`. Use [OPERATIONS_RUNBOOK.md](./OPERATIONS_RUNBOOK.md) for provider backups, monitoring, incident response, and rollback.
-
-GitHub Actions runs schema validation, typechecking, linting, a fresh production build, route/accessibility/SEO audits, form smoke tests, and rendered Playwright/axe checks. Lighthouse is a protected release-candidate gate. Vercel is the intended deployment target; configure the production domain, HTTPS, environment variables, preview protection, backups, and rollback access in the hosting/provider dashboards.
+No payment gateway, automatic waitlist promotion, multi-event tenancy or production deployment is included. The local PostgreSQL/Auth fixture does not replace a staging Supabase Auth, Storage and email smoke test.

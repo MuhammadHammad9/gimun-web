@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto';
 const db=new PGlite();
 try {
   await db.exec(`create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create table auth.users(id uuid primary key); create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);`);
-  for(const file of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.sql')).sort()) { await db.exec(await readFile(`supabase/migrations/${file}`,'utf8')); console.log(`Applied ${file}`); }
+  for(const file of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.sql')).sort()) { await db.exec(await readFile(`supabase/migrations/${file}`,'utf8')); console.log(`Applied ${file}`); if(file==='0001_public_launch.sql'){await db.exec(await readFile('supabase/harden_legacy_access.sql','utf8'));await db.exec('set role anon');await assert.rejects(()=>db.query("select public.next_submission_reference('gimun')"),/permission denied/);await db.exec('reset role');} }
   const actor=randomUUID();await db.query('insert into auth.users values($1)',[actor]);await db.query("insert into admin_users(user_id,email,display_name,role,must_change_password) values($1,'owner@example.test','Test Owner','owner',false)",[actor]);
   const key=randomUUID(),token=randomUUID();
   const args=['gimun','individual','Test Delegate','Test University','test@example.test',1,new Date().toISOString(),'received',JSON.stringify({fullName:'Test Delegate',email:'test@example.test',committeePreference1:'unsc'}),'Receipt','<img src="cid:ticket"> {{REFERENCE_ID}}',[], 'Notification','{{REFERENCE_ID}}',2028,key,'hash',token,JSON.stringify([{filename:'ticket.png',content:'test',content_id:'ticket'}]),'PKR 4,500',4500,'test@example.test'];
@@ -37,5 +37,30 @@ try {
   assert.ok((await db.query('select checked_in_at from participants')).rows[0].checked_in_at);
   await db.query("select admin_operation('certificate',$1,$2)",[JSON.stringify({participant_id:participant,kind:'participation',override:false}),actor]);
   assert.equal((await db.query('select * from certificates')).rows.length,1);
-  console.log('PASS: migrations, private grants, idempotency, year/large counters, normalized roster, revisions, check-in and certificates');
+  const committee={collection:'committees',id:'committee-test',status:'published',sort_order:0,publish_at:null,expire_at:null,version:0,data:{id:'committee-test',slug:'test',capacity:1,countryList:[{country:'France',status:'available'},{country:'Japan',status:'available'}]}};
+  await db.query('select save_content($1,$2)',[JSON.stringify(committee),actor]);
+  const op=(operation,input)=>db.query('select admin_operation($1,$2,$3)',[operation,JSON.stringify(input),actor]);
+  await op('reserve',{committee_slug:'test',country:'France',reserved:true,note:'Test'});
+  await assert.rejects(()=>op('allocation',{participant_id:participant,committee_slug:'test',country:'France'}),/reserved/);
+  await op('reserve',{committee_slug:'test',country:'France',reserved:false,note:''});
+  await op('allocation',{participant_id:participant,committee_slug:'test',country:'France'});
+  await assert.rejects(()=>op('reserve',{committee_slug:'test',country:'France',reserved:true,note:''}),/already allocated/);
+  const secondReceipt=(await db.query(sql,args.map((v,i)=>i===15?randomUUID():i===17?randomUUID():v))).rows[0].receipt;
+  await db.query("update registrations set status='accepted' where reference_id=$1",[secondReceipt.referenceId]);
+  const participant2=(await db.query('select id from participants where registration_ref=$1',[secondReceipt.referenceId])).rows[0].id;
+  await assert.rejects(()=>op('allocation',{participant_id:participant2,committee_slug:'test',country:'Japan'}),/capacity/);
+  await assert.rejects(()=>db.query('select guarded_counter_reset($1)',[actor]),/Cannot reset/);
+  const before=new Date(Date.now()-86400000).toISOString();
+  const cleanup=(execute,expected)=>db.query('select retention_cleanup($1,$2,$3,$4,$5,$6,$7) as result',[actor,before,'Approved test retention policy','Approved test legal basis','privacy@example.test',execute,expected]);
+  await assert.rejects(()=>cleanup(false,0),/Archive/);
+  await db.query("insert into site_settings(id,data) values('site',$1)",[JSON.stringify({registrationStatus:{gimunOpen:false,mootCupOpen:false}})]);
+  await op('archive',{name:'Test closeout'});
+  await db.query("update registrations set submitted_at=now()-interval '2 days'");
+  const preview=(await cleanup(false,0)).rows[0].result;assert.equal(preview.registrations,2);
+  await assert.rejects(()=>cleanup(true,1),/Counts changed/);
+  await cleanup(true,2);
+  assert.equal((await db.query("select count(*)::int as n from registrations where contact_email='anonymized@invalid.example'")).rows[0].n,2);
+  assert.equal((await db.query('select count(*)::int as n from certificates')).rows[0].n,0);
+  assert.equal((await db.query('select count(*)::int as n from email_outbox')).rows[0].n,0);
+  console.log('PASS: migrations, private grants, idempotency, references, roster, revisions, attendance, certificates, allocation conflicts/capacity, guarded reset and retention dry-run/anonymization');
 } finally { await db.close(); }

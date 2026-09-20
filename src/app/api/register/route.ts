@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
         referenceId: delivery.referenceId,
         checkinToken: delivery.checkinToken,
         message: delivery.emailQueued
-          ? 'Application received successfully. An official receipt has been dispatched to your email.'
+          ? 'Application received successfully. Your receipt email is queued for delivery.'
           : 'Application received successfully. Preserve your reference number for correspondence.',
         emailQueued: delivery.emailQueued,
         notificationQueued: delivery.notificationQueued,

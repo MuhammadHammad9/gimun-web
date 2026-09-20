@@ -61,3 +61,11 @@ playwright-report/
 artifacts/
 .tmp-dbg/
 .lhserver.log
+
+.next-admin-test/
+
+.lighthouseci/
+
+scratch/
+
+*.docx

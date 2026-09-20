@@ -58,7 +58,7 @@ export function AnnouncementBanner({
   // Dismissal is a one-way collapse, so it does not need an exit animation
   // framework: the element unmounts and CSS handles the rest. Keeping
   // framer-motion out of the site chrome keeps it out of every page's bundle.
-  if (dismissed) return null;
+  if (dismissed || (!announcement && !message)) return null;
 
   return (
     <aside
@@ -66,11 +66,11 @@ export function AnnouncementBanner({
       className="banner-collapse overflow-hidden border-b border-line bg-elevated text-white"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5 text-xs font-medium sm:px-6 lg:px-8">
-        <div className="flex items-center gap-2.5 truncate">
+        <div className="flex min-w-0 flex-1 items-center gap-2.5">
           <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/60 text-champagne">
             <Sparkles aria-hidden="true" className="h-3 w-3" />
           </span>
-          <span className="truncate text-white/90">{displayMessage}</span>
+          <span className="min-w-0 flex-1 truncate text-white/90" title={displayMessage}>{displayMessage}</span>
           <Link
             href={targetHref}
             className="ml-1 shrink-0 font-semibold text-champagne underline underline-offset-2 transition-colors hover:text-white"

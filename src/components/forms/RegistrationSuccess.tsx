@@ -989,7 +989,7 @@ export function RegistrationSuccess({
                     <span>Dossier Review</span>
                   </div>
                   <p className="text-[11px] text-slate-600 leading-relaxed">
-                    Secretariat evaluates allocations and rosters within 2–3 business days.
+                    {site.replyTime || 'The Secretariat reviews allocations and rosters and follows up by email.'}
                   </p>
                 </div>
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">

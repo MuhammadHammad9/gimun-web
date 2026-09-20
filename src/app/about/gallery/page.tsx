@@ -34,7 +34,7 @@ export default async function GalleryPage() {
                         Visual Archives
                       </span>
                       <span className="text-xs font-mono text-champagne/70 uppercase tracking-widest">
-                        15 Years of Memories
+                        Event Memories
                       </span>
                     </div>
         }
