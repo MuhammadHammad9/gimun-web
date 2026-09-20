@@ -9,13 +9,13 @@ export interface MetadataProps {
   path?: string;
 }
 
-export function constructMetadata({
+export async function constructMetadata({
   title,
   description = 'Two flagship collegiate student competitions. One unified digital home at Ghulam Ishaq Khan Institute (GIKI), Topi. Model United Nations diplomacy meets appellate moot court advocacy.',
   image = '/images/og/default.jpg',
   path = '',
-}: MetadataProps = {}): Metadata {
-  const siteConfig = getSiteConfig();
+}: MetadataProps = {}): Promise<Metadata> {
+  const siteConfig = (await getSiteConfig());
   const siteUrl = getSiteUrl();
   const defaultTitle = `${siteConfig?.eventNames?.combined || 'GIMUN & GMC'} | Official Website`;
   const resolvedTitle = title || defaultTitle;

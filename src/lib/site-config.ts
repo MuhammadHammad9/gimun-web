@@ -1,4 +1,3 @@
-import siteConfig from '../../content/site.json';
 import type { SiteConfig } from './types';
 
 const DEFAULT_SITE_URL = 'https://gimungiki.org';
@@ -16,7 +15,7 @@ export function isValidIsoDate(value: unknown): value is string {
 }
 
 export function getSiteUrl() {
-  const configuredUrl = process.env.SITE_URL?.trim();
+  const configuredUrl = (process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL)?.trim();
   if (process.env.VERCEL_ENV === 'production' && !configuredUrl) {
     throw new Error('SITE_URL is required for the production deployment.');
   }
@@ -40,11 +39,11 @@ export function getSiteUrl() {
 }
 
 export function getAnalyticsMeasurementId() {
-  const value = process.env.ANALYTICS_MEASUREMENT_ID?.trim();
+  const value = (process.env.ANALYTICS_MEASUREMENT_ID || process.env.NEXT_PUBLIC_GA_ID)?.trim();
   return value && /^G-[A-Z0-9]+$/i.test(value) ? value : undefined;
 }
 
-export function getEventYear() {
+export function getEventYear(siteConfig: SiteConfig) {
   const value = (siteConfig as Partial<SiteConfig>).eventDates?.start;
   return typeof value === 'string' && /^\d{4}-/.test(value) ? value.slice(0, 4) : 'unknown';
 }
@@ -55,12 +54,12 @@ export function isRegistrationDeadlinePassed(deadline: string, now = Date.now())
   return !Number.isFinite(deadlineAt) || now > deadlineAt;
 }
 
-export function getCanonicalEventDateRange() {
+export function getCanonicalEventDateRange(siteConfig: SiteConfig) {
   const config = siteConfig as SiteConfig;
   return `${formatEventDate(config.eventDates.start)}–${formatEventDate(config.eventDates.end, { day: 'numeric' })}`;
 }
 
-export function getCanonicalVenue() {
+export function getCanonicalVenue(siteConfig: SiteConfig) {
   return (siteConfig as SiteConfig).venue;
 }
 
