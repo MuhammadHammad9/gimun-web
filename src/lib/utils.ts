@@ -1,5 +1,30 @@
 import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { extendTailwindMerge } from 'tailwind-merge';
+
+/**
+ * tailwind-merge has no visibility into the project's Tailwind v4 `@theme`
+ * block, so it cannot tell that `text-display` / `text-h1` / `text-lead` are
+ * font sizes while `text-text` / `text-champagne` are colours. Left
+ * unconfigured it treats them as one conflicting group and silently drops the
+ * colour — `cn('text-text', 'text-display')` returned just `text-display`,
+ * which quietly removed the colour from every heading that set both.
+ *
+ * Registering the custom sizes explicitly separates the two groups again.
+ */
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      'font-size': [
+        'text-display',
+        'text-h1',
+        'text-h2',
+        'text-h3',
+        'text-lead',
+        'text-meta',
+      ],
+    },
+  },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -57,3 +82,6 @@ export function formatDateRange(startStr?: string, endStr?: string): string {
     return startStr;
   }
 }
+
+export { formatPublishedDate } from './site-config';
+
