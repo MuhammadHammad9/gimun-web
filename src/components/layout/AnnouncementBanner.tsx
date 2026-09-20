@@ -64,11 +64,11 @@ export function AnnouncementBanner({
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-          className="overflow-hidden bg-[#141D54] text-white border-b border-white/10"
+          className="overflow-hidden bg-elevated text-white border-b border-champagne/15"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between text-xs font-medium gap-3">
             <div className="flex items-center gap-2.5 truncate">
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#FF6B35]/20 text-[#FF6B35] shrink-0">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-brand/60 text-champagne shrink-0">
                 <Sparkles className="w-3 h-3 animate-pulse" />
               </span>
               <span className="truncate text-white/90">
@@ -76,7 +76,7 @@ export function AnnouncementBanner({
               </span>
               <Link
                 href={targetHref}
-                className="underline underline-offset-2 font-semibold text-[#FF6B35] hover:text-[#E55A28] shrink-0 ml-1 transition-colors"
+                className="underline underline-offset-2 font-semibold text-champagne hover:text-white shrink-0 ml-1 transition-colors"
               >
                 {linkText} →
               </Link>

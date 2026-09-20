@@ -22,24 +22,24 @@ export default function LogoIcon({ className = 'size-8', ...props }: LogoIconPro
         strokeLinejoin="round"
         className="opacity-40"
       />
-      {/* GIMUN Laurel Branch (Left) in Orange accent */}
+      {/* GIMUN Laurel Branch (Left) in Crimson Red accent */}
       <path
         d="M16 18C14.5 20.5 14.5 24 16 27C17 29 19 30.5 21 31.5M14 20C12 21.5 12 23.5 14 25M17 14C15.5 15.5 15.5 17 17 18.5"
-        stroke="#FF6B35"
+        stroke="#c93b1e"
         strokeWidth="2.2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* GMC Scales of Justice (Right) in Teal accent */}
+      {/* GMC Scales of Justice (Right) in Warm Beige accent */}
       <path
         d="M24 14V34M20 34H28M19 18H29M29 18L33 24M25 24H33M33 24L31 28M32 18C33.5 20.5 33.5 24 32 27"
-        stroke="#00B4A6"
+        stroke="#ecd8b7"
         strokeWidth="2.2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       {/* Central Star of Diplomatic Excellence */}
-      <circle cx="24" cy="14" r="2" fill="#FF6B35" />
+      <circle cx="24" cy="14" r="2" fill="#ecd8b7" />
     </svg>
   );
 }
