@@ -112,8 +112,9 @@ where reference_id = 'REG-GIMUN-2027-0002';
 -- 6. PURGE TEST DATA BEFORE GO-LIVE
 -- CAUTION: Run ONLY before opening public registration to clear smoke-test rows.
 -- ------------------------------------------------------------------------------
--- Purge test registrations:
--- delete from public.registrations where contact_email like '%test%' or applicant_name like '%Test%';
-
--- Reset counters back to 1:
--- update public.reference_counters set next_value = 1;
+-- Review and export exact reference IDs first. Never identify test data using
+-- broad name/email substring matches. Use the audited admin workflow for status
+-- changes; direct SQL above is diagnostic/reference material only.
+-- Counter resets are guarded and require an active owner's UUID:
+-- select public.guarded_counter_reset('OWNER-UUID'::uuid);
+-- This aborts if any registrations or reference-linked outbox rows remain.
