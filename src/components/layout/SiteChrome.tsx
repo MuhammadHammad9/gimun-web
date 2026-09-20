@@ -5,7 +5,6 @@ import type { SiteConfig, Announcement, Sponsor } from '@/lib/types';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { AnnouncementBanner } from './AnnouncementBanner';
-import { SmoothScroll } from '@/components/motion/SmoothScroll';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
 
 /**
@@ -33,7 +32,6 @@ export function SiteChrome({
 
   return (
     <>
-      <SmoothScroll />
       <ScrollProgress />
 
       <a

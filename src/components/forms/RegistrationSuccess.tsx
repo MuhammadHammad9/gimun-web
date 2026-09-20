@@ -647,11 +647,11 @@ export function RegistrationSuccess({
       <span>OFFICIAL GIMUN DIGITAL CREDENTIAL · VERIFIED DOSSIER</span>
     </div>
     <div class="top-bar-actions">
-      <button class="btn-copy" onclick="navigator.clipboard.writeText('${safeReferenceId}'); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='📋 Copy Reference', 2000);">
-        📋 Copy Reference
+      <button class="btn-copy" onclick="navigator.clipboard.writeText('${safeReferenceId}'); this.innerText='Copied'; setTimeout(()=>this.innerText='Copy reference', 2000);">
+        Copy reference
       </button>
       <button class="btn-print" onclick="window.print()">
-        🖨️ Print / Save as PDF (Single A4)
+        Print or save as PDF
       </button>
     </div>
   </div>

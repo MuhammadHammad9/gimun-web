@@ -1,56 +1,72 @@
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import type { Sponsor } from '@/lib/types';
 
 export interface SponsorStripProps {
   sponsors: Sponsor[];
+  /** Optional heading rendered above the marquee. Omit when the page supplies one. */
   title?: string;
   className?: string;
 }
 
-export function SponsorStrip({
-  sponsors,
-  title = 'Proudly Supported By Institutional Partners & Sponsors',
-  className,
-}: SponsorStripProps) {
+/**
+ * Continuous partner marquee.
+ *
+ * Logos run at reduced opacity and resolve on hover, which is the convention
+ * for a partner band — boxing each sponsor in its own bordered card, as this
+ * previously did, reads as a placeholder grid rather than an endorsement.
+ *
+ * The track is duplicated once and translated by exactly -50%, so the loop is
+ * seamless. Only the first copy is reachable by keyboard or screen reader; the
+ * duplicate is inert.
+ */
+export function SponsorStrip({ sponsors, title, className }: SponsorStripProps) {
   if (!sponsors || sponsors.length === 0) {
-    return null; // Graceful empty state (PRD §18.3)
+    return null;
   }
 
-  // Duplicate sponsors for continuous marquee loop
-  const marqueeItems = [...sponsors, ...sponsors, ...sponsors];
+  const lane = [...sponsors, ...sponsors];
 
   return (
-    <div className={cn('py-10 border-y border-champagne/20 bg-overlay/90 backdrop-blur-md overflow-hidden', className)}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 text-center">
-        <p className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
+    <div className={cn('w-full', className)}>
+      {title && (
+        <p className="mb-8 px-4 text-center font-mono text-meta uppercase tracking-[0.14em] text-text-4">
           {title}
         </p>
-      </div>
+      )}
 
       <div className="relative w-full overflow-hidden mask-gradient">
-        <div className="animate-marquee flex items-center gap-12 sm:gap-16">
-          {marqueeItems.map((sponsor, idx) => (
-            <Link
-              key={`${sponsor.id}-${idx}`}
-              href={sponsor.url}
-              tabIndex={idx >= sponsors.length ? -1 : undefined}
-              aria-hidden={idx >= sponsors.length ? true : undefined}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 shrink-0 opacity-80 hover:opacity-100 transition-all duration-300 group"
-              title={sponsor.name}
-            >
-              <div className="px-5 py-2.5 rounded-xl bg-crest/80 border border-champagne/25 shadow-md flex items-center justify-center min-w-[140px] h-[52px] group-hover:border-champagne/50 transition-all">
-                <span className="font-heading font-bold text-sm tracking-tight text-cream group-hover:text-champagne transition-colors">
-                  {sponsor.name}
-                </span>
-              </div>
-            </Link>
-          ))}
+        <div className="animate-marquee flex items-center gap-14 sm:gap-20">
+          {lane.map((sponsor, idx) => {
+            const isDuplicate = idx >= sponsors.length;
+            return (
+              <Link
+                key={`${sponsor.id}-${idx}`}
+                href={sponsor.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                tabIndex={isDuplicate ? -1 : undefined}
+                aria-hidden={isDuplicate || undefined}
+                title={sponsor.name}
+                className="group flex shrink-0 items-center"
+              >
+                <Image
+                  src={sponsor.logo}
+                  alt={isDuplicate ? '' : sponsor.name}
+                  width={160}
+                  height={44}
+                  loading="lazy"
+                  className="h-8 w-auto opacity-45 transition-opacity duration-300 group-hover:opacity-90 sm:h-9"
+                />
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 }
+
+export default SponsorStrip;

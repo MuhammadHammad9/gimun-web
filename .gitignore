@@ -57,9 +57,4 @@ data/submissions/*.json
 # test results
 test-results/
 playwright-report/
-
-.lighthouseci/
-artifacts/
-scratch/
-.next-admin-test/
-*.docx
+.claude/launch.json
