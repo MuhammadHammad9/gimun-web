@@ -34,6 +34,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
     hasNavigated = true;
   }, []);
 
+  // The admin CMS opts out of the public transition entirely.
   if (pathname === '/admin' || pathname.startsWith('/admin/')) return <>{children}</>;
 
   const skipEnter = reduced || isFirstLoad;
