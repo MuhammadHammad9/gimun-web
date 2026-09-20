@@ -1,9 +1,10 @@
 name: Website QA
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
-    branches: [main, master]
+    branches: [main, master, 'release/**']
 
 jobs:
   qa:
@@ -21,7 +22,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -32,6 +33,12 @@ jobs:
 
       - name: Validate content schema
         run: npm run validate
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: PostgreSQL migration tests
+        run: npm run test:migrations
 
       - name: Typecheck
         run: npm run typecheck
@@ -60,6 +67,9 @@ jobs:
       - name: Rendered browser and axe tests
         run: npm run test:browser
 
+      - name: Admin integration tests
+        run: npm run test:admin
+
       - name: Upload browser artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -68,12 +78,12 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            artifacts/
           if-no-files-found: ignore
 
-      - name: Report production content gate
-        run: npm run validate:launch
 
   lighthouse-release:
+    needs: qa
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     env:
@@ -85,7 +95,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -96,3 +106,24 @@ jobs:
 
       - name: Lighthouse release gate
         run: npm run audit:lighthouse
+
+      - name: Upload Lighthouse artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse
+          path: .lighthouseci/
+          if-no-files-found: ignore
+
+  launch-content:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/release/')
+    needs: qa
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run validate:launch

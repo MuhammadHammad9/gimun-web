@@ -12,11 +12,11 @@ const registrationBlock = serviceSource.slice(registrationStart, contactStart);
 const requestPersistenceBlock = serviceSource.slice(registrationStart, serviceSource.indexOf('async function updateOutbox'));
 
 const checks = [
-  ['registration uses transactional RPC', /create_registration_submission/.test(registrationBlock)],
+  ['registration uses transactional RPC', /create_registration_v2/.test(registrationBlock)],
   ['registration does not POST directly to registrations', !/supabaseRequest\(['"]registrations/.test(registrationBlock)],
   ['registration does not dispatch Resend inline', !/api\.resend\.com/.test(registrationBlock)],
   ['request path has no direct-send or fallback handler', !/sendDirectEmail|fallbackPersist|supabaseRequest\(['"](?:registrations|contact_messages)/.test(requestPersistenceBlock)],
-  ['contact uses transactional RPC', /create_contact_submission/.test(serviceSource.slice(contactStart, serviceSource.indexOf('async function updateOutbox')))],
+  ['contact uses transactional RPC', /create_contact_v2/.test(serviceSource.slice(contactStart, serviceSource.indexOf('async function updateOutbox')))],
   ['request path does not invoke the cron worker', !/dispatchEmailOutbox\(\)/.test(requestPersistenceBlock)],
   ['successful registration reports durable email queue state', /emailQueued: true/.test(registrationBlock)],
   ['migration has atomic registration transaction', /create or replace function public\.create_registration_submission/.test(migrationSource)],

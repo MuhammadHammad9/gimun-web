@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/admin/**/*.ts", ".next-admin-test/types/**/*.ts", "tests/admin/next-env.d.ts"],
+  "exclude": ["node_modules", ".next", "scratch"]
+}

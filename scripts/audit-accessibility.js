@@ -278,13 +278,14 @@ for (const pageFile of pageFiles) {
   // Check direct <h1> tags
   const directH1Matches = content.match(/<h1\b[^>]*>/g) || [];
   
-  // Check HeroSection usage (which renders an <h1> internally)
-  const heroMatches = content.match(/<HeroSection\b/g) || [];
+  // Components that render the page <h1> internally. PageHero replaced the
+  // former HeroSection in the 2027 redesign; both names are accepted.
+  const heroMatches = content.match(/<(?:PageHero|HeroSection)[\s/>]/g) || [];
 
   const totalH1Count = directH1Matches.length + heroMatches.length;
 
   if (totalH1Count === 0) {
-    headingErrors.push({ file: relPath, issue: 'No <h1> or HeroSection heading found' });
+    headingErrors.push({ file: relPath, issue: 'No <h1> or PageHero heading found' });
   } else if (totalH1Count > 1) {
     headingErrors.push({ file: relPath, issue: `Multiple (${totalH1Count}) <h1> headings detected` });
   }
