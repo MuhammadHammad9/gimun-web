@@ -23,18 +23,18 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'w-full p-10 sm:p-14 text-center rounded-2xl bg-[#F8F8FC] border border-dashed border-gray-200 flex flex-col items-center justify-center space-y-4',
+        'w-full p-10 sm:p-14 text-center rounded-2xl bg-overlay/70 border border-dashed border-champagne/40 backdrop-blur-md flex flex-col items-center justify-center space-y-4',
         className
       )}
     >
-      <div className="w-12 h-12 rounded-2xl bg-white border border-gray-200/80 shadow-2xs flex items-center justify-center text-[#5A5A6E]">
-        {icon || <SearchX className="w-6 h-6 text-[#5A5A6E]" />}
+      <div className="w-12 h-12 rounded-2xl bg-crest border border-champagne/30 shadow-md flex items-center justify-center text-champagne">
+        {icon || <SearchX className="w-6 h-6 text-champagne" />}
       </div>
       <div className="space-y-1 max-w-md mx-auto">
-        <h3 className="font-heading font-bold text-base sm:text-lg text-[#1A1A2E]">
+        <h3 className="font-heading font-bold text-base sm:text-lg text-cream">
           {title}
         </h3>
-        <p className="text-xs sm:text-sm text-[#5A5A6E] leading-relaxed">
+        <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
           {description}
         </p>
       </div>

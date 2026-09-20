@@ -77,7 +77,7 @@ export function CountdownChip({
           className
         )}
       >
-        <Calendar className="w-3.5 h-3.5 text-[#FF6B35]" />
+        <Calendar className="w-3.5 h-3.5 text-champagne" />
         <span>Dates: {formatDateRange(startDate, endDate)}</span>
       </div>
     );
@@ -87,11 +87,11 @@ export function CountdownChip({
     return (
       <div
         className={cn(
-          'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-500/25 text-emerald-300 border border-emerald-400/40 select-none animate-pulse',
+          'inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-champagne-lo/25 text-champagne border border-champagne/40 select-none animate-pulse',
           className
         )}
       >
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+        <span className="w-2 h-2 rounded-full bg-champagne animate-ping" />
         <span>🔴 Happening Now</span>
       </div>
     );
@@ -117,9 +117,9 @@ export function CountdownChip({
         className
       )}
     >
-      <Calendar className="w-3.5 h-3.5 text-[#FF6B35]" />
+      <Calendar className="w-3.5 h-3.5 text-champagne" />
       <span>
-        <strong className="text-[#FF6B35] font-bold">{timeLeft.days}d {timeLeft.hours}h</strong> until {eventName}
+        <strong className="text-champagne font-bold">{timeLeft.days}d {timeLeft.hours}h</strong> until {eventName}
       </span>
     </div>
   );
