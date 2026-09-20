@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { X, ChevronDown, ArrowRight } from 'lucide-react';
+import { X, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { eventPhase } from '@/lib/phase';
+import { navigationTree } from '@/lib/navigation';
+import { useSiteConfig } from '@/components/SiteConfigProvider';
 import { Button } from '@/components/ui/Button';
 
 export interface MobileMenuProps {
@@ -13,9 +16,8 @@ export interface MobileMenuProps {
 }
 
 export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: MobileMenuProps) {
-  const [gimunOpen, setGimunOpen] = useState(false);
-  const [mootOpen, setMootOpen] = useState(false);
-  const [aboutOpen, setAboutOpen] = useState(false);
+  const site=useSiteConfig();
+  const navigation = navigationTree(site.navigation, 'mobile');
   const menuRef = React.useRef<HTMLDivElement>(null);
   const closeButtonRef = React.useRef<HTMLButtonElement>(null);
 
@@ -69,7 +71,7 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 bg-[#1E2A78]/95 backdrop-blur-2xl flex flex-col md:hidden text-white"
+          className="fixed inset-0 z-50 bg-canvas/98 backdrop-blur-2xl flex flex-col md:hidden text-white"
           role="dialog"
           aria-modal="true"
           aria-label="Mobile menu"
@@ -81,7 +83,7 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
               onClick={onClose}
               className="font-heading text-lg font-bold text-white tracking-tight flex items-center gap-2"
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FF6B35]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-crimson" />
               <span>GIMUN & GMC</span>
             </Link>
 
@@ -101,198 +103,16 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
             <Link
               href="/"
               onClick={onClose}
-              className="block font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors"
+              className="block font-heading text-2xl font-bold text-white/90 hover:text-champagne transition-colors"
             >
               Home
             </Link>
 
-            {/* GIMUN Section */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setGimunOpen(!gimunOpen)}
-                className="w-full flex items-center justify-between font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors text-left"
-              >
-                <span>GIMUN (MUN)</span>
-                <ChevronDown
-                  className={`w-5 h-5 transition-transform duration-200 ${
-                    gimunOpen ? 'rotate-180 text-[#FF6B35]' : ''
-                  }`}
-                />
-              </button>
-              {gimunOpen && (
-                <div className="pl-4 mt-3 space-y-3 border-l-2 border-[#FF6B35]/40">
-                  <Link
-                    href="/gimun"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Overview & Eligibility
-                  </Link>
-                  <Link
-                    href="/gimun/committees"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Committees & Topics
-                  </Link>
-                  <Link
-                    href="/gimun/rules"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Rules of Procedure
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* GMC Section */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setMootOpen(!mootOpen)}
-                className="w-full flex items-center justify-between font-heading text-2xl font-bold text-white/90 hover:text-[#00B4A6] transition-colors text-left"
-              >
-                <span>GMC (Moot Court)</span>
-                <ChevronDown
-                  className={`w-5 h-5 transition-transform duration-200 ${
-                    mootOpen ? 'rotate-180 text-[#00B4A6]' : ''
-                  }`}
-                />
-              </button>
-              {mootOpen && (
-                <div className="pl-4 mt-3 space-y-3 border-l-2 border-[#00B4A6]/40">
-                  <Link
-                    href="/moot-cup"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Overview & Format
-                  </Link>
-                  <Link
-                    href="/moot-cup/categories"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Problem Categories
-                  </Link>
-                  <Link
-                    href="/moot-cup/rules"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Rules & Memorials
-                  </Link>
-                  <Link
-                    href="/moot-cup/clarifications"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Clarifications Log
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            <Link
-              href="/schedule"
-              onClick={onClose}
-              className="block font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors"
-            >
-              Schedule
-            </Link>
-
-            <Link
-              href="/resources"
-              onClick={onClose}
-              className="block font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors"
-            >
-              Resource Hub
-            </Link>
-
-            <Link
-              href="/announcements"
-              onClick={onClose}
-              className="block font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors"
-            >
-              Announcements
-            </Link>
-
-            <Link
-              href="/results"
-              onClick={onClose}
-              className="block font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors"
-            >
-              Results & Awards
-            </Link>
-
-            <Link
-              href="/contact"
-              onClick={onClose}
-              className="block font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors"
-            >
-              Contact Us
-            </Link>
-
-            {/* About Section */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setAboutOpen(!aboutOpen)}
-                className="w-full flex items-center justify-between font-heading text-2xl font-bold text-white/90 hover:text-[#FF6B35] transition-colors text-left"
-              >
-                <span>About</span>
-                <ChevronDown
-                  className={`w-5 h-5 transition-transform duration-200 ${
-                    aboutOpen ? 'rotate-180 text-[#FF6B35]' : ''
-                  }`}
-                />
-              </button>
-              {aboutOpen && (
-                <div className="pl-4 mt-3 space-y-3 border-l-2 border-white/20">
-                  <Link
-                    href="/about/team"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Secretariat & Team
-                  </Link>
-                  <Link
-                    href="/about/venue"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Venue & Travel
-                  </Link>
-                  <Link
-                    href="/about/faq"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    FAQ
-                  </Link>
-                  <Link
-                    href="/about/sponsors"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Sponsors & Partners
-                  </Link>
-                  <Link
-                    href="/about/gallery"
-                    onClick={onClose}
-                    className="block text-base text-white/80 hover:text-white"
-                  >
-                    Gallery & Press
-                  </Link>
-                </div>
-              )}
-            </div>
+            {navigation.map(item => item.dropdown.length ? <details key={item.id} className="py-2"><summary className="text-2xl font-bold cursor-pointer">{item.label}</summary><div className="pl-4 py-3 space-y-3">{item.dropdown.map(child => <Link key={child.id} href={child.href} onClick={onClose} className="block text-lg text-white/90">{child.label}</Link>)}</div></details> : <Link key={item.id} href={item.href} onClick={onClose} className="block text-2xl font-bold">{item.label}</Link>)}
           </nav>
 
           {/* Persistent Bottom Action */}
-          <div className="p-6 border-t border-white/10 bg-[#141D54]/50">
+          <div className="p-6 border-t border-white/10 bg-raised/90">
             <Button
               variant="primary"
               size="lg"
@@ -301,7 +121,7 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
               onClick={onClose}
               icon={<ArrowRight className="w-4 h-4" />}
             >
-              Register Now (No Payment)
+              {eventPhase(site)==='registration-open'?'Register Now (No Payment)':'Registration status'}
             </Button>
           </div>
         </motion.div>
