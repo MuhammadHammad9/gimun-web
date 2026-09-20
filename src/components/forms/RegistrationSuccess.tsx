@@ -64,9 +64,9 @@ export function RegistrationSuccess({
   const trackNameShort = isMoot ? 'GMC' : 'GIMUN';
   const typeLabel =
     applicantType === 'individual'
-      ? 'Individual Delegate'
+      ? 'Individual entry'
       : applicantType === 'delegation'
-      ? `Institutional Delegation (${details?.participantCount || 1} Delegates)`
+      ? `Entering as a delegation (${details?.participantCount || 1} Delegates)`
       : `Advocacy Team (${details?.participantCount || 3} Advocates)`;
 
   const feeDisplay =

@@ -1,21 +1,17 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/Button";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
-  CheckCircle2,
   AlertCircle,
-  Send,
   Calendar,
   FileCheck,
 } from "lucide-react";
 import type { Clarification } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { HoneypotField } from "@/components/forms/HoneypotField";
-import { validateEmail } from "@/lib/validation";
+import { ClarificationForm } from '@/components/forms/ClarificationForm';
 
 interface ClarificationsClientProps {
   initialClarifications: Clarification[];
@@ -26,13 +22,6 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
 
   // Submission Form State
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [teamName, setTeamName] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-  const [questionText, setQuestionText] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [honeypot, setHoneypot] = useState("");
   const formLoadedAt = useRef(0);
 
   useEffect(() => {
@@ -64,43 +53,6 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
     return true;
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!teamName.trim() || !contactEmail.trim() || !questionText.trim()) {
-      setSubmitError("Team code, contact email, and clarification question are required.");
-      return;
-    }
-    const emailError = validateEmail(contactEmail);
-    if (emailError) {
-      setSubmitError(emailError);
-      return;
-    }
-    setSubmitting(true);
-    setSubmitError(null);
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: `Advocate of ${teamName}`,
-          email: contactEmail,
-          queryType: "moot-cup",
-          message: `[Official GMC Clarification Request]\nTeam: ${teamName}\n\nQuestion / Issue:\n${questionText}`,
-          _hp: honeypot,
-          _ts: formLoadedAt.current,
-        }),
-      });
-      const result = await response.json();
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "Unable to submit the clarification inquiry.");
-      }
-      setFormSubmitted(true);
-    } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : "Unable to submit the clarification inquiry.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   return (
     <div className="space-y-12">
@@ -207,114 +159,28 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
         )}
       </div>
 
-      {/* Formal Inquiry Submission Box (PRD §16.2) */}
+      {/* The submission form lives in ClarificationForm, which is shared with
+          the contact flow. This page previously carried its own inline copy —
+          a second form with its own state, validation and honeypot that had
+          already drifted from the shared one (it collected no paragraph
+          citation, so the Bench received questions it could not place). */}
       <section className="pt-4">
         <div className="double-bezel">
-          <div className="double-bezel-inner p-6 sm:p-10 space-y-6">
-            <div className="space-y-1">
-              <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
-                Direct Submission
+          <div className="double-bezel-inner space-y-6 p-6 sm:p-10">
+            <div className="space-y-2">
+              <span className="font-mono text-meta font-bold uppercase tracking-[0.14em] text-champagne">
+                Ask the bench
               </span>
-              <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
-                Submit Clarification Inquiry to the Bench
+              <h2 className="text-h2 font-display font-medium text-text">
+                Submit a clarification
               </h2>
-              <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
-                Registered teams may formulate concise questions identifying specific factual ambiguities in the Compromis. All inquiries are evaluated confidentially and published for all teams simultaneously.
+              <p className="max-w-2xl text-body text-text-3">
+                Registered teams can ask about anything ambiguous in the case problem.
+                Answers are published here for every team at the same time.
               </p>
             </div>
 
-            {formSubmitted ? (
-              <div className="p-6 rounded-2xl bg-elevated/80 border border-champagne-lo/40 text-champagne-hi space-y-2">
-                <div className="flex items-center gap-2 font-heading font-bold text-base text-champagne-hi">
-                  <CheckCircle2 className="w-5 h-5 text-champagne" />
-                  <span>Inquiry Transmitted to the Bench Drafting Committee</span>
-                </div>
-                <p className="text-xs text-champagne-hi/90 leading-relaxed">
-                  Your question has been logged for judicial consideration. Rulings are issued periodically on this dispatch board.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormSubmitted(false);
-                    setTeamName("");
-                    setContactEmail("");
-                    setQuestionText("");
-                    setHoneypot("");
-                    setSubmitError(null);
-                    formLoadedAt.current = Date.now();
-                  }}
-                  className="text-xs font-semibold text-champagne underline hover:text-cream pt-2 block cursor-pointer"
-                >
-                  Submit another inquiry
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} noValidate className="space-y-4">
-                {submitError && (
-                  <div className="p-3 rounded-xl bg-brand-deep/80 border border-crimson/40 text-crimson-soft text-xs" role="alert">
-                    {submitError}
-                  </div>
-                )}
-                <HoneypotField value={honeypot} onChange={setHoneypot} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label htmlFor="clarification-team-code" className="text-xs font-mono text-champagne/80 font-medium block">
-                      Assigned Team Code (e.g. TC-08) *
-                    </label>
-                    <input
-                      id="clarification-team-code"
-                      type="text"
-                      autoComplete="off"
-                      value={teamName}
-                      onChange={(e) => setTeamName(e.target.value)}
-                      placeholder="e.g. TC-08"
-                      className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 text-base sm:text-xs bg-overlay/90 text-cream placeholder-champagne/40 focus:outline-hidden focus:ring-2 focus:ring-champagne/30 focus:border-champagne"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label htmlFor="clarification-contact-email" className="text-xs font-mono text-champagne/80 font-medium block">
-                      Contact Advocate Email *
-                    </label>
-                    <input
-                      id="clarification-contact-email"
-                      type="email"
-                      autoComplete="email"
-                      value={contactEmail}
-                      onChange={(e) => setContactEmail(e.target.value)}
-                      placeholder="advocate@university.edu.pk"
-                      className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 text-base sm:text-xs bg-overlay/90 text-cream placeholder-champagne/40 focus:outline-hidden focus:ring-2 focus:ring-champagne/30 focus:border-champagne"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label htmlFor="clarification-question" className="text-xs font-mono text-champagne/80 font-medium block">
-                    Specific Clarification Question (cite Compromis paragraph) *
-                  </label>
-                  <textarea
-                    id="clarification-question"
-                    rows={4}
-                    value={questionText}
-                    onChange={(e) => setQuestionText(e.target.value)}
-                    placeholder="e.g. In reference to Paragraph 14 of the Compromis, does the multilateral communique imply..."
-                    className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 text-base sm:text-xs bg-overlay/90 text-cream placeholder-champagne/40 focus:outline-hidden focus:ring-2 focus:ring-champagne/30 focus:border-champagne"
-                  />
-                </div>
-
-                <div className="pt-2">
-                  <Button
-                    type="submit"
-                    variant="track-moot"
-                    size="md"
-                    disabled={submitting}
-                    icon={<Send className="w-4 h-4" />}
-                  >
-                    {submitting ? "Transmitting..." : "Submit Inquiry to Bench"}
-                  </Button>
-                </div>
-              </form>
-            )}
+            <ClarificationForm />
           </div>
         </div>
       </section>

@@ -9,6 +9,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Users2, ArrowRight } from 'lucide-react';
 import type { Committee } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { HelpCallout } from '@/components/ui/HelpCallout';
 
 interface CommitteesClientProps {
   initialCommittees: Committee[];
@@ -40,7 +41,7 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
           </span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-heading font-extrabold text-cream tracking-tight">
-          GIMUN Committee Roster &amp; Agendas
+          Committees
         </h1>
         <p className="text-sm sm:text-base text-champagne/80 leading-relaxed">
           Explore our simulation bodies ranging from multilateral security councils to fast-breaking national crisis cabinets. Select a committee to inspect its agenda topics, committee chairs, and available country allocations.
@@ -166,27 +167,14 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
         })}
       </div>
 
-      {/* Bottom CTA */}
-      <section className="pt-8">
-        <div className="p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="space-y-1">
-            <h3 className="font-heading font-bold text-lg text-cream">
-              Have questions regarding country matrix policies?
-            </h3>
-            <p className="text-xs sm:text-sm text-champagne/80">
-              Consult our Rules of Procedure or explore the Resource Hub for background guides.
-            </p>
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <Button variant="secondary" size="sm" href="/gimun/rules">
-              View RoP
-            </Button>
-            <Button variant="primary" size="sm" href="/resources">
-              Resource Hub
-            </Button>
-          </div>
-        </div>
-      </section>
+      <HelpCallout
+        className="mt-8"
+        question="Still unsure how country allocation works?"
+        actions={[
+          { label: 'Rules of procedure', href: '/gimun/rules' },
+          { label: 'Background guides', href: '/resources' },
+        ]}
+      />
     </div>
   );
 }

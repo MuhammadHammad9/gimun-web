@@ -376,34 +376,6 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-text);
 }
 
-/* Cursor spotlight. --mx/--my are written by SpotlightCard as percentages, on
-   the node itself, so pointer movement costs no React render. */
-.spotlight {
-  position: relative;
-  isolation: isolate;
-}
-
-.spotlight::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  z-index: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s var(--ease-brand);
-  background: radial-gradient(
-    22rem circle at var(--mx, 50%) var(--my, 50%),
-    rgba(236, 216, 183, 0.07),
-    transparent 60%
-  );
-}
-
-.spotlight:hover::before,
-.spotlight:focus-within::before {
-  opacity: 1;
-}
-
 /* ==============================================================================
    CONTROLS
    ============================================================================== */

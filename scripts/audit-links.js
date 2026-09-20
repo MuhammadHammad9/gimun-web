@@ -77,6 +77,24 @@ const all31Routes = [
   '/api/contact',
   // Sitemap XML Route
   '/sitemap.xml',
+  // Admin console. Not part of the public site and excluded from the sitemap,
+  // but it is linked from within itself, so leaving it out of this list made
+  // every internal admin link report as broken. `/admin/<section>` is served
+  // by the dynamic `[section]` route and is matched separately below.
+  '/admin',
+  '/admin/login',
+  '/admin/password',
+  '/admin/settings',
+  '/admin/export',
+];
+
+// Sections accepted by src/app/admin/[section]/page.tsx. Kept in sync with
+// `sections` in src/lib/server/admin/permissions.ts.
+const adminSections = [
+  'announcements', 'schedule', 'committees', 'moot-categories', 'resources',
+  'faq', 'team', 'sponsors', 'gallery', 'clarifications', 'results', 'navigation',
+  'settings', 'registrations', 'inbox', 'email', 'event-day', 'allocations',
+  'certificates', 'feedback', 'close-out', 'users', 'media', 'audit',
 ];
 
 const knownRoutes = new Set(all31Routes);
@@ -358,7 +376,10 @@ for (const { url, sourceFile, isRenderedHtml } of discoveredLinks) {
     verifiedRouteCount++;
   } else {
     // Check if it matches a dynamic route
-    const isDynamicMatch = committeeSlugs.some((s) => normalizedPath === `/gimun/committees/${s}`);
+    const isDynamicMatch =
+      committeeSlugs.some((s) => normalizedPath === `/gimun/committees/${s}`) ||
+      adminSections.some((s) => normalizedPath === `/admin/${s}`) ||
+      /^\/admin\/(content|inbox|registrations)\//.test(normalizedPath);
     if (isDynamicMatch) {
       verifiedRouteCount++;
     } else {

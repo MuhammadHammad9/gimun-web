@@ -70,7 +70,7 @@ export default async function ContactPage() {
               <div className="space-y-1 pb-3 border-b border-champagne/15">
                 <h2 className="text-lg font-heading font-bold text-cream flex items-center gap-2">
                   <Mail className="w-4 h-4 text-champagne" />
-                  <span>Dedicated Department Desks</span>
+                  <span>Who to email</span>
                 </h2>
                 <p className="text-xs text-champagne/75">
                   Direct emails monitored continuously by corresponding directorate heads.
@@ -138,7 +138,7 @@ export default async function ContactPage() {
             <div className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-4">
               <h2 className="text-lg font-heading font-bold text-cream flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-champagne" />
-                <span>Physical Campus Headquarters</span>
+                <span>Where we are</span>
               </h2>
               <p className="text-xs text-champagne/80 leading-relaxed">
                 {config.hostInstitution}

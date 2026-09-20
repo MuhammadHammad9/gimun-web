@@ -20,9 +20,9 @@ import {
   Sparkles,
   Calendar,
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
 import type { ResultAward, Track } from '@/lib/types';
 import { getEventYear } from '@/lib/site-config';
+import { HelpCallout } from '@/components/ui/HelpCallout';
 
 interface ResultsClientProps {
   initialResults: ResultAward[];
@@ -107,7 +107,7 @@ export function ResultsClient({
                     Supreme Conclave Honors
                   </span>
                   <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream">
-                    {eventYear} Flagship Champion Trophies
+                    {eventYear} Main awards
                   </h2>
                 </div>
                 <div className="px-3 py-1 rounded-full bg-champagne/20 text-cream text-xs font-mono font-bold self-start sm:self-auto flex items-center gap-1.5 border border-champagne/30">
@@ -122,7 +122,7 @@ export function ResultsClient({
                     <Crown className="w-5 h-5" />
                   </div>
                   <h3 className="font-heading font-bold text-lg text-cream">
-                    Best Delegation Trophy
+                    Best delegation
                   </h3>
                   <p className="text-xs text-champagne/80 leading-relaxed">
                     Awarded to the overall highest-performing institutional delegation accumulating points across all UN committee chambers.
@@ -137,7 +137,7 @@ export function ResultsClient({
                     <Medal className="w-5 h-5" />
                   </div>
                   <h3 className="font-heading font-bold text-lg text-cream">
-                    Best Delegate Gavel (GIMUN)
+                    Best delegate
                   </h3>
                   <p className="text-xs text-champagne/80 leading-relaxed">
                     Conferred by committee Dais panels for exceptional resolution drafting, unmoderated caucusing, and sovereign policy defense.
@@ -152,7 +152,7 @@ export function ResultsClient({
                     <Trophy className="w-5 h-5" />
                   </div>
                   <h3 className="font-heading font-bold text-lg text-cream">
-                    Champion Bench (GMC)
+                    Winning team
                   </h3>
                   <p className="text-xs text-champagne/80 leading-relaxed">
                     Awarded to the Grand Final winning legal team following intense appellate advocacy before the High Court judicial panel.
@@ -180,7 +180,7 @@ export function ResultsClient({
                     <span>Official Announcement Protocol</span>
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream">
-                    Promulgation Following Grand Awards Gala
+                    Published after the awards ceremony
                   </h2>
                 </div>
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-overlay/80 border border-champagne/30 text-cream font-mono text-xs font-semibold shrink-0">
@@ -225,7 +225,7 @@ export function ResultsClient({
                 Evaluation Standards
               </span>
               <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream">
-                Merit Adjudication Criteria
+                How winners are chosen
               </h2>
               <p className="text-sm text-champagne/80">
                 All awards across both tracks are adjudicated by specialized panels based on transparent, pre-published criteria.
@@ -242,7 +242,7 @@ export function ResultsClient({
                         <Globe2 className="w-4 h-4" />
                       </div>
                       <h3 className="font-heading font-bold text-xl text-cream">
-                        GIMUN Diplomatic Rubric
+                        GIMUN scoring
                       </h3>
                     </div>
                     <TrackBadge track="gimun" size="sm" />
@@ -265,7 +265,7 @@ export function ResultsClient({
                         <Scale className="w-4 h-4" />
                       </div>
                       <h3 className="font-heading font-bold text-xl text-cream">
-                        GMC Judicial Rubric
+                        Moot Court scoring
                       </h3>
                     </div>
                     <TrackBadge track="moot-cup" size="sm" />
@@ -284,7 +284,7 @@ export function ResultsClient({
           {/* Hall of Fame Distinction & Previous Laureates */}
           <section className="space-y-4">
             <h3 className="text-xl font-heading font-bold text-cream">
-              The Conclave Laureate Registry
+              Award winners
             </h3>
             <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
               Upon conclusion of the {eventYear} edition, full names of winning advocates, best delegates, honorable mentions, and university delegations will be permanently archived in the institutional registry accessible on this page.
@@ -372,27 +372,11 @@ export function ResultsClient({
         </section>
       )}
 
-      {/* Adjudication Standards Note */}
-      <section className="pt-8">
-        <div className="p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="space-y-1 max-w-2xl">
-            <h3 className="font-heading font-bold text-lg text-cream">
-              Merit Adjudication &amp; Score Verifications
-            </h3>
-            <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
-              All committee awards are graded according to international HMUN rubrics, while GMC awards are determined by cumulative blind memorial scoring and oral bench ballots.
-            </p>
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <Button variant="secondary" href="/about/faq">
-              Award FAQ
-            </Button>
-            <Button variant="primary" href="/register">
-              Apply for {eventYear}
-            </Button>
-          </div>
-        </div>
-      </section>
+      <HelpCallout
+        className="mt-8"
+        question="Question about how an award was scored?"
+        actions={[{ label: 'Award FAQ', href: '/about/faq' }]}
+      />
     </div>
   );
 }

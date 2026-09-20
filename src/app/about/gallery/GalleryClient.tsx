@@ -131,7 +131,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
       </div>
 
       {/* Asymmetric Bento Media Grid */}
-      <h2 className="sr-only">Visual Archive Albums and Curated Sessions</h2>
+      <h2 className="sr-only">Photo albums</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.map((item, index) => {
           const isWide = item.aspectRatio === 'wide';

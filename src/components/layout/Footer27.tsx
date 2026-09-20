@@ -8,7 +8,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { FaFacebookF as Facebook, FaXTwitter as Twitter, FaInstagram as Instagram, FaLinkedinIn as Linkedin } from "react-icons/fa6";
-import { navigationTree } from '@/lib/navigation';
+import { footerColumns } from '@/lib/navigation';
 import LogoIcon from "@/assets/logo-icon";
 import type { SiteConfig, Sponsor } from "@/lib/types";
 import { formatDateRange } from "@/lib/utils";
@@ -36,7 +36,7 @@ export function Footer27({
   brandName,
 }: Footer27Props) {
   const liveSite = useSiteConfig();
-  const defaultFooterColumns = navigationTree(liveSite.navigation, 'footer').map(item => ({ title:item.label, links:item.dropdown.length ? item.dropdown : [item] }));
+  const columns = footerColumns;
   const eventYear = getEventYear(siteConfig || liveSite);
   const resolvedBrandName = brandName || siteConfig?.eventNames?.combined || `GIMUN & GMC ${eventYear}`;
   const socialIcons = [
@@ -123,7 +123,7 @@ export function Footer27({
             className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 lg:col-span-8"
           >
             <h2 className="sr-only">Site Directory &amp; Navigation</h2>
-            {defaultFooterColumns.map((col) => (
+            {columns.map((col) => (
               <div
                 key={col.title}
                 className="flex flex-col gap-3.5"

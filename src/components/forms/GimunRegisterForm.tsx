@@ -266,7 +266,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
         email: data.receipt?.email || (applicantType === 'individual' ? individualData.email : delegationData.delegationHeadEmail),
         institution: data.receipt?.institution || (applicantType === 'individual' ? individualData.institution : delegationData.institution),
         phone: data.receipt?.phone || (applicantType === 'individual' ? individualData.phone : delegationData.delegationHeadPhone),
-        summary: data.receipt?.summary || (applicantType === 'individual' ? `1st Pref: ${prefName}` : `Institutional Delegation Roster (${delegationData.delegates.length} Delegates)`),
+        summary: data.receipt?.summary || (applicantType === 'individual' ? `1st Pref: ${prefName}` : `Entering as a delegation Roster (${delegationData.delegates.length} Delegates)`),
         feeAmount: data.receipt?.feeAmount,
         eventDates: data.receipt?.eventDates,
         venue: data.receipt?.venue,
@@ -319,7 +319,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
               }`}
             >
               <User className="w-3.5 h-3.5" />
-              <span>Individual Delegate</span>
+              <span>Individual entry</span>
             </button>
             <button
               type="button"

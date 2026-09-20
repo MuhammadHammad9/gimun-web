@@ -58,7 +58,7 @@ export default async function GimunOverviewPage() {
               </span>
             </div>
             <h2 className="font-heading font-bold text-xl text-white">
-              Diplomatic Fast Facts
+              At a glance
             </h2>
             <ul className="space-y-3 text-xs sm:text-sm text-text-2">
               <li className="flex items-start gap-2.5">
@@ -99,7 +99,7 @@ export default async function GimunOverviewPage() {
               Conference Mechanics
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-bold text-text mt-1">
-              How GIMUN Operates: The 4-Stage Cycle
+              How GIMUN works
             </h2>
             <p className="text-champagne/80 text-sm sm:text-base mt-2 leading-relaxed">
               Never attended a Model United Nations before? GIMUN is structured so that both first-time debaters and experienced veterans can participate effectively.
@@ -174,7 +174,7 @@ export default async function GimunOverviewPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Individual Delegate Card */}
+            {/* Individual entry Card */}
             <div className="double-bezel">
               <div className="double-bezel-inner p-8 space-y-4 border-l-4 border-l-champagne">
                 <div className="flex items-center justify-between">
@@ -186,7 +186,7 @@ export default async function GimunOverviewPage() {
                   </span>
                 </div>
                 <h3 className="font-heading font-bold text-2xl text-cream">
-                  Individual Delegate Entry
+                  Entering on your own
                 </h3>
                 <p className="text-sm text-champagne/80 leading-relaxed">
                   Ideal for independent delegates, high school seniors, and university scholars seeking solo committee allocation without requiring a registered institution delegation.
@@ -207,13 +207,13 @@ export default async function GimunOverviewPage() {
                 </ul>
                 <div className="pt-4 border-t border-champagne/20">
                   <Button variant="track-gimun" href="/register?track=gimun&type=individual">
-                    Register as Individual Delegate
+                    Register as Individual entry
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* Institutional Delegation Card */}
+            {/* Entering as a delegation Card */}
             <div className="double-bezel">
               <div className="double-bezel-inner p-8 space-y-4 border-l-4 border-l-champagne">
                 <div className="flex items-center justify-between">
@@ -225,10 +225,10 @@ export default async function GimunOverviewPage() {
                   </span>
                 </div>
                 <h3 className="font-heading font-bold text-2xl text-cream">
-                  Institutional Delegation
+                  Entering as a delegation
                 </h3>
                 <p className="text-sm text-champagne/80 leading-relaxed">
-                  Head Delegates and faculty advisors can register entire institutional squads in a single form submission, competing for the coveted Best Delegation Trophy.
+                  Head Delegates and faculty advisors can register entire institutional squads in a single form submission, competing for the coveted Best delegation.
                 </p>
                 <ul className="space-y-2 text-xs sm:text-sm text-cream font-medium pt-2">
                   <li className="flex items-center gap-2">
@@ -241,7 +241,7 @@ export default async function GimunOverviewPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-champagne" />
-                    <span>Contend for the Best Delegation Trophy</span>
+                    <span>Contend for the Best delegation</span>
                   </li>
                 </ul>
                 <div className="pt-4 border-t border-champagne/20">
@@ -265,7 +265,7 @@ export default async function GimunOverviewPage() {
                   Investment &amp; Inclusions
                 </span>
                 <h3 className="font-heading font-bold text-2xl text-text mt-0.5">
-                  Registration Fees &amp; Inclusions
+                  Fees and what they cover
                 </h3>
               </div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-semibold bg-champagne/20 text-champagne border border-champagne/30">
@@ -276,7 +276,7 @@ export default async function GimunOverviewPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-1">
-                <div className="text-xs font-mono text-champagne/70">Individual Delegate</div>
+                <div className="text-xs font-mono text-champagne/70">Individual entry</div>
                 <div className="text-2xl font-heading font-extrabold text-text">
                   {siteConfig.fees?.gimunIndividual}
                 </div>
@@ -284,7 +284,7 @@ export default async function GimunOverviewPage() {
               </div>
 
               <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-1">
-                <div className="text-xs font-mono text-champagne/70">Delegation Member Rate</div>
+                <div className="text-xs font-mono text-champagne/70">Rate per delegate</div>
                 <div className="text-2xl font-heading font-extrabold text-champagne">
                   {siteConfig.fees?.gimunDelegationPerDelegate}
                 </div>
@@ -357,7 +357,7 @@ export default async function GimunOverviewPage() {
                 Step into the Shoes of a Diplomat
               </span>
               <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream max-w-xl mx-auto">
-                Ready to Represent Your Country?
+                Ready to take a seat?
               </h2>
               <p className="text-sm text-champagne/80 max-w-lg mx-auto">
                 Registrations are processed on a rolling priority basis. Early submissions receive priority committee and country preferences.

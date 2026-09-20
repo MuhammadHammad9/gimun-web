@@ -59,7 +59,7 @@ export default async function MootCupOverviewPage() {
               </span>
             </div>
             <h2 className="font-heading font-bold text-xl text-white">
-              Advocacy Fast Facts
+              At a glance
             </h2>
             <ul className="space-y-3 text-xs sm:text-sm text-text-2">
               <li className="flex items-start gap-2.5">
@@ -106,7 +106,7 @@ export default async function MootCupOverviewPage() {
               Courtroom Procedure
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-bold text-text mt-1">
-              How GMC Operates: From Case Problem to the Bench
+              How the Moot Court works
             </h2>
             <p className="text-champagne/80 text-sm sm:text-base mt-2 leading-relaxed">
               Moot court simulates an appellate or constitutional judicial review proceeding. There are no witnesses or cross-examinations; advocates debate points of substantive law directly before the judges.
@@ -122,7 +122,7 @@ export default async function MootCupOverviewPage() {
                 <span className="text-xs font-mono font-bold text-champagne/70">01</span>
               </div>
               <h3 className="font-heading font-bold text-lg text-text">
-                Factual Case Problem (Compromis)
+                The case problem
               </h3>
               <p className="text-xs text-champagne/80 leading-relaxed">
                 Teams receive a detailed legal case problem presenting complex legal disputes across constitutional, international, or human rights law.
@@ -137,7 +137,7 @@ export default async function MootCupOverviewPage() {
                 <span className="text-xs font-mono font-bold text-champagne/70">02</span>
               </div>
               <h3 className="font-heading font-bold text-lg text-text">
-                Written Arguments (Memorials)
+                Written arguments
               </h3>
               <p className="text-xs text-champagne/80 leading-relaxed">
                 Draft two comprehensive legal briefs (Applicant and Respondent) following standard citation guidelines and institutional anonymity.
@@ -167,7 +167,7 @@ export default async function MootCupOverviewPage() {
                 <span className="text-xs font-mono font-bold text-champagne/70">04</span>
               </div>
               <h3 className="font-heading font-bold text-lg text-text">
-                Grand Final Bench
+                The final
               </h3>
               <p className="text-xs text-champagne/80 leading-relaxed">
                 Top teams advance through Quarter and Semi-Finals to argue before an expanded panel of High Court jurists on the Aga Khan Auditorium Main Stage.
@@ -188,7 +188,7 @@ export default async function MootCupOverviewPage() {
                     Eligibility Guidelines
                   </span>
                   <h3 className="font-heading font-bold text-2xl text-text mt-1">
-                    Team Composition &amp; Institution Criteria
+                    Who can enter
                   </h3>
                 </div>
                 <div className="text-xs font-mono px-3 py-1 rounded-full bg-champagne/20 border border-champagne/30 text-text font-bold self-start">
@@ -236,7 +236,7 @@ export default async function MootCupOverviewPage() {
                   Team Investment
                 </span>
                 <h3 className="font-heading font-bold text-2xl text-text mt-0.5">
-                  Registration Package &amp; Inclusions
+                  Fees and what they cover
                 </h3>
               </div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-semibold bg-elevated/70 border border-champagne-lo/40 text-champagne">
@@ -329,7 +329,7 @@ export default async function MootCupOverviewPage() {
                 Step Up to the Bar
               </span>
               <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream max-w-xl mx-auto">
-                Ready to Argue Before Senior Judges?
+                Ready to argue your case?
               </h2>
               <p className="text-sm text-champagne/80 max-w-lg mx-auto">
                 Early registration ensures timely receipt of team codes and priority access to the official clarifications process.

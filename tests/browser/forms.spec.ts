@@ -40,9 +40,13 @@ test.describe('public form interaction coverage', () => {
     await expect(page.getByText('Your Name is required')).toBeVisible();
 
     await page.goto('/moot-cup/clarifications');
-    await page.getByRole('button', { name: 'Submit Inquiry to Bench' }).click();
+    // The page now renders the shared ClarificationForm rather than its own
+    // inline copy, so the control and message come from that component.
+    await page.getByRole('button', { name: 'Submit question' }).click();
     await expect(
-      page.getByRole('alert').filter({ hasText: 'Team code, contact email, and clarification question are required.' }),
+      page
+        .getByRole('alert')
+        .filter({ hasText: 'Team ID, email, case-problem section and your question are all required.' }),
     ).toBeVisible();
   });
 

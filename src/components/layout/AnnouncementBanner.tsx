@@ -61,7 +61,10 @@ export function AnnouncementBanner({
   if (dismissed) return null;
 
   return (
-    <aside className="banner-collapse overflow-hidden border-b border-line bg-elevated text-white">
+    <aside
+      aria-label="Site announcement"
+      className="banner-collapse overflow-hidden border-b border-line bg-elevated text-white"
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5 text-xs font-medium sm:px-6 lg:px-8">
         <div className="flex items-center gap-2.5 truncate">
           <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/60 text-champagne">

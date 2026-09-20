@@ -149,19 +149,13 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                                 onClick={() => setActiveDropdown(null)}
                                 className="group block px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
                               >
-                                <div className="flex items-center justify-between text-xs font-semibold text-white group-hover:text-champagne transition-colors">
-                                  <span>{sub.label}</span>
-                                  {sub.trackBadge && (
-                                    <span
-                                      className={`text-[9px] font-mono px-1.5 py-0.5 rounded uppercase font-bold ${
-                                        sub.trackBadge === 'GIMUN'
-                                          ? 'bg-crimson/20 text-crimson-soft border border-crimson/40'
-                                          : 'bg-champagne/20 text-champagne border border-champagne/40'
-                                      }`}
-                                    >
-                                      {sub.trackBadge}
-                                    </span>
-                                  )}
+                                {/* No per-item track badge: the dropdown is
+                                    already scoped to one track, so repeating
+                                    it on every row said nothing. The old
+                                    implementation never rendered anyway —
+                                    the value was hard-coded to undefined. */}
+                                <div className="text-xs font-semibold text-white transition-colors group-hover:text-champagne">
+                                  {sub.label}
                                 </div>
                                 {sub.description && (
                                   <p className="text-[11px] text-white/60 leading-tight mt-0.5">

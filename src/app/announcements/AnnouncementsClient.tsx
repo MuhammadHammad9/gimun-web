@@ -48,7 +48,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
           <span>Live Dispatch Feed</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-heading font-extrabold text-cream tracking-tight">
-          Official Announcements &amp; Dispatches
+          Announcements
         </h1>
         <p className="text-sm sm:text-base text-champagne/80 leading-relaxed">
           Real-time notices, schedule adjustments, dais releases, and logistical bulletins issued directly by the GIMUN Secretariat and GMC Court Administration.
@@ -211,10 +211,10 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
           <div className="space-y-2 max-w-2xl">
             <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase text-champagne">
               <Radio className="w-4 h-4 text-champagne animate-pulse" />
-              <span>Delegation Broadcast Protocol</span>
+              <span>Delegation updates</span>
             </div>
             <h3 className="font-heading font-bold text-xl text-cream">
-              Registered Delegates &amp; Team Heads
+              Registered delegates and team heads
             </h3>
             <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
               All committee-specific directives and emergency room adjustments are mirrored to official Head Delegate WhatsApp groups during the conference days.

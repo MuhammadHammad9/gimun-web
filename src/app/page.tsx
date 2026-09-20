@@ -159,7 +159,7 @@ export default async function Home() {
         bullets={[
           'Four UN chambers and three appellate problem categories',
           'Merit-based allocation, reviewed by the Secretariat and the Bench',
-          'No online payment is collected at any stage',
+          'Enter on your own or as a university delegation',
         ]}
         eyebrow={
           <div className="inline-flex flex-wrap items-center justify-center gap-2.5">

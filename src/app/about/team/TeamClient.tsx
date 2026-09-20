@@ -125,7 +125,7 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
       </div>
 
       {/* Team Member Cards Grid */}
-      <h2 className="sr-only">Organizing Committee and Dais Directory</h2>
+      <h2 className="sr-only">Who runs the event</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMembers.map((member, idx) => {
           const groupMeta = GROUP_CONFIG[member.group] || GROUP_CONFIG["organizing-committee"];
@@ -252,10 +252,10 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
         <div className="relative z-10 space-y-1 text-center md:text-left">
           <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-champagne">
             <Award className="w-4 h-4 text-champagne" />
-            <span>Academic Rigor &amp; Student Leadership</span>
+            <span>Academic rigour and student leadership</span>
           </div>
           <h3 className="text-lg font-heading font-extrabold text-cream">
-            Governed by GIKI Student Debating &amp; Law Societies
+            Run by the GIKI debating and law societies
           </h3>
           <p className="text-xs text-champagne/80 max-w-xl">
             Our student directors, committee chairs, and bench evaluators are bound by institutional codes of strict neutrality, substantive integrity, and academic rigor.

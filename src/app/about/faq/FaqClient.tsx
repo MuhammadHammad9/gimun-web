@@ -1,18 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import {
   ChevronDown,
-  HelpCircle,
-  MessageSquare,
-  ArrowRight,
-} from 'lucide-react';
+  } from 'lucide-react';
 import type { FAQItem } from '@/lib/types';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { CtaBanner } from '@/components/ui/CtaBanner';
 import { FilterBar } from '@/components/ui/FilterBar';
+import { HelpCallout } from '@/components/ui/HelpCallout';
 
 interface FaqClientProps {
   initialFaqs: FAQItem[];
@@ -151,7 +147,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
 
       {/* Accordion FAQ List - Clean minimalist border-b divider architecture */}
       <div className="divide-y divide-champagne/15 border-y border-champagne/15">
-        <h2 className="sr-only">Frequently Asked Questions Directory</h2>
+        <h2 className="sr-only">Questions, by topic</h2>
         {filteredFaqs.map((faq) => {
           const isOpen = openIds.has(faq.id);
           return (
@@ -225,41 +221,10 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
       </div>
 
       {/* Still Have Questions CTA Banner */}
-      <CtaBanner variant="slab">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-
-        <div className="space-y-1.5 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-champagne">
-            <HelpCircle className="w-4 h-4 text-champagne" />
-            <span>Unanswered Inquiries?</span>
-          </div>
-          <h3 className="text-lg font-heading font-bold text-cream">
-            Can&apos;t find what you&apos;re looking for?
-          </h3>
-          <p className="text-xs text-champagne/80 max-w-xl">
-            Our Secretariat and Moot Court Bench are available to clarify delegation accommodations,
-            observer passes, or specialized committee rules.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3 shrink-0">
-          <Link
-            href="/contact?type=other"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest text-xs font-bold hover:brightness-110 transition-all shadow-md"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>Contact Secretariat</span>
-          </Link>
-          <Link
-            href="/register"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-crest border border-champagne/40 text-xs font-semibold text-champagne hover:bg-brand transition-colors"
-          >
-            <span>Register Now</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-        </div>
-      </CtaBanner>
+      <HelpCallout
+        question="Still haven't found your answer?"
+        actions={[{ label: 'Register', href: '/register' }]}
+      />
     </div>
   );
 }

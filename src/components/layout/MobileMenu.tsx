@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { X, ArrowRight } from 'lucide-react';
+import { X, ArrowRight, ChevronDown } from 'lucide-react';
 import { eventPhase } from '@/lib/phase';
 import { navigationTree } from '@/lib/navigation';
 import { useSiteConfig } from '@/components/SiteConfigProvider';
@@ -16,7 +16,9 @@ export interface MobileMenuProps {
 
 export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: MobileMenuProps) {
   const site=useSiteConfig();
-  const navigation = navigationTree(site.navigation, 'mobile');
+  // The full set, not the reduced header set: on a phone this menu is the
+  // only navigation, so anything that exists has to be reachable from it.
+  const navigation = navigationTree(site.navigation, 'footer');
   const menuRef = React.useRef<HTMLDivElement>(null);
   const closeButtonRef = React.useRef<HTMLButtonElement>(null);
 
@@ -106,7 +108,50 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
               Home
             </Link>
 
-            {navigation.map(item => item.dropdown.length ? <details key={item.id} className="py-2"><summary className="text-2xl font-bold cursor-pointer">{item.label}</summary><div className="pl-4 py-3 space-y-3">{item.dropdown.map(child => <Link key={child.id} href={child.href} onClick={onClose} className="block text-lg text-white/90">{child.label}</Link>)}</div></details> : <Link key={item.id} href={item.href} onClick={onClose} className="block text-2xl font-bold">{item.label}</Link>)}
+            {navigation.map((item) =>
+              item.dropdown.length ? (
+                <details key={item.id} className="group border-b border-white/5 py-2">
+                  <summary className="flex cursor-pointer list-none items-center justify-between text-2xl font-bold text-white/90 transition-colors hover:text-champagne">
+                    {item.label}
+                    <ChevronDown
+                      aria-hidden="true"
+                      className="h-5 w-5 text-white/40 transition-transform duration-200 group-open:rotate-180"
+                    />
+                  </summary>
+                  <div className="space-y-3 py-4 pl-1">
+                    {/* The section's own page. Without this the parent was a
+                        toggle only, and /gimun and /moot-cup could not be
+                        reached at all from a phone. */}
+                    <Link
+                      href={item.href}
+                      onClick={onClose}
+                      className="block text-lg font-medium text-champagne"
+                    >
+                      {item.label} overview
+                    </Link>
+                    {item.dropdown.map((child) => (
+                      <Link
+                        key={child.id}
+                        href={child.href}
+                        onClick={onClose}
+                        className="block text-lg text-white/80 transition-colors hover:text-white"
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                </details>
+              ) : (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  onClick={onClose}
+                  className="block border-b border-white/5 py-3 text-2xl font-bold text-white/90 transition-colors hover:text-champagne"
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
           </nav>
 
           {/* Persistent Bottom Action */}
@@ -119,7 +164,7 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
               onClick={onClose}
               icon={<ArrowRight className="w-4 h-4" />}
             >
-              {eventPhase(site)==='registration-open'?'Register Now (No Payment)':'Registration status'}
+              {eventPhase(site) === 'registration-open' ? 'Register' : 'Registration status'}
             </Button>
           </div>
     </div>

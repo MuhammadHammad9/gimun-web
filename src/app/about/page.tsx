@@ -3,20 +3,13 @@ import { getSiteConfig } from '@/lib/content';
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  Users,
   Compass,
   Scale,
   ArrowRight,
   ShieldCheck,
-  BookOpen,
-  Image as ImageIcon,
-  HelpCircle,
-  Briefcase,
-  MapPin,
-  CheckCircle2,
+  Image as CheckCircle2,
   Sparkles,
 } from "lucide-react";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Button } from "@/components/ui/Button";
 
 import { constructMetadata } from "@/lib/metadata";
@@ -33,7 +26,6 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 
 export default async function AboutOverviewPage() {
   const site=await getSiteConfig();
-  const eventYear = getEventYear(site);
   return (
     <div className="space-y-16">
       {/* 1. Atmospheric Dark Hero Header */}
@@ -79,7 +71,7 @@ export default async function AboutOverviewPage() {
               Institutional Stature
             </span>
             <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream">
-              The event at a glance
+              At a glance
             </h2>
           </div>
 
@@ -181,181 +173,30 @@ export default async function AboutOverviewPage() {
           </div>
         </section>
 
-        {/* 4. Sub-Pages Navigation Hub */}
-        <section className="space-y-6">
-          <div className="space-y-1">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
-              Institutional Directory
+        {/* The six-card "Institutional Directory" that sat here linked to Team,
+            Venue, FAQ, Sponsors, Gallery and Resources — the same six links
+            already in the About menu and the footer, so it was the third copy
+            on the page and pushed the actual content below the fold. The About
+            menu covers navigation; this page now only says what the event is. */}
+
+        <section className="surface flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+          <div className="flex items-start gap-4">
+            <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line bg-crest text-champagne">
+              <ShieldCheck aria-hidden="true" className="h-5 w-5" />
             </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
-              Directory, Guides &amp; Historical Archives
-            </h2>
-            <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
-              Inspect organizing leadership, review campus travel protocols, search the FAQ knowledge base, and access historical media archives.
+            <p className="max-w-2xl text-body text-text-3">
+              <span className="font-semibold text-text">
+                Run by GIKI Student Affairs.
+              </span>{' '}
+              Fees are paid through the institute&apos;s own banking channels. Nothing is
+              charged on this site.
             </p>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Card 1: Team */}
-            <ScrollReveal>
-              <Link href="/about/team" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <Users className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Organizing Leadership
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Meet the GIMUN Executive Secretariat, GMC Convening Committee, and Host Directorate operations heads.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>View Leadership Roster</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-
-            {/* Card 2: Venue */}
-            <ScrollReveal>
-              <Link href="/about/venue" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <MapPin className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Campus Venue &amp; Travel
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Directions to GIKI Topi, airport shuttle schedules, campus gate security clearance, and residential boarding.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>Explore Venue Guide</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-
-            {/* Card 3: FAQ */}
-            <ScrollReveal>
-              <Link href="/about/faq" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <HelpCircle className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Frequently Asked Questions
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Searchable answers covering delegate eligibility, memorial submission, dress code, security, and verification.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>Search Knowledge Base</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-
-            {/* Card 4: Sponsors */}
-            <ScrollReveal>
-              <Link href="/about/sponsors" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <Briefcase className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Sponsors &amp; Patrons
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Statutory patrons, legal chambers, government boards, and official {eventYear} Sponsorship Prospectus.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>View Partners &amp; Deck</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-
-            {/* Card 5: Gallery */}
-            <ScrollReveal>
-              <Link href="/about/gallery" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <ImageIcon className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Visual Archives &amp; Gallery
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Photographic archives covering crisis debates, appellate benches, campus life, and social galas.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>Browse Gallery</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-
-            {/* Card 6: Resources */}
-            <ScrollReveal>
-              <Link href="/resources" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <BookOpen className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Official Resources &amp; Rules
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Download committee study guides, moot court case problems, citation guides, and delegate kits.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>Access Downloads</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* 5. Institutional Governance & Zero-Payment Disclosure */}
-        <section className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-crest text-champagne flex items-center justify-center shrink-0 mt-0.5 border border-champagne/20">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <h4 className="text-base font-heading font-bold text-cream">
-                Official Institutional Governance &amp; Manual Payment Notice
-              </h4>
-              <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl leading-relaxed">
-                Organized under the auspices of GIKI Student Affairs. All delegate registration fees are processed exclusively through official GIKI institutional banking channels with manual verification. Zero online commercial transactions occur on this platform.
-              </p>
-            </div>
-          </div>
           <Link
-            href="/about/faq"
-            className="shrink-0 px-4 py-2.5 rounded-xl bg-crest border border-champagne/30 text-champagne hover:bg-brand hover:text-cream text-xs font-mono font-bold transition-colors"
+            href="/about/faq#fees"
+            className="shrink-0 rounded-xl border border-line-2 px-4 py-2.5 text-sm font-medium text-champagne transition-colors hover:border-line-3 hover:bg-champagne/5"
           >
-            Payment FAQ &rarr;
+            Fees &amp; payment
           </Link>
         </section>
 

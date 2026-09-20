@@ -210,7 +210,7 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
             </span>
           </div>
           <h2 className="text-2xl font-heading font-bold text-cream">
-            Interactive Venue &amp; Chamber Directory
+            Rooms and facilities
           </h2>
           <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
             Explore the specialized academic arenas, courtrooms, residential hostels, and dining halls
@@ -316,7 +316,7 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
             </span>
           </div>
           <h2 className="text-2xl font-heading font-bold text-cream">
-            Reaching GIKI Topi from Outstation
+            Getting to GIKI
           </h2>
           <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
             Detailed guidance for national and international delegations arriving by air, motorway, or intercity coaches.
@@ -338,7 +338,7 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
               <Plane className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-xs font-bold text-cream block">By Commercial Flight</span>
+              <span className="text-xs font-bold text-cream block">By air</span>
               <span className="text-[11px] text-champagne/70">Via Islamabad Airport (ISB)</span>
             </div>
           </button>
@@ -386,7 +386,7 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
             <div className="space-y-3">
               <h3 className="text-base font-heading font-bold text-cream flex items-center gap-2">
                 <Plane className="w-4 h-4 text-champagne" />
-                <span>Flight Arrival Protocol — Islamabad International Airport (ISB)</span>
+                <span>Arriving by air — Islamabad International Airport (ISB)</span>
               </h3>
               <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
                 Islamabad International Airport (ISB) is the closest commercial airport, located approximately 110 km
@@ -406,7 +406,7 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
             <div className="space-y-3">
               <h3 className="text-base font-heading font-bold text-cream flex items-center gap-2">
                 <Bus className="w-4 h-4 text-champagne" />
-                <span>Intercity Bus &amp; Coach Terminals</span>
+                <span>Arriving by bus</span>
               </h3>
               <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
                 Delegations traveling via Daewoo Express, Faisal Movers, or Bilal Travels can arrive at Rawalpindi/Islamabad
@@ -425,7 +425,7 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
             <div className="space-y-3">
               <h3 className="text-base font-heading font-bold text-cream flex items-center gap-2">
                 <Car className="w-4 h-4 text-champagne" />
-                <span>Driving Directions via M-1 Motorway</span>
+                <span>Driving</span>
               </h3>
               <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
                 From Islamabad/Rawalpindi or Peshawar, take the M-1 Motorway. Take the <strong>Swabi Interchange (Exit 5)</strong>.
@@ -446,7 +446,7 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
       <section className="p-6 md:p-8 rounded-2xl bg-overlay/90 border border-champagne/30 shadow-xl space-y-4 text-left">
         <div className="flex items-center gap-2 text-champagne font-bold font-heading text-base">
           <ShieldAlert className="w-5 h-5 text-champagne" />
-          <span>Campus Security Protocols &amp; Identification Clearance</span>
+          <span>Security and ID</span>
         </div>
         <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
           GIKI maintains rigorous perimeter and gate protocols to ensure maximum security for all visiting students.
@@ -471,7 +471,7 @@ export function VenueClient({ siteConfig }: VenueClientProps) {
       {/* SECTION 4: Emergency Contacts & Local Essentials */}
       <section className="space-y-4 pt-2">
         <h2 className="text-xl font-heading font-bold text-cream">
-          On-Campus Essentials &amp; Emergency Contacts
+          On campus
         </h2>
         <div className="grid sm:grid-cols-3 gap-4">
           <div className="p-5 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-2">

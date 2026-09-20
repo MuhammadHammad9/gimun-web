@@ -108,7 +108,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
             Substantive Agenda
           </span>
           <h2 className="text-2xl font-heading font-bold text-cream mt-0.5">
-            Committee Topics &amp; Dossiers
+            Topics
           </h2>
         </div>
 
@@ -133,14 +133,14 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
         </div>
       </section>
 
-      {/* Dais Leadership */}
+      {/* Chairs */}
       <section className="space-y-6">
         <div className="border-b border-champagne/20 pb-3">
           <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
             Adjudication &amp; Governance
           </span>
           <h2 className="text-2xl font-heading font-bold text-cream mt-0.5">
-            Dais Leadership
+            Chairs
           </h2>
         </div>
 
@@ -173,7 +173,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
               Portfolio Allocations
             </span>
             <h2 className="text-2xl font-heading font-bold text-cream mt-0.5">
-              Live Country Allocation Matrix
+              Country allocation
             </h2>
           </div>
           <p className="text-xs text-champagne/70">

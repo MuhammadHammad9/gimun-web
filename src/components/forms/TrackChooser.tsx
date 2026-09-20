@@ -71,7 +71,7 @@ export function TrackChooser({
           <div className="space-y-2.5 pt-3 border-t border-champagne/15">
             <div className="flex items-center gap-2.5 text-xs text-champagne/85">
               <Users className="w-4 h-4 text-crimson-soft shrink-0" />
-              <span><strong className="text-text">Applicant Modes:</strong> Individual Delegate or Institutional Delegation</span>
+              <span><strong className="text-text">Applicant Modes:</strong> Individual entry or Entering as a delegation</span>
             </div>
             <div className="flex items-center gap-2.5 text-xs text-champagne/85">
               <Award className="w-4 h-4 text-crimson-soft shrink-0" />

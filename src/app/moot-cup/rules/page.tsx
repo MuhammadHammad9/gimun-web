@@ -26,7 +26,7 @@ export default async function MootRulesPage() {
       <PageHero
         variant="moot"
         breadcrumbs={[{ label: 'GMC', href: '/moot-cup' }, { label: 'Rules & Memorials' }]}
-        title={'Rules & Written Arguments (Memorials)'}
+        title={'Rules & Written arguments'}
         eyebrow={
           <div className="flex items-center gap-2">
                       <TrackBadge track="moot-cup" />

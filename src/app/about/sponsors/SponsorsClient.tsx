@@ -71,7 +71,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
             Partner Value Proposition
           </span>
           <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream">
-            Why Sponsor GIMUN &amp; GMC?
+            Why sponsor us?
           </h2>
           <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl leading-relaxed">
             Direct access to Pakistan&apos;s most articulate, legally minded, and ambitious student leaders,
@@ -89,7 +89,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
         <div className="space-y-2 text-center md:text-left">
           <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-champagne">
             <Sparkles className="w-4 h-4 text-champagne" />
-            <span>Corporate Partnerships Deck</span>
+            <span>Sponsorship pack</span>
           </span>
           <h3 className="text-xl sm:text-2xl font-heading font-bold text-cream">
             Download the {eventYear} Sponsorship Prospectus
@@ -126,7 +126,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
             Institutional Roster
           </span>
           <h2 className="text-2xl font-heading font-bold text-cream">
-            Current Edition Sponsors &amp; Patrons
+            This year&apos;s sponsors
           </h2>
           <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
             We express our deepest gratitude to our statutory patrons, government boards, and legal institutions.
