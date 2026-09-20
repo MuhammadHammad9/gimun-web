@@ -101,6 +101,15 @@ async function runE2ETests() {
         ALLOW_IN_MEMORY_SUBMISSIONS: '1',
         SUBMISSIONS_TEST_MODE: '1',
         SITE_URL: `http://127.0.0.1:${port}`,
+        // Force the in-memory rate limiter. SUBMISSIONS_BACKEND only isolates
+        // the submission store; the limiter reads these two variables
+        // directly, so with real credentials inherited from .env.local its
+        // counters lived in shared Redis and survived between runs. Test 7
+        // deliberately bursts until it is throttled, which then left no budget
+        // for the contact test on any run inside the ten-minute window — the
+        // suite could only pass once every ten minutes.
+        UPSTASH_REDIS_REST_URL: '',
+        UPSTASH_REDIS_REST_TOKEN: '',
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
