@@ -47,7 +47,9 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
   const sourcePath = useRef(pathname);
   const coveredAt = useRef(0);
   const failsafe = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const firstRender = useRef(true);
+  // The pathname last seen by the arrival effect (safe under StrictMode's
+  // double effect run, unlike a first-render flag).
+  const seenPath = useRef(pathname);
 
   const openCurtain = useCallback(async (fast = false) => {
     if (!busy.current) return;
@@ -120,10 +122,8 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
   // The new page arrived: open the curtain. Without a curtain (reduced
   // motion, Back/Forward), still move focus to the new content.
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
+    if (pathname === seenPath.current) return;
+    seenPath.current = pathname;
     if (busy.current) {
       if (pathname !== sourcePath.current) void openCurtain();
       return;
