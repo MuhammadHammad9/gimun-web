@@ -20,10 +20,7 @@ export function AnnouncementBanner({
   linkText = 'Read Announcement',
   linkHref = '/announcements',
 }: AnnouncementBannerProps) {
-  const displayMessage =
-    announcement?.title ||
-    message ||
-    'Early Bird Registration now open for delegations and moot court teams.';
+  const displayMessage = announcement?.title || message || '';
   const targetHref =
     announcement?.actionUrl ||
     (announcement?.id ? `/announcements#${announcement.id}` : linkHref);
@@ -60,8 +57,15 @@ export function AnnouncementBanner({
   // framer-motion out of the site chrome keeps it out of every page's bundle.
   if (dismissed || (!announcement && !message)) return null;
 
+  // Runs while the HTML is parsed, before first paint, so a visitor who
+  // already dismissed this notice never sees it appear and then vanish.
+  const hideIfDismissed = `try{if(localStorage.getItem(${JSON.stringify(storageKey).replace(/</g, '\\u003c')})==='true')document.documentElement.dataset.bannerDismissed='1'}catch(e){}`;
+
   return (
+    <>
+    <script dangerouslySetInnerHTML={{ __html: hideIfDismissed }} />
     <aside
+      data-announcement-banner=""
       aria-label="Site announcement"
       className="banner-collapse overflow-hidden border-b border-line bg-elevated text-white"
     >
@@ -89,5 +93,6 @@ export function AnnouncementBanner({
         </button>
       </div>
     </aside>
+    </>
   );
 }

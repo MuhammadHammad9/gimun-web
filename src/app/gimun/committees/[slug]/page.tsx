@@ -1,6 +1,6 @@
 import { getSiteConfig } from '@/lib/content';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { TrackBadge } from '@/components/ui/TrackBadge';
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: CommitteePageProps): Promise<
   return (await constructMetadata({
     title: `${committee.name} | GIMUN ${getEventYear(await getSiteConfig())} Committee Dossier`,
     description: committee.shortDescription,
-    path: `/gimun/committees/${slug}`,
+    path: `/gimun/committees/${committee.slug}`,
   }));
 }
 
@@ -48,6 +48,10 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
 
   if (!committee) {
     notFound();
+  }
+  // Old links may use the internal id (com-unsc); send them to the one canonical URL.
+  if (committee.slug !== slug) {
+    permanentRedirect(`/gimun/committees/${committee.slug}`);
   }
 
   const documents = (await getDocuments());

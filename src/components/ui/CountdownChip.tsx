@@ -1,9 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useSyncExternalStore } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-
-const emptySubscribe = () => () => {};
 
 export interface CountdownChipProps {
   /** ISO date, e.g. "2027-03-18". */
@@ -33,17 +31,13 @@ export function CountdownChip({
   eventName = 'GIMUN & GMC',
   className,
 }: CountdownChipProps) {
-  const mounted = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
-
+  // Null until the first effect: the real value is computed before anything
+  // but the placeholder renders, so "0d 0h" never flashes.
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
     hours: number;
     status: Status;
-  }>({ days: 0, hours: 0, status: 'upcoming' });
+  } | null>(null);
 
   useEffect(() => {
     const updateTimer = () => {
@@ -78,7 +72,7 @@ export function CountdownChip({
   }, [startDate, endDate]);
 
   // Reserve the row height before hydration so nothing shifts.
-  if (!mounted) {
+  if (!timeLeft) {
     return <div aria-hidden="true" className={cn(SHELL, 'invisible', className)}>&nbsp;</div>;
   }
 

@@ -70,7 +70,11 @@
   --color-err: #f43f5e;
 
   /* --- Typography ----------------------------------------------------------- */
-  --font-display: var(--font-display), "Satoshi", system-ui, sans-serif;
+  /* next/font exposes the face as --font-satoshi. It must not share the
+     theme token's name, or the token would reference itself and resolve to
+     nothing. `font-heading` is kept as an alias because components use it. */
+  --font-display: var(--font-satoshi), "Satoshi", system-ui, sans-serif;
+  --font-heading: var(--font-satoshi), "Satoshi", system-ui, sans-serif;
   --font-body: var(--font-body-sans), "General Sans", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
@@ -500,7 +504,13 @@ h1, h2, h3, h4, h5, h6 {
   animation: marquee 35s linear infinite;
 }
 
-.animate-marquee:hover {
+html[data-banner-dismissed] [data-announcement-banner] {
+  display: none;
+}
+
+.animate-marquee:hover,
+.marquee-clip:focus-within .animate-marquee,
+.marquee-pause:checked ~ .marquee-clip .animate-marquee {
   animation-play-state: paused;
 }
 

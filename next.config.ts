@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
     qualities: [75, 85, 90, 100],
     remotePatterns: process.env.NEXT_PUBLIC_SUPABASE_URL ? [{ protocol: 'https', hostname: new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname, pathname: '/storage/v1/object/public/media/**' }] : [],
   },
+  // Short URLs for posters, QR codes and social bios.
+  async redirects() {
+    return [
+      { source: '/apply', destination: '/register', permanent: false },
+      { source: '/go', destination: '/register', permanent: false },
+    ];
+  },
   async headers() {
     return [{ source: '/:path*', headers: [
       { key: 'X-Content-Type-Options', value: 'nosniff' },

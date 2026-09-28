@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,7 @@ export interface SponsorStripProps {
  * duplicate is inert.
  */
 export function SponsorStrip({ sponsors, title, className }: SponsorStripProps) {
+  const pauseId = useId();
   if (!sponsors || sponsors.length === 0) {
     return null;
   }
@@ -37,6 +38,13 @@ export function SponsorStrip({ sponsors, title, className }: SponsorStripProps) 
         </p>
       )}
 
+      {/* WCAG 2.2.2: moving content needs a pause control. CSS-only, so the
+          strip stays a server component. */}
+      <input
+        id={pauseId}
+        type="checkbox"
+        className="marquee-pause peer sr-only"
+      />
       <div className="marquee-clip mask-gradient">
         <div className="animate-marquee flex items-center gap-14 sm:gap-20">
           {lane.map((sponsor, idx) => {
@@ -57,6 +65,7 @@ export function SponsorStrip({ sponsors, title, className }: SponsorStripProps) 
                   alt={isDuplicate ? '' : sponsor.name}
                   width={400}
                   height={140}
+                  sizes="160px"
                   loading="lazy"
                   className="h-8 w-auto opacity-45 transition-opacity duration-300 group-hover:opacity-90 sm:h-9"
                 />
@@ -64,6 +73,16 @@ export function SponsorStrip({ sponsors, title, className }: SponsorStripProps) 
             );
           })}
         </div>
+      </div>
+      {/* peer-* variants reach sibling elements only, so they sit on this
+          wrapper and style the label through it. */}
+      <div className="mt-4 flex justify-center peer-checked:[&>label]:text-text-2 peer-focus-visible:[&>label]:ring-2 peer-focus-visible:[&>label]:ring-champagne">
+        <label
+          htmlFor={pauseId}
+          className="inline-flex min-h-8 cursor-pointer items-center rounded-full px-3 font-mono text-[11px] uppercase tracking-wider text-text-4 transition-colors hover:text-text-2"
+        >
+          Pause logo animation
+        </label>
       </div>
     </div>
   );

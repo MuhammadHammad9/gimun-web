@@ -11,7 +11,7 @@ import { serverRenderTime } from '@/lib/phase';
 
 const satoshi = localFont({
   src: '../assets/fonts/Satoshi-Variable.woff2',
-  variable: '--font-display',
+  variable: '--font-satoshi',
   display: 'swap',
   weight: '300 900',
 });

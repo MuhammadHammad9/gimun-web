@@ -3,6 +3,7 @@ import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   MapPin,
   Calendar,
@@ -13,6 +14,7 @@ import LogoIcon from "@/assets/logo-icon";
 import type { SiteConfig, Sponsor } from "@/lib/types";
 import { formatDateRange } from "@/lib/utils";
 import { getEventYear } from "@/lib/site-config";
+import { SponsorStrip } from "@/components/ui/SponsorStrip";
 
 export interface FooterColumnLink {
   label: string;
@@ -32,39 +34,30 @@ export interface Footer27Props {
 
 
 export function Footer27({
-  siteConfig,
+  siteConfig: siteConfigProp,
+  sponsors = [],
   brandName,
 }: Footer27Props) {
   const liveSite = useSiteConfig();
+  const siteConfig = siteConfigProp || liveSite;
   const columns = footerColumns;
-  const eventYear = getEventYear(siteConfig || liveSite);
-  const resolvedBrandName = brandName || siteConfig?.eventNames?.combined || `GIMUN & GMC ${eventYear}`;
+  // These pages already feature the partners prominently.
+  const pathname = usePathname();
+  const showPartners = sponsors.length > 0 && pathname !== '/' && !pathname.startsWith('/about/sponsors');
+  const eventYear = getEventYear(siteConfig);
+  const resolvedBrandName = brandName || siteConfig.eventNames?.combined || `GIMUN & GMC ${eventYear}`;
+  // Only accounts the organizers have configured. Guessed handles send
+  // visitors to profiles that may belong to someone else.
   const socialIcons = [
-    {
-      icon: Facebook,
-      label: "Facebook",
-      href: siteConfig?.socialLinks?.facebook || "https://facebook.com/gimunofficial",
-    },
-    {
-      icon: Twitter,
-      label: "Twitter",
-      href: "https://twitter.com/gimun_giki",
-    },
-    {
-      icon: Instagram,
-      label: "Instagram",
-      href: siteConfig?.socialLinks?.instagram || "https://instagram.com/gimun_giki",
-    },
-    {
-      icon: Linkedin,
-      label: "LinkedIn",
-      href: siteConfig?.socialLinks?.linkedin || "https://linkedin.com/company/gimun-mootcup",
-    },
-  ];
+    { icon: Facebook, label: "Facebook", href: siteConfig.socialLinks?.facebook },
+    { icon: Twitter, label: "X (Twitter)", href: siteConfig.socialLinks?.twitter },
+    { icon: Instagram, label: "Instagram", href: siteConfig.socialLinks?.instagram },
+    { icon: Linkedin, label: "LinkedIn", href: siteConfig.socialLinks?.linkedin },
+  ].filter((item): item is typeof item & { href: string } => Boolean(item.href));
 
   return (
     <footer
-      className="relative w-full overflow-hidden bg-void font-sans antialiased selection:bg-champagne selection:text-void border-t border-champagne/20 pt-12 pb-6"
+      className="relative w-full overflow-hidden bg-void font-body antialiased selection:bg-champagne selection:text-void border-t border-champagne/20 pt-12 pb-6"
       aria-label="Site footer"
     >
       {/* ── Main Footer Content ─────────────────────────────────────────── */}
@@ -85,22 +78,23 @@ export function Footer27({
             </div>
 
             <p className="max-w-[320px] text-xs sm:text-[13px] leading-relaxed text-pretty text-text-3">
-              {siteConfig?.footerBlurb || 'Student diplomacy and legal advocacy at GIKI, Topi.'}
+              {siteConfig.footerBlurb || 'Student diplomacy and legal advocacy at GIKI, Topi.'}
             </p>
 
             {/* Quick Metadata Badges */}
             <div className="flex flex-col gap-2 pt-1 text-xs text-text-3 font-mono">
               <div className="flex items-center gap-2">
                 <Calendar className="size-3.5 text-brand-soft shrink-0" />
-                <span>{formatDateRange(siteConfig?.eventDates?.start, siteConfig?.eventDates?.end)}</span>
+                <span>{formatDateRange(siteConfig.eventDates.start, siteConfig.eventDates.end)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="size-3.5 text-champagne shrink-0" />
-                <span>GIKI Campus, Topi, Khyber Pakhtunkhwa</span>
+                <span>{siteConfig.venue}</span>
               </div>
             </div>
 
             {/* Social Icons Strip */}
+            {socialIcons.length > 0 && (
             <div className="flex items-center gap-2 pt-2">
               {socialIcons.map(({ icon: Icon, label, href }) => (
                 <a
@@ -108,13 +102,14 @@ export function Footer27({
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={label}
+                  aria-label={`${label} (opens in a new tab)`}
                   className="flex size-9 items-center justify-center rounded-full bg-raised text-text-3 shadow-[0_0_0_1px_rgba(236,216,183,0.12)] transition-all duration-150 hover:bg-brand/40 hover:text-champagne hover:shadow-[0_0_0_1px_rgba(236,216,183,0.3)] hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-champagne focus-visible:outline-none"
                 >
-                  <Icon className="size-4" />
+                  <Icon aria-hidden="true" className="size-4" />
                 </a>
               ))}
             </div>
+            )}
           </div>
 
           {/* Navigation columns — 8 cols */}
@@ -150,6 +145,13 @@ export function Footer27({
             ))}
           </nav>
         </div>
+
+        {/* ── Partners ───────────────────────────────────────────────────── */}
+        {showPartners && (
+          <div className="mt-12 border-t border-champagne/10 pt-8">
+            <SponsorStrip sponsors={sponsors} title="Partners" />
+          </div>
+        )}
 
         {/* ── Meta & Legal Section ─────────────────────────────────────── */}
         <div

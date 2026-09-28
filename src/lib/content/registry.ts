@@ -13,7 +13,7 @@ export const siteSchema = z.object({
   eventNames: z.object({ gimun: required, mootCup: required, combined: required }),
   hostInstitution: required, eventDates: z.object({ start: date, end: date }),
   registrationDeadlines: z.object({ gimun: date, mootCup: date }), venue: required,
-  socialLinks: z.object({ instagram: link.optional(), facebook: link.optional(), linkedin: link.optional() }),
+  socialLinks: z.object({ instagram: link.optional(), facebook: link.optional(), linkedin: link.optional(), twitter: link.optional() }),
   contactEmails: z.object({ general: email, gimun: email.optional(), mootCup: email.optional(), sponsorship: email.optional() }),
   fees: z.object({ gimunIndividual: required, gimunDelegationPerDelegate: required, mootCupTeam: required }),
   registrationStatus: z.object({ gimunOpen: z.boolean(), mootCupOpen: z.boolean() }),

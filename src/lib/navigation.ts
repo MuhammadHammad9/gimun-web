@@ -194,6 +194,7 @@ export const footerColumns: FooterColumn[] = [
   {
     title: 'Event',
     links: [
+      { label: 'Register', href: '/register' },
       { label: 'Schedule', href: '/schedule' },
       { label: 'Resources', href: '/resources' },
       { label: 'Venue & travel', href: '/about/venue' },
