@@ -7,6 +7,7 @@ import { getSiteConfig, getAnnouncements, getSponsors } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { getAnalyticsMeasurementId } from '@/lib/site-config';
+import { serverRenderTime } from '@/lib/phase';
 
 const satoshi = localFont({
   src: '../assets/fonts/Satoshi-Variable.woff2',
@@ -50,6 +51,9 @@ export default async function RootLayout({
   const announcements = (await getAnnouncements());
   const sponsors = (await getSponsors());
 
+  // Frozen per render so every client component agrees with this HTML.
+  const renderedAt = serverRenderTime();
+
   const activeAnnouncement =
     announcements.find((a) => a.pinnedFlag) || announcements[0];
 
@@ -57,7 +61,7 @@ export default async function RootLayout({
     <html lang="en" className={`${satoshi.variable} ${generalSans.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen flex flex-col bg-canvas text-text antialiased selection:bg-champagne selection:text-canvas">
         <GoogleAnalytics measurementId={getAnalyticsMeasurementId()} />
-        <SiteConfigProvider value={siteConfig}>
+        <SiteConfigProvider value={siteConfig} renderedAt={renderedAt}>
           <SiteChrome site={siteConfig} announcement={activeAnnouncement} sponsors={sponsors}>
             {children}
           </SiteChrome>

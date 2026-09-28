@@ -13,8 +13,13 @@ export async function generateMetadata(): Promise<Metadata> { return await const
     "Reach out to our organizing team for inquiries regarding committee allocations, case problems, partnerships, or logistics.",
 }); }
 
-export default async function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string | string[] }>;
+}) {
   const config = (await getSiteConfig());
+  const { type } = await searchParams;
 
   return (
     <div className="space-y-12">
@@ -39,10 +44,6 @@ export default async function ContactPage() {
           <>
             <div className="flex flex-wrap items-center gap-6 pt-1 text-xs font-mono text-champagne/80">
                         <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-champagne animate-pulse" />
-                          <span>Secretariat Inquiries Active</span>
-                        </div>
-                        <div className="flex items-center gap-2">
                           <Clock className="w-3.5 h-3.5 text-champagne" />
                           <span>{config.checkinDesk || 'Contact us for current desk hours'}</span>
                         </div>
@@ -60,7 +61,7 @@ export default async function ContactPage() {
         <div className="grid lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Interactive Contact Form (7 cols) */}
           <div className="lg:col-span-7">
-            <ContactForm />
+            <ContactForm initialType={typeof type === 'string' ? type : ''} />
           </div>
 
           {/* Right Column: Directorate Channels & Campus Venue (5 cols) */}
@@ -73,7 +74,7 @@ export default async function ContactPage() {
                   <span>Who to email</span>
                 </h2>
                 <p className="text-xs text-champagne/75">
-                  Direct emails monitored continuously by corresponding directorate heads.
+                  Email the team that owns your question, or use the form.
                 </p>
               </div>
 
@@ -160,7 +161,7 @@ export default async function ContactPage() {
             <div className="p-4 rounded-xl bg-overlay/90 border border-champagne/25 text-xs text-champagne/90 flex items-start gap-2.5 shadow-md">
               <ShieldCheck className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
               <span>
-                All inquiries are processed under strict institutional privacy protocols. You will receive an automated tracking reference upon submission.
+                Messages are handled as described in our <a href="/privacy" className="underline underline-offset-2 hover:text-cream">privacy notice</a> and used only to answer your question.
               </span>
             </div>
           </div>

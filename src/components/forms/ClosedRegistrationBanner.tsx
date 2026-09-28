@@ -1,11 +1,11 @@
 'use client';
 
-import { useSiteConfig } from '@/components/SiteConfigProvider';
+import { useRenderedAt, useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React from 'react';
 import Link from 'next/link';
 import { Lock, Mail, Calendar, FileText, ArrowRight, RefreshCw } from 'lucide-react';
-import { getEventYear } from '@/lib/site-config';
+import { formatEventDate, getEventYear, isRegistrationDeadlinePassed } from '@/lib/site-config';
 
 interface ClosedRegistrationBannerProps {
   track?: 'gimun' | 'moot-cup' | 'all';
@@ -19,6 +19,10 @@ export function ClosedRegistrationBanner({
   onSwitchTrack,
 }: ClosedRegistrationBannerProps) {
   const eventYear = getEventYear(useSiteConfig());
+  const renderedAt = useRenderedAt();
+  // A future deadline means registration is paused or not open yet, not over.
+  const deadlinePassed = deadline ? isRegistrationDeadlinePassed(deadline, renderedAt) : true;
+  const deadlineLabel = deadline ? formatEventDate(deadline) : null;
   const isMoot = track === 'moot-cup';
   const isGimun = track === 'gimun';
 
@@ -36,14 +40,15 @@ export function ClosedRegistrationBanner({
 
       <div className="space-y-2">
         <span className="px-3.5 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-brand-deep/70 text-crimson-soft border border-brand/60">
-          Registrations Concluded
+          {deadlinePassed ? 'Registration closed' : 'Not open right now'}
         </span>
         <h2 className="text-2xl md:text-3xl font-heading font-extrabold text-cream">
-          {trackTitle} Registration Closed
+          {trackTitle} registration {deadlinePassed ? 'is closed' : 'is not open'}
         </h2>
         <p className="text-sm text-champagne/80 max-w-lg mx-auto leading-relaxed">
-          The official submission deadline {deadline ? `of ${deadline}` : ''} has passed or committee/bench
-          capacity has been fully committed. New delegate allocations are no longer being accepted through this portal.
+          {deadlinePassed
+            ? `The registration deadline${deadlineLabel ? ` (${deadlineLabel})` : ''} has passed, so this portal is no longer accepting applications.`
+            : `Applications are not being accepted at the moment${deadlineLabel ? `; the current deadline is ${deadlineLabel}` : ''}. Check announcements for when registration opens.`}
         </p>
       </div>
 
@@ -93,7 +98,7 @@ export function ClosedRegistrationBanner({
             <ArrowRight className="w-3.5 h-3.5 text-champagne/60 group-hover:translate-x-0.5 transition-transform" />
           </div>
           <p className="text-[11px] text-champagne/70 leading-snug">
-            Download RoP handbooks, compromise files, and prep guides.
+            Download rules, the moot problem (compromis) and prep guides.
           </p>
         </Link>
       </div>

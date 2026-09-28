@@ -10,6 +10,7 @@ import { Download, ArrowLeft } from 'lucide-react';
 import { getCommittees, getCommitteeBySlug, getDocuments } from '@/lib/content';
 
 import { constructMetadata } from '@/lib/metadata';
+import { canRegister } from '@/lib/phase';
 import { getEventYear } from '@/lib/site-config';
 
 interface CommitteePageProps {
@@ -43,6 +44,7 @@ export async function generateMetadata({ params }: CommitteePageProps): Promise<
 export default async function CommitteeDetailPage({ params }: CommitteePageProps) {
   const { slug } = await params;
   const committee = (await getCommitteeBySlug(slug));
+  const open = canRegister(await getSiteConfig(), 'gimun');
 
   if (!committee) {
     notFound();
@@ -87,7 +89,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
             variant="track-gimun"
             href={`/register?track=gimun&committee=${committee.slug}`}
           >
-            Apply for this Committee
+            {open ? 'Apply for this Committee' : 'Registration status'}
           </Button>
           {backgroundGuide && (
             <Button
@@ -198,7 +200,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           variant="track-gimun"
           href={`/register?track=gimun&committee=${committee.slug}`}
         >
-          Proceed to Registration
+          {open ? 'Proceed to Registration' : 'Registration status'}
         </Button>
       </div>
     </div>

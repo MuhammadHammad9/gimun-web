@@ -49,6 +49,7 @@ export function ClarificationForm() {
           name: `Advocate of ${teamId.trim()}`,
           email: teamEmail.trim(),
           queryType: 'moot-cup',
+          kind: 'clarification',
           message: `[GMC Compromis Clarification]\nCompromis Citation: ${paragraphRef.trim()}\n\nQuestion:\n${questionText.trim()}`,
           _hp: honeypot,
           _ts: formLoadedAt.current,

@@ -15,6 +15,7 @@ import { validateMootCupTeam, type ValidationErrors } from '@/lib/validation';
 import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
 import { NonPaymentNotice } from './NonPaymentNotice';
+import { FormErrorSummary, focusFirstError } from './FormErrorSummary';
 import { PrivacyStatement } from './PrivacyStatement';
 import { getEventYear } from '@/lib/site-config';
 
@@ -138,11 +139,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
 
     if (Object.keys(validationResult).length > 0) {
       setErrors(validationResult);
-      const firstErrorKey = Object.keys(validationResult)[0];
-      const el = document.getElementById(`field-${firstErrorKey}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      focusFirstError(validationResult);
       return;
     }
 
@@ -171,6 +168,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         setStatus('error');
         if (data.errors) {
           setErrors(data.errors);
+          focusFirstError(data.errors);
         } else {
           setServerError(data.message || 'An unexpected error occurred. Please try again.');
         }
@@ -226,7 +224,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
       </div>
 
       {serverError && (
-        <div className="p-4 rounded-xl bg-brand-deep/80 border border-brand text-crimson-soft flex items-start gap-3">
+        <div role="alert" className="p-4 rounded-xl bg-brand-deep/80 border border-brand text-crimson-soft flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-crimson-hi shrink-0 mt-0.5" />
           <div className="text-xs space-y-1">
             <span className="font-bold block">Submission Error</span>
@@ -579,6 +577,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
 
       {/* Submit Action Block */}
       <div className="space-y-4 pt-3 border-t border-champagne/15">
+        <FormErrorSummary errors={errors} />
         <button
           type="submit"
           disabled={status === 'submitting'}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ChevronDown,
   } from 'lucide-react';
@@ -15,6 +15,16 @@ interface FaqClientProps {
 }
 
 type FaqCategory = 'all' | 'general' | 'registration-fees' | 'gimun-specific' | 'moot-cup-specific' | 'logistics';
+
+/** Deep-link hashes that select a category, e.g. /about/faq#fees. */
+const HASH_CATEGORIES: Record<string, FaqCategory> = {
+  fees: 'registration-fees',
+  'registration-fees': 'registration-fees',
+  general: 'general',
+  gimun: 'gimun-specific',
+  'moot-cup': 'moot-cup-specific',
+  logistics: 'logistics',
+};
 
 const CATEGORY_LABELS: Record<FaqCategory, string> = {
   all: 'All Categories',
@@ -33,6 +43,19 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
     const firstTwo = initialFaqs.slice(0, 2).map((f) => f.id);
     return new Set(firstTwo);
   });
+
+  // Honour category deep links on load and on in-page hash changes.
+  useEffect(() => {
+    const applyHash = () => {
+      const category = HASH_CATEGORIES[window.location.hash.slice(1)];
+      if (!category) return;
+      setActiveCategory(category);
+      document.getElementById('faq-categories')?.scrollIntoView({ block: 'start' });
+    };
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, []);
 
   const toggleItem = (id: string) => {
     setOpenIds((prev) => {
@@ -129,15 +152,17 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
         </div>
 
         {/* Category Pills with Count Chips */}
-        <div className="pt-1 border-b border-line pb-3">
+        <div id="faq-categories" className="scroll-mt-28 pt-1 border-b border-line pb-3">
+          {/* Real anchor targets for /about/faq#fees and friends. */}
+          {Object.keys(HASH_CATEGORIES).map((hash) => (
+            <span key={hash} id={hash} aria-hidden="true" className="block h-0 scroll-mt-28" />
+          ))}
           <FilterBar
             label="Filter questions by category"
             activeValue={activeCategory}
             onChange={setActiveCategory}
             options={(Object.keys(CATEGORY_LABELS) as FaqCategory[]).map((cat) => ({
               value: cat,
-              id: cat,
-              anchorId: cat === 'registration-fees' ? 'fees' : undefined,
               label: CATEGORY_LABELS[cat],
               count: counts[cat],
             }))}
@@ -160,6 +185,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                 type="button"
                 onClick={() => toggleItem(faq.id)}
                 aria-expanded={isOpen}
+                aria-controls={`${faq.id}-answer`}
                 className="w-full text-left flex items-start justify-between gap-4 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-champagne/40 rounded-lg group"
               >
                 <div className="space-y-1.5 pr-2">
@@ -169,7 +195,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                         faq.category
                       )}`}
                     >
-                      {faq.category.replace('-', ' ')}
+                      {CATEGORY_LABELS[faq.category] ?? faq.category.replaceAll('-', ' ')}
                     </span>
                   </div>
                   <h3 className="text-base sm:text-lg font-heading font-semibold text-cream group-hover:text-champagne transition-colors leading-snug">
@@ -191,18 +217,13 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                 </div>
               </button>
 
-              <>
-                {isOpen && (
-                  <div
-                    key="content"
-                    className="overflow-hidden"
-                  >
-                    <div className="pt-3 pb-2 text-sm text-champagne/85 leading-relaxed">
-                      {faq.answer}
-                    </div>
-                  </div>
-                )}
-              </>
+              {/* Always in the HTML (search engines, find-in-page, no-JS);
+                  collapsed answers are hidden rather than unmounted. */}
+              <div id={`${faq.id}-answer`} hidden={!isOpen} className="overflow-hidden">
+                <div className="pt-3 pb-2 text-sm text-champagne/85 leading-relaxed">
+                  {faq.answer}
+                </div>
+              </div>
             </div>
           );
         })}
@@ -223,7 +244,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
       {/* Still Have Questions CTA Banner */}
       <HelpCallout
         question="Still haven't found your answer?"
-        actions={[{ label: 'Register', href: '/register' }]}
+        actions={[{ label: 'Contact the organizing team', href: '/contact' }]}
       />
     </div>
   );

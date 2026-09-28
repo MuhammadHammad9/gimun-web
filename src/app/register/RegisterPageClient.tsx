@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import type { Committee, ProblemCategory, SiteConfig } from '@/lib/types';
 import { TrackChooser } from '@/components/forms/TrackChooser';
@@ -9,12 +8,15 @@ import { GimunRegisterForm } from '@/components/forms/GimunRegisterForm';
 import { MootRegisterForm } from '@/components/forms/MootRegisterForm';
 import { ClosedRegistrationBanner } from '@/components/forms/ClosedRegistrationBanner';
 import { RegistrationSuccess } from '@/components/forms/RegistrationSuccess';
-import { isRegistrationDeadlinePassed } from '@/lib/site-config';
+import { canRegister } from '@/lib/phase';
+import { useRenderedAt } from '@/components/SiteConfigProvider';
 
 interface RegisterPageClientProps {
   committees: Committee[];
   categories: ProblemCategory[];
   siteConfig: SiteConfig;
+  /** Track requested in the URL (?track=, or implied by ?committee= / ?category=), read on the server. */
+  initialTrack: 'gimun' | 'moot-cup' | null;
 }
 
 interface SuccessState {
@@ -36,35 +38,27 @@ interface SuccessState {
   };
 }
 
-function RegisterContent({ committees, categories, siteConfig }: RegisterPageClientProps) {
-  const searchParams = useSearchParams();
-  const trackQuery = searchParams.get('track') || (searchParams.has('committee') ? 'gimun' : searchParams.has('category') ? 'moot-cup' : null);
+export function RegisterPageClient({ committees, categories, siteConfig, initialTrack }: RegisterPageClientProps) {
+  const renderedAt = useRenderedAt();
 
   const [overrideTrack, setOverrideTrack] = useState<'gimun' | 'moot-cup' | null | undefined>(undefined);
   const selectedTrack: 'gimun' | 'moot-cup' | null =
     overrideTrack !== undefined
       ? overrideTrack
-      : trackQuery === 'gimun' || trackQuery === 'moot-cup'
-      ? trackQuery
-      : null;
-  const setSelectedTrack = (track: 'gimun' | 'moot-cup' | null) => setOverrideTrack(track);
+      : initialTrack;
 
   const [successData, setSuccessData] = useState<SuccessState | null>(null);
 
-  // Check deadline & manual kill-switch status
-  const isGimunOpen = () => {
-    const manualOpen = siteConfig.registrationStatus?.gimunOpen !== false;
-    const deadline = siteConfig.registrationDeadlines.gimun;
-    const pastDeadline = isRegistrationDeadlinePassed(deadline);
-    return manualOpen && !pastDeadline;
-  };
+  // Same rule as every other page (phase, manual switch, deadline); the API enforces it again.
+  const isGimunOpen = () => canRegister(siteConfig, 'gimun', renderedAt);
+  const isMootOpen = () => canRegister(siteConfig, 'mootCup', renderedAt);
 
-  const isMootOpen = () => {
-    const manualOpen = siteConfig.registrationStatus?.mootCupOpen !== false;
-    const deadline = siteConfig.registrationDeadlines.mootCup;
-    const pastDeadline = isRegistrationDeadlinePassed(deadline);
-    return manualOpen && !pastDeadline;
-  };
+  // Forms stay mounted once opened, so switching tracks and back keeps what
+  // the visitor already typed instead of silently wiping it.
+  const [openedTracks, setOpenedTracks] = useState<Set<'gimun' | 'moot-cup'>>(new Set());
+  if (selectedTrack && !openedTracks.has(selectedTrack)) {
+    setOpenedTracks(new Set(openedTracks).add(selectedTrack));
+  }
 
   const handleSelectTrack = (track: 'gimun' | 'moot-cup') => {
     setOverrideTrack(track);
@@ -101,25 +95,19 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
         </div>
       )}
 
-      {/* Main View Transition */}
-      <>
-        {successData ? (
-          <div
-            key="success-view"
-          >
-            <RegistrationSuccess
-              referenceId={successData.referenceId}
-              applicantName={successData.applicantName}
-              track={successData.track}
-              applicantType={successData.applicantType}
-              details={successData.details}
-              onReset={handleReset}
-            />
-          </div>
-        ) : selectedTrack === null ? (
-          <div
-            key="chooser-view"
-          >
+      {/* Main view */}
+      {successData ? (
+        <RegistrationSuccess
+          referenceId={successData.referenceId}
+          applicantName={successData.applicantName}
+          track={successData.track}
+          applicantType={successData.applicantType}
+          details={successData.details}
+          onReset={handleReset}
+        />
+      ) : (
+        <>
+          {selectedTrack === null && (
             <TrackChooser
               onSelectTrack={handleSelectTrack}
               gimunDeadline={siteConfig.registrationDeadlines.gimun}
@@ -128,75 +116,63 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
               mootCupOpen={isMootOpen()}
               fees={siteConfig.fees}
             />
-          </div>
-        ) : selectedTrack === 'gimun' ? (
-          <div
-            key="gimun-view"
-          >
-            {isGimunOpen() ? (
-              <GimunRegisterForm
-                committees={committees}
-                onSuccess={(refId, name, type, details) => {
-                  setSuccessData({
-                    referenceId: refId,
-                    applicantName: name,
-                    track: 'gimun',
-                    applicantType: type,
-                    details,
-                  });
-                  window.scrollTo({ top: 100, behavior: 'smooth' });
-                }}
-              />
-            ) : (
-              <ClosedRegistrationBanner
-                track="gimun"
-                deadline={siteConfig.registrationDeadlines.gimun}
-                onSwitchTrack={() => setOverrideTrack('moot-cup')}
-              />
-            )}
-          </div>
-        ) : (
-          <div
-            key="moot-view"
-          >
-            {isMootOpen() ? (
-              <MootRegisterForm
-                categories={categories}
-                onSuccess={(refId, name, details) => {
-                  setSuccessData({
-                    referenceId: refId,
-                    applicantName: name,
-                    track: 'moot-cup',
-                    applicantType: 'team',
-                    details,
-                  });
-                  window.scrollTo({ top: 100, behavior: 'smooth' });
-                }}
-              />
-            ) : (
-              <ClosedRegistrationBanner
-                track="moot-cup"
-                deadline={siteConfig.registrationDeadlines.mootCup}
-                onSwitchTrack={() => setSelectedTrack('gimun')}
-              />
-            )}
-          </div>
-        )}
-      </>
-    </div>
-  );
-}
+          )}
 
-export function RegisterPageClient(props: RegisterPageClientProps) {
-  return (
-    <Suspense
-      fallback={
-        <div className="max-w-4xl mx-auto p-12 text-center text-sm font-mono text-champagne/70 animate-pulse">
-          Loading Official Registration Portal…
-        </div>
-      }
-    >
-      <RegisterContent {...props} />
-    </Suspense>
+          {openedTracks.has('gimun') && (
+            <div hidden={selectedTrack !== 'gimun'}>
+              {isGimunOpen() ? (
+                <GimunRegisterForm
+                  committees={committees}
+                  onSuccess={(refId, name, type, details) => {
+                    setSuccessData({
+                      referenceId: refId,
+                      applicantName: name,
+                      track: 'gimun',
+                      applicantType: type,
+                      details,
+                    });
+                    setOpenedTracks(new Set());
+                    window.scrollTo({ top: 100, behavior: 'smooth' });
+                  }}
+                />
+              ) : (
+                <ClosedRegistrationBanner
+                  track="gimun"
+                  deadline={siteConfig.registrationDeadlines.gimun}
+                  onSwitchTrack={() => setOverrideTrack('moot-cup')}
+                />
+              )}
+            </div>
+          )}
+
+          {openedTracks.has('moot-cup') && (
+            <div hidden={selectedTrack !== 'moot-cup'}>
+              {isMootOpen() ? (
+                <MootRegisterForm
+                  categories={categories}
+                  onSuccess={(refId, name, details) => {
+                    setSuccessData({
+                      referenceId: refId,
+                      applicantName: name,
+                      track: 'moot-cup',
+                      applicantType: 'team',
+                      details,
+                    });
+                    setOpenedTracks(new Set());
+                    window.scrollTo({ top: 100, behavior: 'smooth' });
+                  }}
+                />
+              ) : (
+                <ClosedRegistrationBanner
+                  track="moot-cup"
+                  deadline={siteConfig.registrationDeadlines.mootCup}
+                  onSwitchTrack={() => setOverrideTrack('gimun')}
+                />
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 }

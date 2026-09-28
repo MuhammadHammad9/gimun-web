@@ -47,7 +47,7 @@ export function SiteChrome({
 
       {/* The wrapper must stick: a sticky child cannot leave a header-height parent. */}
       <div className="sticky top-0 z-40 print:hidden">
-        <Navbar siteConfig={site} />
+        <Navbar />
       </div>
 
       <main id="main-content" className="flex-1 w-full print:p-0 print:m-0">

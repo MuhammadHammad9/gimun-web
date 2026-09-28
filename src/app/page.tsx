@@ -12,7 +12,7 @@ import { SponsorStrip } from '@/components/ui/SponsorStrip';
 import { CountdownChip } from '@/components/ui/CountdownChip';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 
-import { eventPhase } from '@/lib/phase';
+import { canRegister as canTrackRegister, eventPhase } from '@/lib/phase';
 import { formatDateRange } from '@/lib/utils';
 import {
   formatEventDate,
@@ -55,10 +55,7 @@ export default async function Home() {
   const documents = await getDocuments();
 
   const phase = eventPhase(siteConfig);
-  const canRegister = (track: 'gimun' | 'mootCup') =>
-    phase === 'registration-open' &&
-    siteConfig.registrationStatus[track === 'gimun' ? 'gimunOpen' : 'mootCupOpen'] &&
-    !isRegistrationDeadlinePassed(siteConfig.registrationDeadlines[track]);
+  const canRegister = (track: 'gimun' | 'mootCup') => canTrackRegister(siteConfig, track);
 
   // The masthead backdrop is built from the real allocation roster, so it is
   // accurate rather than decorative filler. Interleaving chambers keeps
@@ -107,41 +104,52 @@ export default async function Home() {
     variant: 'track-moot' as const,
   };
 
+  // Every status is derived from the calendar, not assumed: before launch the
+  // registration phase is upcoming, not complete, and each later phase flips
+  // only once its own date has passed.
+  const shortDate = (iso: string) => formatEventDate(iso, { month: 'short' });
+  const eventStarted = phase === 'event-live' || phase === 'results' || phase === 'archived';
+  const eventEnded = phase === 'results' || phase === 'archived';
+  const memorialPassed = siteConfig.memorialDeadline
+    ? isRegistrationDeadlinePassed(siteConfig.memorialDeadline)
+    : false;
+
   const phases: TimelinePhase[] = [
     {
       step: 'Phase 01',
       title: phase === 'registration-open' ? 'Registration open' : 'Registration',
-      date: `Closes ${formatEventDate(siteConfig.registrationDeadlines.gimun, { month: 'short' })}`,
+      date: `GIMUN closes ${shortDate(siteConfig.registrationDeadlines.gimun)} · GMC closes ${shortDate(siteConfig.registrationDeadlines.mootCup)}`,
       description:
         'See the registration page for current availability, fees and requirements.',
-      status: phase === 'registration-open' ? 'active' : 'complete',
+      status:
+        phase === 'registration-open' ? 'active' : phase === 'pre-launch' ? 'upcoming' : 'complete',
     },
     {
       step: 'Phase 02',
       title: 'Guides & case problem',
       date: latestResourceDate
-        ? `Revised ${formatEventDate(latestResourceDate, { month: 'short' })}`
+        ? `Revised ${shortDate(latestResourceDate)}`
         : 'Pending publication',
       description:
         'Background guides, case problems and rules are published in the Resource Hub.',
-      status: 'upcoming',
+      status: eventStarted ? 'complete' : documents.length > 0 ? 'active' : 'upcoming',
     },
     {
       step: 'Phase 03',
       title: 'Written memorials',
       date: siteConfig.memorialDeadline
-        ? `Due ${formatEventDate(siteConfig.memorialDeadline, { month: 'short' })}`
+        ? `Due ${shortDate(siteConfig.memorialDeadline)}`
         : 'Deadline to be confirmed',
       description:
         'Final electronic submission deadline for all Moot Court written arguments.',
-      status: 'upcoming',
+      status: memorialPassed || eventStarted ? 'complete' : 'upcoming',
     },
     {
       step: 'Phase 04',
       title: 'Conference days',
       date: formatDateRange(siteConfig.eventDates.start, siteConfig.eventDates.end),
       description: 'Check-in, opening ceremony, committee sessions and the Grand Final.',
-      status: 'upcoming',
+      status: eventEnded ? 'complete' : phase === 'event-live' ? 'active' : 'upcoming',
     },
   ];
 

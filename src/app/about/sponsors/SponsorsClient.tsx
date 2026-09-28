@@ -20,6 +20,8 @@ import { CtaBanner } from '@/components/ui/CtaBanner';
 
 interface SponsorsClientProps {
   initialSponsors: Sponsor[];
+  /** The sponsorship deck PDF, or the Resource Hub when none is published. */
+  deckUrl: string;
 }
 
 const TIER_ORDER: Sponsor['tier'][] = ['title', 'gold', 'silver', 'partner', 'media-partner'];
@@ -52,7 +54,7 @@ const TIER_LABELS: Record<Sponsor['tier'], { label: string; badge: string; color
   },
 };
 
-export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
+export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps) {
   const site=useSiteConfig();
   const eventYear = getEventYear(site);
   // Group sponsors by tier
@@ -102,7 +104,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
 
         <div className="flex flex-wrap items-center gap-3 shrink-0">
           <Link
-            href="/resources"
+            href={deckUrl}
             className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest text-xs font-bold hover:brightness-110 transition-all shadow-md"
           >
             <Download className="w-4 h-4" />

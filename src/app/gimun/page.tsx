@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { getCommittees, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
+import { canRegister } from '@/lib/phase';
 import { formatEventMonth, getEventYear } from '@/lib/site-config';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
@@ -28,6 +29,7 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 export default async function GimunOverviewPage() {
   const committees = (await getCommittees());
   const siteConfig = (await getSiteConfig());
+  const open = canRegister(siteConfig, 'gimun');
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-20">
@@ -44,7 +46,7 @@ export default async function GimunOverviewPage() {
         accentWords={['Defend', 'Sovereignty.']}
         description="The GIKI Model United Nations (GIMUN) convenes Pakistan's brightest student delegates to debate global crises, draft multilateral treaties, and master parliamentary diplomacy across specialized UN bodies."
         actions={[
-          { label: 'Register for GIMUN', href: '/register?track=gimun', variant: 'track-gimun' },
+          { label: open ? 'Register for GIMUN' : 'Registration status', href: '/register?track=gimun', variant: 'track-gimun' },
           { label: 'Browse Committees', href: '/gimun/committees', variant: 'secondary' },
         ]}
         aside={
@@ -207,7 +209,7 @@ export default async function GimunOverviewPage() {
                 </ul>
                 <div className="pt-4 border-t border-champagne/20">
                   <Button variant="track-gimun" href="/register?track=gimun&type=individual">
-                    Register as Individual entry
+                    {open ? 'Register as Individual entry' : 'Registration status'}
                   </Button>
                 </div>
               </div>
@@ -246,7 +248,7 @@ export default async function GimunOverviewPage() {
                 </ul>
                 <div className="pt-4 border-t border-champagne/20">
                   <Button variant="secondary" href="/register?track=gimun&type=delegation">
-                    Register Group Delegation
+                    {open ? 'Register Group Delegation' : 'Registration status'}
                   </Button>
                 </div>
               </div>
@@ -364,7 +366,7 @@ export default async function GimunOverviewPage() {
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
                 <Button variant="track-gimun" size="lg" href="/register?track=gimun">
-                  Register for GIMUN
+                  {open ? 'Register for GIMUN' : 'Registration status'}
                 </Button>
                 <Button variant="secondary" size="lg" href="/gimun/rules">
                   Rules of Procedure

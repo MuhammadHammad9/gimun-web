@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { X, ArrowRight, ChevronDown } from 'lucide-react';
 import { eventPhase } from '@/lib/phase';
 import { navigationTree } from '@/lib/navigation';
-import { useSiteConfig } from '@/components/SiteConfigProvider';
+import { useRenderedAt, useSiteConfig } from '@/components/SiteConfigProvider';
 import { Button } from '@/components/ui/Button';
 
 export interface MobileMenuProps {
@@ -16,6 +16,7 @@ export interface MobileMenuProps {
 
 export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: MobileMenuProps) {
   const site=useSiteConfig();
+  const renderedAt = useRenderedAt();
   // The full set, not the reduced header set: on a phone this menu is the
   // only navigation, so anything that exists has to be reachable from it.
   const navigation = navigationTree(site.navigation, 'footer');
@@ -92,7 +93,7 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
               type="button"
               onClick={onClose}
               aria-label="Close mobile menu"
-              className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -164,7 +165,7 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
               onClick={onClose}
               icon={<ArrowRight className="w-4 h-4" />}
             >
-              {eventPhase(site) === 'registration-open' ? 'Register' : 'Registration status'}
+              {eventPhase(site, renderedAt) === 'registration-open' ? 'Register' : 'Registration status'}
             </Button>
           </div>
     </div>

@@ -22,6 +22,25 @@ export function FormField({
   id,
   className = '',
 }: FormFieldProps) {
+  const descriptionId = id && description ? `${id}-description` : undefined;
+  const errorId = id && error ? `${id}-error` : undefined;
+  const describedBy = [descriptionId, errorId].filter(Boolean).join(' ') || undefined;
+
+  // Wire the control to its label text, hint and error so screen readers
+  // announce them together. Only a single element child is wired; composite
+  // children (radio groups, custom widgets) manage their own attributes.
+  const control =
+    React.isValidElement<Record<string, unknown>>(children) && id
+      ? React.cloneElement(children, {
+          'aria-invalid': error ? true : undefined,
+          'aria-describedby':
+            [children.props['aria-describedby'] as string | undefined, describedBy]
+              .filter(Boolean)
+              .join(' ') || undefined,
+          'aria-required': required ? true : undefined,
+        })
+      : children;
+
   return (
     <div
       className={`space-y-1.5 text-left ${className}`}
@@ -41,15 +60,16 @@ export function FormField({
       </div>
 
       {description && (
-        <p className="text-[11px] text-champagne/70 leading-snug">{description}</p>
+        <p id={descriptionId} className="text-[11px] text-champagne/70 leading-snug">{description}</p>
       )}
 
-      {children}
+      {control}
 
       <>
         {error && (
           <p
             key={error}
+            id={errorId}
             className="field-error flex items-center gap-1.5 pt-0.5 text-xs font-medium text-crimson-soft"
           >
             <span aria-hidden="true" className="inline-block h-1 w-1 rounded-full bg-crimson-hi" />

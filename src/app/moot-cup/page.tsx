@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { getMootCategories, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
+import { canRegister } from '@/lib/phase';
 import { formatEventMonth } from '@/lib/site-config';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
@@ -29,6 +30,7 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 export default async function MootCupOverviewPage() {
   const categories = (await getMootCategories());
   const siteConfig = (await getSiteConfig());
+  const open = canRegister(siteConfig, 'mootCup');
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-20">
@@ -45,7 +47,7 @@ export default async function MootCupOverviewPage() {
         accentWords={['Plead', 'Your', 'Case.']}
         description="The GIKI Moot Court (GMC) challenges aspiring advocates to analyze complex case problems, draft written arguments (memorials), and present oral submissions before a panel of experienced judges."
         actions={[
-          { label: 'Register for GMC', href: '/register?track=moot-cup', variant: 'track-moot' },
+          { label: open ? 'Register for GMC' : 'Registration status', href: '/register?track=moot-cup', variant: 'track-moot' },
           { label: 'Explore Problem Tracks', href: '/moot-cup/categories', variant: 'secondary' },
         ]}
         aside={
@@ -215,7 +217,7 @@ export default async function MootCupOverviewPage() {
 
               <div className="pt-2 flex flex-wrap items-center gap-4">
                 <Button variant="track-moot" href="/register?track=moot-cup">
-                  Register Your GMC Team
+                  {open ? 'Register Your GMC Team' : 'Registration status'}
                 </Button>
                 <Button variant="secondary" href="/moot-cup/rules">
                   View Written Argument Rules
@@ -336,7 +338,7 @@ export default async function MootCupOverviewPage() {
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
                 <Button variant="track-moot" size="lg" href="/register?track=moot-cup">
-                  Register GMC Team
+                  {open ? 'Register GMC Team' : 'Registration status'}
                 </Button>
                 <Button variant="secondary" size="lg" href="/moot-cup/rules">
                   Rules &amp; Written Arguments

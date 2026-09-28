@@ -16,6 +16,7 @@ import { validateGimunIndividual, validateGimunDelegation, type ValidationErrors
 import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
 import { NonPaymentNotice } from './NonPaymentNotice';
+import { FormErrorSummary, focusFirstError } from './FormErrorSummary';
 import { PrivacyStatement } from './PrivacyStatement';
 import { getEventYear } from '@/lib/site-config';
 
@@ -138,15 +139,24 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
   ) => {
     setDelegationData((prev) => {
       const nextDelegates = [...prev.delegates];
-      nextDelegates[index] = { ...nextDelegates[index], [field]: value };
+      const updated = { ...nextDelegates[index], [field]: value };
+      // The 2nd-choice list hides the 1st choice, so a clashing 2nd choice
+      // would be invisible yet still fail validation. Clear it instead.
+      if (field === 'committeePreference1' && updated.committeePreference2 === value) {
+        updated.committeePreference2 = '';
+      }
+      nextDelegates[index] = updated;
       return { ...prev, delegates: nextDelegates };
     });
 
-    const errorKey = `delegate_${index}_${field === 'committeePreference1' ? 'pref1' : field}`;
-    if (errors[errorKey]) {
+    const fieldKey =
+      field === 'committeePreference1' ? 'pref1' : field === 'committeePreference2' ? 'pref2' : field;
+    const staleKeys = [`delegate_${index}_${fieldKey}`, 'delegates'];
+    if (field === 'committeePreference1') staleKeys.push(`delegate_${index}_pref2`);
+    if (staleKeys.some((key) => errors[key])) {
       setErrors((prev) => {
         const next = { ...prev };
-        delete next[errorKey];
+        staleKeys.forEach((key) => delete next[key]);
         return next;
       });
     }
@@ -210,11 +220,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
 
     if (Object.keys(validationResult).length > 0) {
       setErrors(validationResult);
-      const firstErrorKey = Object.keys(validationResult)[0];
-      const el = document.getElementById(`field-${firstErrorKey}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      focusFirstError(validationResult);
       return;
     }
 
@@ -243,6 +249,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
         setStatus('error');
         if (data.errors) {
           setErrors(data.errors);
+          focusFirstError(data.errors);
         } else {
           setServerError(data.message || 'An unexpected error occurred. Please try again.');
         }
@@ -352,7 +359,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
       </div>
 
       {serverError && (
-        <div className="p-4 rounded-xl bg-brand-deep/80 border border-brand text-crimson-soft flex items-start gap-3">
+        <div role="alert" className="p-4 rounded-xl bg-brand-deep/80 border border-brand text-crimson-soft flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-crimson-hi shrink-0 mt-0.5" />
           <div className="text-xs space-y-1">
             <span className="font-bold block">Submission Error</span>
@@ -809,8 +816,8 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                 </div>
               </div>
 
-              {errors.delegateCount && (
-                <p className="text-xs text-crimson-soft font-medium">{errors.delegateCount}</p>
+              {(errors.delegateCount || errors.delegates) && (
+                <p role="alert" className="text-xs text-crimson-soft font-medium">{errors.delegateCount || errors.delegates}</p>
               )}
 
               {/* Repeatable Delegate Cards */}
@@ -895,9 +902,13 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                         </select>
                       </FormField>
 
-                      <FormField label="2nd Committee Preference (Optional)" id={`delegate-${idx}-pref2`}>
+                      <FormField
+                        label="2nd Committee Preference (Optional)"
+                        id={`field-delegate_${idx}_pref2`}
+                        error={errors[`delegate_${idx}_pref2`]}
+                      >
                         <select
-                          id={`delegate-${idx}-pref2`}
+                          id={`field-delegate_${idx}_pref2`}
                           value={del.committeePreference2}
                           onChange={(e) => handleDelegateChange(idx, 'committeePreference2', e.target.value)}
                           className="w-full px-3.5 py-2.5 rounded-xl border border-champagne/30 bg-canvas text-text text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
@@ -913,10 +924,15 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                         </select>
                       </FormField>
 
-                      <FormField label="Country Preference (Optional)" id={`delegate-${idx}-country`}>
+                      <FormField
+                        label="Country Preference (Optional)"
+                        id={`field-delegate_${idx}_countryPreference`}
+                        error={errors[`delegate_${idx}_countryPreference`]}
+                      >
                         <input
                           type="text"
-                          id={`delegate-${idx}-country`}
+                          maxLength={100}
+                          id={`field-delegate_${idx}_countryPreference`}
                           value={del.countryPreference}
                           onChange={(e) => handleDelegateChange(idx, 'countryPreference', e.target.value)}
                           placeholder="e.g. Germany"
@@ -1002,6 +1018,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
 
       {/* Submit Action Block */}
       <div className="space-y-4 pt-3 border-t border-champagne/15">
+        <FormErrorSummary errors={errors} />
         <button
           type="submit"
           disabled={status === 'submitting'}

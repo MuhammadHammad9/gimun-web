@@ -4,19 +4,17 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
-import type { SiteConfig } from '@/lib/types';
-import { eventPhase } from '@/lib/phase';
+import { canRegister, eventPhase } from '@/lib/phase';
 import { navigationTree } from '@/lib/navigation';
-import { useSiteConfig } from '@/components/SiteConfigProvider';
+import { useRenderedAt, useSiteConfig } from '@/components/SiteConfigProvider';
 import { MobileMenu } from './MobileMenu';
 
-interface NavbarProps {
-  siteConfig?: SiteConfig;
-}
-
-export function Navbar({ siteConfig }: NavbarProps = {}) {
+export function Navbar() {
   const site = useSiteConfig();
-  const registrationOpen=eventPhase(site)==='registration-open';
+  const renderedAt = useRenderedAt();
+  const registrationOpen = eventPhase(site, renderedAt) === 'registration-open';
+  const gimunOpen = canRegister(site, 'gimun', renderedAt);
+  const mootOpen = canRegister(site, 'mootCup', renderedAt);
   const NAV_ITEMS = navigationTree(site.navigation, 'header');
   const pathname = usePathname();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -80,7 +78,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
               <span className="w-2.5 h-2.5 rounded-full bg-champagne" title="GMC Track" />
             </span>
             <span className="hidden sm:inline font-bold">
-              {siteConfig?.eventNames?.combined || 'GIMUN & GMC'}
+              {site.eventNames?.combined || 'GIMUN & GMC'}
             </span>
             <span className="sm:hidden font-bold">GIMUN & GMC</span>
           </Link>
@@ -89,13 +87,9 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
           <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-1 lg:gap-2">
             {NAV_ITEMS.map((item) => {
               const isActive =
-                item.label === 'Info'
-                  ? pathname.startsWith('/about') || pathname.startsWith('/announcements') || pathname.startsWith('/contact')
-                  : item.href === '/'
-                    ? pathname === '/'
-                    : pathname.startsWith(item.href);
+                item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
 
-              const hasDropdown = Boolean(item.dropdown);
+              const hasDropdown = item.dropdown.length > 0;
 
               return (
                 <div
@@ -110,31 +104,46 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                     }
                   }}
                 >
-                  <Link
-                    aria-expanded={hasDropdown ? activeDropdown === item.label : undefined}
-                    aria-current={isActive ? 'page' : undefined}
-                    href={item.href}
-                    className={`relative px-3 py-1.5 rounded-xl text-xs font-medium tracking-wide transition-colors flex items-center gap-1 ${
-                      isActive
-                        ? 'text-champagne font-semibold'
-                        : 'text-white/80 hover:text-champagne hover:bg-white/10'
-                    }`}
-                  >
-                    {isActive && (
-                      <span
-                        aria-hidden="true"
-                        className="absolute inset-0 -z-10 rounded-xl bg-white/15"
-                      />
-                    )}
-                    <span>{item.label}</span>
+                  <div className="flex items-center">
+                    <Link
+                      aria-current={isActive ? 'page' : undefined}
+                      href={item.href}
+                      className={`relative px-3 py-1.5 rounded-xl text-xs font-medium tracking-wide transition-colors flex items-center gap-1 ${
+                        isActive
+                          ? 'text-champagne font-semibold'
+                          : 'text-white/80 hover:text-champagne hover:bg-white/10'
+                      } ${hasDropdown ? 'pr-1' : ''}`}
+                    >
+                      {isActive && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-0 -z-10 rounded-xl bg-white/15"
+                        />
+                      )}
+                      <span>{item.label}</span>
+                    </Link>
+                    {/* Separate toggle so touch tablets (no hover) can open the
+                        menu without navigating away, and so aria-expanded sits
+                        on a button rather than a link. */}
                     {hasDropdown && (
-                      <ChevronDown
-                        className={`w-3 h-3 transition-transform duration-200 ${
-                          activeDropdown === item.label ? 'rotate-180' : ''
-                        }`}
-                      />
+                      <button
+                        type="button"
+                        aria-expanded={activeDropdown === item.label}
+                        aria-label={`${item.label} pages`}
+                        onClick={() =>
+                          setActiveDropdown(activeDropdown === item.label ? null : item.label)
+                        }
+                        className="inline-flex h-8 w-6 items-center justify-center rounded-lg text-white/70 transition-colors hover:text-champagne"
+                      >
+                        <ChevronDown
+                          aria-hidden="true"
+                          className={`w-3 h-3 transition-transform duration-200 ${
+                            activeDropdown === item.label ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
                     )}
-                  </Link>
+                  </div>
 
                   {/* Dropdown Menu with Spring Scale-in */}
                   {hasDropdown && (
@@ -209,7 +218,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                       <span className="w-2.5 h-2.5 rounded-full bg-crimson shrink-0" />
                       <div>
                         <div className="text-xs font-bold text-white group-hover:text-crimson-soft transition-colors">GIMUN (Model UN)</div>
-                        <div className="text-[10px] text-white/50">{site.registrationStatus.gimunOpen&&registrationOpen?'Diplomacy & debate':'Registration closed'}</div>
+                        <div className="text-[10px] text-white/50">{gimunOpen ? 'Diplomacy & debate' : 'Registration closed'}</div>
                       </div>
                     </Link>
                     <Link
@@ -220,7 +229,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                       <span className="w-2.5 h-2.5 rounded-full bg-champagne shrink-0" />
                       <div>
                         <div className="text-xs font-bold text-white group-hover:text-champagne transition-colors">GMC (Moot Court)</div>
-                        <div className="text-[10px] text-white/50">{site.registrationStatus.mootCupOpen&&registrationOpen?'Legal advocacy':'Registration closed'}</div>
+                        <div className="text-[10px] text-white/50">{mootOpen ? 'Legal advocacy' : 'Registration closed'}</div>
                       </div>
                     </Link>
                   </div>

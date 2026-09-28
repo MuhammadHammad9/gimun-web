@@ -7,13 +7,14 @@ import {
   Scale,
   ArrowRight,
   ShieldCheck,
-  Image as CheckCircle2,
+  CheckCircle2,
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 import { constructMetadata } from "@/lib/metadata";
 import { getEventYear } from "@/lib/site-config";
+import { canRegister } from "@/lib/phase";
 import { PageHero } from '@/components/ui/PageHero';
 import { CtaBanner } from '@/components/ui/CtaBanner';
 
@@ -26,6 +27,8 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 
 export default async function AboutOverviewPage() {
   const site=await getSiteConfig();
+  const gimunOpen = canRegister(site, 'gimun');
+  const mootOpen = canRegister(site, 'mootCup');
   return (
     <div className="space-y-16">
       {/* 1. Atmospheric Dark Hero Header */}
@@ -64,7 +67,8 @@ export default async function AboutOverviewPage() {
 
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 pb-16">
-        {/* 2. 15-Year Legacy Bento Metrics */}
+        {/* 2. Published metrics — omitted entirely until the CMS has real figures. */}
+        {site.stats?.length ? (
         <section className="space-y-8">
           <div className="space-y-1">
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
@@ -77,6 +81,7 @@ export default async function AboutOverviewPage() {
 
           <PublishedStats stats={site.stats}/>
         </section>
+        ) : null}
 
         {/* 3. The Twin Flagship Pillars */}
         <section className="grid md:grid-cols-2 gap-8">
@@ -207,7 +212,7 @@ export default async function AboutOverviewPage() {
           <div className="absolute inset-0 bg-radial-glow-dual opacity-30 pointer-events-none" />
           <div className="relative z-10 space-y-2 text-center md:text-left max-w-xl">
             <span className="text-xs font-mono uppercase font-bold text-champagne tracking-wider">
-              Delegate Applications Open
+              {gimunOpen || mootOpen ? 'Applications open' : 'Registration status'}
             </span>
             <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream">
               Represent Your Institution at GIKI Topi
@@ -219,10 +224,10 @@ export default async function AboutOverviewPage() {
 
           <div className="relative z-10 flex flex-wrap items-center gap-3 shrink-0">
             <Button variant="track-gimun" href="/register?track=gimun">
-              Apply for GIMUN
+              {gimunOpen ? 'Apply for GIMUN' : 'GIMUN registration status'}
             </Button>
             <Button variant="track-moot" href="/register?track=moot-cup">
-              Register GMC Team
+              {mootOpen ? 'Register GMC Team' : 'GMC registration status'}
             </Button>
           </div>
         </div>
