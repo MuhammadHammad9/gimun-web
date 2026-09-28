@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useSyncExternalStore } from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import type { Announcement } from '@/lib/types';
 import { X, Sparkles } from 'lucide-react';
 

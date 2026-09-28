@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

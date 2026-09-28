@@ -1,5 +1,5 @@
 import { getSiteConfig } from '@/lib/content';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { PageHero } from '@/components/ui/PageHero';
 import type { Metadata } from 'next';
 import { constructMetadata } from '@/lib/metadata';

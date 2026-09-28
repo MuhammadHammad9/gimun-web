@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { Button } from '@/components/ui/Button';
 import { Home, Calendar, FileText, ArrowRight } from 'lucide-react';
 

@@ -2,7 +2,7 @@
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React from "react";
-import Link from "next/link";
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { usePathname } from "next/navigation";
 import {
   MapPin,

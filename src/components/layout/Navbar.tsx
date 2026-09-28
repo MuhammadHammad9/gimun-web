@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { usePathname } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import { canRegister, eventPhase } from '@/lib/phase';

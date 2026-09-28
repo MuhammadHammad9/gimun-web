@@ -3,7 +3,7 @@ import { ComingSoon } from '@/components/ui/ComingSoon';
 
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { Mail, Award } from "lucide-react";
 import type { TeamMember } from "@/lib/types";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";

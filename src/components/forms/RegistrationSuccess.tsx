@@ -3,7 +3,7 @@
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import QRCode from 'qrcode';
 import {
   Copy,

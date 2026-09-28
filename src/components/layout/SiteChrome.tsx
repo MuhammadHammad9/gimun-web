@@ -6,6 +6,7 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
+import { TransitionProvider } from '@/components/motion/TransitionProvider';
 
 /**
  * The public site shell: skip link, announcement bar, navbar, main, footer.
@@ -31,7 +32,7 @@ export function SiteChrome({
   }
 
   return (
-    <>
+    <TransitionProvider>
       <ScrollProgress />
 
       <a
@@ -57,6 +58,6 @@ export function SiteChrome({
       <div className="print:hidden">
         <Footer siteConfig={site} sponsors={sponsors} />
       </div>
-    </>
+    </TransitionProvider>
   );
 }
