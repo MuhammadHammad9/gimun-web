@@ -7,37 +7,37 @@
     "fileUrl": "/documents/shared/GIMUN_MootCup_Handbook_2027.pdf",
     "fileSize": "19.6 KB",
     "fileFormat": "PDF",
-    "versionDate": "2027-01-10"
+    "versionDate": "2026-09-01"
   },
   {
     "id": "doc-bg-unsc",
-    "title": "UNSC Background Guide — Autonomous Weapons & Maritime Security",
+    "title": "UNSC Background Guide: Maritime Security & Humanitarian Sanction Exceptions",
     "track": "gimun",
     "type": "background-guide",
     "fileUrl": "/documents/gimun/UNSC_Background_Guide_2027.pdf",
     "fileSize": "18.9 KB",
     "fileFormat": "PDF",
-    "versionDate": "2027-01-25"
+    "versionDate": "2026-09-05"
   },
   {
     "id": "doc-bg-unhrc",
-    "title": "UNHRC Background Guide — Surveillance & Climate Displacement",
+    "title": "UNHRC Background Guide: Biometric Surveillance & Climate Displacement",
     "track": "gimun",
     "type": "background-guide",
     "fileUrl": "/documents/gimun/UNHRC_Background_Guide_2027.pdf",
     "fileSize": "18.8 KB",
     "fileFormat": "PDF",
-    "versionDate": "2027-01-25"
+    "versionDate": "2026-09-05"
   },
   {
     "id": "doc-bg-disec",
-    "title": "DISEC Background Guide — Hypersonic Proliferation",
+    "title": "DISEC Background Guide: Autonomous Weapons & Illicit Arms Proliferation",
     "track": "gimun",
     "type": "background-guide",
     "fileUrl": "/documents/gimun/DISEC_Background_Guide_2027.pdf",
     "fileSize": "18.5 KB",
     "fileFormat": "PDF",
-    "versionDate": "2027-01-25"
+    "versionDate": "2026-09-05"
   },
   {
     "id": "doc-gimun-rop",
@@ -47,17 +47,17 @@
     "fileUrl": "/documents/gimun/GIMUN_Rules_of_Procedure.pdf",
     "fileSize": "19.6 KB",
     "fileFormat": "PDF",
-    "versionDate": "2027-01-05"
+    "versionDate": "2026-09-04"
   },
   {
     "id": "doc-moot-prop-2027",
-    "title": "GMC 2027 Official Proposition (IHL & Cyber Warfare)",
+    "title": "GMC 2027 Moot Problem (Compromis)",
     "track": "moot-cup",
     "type": "proposition",
     "fileUrl": "/documents/moot-cup/GIKI_Moot_Cup_2027_Proposition.pdf",
     "fileSize": "19.0 KB",
     "fileFormat": "PDF",
-    "versionDate": "2027-01-20"
+    "versionDate": "2026-09-03"
   },
   {
     "id": "doc-moot-rules",
@@ -67,7 +67,7 @@
     "fileUrl": "/documents/moot-cup/Moot_Cup_Rules_and_Memorial_Guide.pdf",
     "fileSize": "18.7 KB",
     "fileFormat": "PDF",
-    "versionDate": "2027-01-18"
+    "versionDate": "2026-09-03"
   },
   {
     "id": "doc-campus-map",
@@ -77,7 +77,7 @@
     "fileUrl": "/documents/shared/GIKI_Campus_Map_Venue_Guide.pdf",
     "fileSize": "18.8 KB",
     "fileFormat": "PDF",
-    "versionDate": "2027-01-12"
+    "versionDate": "2026-09-01"
   },
   {
     "id": "doc-sponsor-deck",
@@ -87,6 +87,6 @@
     "fileUrl": "/documents/shared/GIMUN_MootCup_Sponsorship_Deck.pdf",
     "fileSize": "18.5 KB",
     "fileFormat": "PDF",
-    "versionDate": "2027-01-08"
+    "versionDate": "2026-08-25"
   }
 ]

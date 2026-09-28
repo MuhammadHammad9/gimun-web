@@ -73,11 +73,11 @@ export default async function GimunOverviewPage() {
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-clay shrink-0 mt-0.5" />
-                <span><strong>Chambers:</strong> UNSC, DISEC, UNHRC &amp; PNA Crisis</span>
+                <span><strong>Chambers:</strong> {committees.map((c) => c.slug.toUpperCase()).join(', ')}</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-clay shrink-0 mt-0.5" />
-                <span><strong>Recognition:</strong> Best Delegate, Outstanding Delegate &amp; Delegation Trophy</span>
+                <span><strong>Recognition:</strong> Best Delegate, Outstanding Delegate &amp; Best Delegation</span>
               </li>
             </ul>
             <div className="pt-2 border-t border-white/10">
@@ -239,7 +239,7 @@ export default async function GimunOverviewPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-champagne" />
-                    <span>Discounted tier rates for teams of 5+ delegates</span>
+                    <span>One per-delegate rate for the whole delegation</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-champagne" />
@@ -282,7 +282,7 @@ export default async function GimunOverviewPage() {
                 <div className="text-2xl font-heading font-extrabold text-text">
                   {siteConfig.fees?.gimunIndividual}
                 </div>
-                <div className="text-xs text-champagne/70">Includes delegate kit, lanyard, lunch &amp; social pass</div>
+                <div className="text-xs text-champagne/70">Includes sessions, delegate kit, lunch and tea on conference days, and socials</div>
               </div>
 
               <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-1">
@@ -298,7 +298,7 @@ export default async function GimunOverviewPage() {
                 <div className="text-2xl font-heading font-extrabold text-champagne">
                   Available on Request
                 </div>
-                <div className="text-xs text-champagne/70">Hostel lodging at GIKI campus for outstation attendees</div>
+                <div className="text-xs text-champagne/70">On-campus hostel places for outstation participants; confirmed with acceptance</div>
               </div>
             </div>
 

@@ -116,7 +116,7 @@ export default async function AboutOverviewPage() {
               </li>
               <li className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Merit-based Best Delegate, Outstanding &amp; Gavel Accolades</span>
+                <span>Best Delegate, Outstanding Delegate &amp; Best Delegation awards</span>
               </li>
             </ul>
 
@@ -147,7 +147,7 @@ export default async function AboutOverviewPage() {
                 GIKI Moot Court (GMC)
               </h3>
               <p className="text-xs sm:text-sm text-champagne/85 leading-relaxed">
-                The GIKI Moot Court (GMC) is Pakistan&apos;s premier collegiate appellate advocacy championship. Law school delegations draft comprehensive written memorials for Applicant and Respondent, followed by contentious oral pleading rounds adjudicated by senior advocates and High Court jurists.
+                The GIKI Moot Court (GMC) is an appellate advocacy competition for law students. Teams write memorials for both Applicant and Respondent, then argue oral rounds before benches of legal practitioners.
               </p>
             </div>
 

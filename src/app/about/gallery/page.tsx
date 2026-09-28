@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> { return await const
   title: `Media Archive & Gallery | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
   path: '/about/gallery',
   description:
-    "Visual archives capturing intense committee debates, judicial advocacy, diplomacy, campus life, and award ceremonies across 15 years of GIMUN and GMC.",
+    "Visual archives capturing intense committee debates, judicial advocacy, diplomacy, campus life, and award ceremonies from GIMUN and GMC.",
 }); }
 
 export default async function GalleryPage() {

@@ -172,7 +172,7 @@ export default async function MootCupOverviewPage() {
                 The final
               </h3>
               <p className="text-xs text-champagne/80 leading-relaxed">
-                Top teams advance through Quarter and Semi-Finals to argue before an expanded panel of High Court jurists on the Aga Khan Auditorium Main Stage.
+                Top teams advance through the quarter-finals and semi-finals to the Grand Final in the AHA Auditorium, before an expanded bench.
               </p>
             </div>
           </div>
@@ -267,9 +267,9 @@ export default async function MootCupOverviewPage() {
               <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-1">
                 <div className="text-xs font-mono text-champagne/70">Lodging &amp; Campus Board</div>
                 <div className="text-2xl font-heading font-extrabold text-champagne">
-                  Subsidized Options
+                  Available on Request
                 </div>
-                <div className="text-xs text-champagne/80">GIKI campus residential accommodations for visiting legal teams</div>
+                <div className="text-xs text-champagne/80">On-campus hostel places for outstation teams; confirmed with acceptance</div>
               </div>
             </div>
 

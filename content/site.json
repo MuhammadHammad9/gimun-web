@@ -38,5 +38,15 @@
     "gimunOpen": true,
     "mootCupOpen": true
   },
-  "resultsPublished": false
+  "resultsPublished": false,
+  "memorialDeadline": "2027-02-28",
+  "galaDate": "2027-03-20",
+  "replyTime": "We reply to messages within 3 working days.",
+  "checkinDesk": "Check-in opens at 09:00 on Day 1 in the AHA Auditorium foyer.",
+  "entryRequirement": "Bring a photo ID (CNIC, B-Form or student card) and your QR ticket.",
+  "mootScoring": {
+    "memorialWeight": 40,
+    "oralWeight": 60,
+    "citationStyle": "OSCOLA (4th edition)"
+  }
 }

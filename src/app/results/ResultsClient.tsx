@@ -190,7 +190,7 @@ export function ResultsClient({
               </div>
 
               <p className="text-sm sm:text-base text-champagne/80 leading-relaxed max-w-4xl">
-                In strict adherence to academic rigor and blind tabulation security, official award designations are sealed until the Grand Awards Gala on Day 4 of the conference. Tabulation is overseen independently by the Directorate of Academics and audited by faculty advisors prior to public release.
+                In strict adherence to academic rigor and blind tabulation security, awards are announced at the Closing Ceremony and Awards Gala on Day 3 of the conference and published here afterwards. Scores are tabulated by the academic team and checked before release.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">

@@ -638,7 +638,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                       rows={3}
                       value={individualData.experienceDetails}
                       onChange={(e) => handleIndividualChange('experienceDetails', e.target.value)}
-                      placeholder="e.g. LUMUN 2025 (DISEC - Outstanding Diplomat), HMUN Asia 2024 (UNSC)..."
+                      placeholder="e.g. LUMUN 2025 (DISEC, Outstanding Delegate), HMUN Asia 2024 (UNSC)..."
                       className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
                     />
                   </FormField>

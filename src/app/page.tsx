@@ -165,7 +165,7 @@ export default async function Home() {
         accentWords={['courtroom.']}
         description="Two student competitions on one campus. Represent a nation in committee, or argue a case before a bench of judges, at GIK Institute in Topi."
         bullets={[
-          'Four UN chambers and three appellate problem categories',
+          `${committees.length} committees and ${mootCategories.length} moot problem categories`,
           'Merit-based allocation, reviewed by the Secretariat and the Bench',
           'Enter on your own or as a university delegation',
         ]}
