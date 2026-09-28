@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import { SiteChrome } from '@/components/layout/SiteChrome';
+import { NoticeBar, noticeBootScript } from '@/components/chrome/NoticeBar';
+import { SiteFooter } from '@/components/chrome/SiteFooter';
 import { SiteConfigProvider } from '@/components/SiteConfigProvider';
 import { getSiteConfig, getAnnouncements, getSponsors } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
@@ -63,12 +65,15 @@ export default async function RootLayout({
     // from the server markup by design.
     <html lang="en" suppressHydrationWarning className={`${satoshi.variable} ${generalSans.variable} ${jetbrainsMono.variable}`}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT + noticeBootScript(activeAnnouncement) }} />
       </head>
       <body className="min-h-screen flex flex-col bg-canvas text-text antialiased">
         <GoogleAnalytics measurementId={getAnalyticsMeasurementId()} />
         <SiteConfigProvider value={siteConfig} renderedAt={renderedAt}>
-          <SiteChrome site={siteConfig} announcement={activeAnnouncement} sponsors={sponsors}>
+          <SiteChrome
+            banner={<NoticeBar announcement={activeAnnouncement} />}
+            footer={<SiteFooter site={siteConfig} sponsors={sponsors} />}
+          >
             {children}
           </SiteChrome>
         </SiteConfigProvider>

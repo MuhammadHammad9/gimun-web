@@ -111,7 +111,7 @@ async function main() {
   const requestedArgs = process.argv.slice(2);
   const shards = requestedArgs.length > 0
     ? [requestedArgs]
-    : ['mobile-375', 'mobile-390', 'tablet-768', 'desktop-1024', 'desktop-1440']
+    : ['mobile-375', 'mobile-390', 'tablet-768', 'desktop-1024', 'desktop-1440', 'desktop-1440-dark']
         .map((project) => [`--project=${project}`]);
 
   for (const shard of shards) {
