@@ -1,3 +1,19 @@
+# Verification record — 28 September 2026 (improvement pass)
+
+Run against the final source of this pass, local fixtures only:
+
+- `tsc`, ESLint and `next build`: pass. Content schema: 13/13 files valid.
+- Unit tests: 35/35 (adds fees, per-track registration state, date ranges, stored-field picking, IPv6 rate-limit grouping).
+- Migrations 0001–0011 in PGlite: pass, including database-enforced permissions (viewer write refused, door staff override refused), participant and contact corrections, ticket resend, invoice queueing and idempotent contact submissions.
+- Link audit, static accessibility audit (11/11), SEO audit (62/62), submission contract audit (15/15): pass.
+- HTTP form scenarios: 7/7. Admin end-to-end workflow: 1/1 (registration, payment with stale-edit guard, check-in, allocation, certificates, survey, duplicate prevention).
+- Browser suite across 375/390/768/1024/1440 px: 265 passed, 20 skipped (viewport-specific checks, and the gallery lightbox test while the gallery is intentionally empty).
+- Production dependency audit: 0 vulnerabilities.
+
+Not demonstrated locally: real Supabase Auth (including TOTP enrolment), Storage, Resend delivery, pg_cron scheduling, Vercel deployment and hardware QR scanning. `GO_LIVE.md` section 8 is the staging test that covers them. `npm run validate:launch` remains red until real documents and media are supplied and approved.
+
+---
+
 # Verification record — 21 September 2026
 
 This record separates local engineering verification from production readiness. Existing frontend integration commits were preserved. The continuation restored omitted test/CI/build configuration and repaired the issues found while checking the integrated branch.

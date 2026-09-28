@@ -18,9 +18,11 @@ import {
   formatEventDate,
   formatPublishedDate,
   getEventYear,
+  getSiteUrl,
   isRegistrationDeadlinePassed,
 } from '@/lib/site-config';
 import { constructMetadata } from '@/lib/metadata';
+import { feeAmount } from '@/lib/fees';
 import {
   getSiteConfig,
   getCommittees,
@@ -153,8 +155,45 @@ export default async function Home() {
     },
   ];
 
+  const siteUrl = getSiteUrl();
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': `${siteUrl}/#organization`,
+        name: siteConfig.eventNames.combined,
+        url: siteUrl,
+        email: siteConfig.contactEmails.general,
+        sameAs: Object.values(siteConfig.socialLinks || {}).filter(Boolean),
+      },
+      ...(['gimun', 'mootCup'] as const).map((track) => ({
+        '@type': 'Event',
+        name: `${siteConfig.eventNames[track]} ${getEventYear(siteConfig)}`,
+        startDate: siteConfig.eventDates.start,
+        endDate: siteConfig.eventDates.end,
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        location: { '@type': 'Place', name: siteConfig.hostInstitution, address: siteConfig.venue },
+        organizer: { '@id': `${siteUrl}/#organization` },
+        url: `${siteUrl}${track === 'gimun' ? '/gimun' : '/moot-cup'}`,
+        offers: {
+          '@type': 'Offer',
+          price: feeAmount(siteConfig, track === 'gimun' ? 'gimunIndividual' : 'mootCupTeam') ?? undefined,
+          priceCurrency: 'PKR',
+          url: `${siteUrl}/register?track=${track === 'gimun' ? 'gimun' : 'moot-cup'}`,
+          availability: canRegister(track) ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
+        },
+      })),
+    ],
+  };
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
+      />
       {/* ---------------------------------------------------------- masthead */}
       <PageHero
         variant="home"

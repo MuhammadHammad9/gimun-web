@@ -21,15 +21,17 @@ test.describe('public form interaction coverage', () => {
 
     await page.goto('/register?track=gimun');
     await page.getByRole('button', { name: 'Submit Individual Application' }).click();
-    await expect(page.getByText('Full Name is required')).toBeVisible();
+    // Each message appears under its field and again in the error summary.
+    await expect(page.locator('#field-fullName-error')).toHaveText('Full Name is required');
+    await expect(page.getByRole('link', { name: 'Full Name is required' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Delegation (Group)' }).click();
     await page.getByRole('button', { name: /Submit Delegation Roster/ }).click();
-    await expect(page.getByText('Head of Delegation Name is required')).toBeVisible();
+    await expect(page.locator('#field-delegationHeadName-error')).toHaveText('Head of Delegation Name is required');
 
     await page.goto('/register?track=moot-cup');
     await page.getByRole('button', { name: /Submit Law Team Registration/ }).click();
-    await expect(page.getByText('Team Name is required')).toBeVisible();
+    await expect(page.locator('#field-teamName-error')).toHaveText('Team Name is required');
   });
 
   test('shows contact and clarification validation feedback', async ({ page }, testInfo) => {
@@ -37,7 +39,7 @@ test.describe('public form interaction coverage', () => {
 
     await page.goto('/contact');
     await page.getByRole('button', { name: 'Send Direct Message' }).click();
-    await expect(page.getByText('Your Name is required')).toBeVisible();
+    await expect(page.locator('#field-name-error')).toHaveText('Your Name is required');
 
     await page.goto('/moot-cup/clarifications');
     // The page now renders the shared ClarificationForm rather than its own

@@ -84,6 +84,7 @@ const all31Routes = [
   '/admin',
   '/admin/login',
   '/admin/password',
+  '/admin/mfa',
   '/admin/settings',
   '/admin/export',
 ];

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { Suspense, useState, useRef, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Send, CheckCircle2, AlertCircle, MessageSquare } from 'lucide-react';
 import type { ContactFormData, SubmissionResponse } from '@/lib/types';
 import { validateContactForm, type ValidationErrors } from '@/lib/validation';
@@ -239,5 +240,22 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
         )}
       </button>
     </form>
+  );
+}
+
+function ContactFormWithParams() {
+  const type = useSearchParams().get('type') || '';
+  return <ContactForm key={type} initialType={type} />;
+}
+
+/**
+ * Keeps /contact statically cached: the server HTML contains the default
+ * form, and ?type= preselects the category once the page hydrates.
+ */
+export function ContactFormFromUrl() {
+  return (
+    <Suspense fallback={<ContactForm />}>
+      <ContactFormWithParams />
+    </Suspense>
   );
 }

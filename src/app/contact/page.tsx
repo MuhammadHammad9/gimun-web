@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
 import { getSiteConfig } from "@/lib/content";
-import { ContactForm } from "@/components/forms/ContactForm";
+import { ContactFormFromUrl } from "@/components/forms/ContactForm";
 import { Mail, MapPin, Clock, Headphones, ShieldCheck } from "lucide-react";
 import { getEventYear } from "@/lib/site-config";
 import { PageHero } from '@/components/ui/PageHero';
@@ -13,13 +13,8 @@ export async function generateMetadata(): Promise<Metadata> { return await const
     "Reach out to our organizing team for inquiries regarding committee allocations, case problems, partnerships, or logistics.",
 }); }
 
-export default async function ContactPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ type?: string | string[] }>;
-}) {
+export default async function ContactPage() {
   const config = (await getSiteConfig());
-  const { type } = await searchParams;
 
   return (
     <div className="space-y-12">
@@ -61,7 +56,7 @@ export default async function ContactPage({
         <div className="grid lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Interactive Contact Form (7 cols) */}
           <div className="lg:col-span-7">
-            <ContactForm initialType={typeof type === 'string' ? type : ''} />
+            <ContactFormFromUrl />
           </div>
 
           {/* Right Column: Directorate Channels & Campus Venue (5 cols) */}

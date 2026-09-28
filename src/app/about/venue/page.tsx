@@ -130,11 +130,11 @@ export default async function VenuePage() {
             </dl>
             <p className="mt-4 text-sm text-text-4">
               Room numbers are confirmed in the{' '}
-              <Link href="/schedule" className="text-champagne underline-offset-4 hover:underline">
+              <Link href="/schedule" className="text-champagne underline underline-offset-4">
                 schedule
               </Link>
               ; changes during the event appear on{' '}
-              <Link href="/announcements" className="text-champagne underline-offset-4 hover:underline">
+              <Link href="/announcements" className="text-champagne underline underline-offset-4">
                 Announcements
               </Link>
               .

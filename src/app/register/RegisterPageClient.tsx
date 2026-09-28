@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import type { Committee, ProblemCategory, SiteConfig } from '@/lib/types';
 import { TrackChooser } from '@/components/forms/TrackChooser';
@@ -15,8 +16,37 @@ interface RegisterPageClientProps {
   committees: Committee[];
   categories: ProblemCategory[];
   siteConfig: SiteConfig;
-  /** Track requested in the URL (?track=, or implied by ?committee= / ?category=), read on the server. */
+}
+
+interface RegisterContentProps extends RegisterPageClientProps {
+  /** Track requested in the URL (?track=, or implied by ?committee= / ?category=). */
   initialTrack: 'gimun' | 'moot-cup' | null;
+}
+
+function RegisterWithParams(props: RegisterPageClientProps) {
+  const query = useSearchParams();
+  const track = query.get('track');
+  const initialTrack =
+    track === 'gimun' || track === 'moot-cup'
+      ? track
+      : query.has('committee')
+        ? 'gimun'
+        : query.has('category')
+          ? 'moot-cup'
+          : null;
+  return <RegisterContent key={initialTrack ?? 'chooser'} {...props} initialTrack={initialTrack} />;
+}
+
+/**
+ * Keeps /register statically cached: the server HTML is the track chooser,
+ * and a ?track= link opens the matching form as soon as the page hydrates.
+ */
+export function RegisterPageClient(props: RegisterPageClientProps) {
+  return (
+    <Suspense fallback={<RegisterContent {...props} initialTrack={null} />}>
+      <RegisterWithParams {...props} />
+    </Suspense>
+  );
 }
 
 interface SuccessState {
@@ -38,7 +68,7 @@ interface SuccessState {
   };
 }
 
-export function RegisterPageClient({ committees, categories, siteConfig, initialTrack }: RegisterPageClientProps) {
+function RegisterContent({ committees, categories, siteConfig, initialTrack }: RegisterContentProps) {
   const renderedAt = useRenderedAt();
 
   const [overrideTrack, setOverrideTrack] = useState<'gimun' | 'moot-cup' | null | undefined>(undefined);

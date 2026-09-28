@@ -11,20 +11,7 @@ export async function generateMetadata(): Promise<Metadata> { return await const
   path: '/register',
 }); }
 
-export default async function RegisterPage({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const query = await searchParams;
-  const initialTrack =
-    query.track === 'gimun' || query.track === 'moot-cup'
-      ? query.track
-      : query.committee
-        ? 'gimun'
-        : query.category
-          ? 'moot-cup'
-          : null;
+export default async function RegisterPage() {
   const committees = (await getCommittees());
   const categories = (await getProblemCategories());
   const siteConfig = (await getSiteConfig());
@@ -56,7 +43,6 @@ export default async function RegisterPage({
           committees={committees}
           categories={categories}
           siteConfig={siteConfig}
-          initialTrack={initialTrack}
         />
       </div>
     </div>

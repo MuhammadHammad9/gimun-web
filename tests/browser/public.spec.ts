@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import committees from '../../content/committees.json';
+import gallery from '../../content/gallery.json';
 
 const publicRoutes = [
   '/',
@@ -78,8 +79,10 @@ test('mobile navigation opens and closes with accessible state', async ({ page }
 });
 
 test('gallery lightbox is keyboard accessible and restores focus', async ({ page }) => {
+  // The gallery is empty until approved photographs are published.
+  test.skip(gallery.length === 0, 'No published gallery items');
   await page.goto('/about/gallery');
-  const firstCard = page.getByRole('button').filter({ hasText: 'UNSC Midnight Crisis Directive Session' }).first();
+  const firstCard = page.getByRole('button').filter({ hasText: (gallery[0] as { title: string }).title }).first();
   await firstCard.focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('dialog')).toBeVisible();

@@ -97,9 +97,9 @@ export default async function AboutOverviewPage() {
             </div>
 
             <div className="relative z-10 space-y-3">
-              <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
+              <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
                 GIKI Model United Nations (GIMUN)
-              </h3>
+              </h2>
               <p className="text-xs sm:text-sm text-champagne/85 leading-relaxed">
                 GIMUN immerses delegates in the intricacies of multilateral diplomacy, treaty negotiation, and high-stakes geopolitical crisis management. From the UN Security Council to specialized historic cabinets, delegates defend sovereign mandates under rigorous parliamentary protocols.
               </p>
@@ -143,9 +143,9 @@ export default async function AboutOverviewPage() {
             </div>
 
             <div className="relative z-10 space-y-3">
-              <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
+              <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
                 GIKI Moot Court (GMC)
-              </h3>
+              </h2>
               <p className="text-xs sm:text-sm text-champagne/85 leading-relaxed">
                 The GIKI Moot Court (GMC) is an appellate advocacy competition for law students. Teams write memorials for both Applicant and Respondent, then argue oral rounds before benches of legal practitioners.
               </p>
