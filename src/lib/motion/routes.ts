@@ -66,6 +66,16 @@ export function routeLabel(pathname: string): RouteLabel {
 /** Every static public route, for tests and the screenshot script. */
 export const LABELLED_ROUTES = Object.keys(LABELS);
 
+/** Routes that render through the public site shell instead of the focused 404. */
+export function isKnownPublicPath(pathname: string): boolean {
+  const path = REDIRECTS[normalizePath(pathname)] ?? normalizePath(pathname);
+  return Boolean(
+    LABELS[path] ||
+    /^\/gimun\/committees\/[^/]+$/.test(path) ||
+    /^\/(verify|survey)\/[^/]+(?:\/pdf)?$/.test(path),
+  );
+}
+
 /**
  * Files and endpoints: the browser should load these directly, never through
  * a client-side page transition.

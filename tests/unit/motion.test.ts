@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { canReveal, curtainReducer, initialCurtain, isBusy, panelCount } from '../../src/lib/motion/curtain-machine';
 import { EASE, EASE_CSS_VAR, DURATION } from '../../src/lib/motion/tokens';
-import { isDocumentHref, isTransitionable, normalizePath, routeLabel } from '../../src/lib/motion/routes';
+import { isDocumentHref, isKnownPublicPath, isTransitionable, normalizePath, routeLabel } from '../../src/lib/motion/routes';
 
 describe('page transition routes', () => {
   const current = new URL('https://gimun.test/gimun');
@@ -26,6 +26,13 @@ describe('page transition routes', () => {
     expect(isTransitionable('/admin', current)).toBe(false);
     expect(isTransitionable('/documents/guide.pdf', current)).toBe(false);
     expect(isDocumentHref('/verify/ABC/pdf')).toBe(true);
+  });
+
+  it('separates public routes from unmatched paths', () => {
+    expect(isKnownPublicPath('/about/faq')).toBe(true);
+    expect(isKnownPublicPath('/gimun/committees/unsc')).toBe(true);
+    expect(isKnownPublicPath('/verify/CERT-123/pdf')).toBe(true);
+    expect(isKnownPublicPath('/this-route-does-not-exist')).toBe(false);
   });
 });
 
@@ -60,4 +67,3 @@ describe('motion tokens', () => {
     }
   });
 });
-
