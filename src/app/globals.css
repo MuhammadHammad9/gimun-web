@@ -326,12 +326,22 @@
 
 .not-found__code::before {
   color: var(--color-crimson);
-  animation: not-found-glitch-a var(--not-found-glitch-cycle) steps(1, end) infinite;
 }
 
 .not-found__code::after {
   color: var(--color-champagne-lo);
-  animation: not-found-glitch-b var(--not-found-glitch-cycle) steps(1, end) infinite;
+}
+
+.not-found__code--glitching {
+  animation: not-found-code-impact 0.31s steps(1, end) infinite;
+}
+
+.not-found__code--glitching::before {
+  animation: not-found-glitch-a 0.23s steps(1, end) infinite;
+}
+
+.not-found__code--glitching::after {
+  animation: not-found-glitch-b 0.29s steps(1, end) -0.07s infinite;
 }
 
 .not-found__title {
@@ -408,27 +418,25 @@
 .not-found__button--home:hover { background: var(--color-champagne-hi); box-shadow: 0 0.8rem 2rem -0.7rem rgba(236, 216, 183, 0.78); }
 
 @keyframes not-found-glitch-a {
-  0%, 17%, 21%, 43%, 49%, 71%, 77%, 100% { opacity: 0; transform: translate(0); clip-path: inset(0); }
-  18% { opacity: 0.95; transform: translate(0.09em, -0.025em) skewX(5deg); clip-path: inset(4% 0 64%); }
-  19% { opacity: 0.72; transform: translate(-0.065em, 0.018em) rotate(-0.8deg); clip-path: inset(42% 0 23%); }
-  20% { opacity: 0.9; transform: translate(0.04em, 0) skewX(-3deg); clip-path: inset(73% 0 5%); }
-  44% { opacity: 0.85; transform: translate(-0.08em, -0.018em) rotate(0.65deg); clip-path: inset(14% 0 57%); }
-  46% { opacity: 0.98; transform: translate(0.1em, 0.02em) skewX(6deg); clip-path: inset(58% 0 12%); }
-  48% { opacity: 0.64; transform: translate(-0.04em, 0); clip-path: inset(79% 0 2%); }
-  72% { opacity: 0.9; transform: translate(0.075em, -0.02em) rotate(-0.55deg); clip-path: inset(28% 0 39%); }
-  74% { opacity: 0.7; transform: translate(-0.055em, 0.015em) skewX(-4deg); clip-path: inset(5% 0 71%); }
-  76% { opacity: 0.92; transform: translate(0.045em, 0); clip-path: inset(66% 0 9%); }
+  0%, 100% { opacity: 0.9; transform: translate(0.075em, -0.018em) skewX(5deg); clip-path: inset(4% 0 64%); }
+  25% { opacity: 0.72; transform: translate(-0.06em, 0.016em) rotate(-0.7deg); clip-path: inset(43% 0 22%); }
+  50% { opacity: 0.95; transform: translate(0.09em, 0.018em) skewX(-4deg); clip-path: inset(70% 0 5%); }
+  75% { opacity: 0.78; transform: translate(-0.045em, -0.014em) rotate(0.6deg); clip-path: inset(17% 0 55%); }
 }
 
 @keyframes not-found-glitch-b {
-  0%, 17%, 21%, 43%, 49%, 71%, 77%, 100% { opacity: 0; transform: translate(0); clip-path: inset(0); }
-  18% { opacity: 0.8; transform: translate(-0.075em, 0.02em) skewX(-4deg); clip-path: inset(56% 0 9%); }
-  20% { opacity: 0.92; transform: translate(0.055em, -0.015em) rotate(0.7deg); clip-path: inset(17% 0 61%); }
-  44% { opacity: 0.75; transform: translate(0.07em, 0.018em) skewX(3deg); clip-path: inset(68% 0 6%); }
-  45% { opacity: 0.95; transform: translate(-0.09em, -0.02em) rotate(-0.75deg); clip-path: inset(7% 0 69%); }
-  48% { opacity: 0.68; transform: translate(0.04em, 0); clip-path: inset(39% 0 29%); }
-  73% { opacity: 0.88; transform: translate(-0.08em, 0.018em) skewX(-5deg); clip-path: inset(62% 0 11%); }
-  75% { opacity: 0.72; transform: translate(0.06em, -0.012em) rotate(0.5deg); clip-path: inset(21% 0 52%); }
+  0%, 100% { opacity: 0.78; transform: translate(-0.07em, 0.02em) skewX(-4deg); clip-path: inset(57% 0 8%); }
+  25% { opacity: 0.92; transform: translate(0.055em, -0.015em) rotate(0.7deg); clip-path: inset(16% 0 62%); }
+  50% { opacity: 0.7; transform: translate(-0.085em, -0.018em) skewX(4deg); clip-path: inset(73% 0 4%); }
+  75% { opacity: 0.88; transform: translate(0.065em, 0.014em) rotate(-0.65deg); clip-path: inset(35% 0 31%); }
+}
+
+@keyframes not-found-code-impact {
+  0%, 100% { transform: translate(0) rotate(0); filter: none; }
+  20% { transform: translate(-0.025em, 0.01em) rotate(-0.35deg); filter: contrast(1.35); }
+  40% { transform: translate(0.035em, -0.014em) skewX(2deg); filter: brightness(1.16); }
+  60% { transform: translate(-0.02em, -0.006em) skewY(-0.7deg); filter: contrast(1.45); }
+  80% { transform: translate(0.018em, 0.01em) rotate(0.25deg); filter: brightness(1.1); }
 }
 
 @keyframes not-found-screen-glitch {
@@ -546,6 +554,7 @@
   .not-found__signal span,
   .not-found__code::before,
   .not-found__code::after,
+  .not-found__code--glitching,
   .not-found__title,
   .not-found__copy,
   .not-found__actions { animation: none; }

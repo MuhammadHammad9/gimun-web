@@ -1,4 +1,5 @@
 import { NotFoundActions } from '@/components/errors/NotFoundActions';
+import { GlitchCode } from '@/components/errors/GlitchCode';
 
 export default function NotFound() {
   return (
@@ -9,7 +10,7 @@ export default function NotFound() {
         <span />
       </div>
       <div className="not-found__content">
-        <p className="not-found__code" data-text="404" aria-hidden="true">404</p>
+        <GlitchCode />
         <h1 id="not-found-title" className="not-found__title">Page not found</h1>
         <p className="not-found__copy">
           The page or resource you&apos;re looking for may have moved, been renamed, or is temporarily unavailable.
