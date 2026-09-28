@@ -16,6 +16,10 @@ export const siteSchema = z.object({
   socialLinks: z.object({ instagram: link.optional(), facebook: link.optional(), linkedin: link.optional(), twitter: link.optional() }),
   contactEmails: z.object({ general: email, gimun: email.optional(), mootCup: email.optional(), sponsorship: email.optional() }),
   fees: z.object({ gimunIndividual: required, gimunDelegationPerDelegate: required, mootCupTeam: required }),
+  // Numeric amounts used for invoices and amount due. The text above is only for display.
+  feeAmounts: z.object({ gimunIndividual: z.number().min(0), gimunDelegationPerDelegate: z.number().min(0), mootCupTeam: z.number().min(0) }).optional(),
+  // Bank transfer instructions printed on invoices and payment emails.
+  paymentInstructions: text.optional(),
   registrationStatus: z.object({ gimunOpen: z.boolean(), mootCupOpen: z.boolean() }),
   resultsPublished: z.boolean(), phaseOverride: z.enum(phases).optional(),
   contactPhone: text.optional(), checkinDesk: text.optional(), entryRequirement: text.optional(), replyTime: text.optional(),

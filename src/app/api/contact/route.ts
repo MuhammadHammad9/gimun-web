@@ -29,7 +29,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Request body must be a JSON object.' }, { status: 400 });
     }
 
-    const { name, email, queryType, message, kind, _hp, _ts } = body as Record<string, unknown>;
+    const { name, email, queryType, message, kind, submission_key, _hp, _ts } = body as Record<string, unknown>;
+    const submissionKey =
+      typeof submission_key === 'string' && /^[0-9a-f-]{36}$/i.test(submission_key) ? submission_key : undefined;
 
     const loadedAt = Number(_ts);
     if ((_hp && String(_hp).trim()) || (process.env.NODE_ENV === 'production' && !_ts) || (_ts && (!Number.isFinite(loadedAt) || Date.now() - loadedAt < MIN_FILL_TIME_MS))) {
@@ -50,7 +52,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Please resolve the highlighted issues in the form.', errors }, { status: 422 });
     }
 
-    const delivery = await createContactMessage({ ...formData, kind: kind === 'clarification' ? 'clarification' : 'contact' });
+    const delivery = await createContactMessage({ ...formData, kind: kind === 'clarification' ? 'clarification' : 'contact' }, submissionKey);
     after(async () => { try { await dispatchEmailOutbox(); } catch { console.error('[Outbox] Dispatch deferred to next worker.'); } });
     return NextResponse.json(
       {

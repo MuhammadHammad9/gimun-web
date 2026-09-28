@@ -20,7 +20,7 @@ test('login, publish, public cache invalidation, revision restore, registration 
   const outbox=await (await request.get(`http://127.0.0.1:54329/rest/v1/email_outbox?reference_id=eq.${receipt.referenceId}`,{headers:fixtureHeaders})).json();
   const ticket=outbox.find((m:{message_type:string})=>m.message_type==='applicant-receipt');
   expect(ticket.attachments[0].content_id).toBe('ticket');expect(Buffer.from(ticket.attachments[0].content,'base64').subarray(0,8).toString('hex')).toBe('89504e470d0a1a0a');
-  await page.goto('/admin/certificates');const certForm=page.locator('form').filter({has:page.getByRole('heading',{name:'Issue and email participation certificates'})});
+  await page.goto('/admin/certificates');const certForm=page.locator('form').filter({has:page.getByRole('heading',{name:'Issue and email certificates'})});
   await certForm.getByRole('listbox',{name:'Recipients'}).selectOption(participant.id);await certForm.getByRole('checkbox').check();await certForm.getByRole('button',{name:'Queue certificate emails'}).click();await expect(certForm.getByRole('status')).toContainText('Queued 1 emails');
   const certificates=await (await request.get('http://127.0.0.1:54329/rest/v1/certificates',{headers:fixtureHeaders})).json();
   const code=certificates.find((c:{participant_id:string})=>c.participant_id===participant.id).verify_code;

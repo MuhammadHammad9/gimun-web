@@ -1,10 +1,30 @@
 import type { NextConfig } from "next";
 
+const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin : '';
+
+// Next injects inline bootstrap scripts, so script-src needs 'unsafe-inline'
+// without a nonce setup; the value of this policy is in everything else:
+// no plugins, no foreign frames or form targets, and a short connect list.
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''}`,
+  "style-src 'self' 'unsafe-inline'",
+  `img-src 'self' data: blob: https://www.googletagmanager.com https://www.google-analytics.com ${supabaseOrigin}`.trim(),
+  "font-src 'self'",
+  `connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com ${supabaseOrigin}`.trim(),
+  "frame-src https://www.google.com https://maps.google.com",
+  "media-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+].join('; ');
+
 const nextConfig: NextConfig = {
   distDir: process.env.ADMIN_TEST_BUILD === '1' ? '.next-admin-test' : '.next',
   typescript: process.env.ADMIN_TEST_BUILD === '1' ? { tsconfigPath: 'tsconfig.admin-test.json' } : {},
   images: {
-    qualities: [75, 85, 90, 100],
+    qualities: [75, 85, 90],
     remotePatterns: process.env.NEXT_PUBLIC_SUPABASE_URL ? [{ protocol: 'https', hostname: new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname, pathname: '/storage/v1/object/public/media/**' }] : [],
   },
   // Short URLs for posters, QR codes and social bios.
@@ -20,6 +40,8 @@ const nextConfig: NextConfig = {
       { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
       { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
       { key: 'Permissions-Policy', value: 'camera=(self), microphone=(), geolocation=()' },
+      { key: 'Content-Security-Policy', value: contentSecurityPolicy },
+      { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
     ] }, { source: '/admin/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }, { key: 'Cache-Control', value: 'private, no-store' }] }];
   },
   // Tell Turbopack the workspace root explicitly to avoid the

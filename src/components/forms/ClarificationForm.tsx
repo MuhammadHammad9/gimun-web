@@ -19,6 +19,7 @@ export function ClarificationForm() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [serverError, setServerError] = useState<string | null>(null);
   const formLoadedAt = useRef(0);
+  const submissionKey = useRef<string | null>(null);
 
   useEffect(() => {
     formLoadedAt.current = Date.now();
@@ -50,6 +51,7 @@ export function ClarificationForm() {
           email: teamEmail.trim(),
           queryType: 'moot-cup',
           kind: 'clarification',
+          submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
           message: `[GMC Compromis Clarification]\nCompromis Citation: ${paragraphRef.trim()}\n\nQuestion:\n${questionText.trim()}`,
           _hp: honeypot,
           _ts: formLoadedAt.current,

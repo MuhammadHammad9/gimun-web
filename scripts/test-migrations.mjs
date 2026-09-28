@@ -50,6 +50,28 @@ try {
   const participant2=(await db.query('select id from participants where registration_ref=$1',[secondReceipt.referenceId])).rows[0].id;
   await assert.rejects(()=>op('allocation',{participant_id:participant2,committee_slug:'test',country:'Japan'}),/capacity/);
   await assert.rejects(()=>db.query('select guarded_counter_reset($1)',[actor]),/Cannot reset/);
+  // 0011: database-side permissions, correction operations, resend, invoice, idempotent contact.
+  const viewer=randomUUID(),doorStaff=randomUUID();await db.query('insert into auth.users values($1),($2)',[viewer,doorStaff]);
+  await db.query("insert into admin_users(user_id,email,display_name,role,must_change_password) values($1,'viewer@example.test','Viewer','viewer',false),($2,'door@example.test','Door','checkin',false)",[viewer,doorStaff]);
+  const opAs=(who,operation,input)=>db.query('select admin_operation($1,$2,$3)',[operation,JSON.stringify(input),who]);
+  await assert.rejects(()=>opAs(viewer,'registration-contact',{reference:first.referenceId,applicant_name:'X',contact_email:'x@example.test'}),/permission/);
+  await assert.rejects(()=>opAs(doorStaff,'checkin',{participant_id:participant,checked:true,override:true,reason:'Lost ticket'}),/Overrides require/);
+  await opAs(doorStaff,'checkin',{participant_id:participant,checked:true,override:false});
+  await op('participant-edit',{participant_id:participant,name:'Corrected Name',email:'Fixed@Example.test'});
+  assert.deepEqual((await db.query('select name,email from participants where id=$1',[participant])).rows[0],{name:'Corrected Name',email:'fixed@example.test'});
+  await op('registration-contact',{reference:first.referenceId,applicant_name:'Corrected Name',contact_email:'new@example.test',institution:'Test University'});
+  await assert.rejects(()=>op('registration-contact',{reference:first.referenceId,applicant_name:'Y',contact_email:'not-an-email'}),/valid email/);
+  await op('resend-ticket',{reference:first.referenceId});
+  assert.deepEqual((await db.query("select to_addresses from email_outbox where reference_id=$1 and message_type='applicant-receipt' order by created_at desc limit 1",[first.referenceId])).rows[0].to_addresses,['new@example.test']);
+  await op('invoice',{reference:first.referenceId,subject:'Invoice',html:'<p>Invoice</p>',from:'test@example.test',invoice_number:'INV-1'});
+  assert.equal((await db.query("select count(*)::int as n from email_outbox where message_type='invoice'")).rows[0].n,1);
+  assert.ok((await db.query("select count(*)::int as n from registration_history where action in ('participant-edit','contact-edit','resend-ticket','invoice')")).rows[0].n>=4);
+  const contactArgs=['INQ-TEST-1',new Date().toISOString(),'Tester','t@example.test','other','A question worth asking',['team@example.test'],'Subject','<p>x</p>','contact','from@example.test'];
+  const contactSql='select create_contact_v2($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) as id';
+  await db.query(contactSql,contactArgs);await db.query(contactSql,contactArgs);
+  assert.equal((await db.query("select count(*)::int as n from contact_messages where id='INQ-TEST-1'")).rows[0].n,1);
+  assert.equal((await db.query("select count(*)::int as n from email_outbox where contact_id='INQ-TEST-1'")).rows[0].n,1);
+  await db.query("delete from email_outbox where contact_id='INQ-TEST-1'");await db.query("delete from contact_messages where id='INQ-TEST-1'");
   const before=new Date(Date.now()-86400000).toISOString();
   const cleanup=(execute,expected)=>db.query('select retention_cleanup($1,$2,$3,$4,$5,$6,$7) as result',[actor,before,'Approved test retention policy','Approved test legal basis','privacy@example.test',execute,expected]);
   await assert.rejects(()=>cleanup(false,0),/Archive/);
@@ -62,5 +84,5 @@ try {
   assert.equal((await db.query("select count(*)::int as n from registrations where contact_email='anonymized@invalid.example'")).rows[0].n,2);
   assert.equal((await db.query('select count(*)::int as n from certificates')).rows[0].n,0);
   assert.equal((await db.query('select count(*)::int as n from email_outbox')).rows[0].n,0);
-  console.log('PASS: migrations, private grants, idempotency, references, roster, revisions, attendance, certificates, allocation conflicts/capacity, guarded reset and retention dry-run/anonymization');
+  console.log('PASS: migrations, private grants, idempotency, references, roster, revisions, attendance, certificates, allocation conflicts/capacity, guarded reset, retention dry-run/anonymization, database permissions and correction operations');
 } finally { await db.close(); }

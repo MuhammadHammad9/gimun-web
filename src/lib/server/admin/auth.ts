@@ -14,10 +14,29 @@ export async function authClient() {
     try { values.forEach(({ name, value, options }) => store.set(name, value, options)); } catch { /* Proxy refreshes cookies during server rendering. */ }
   } } });
 }
-export async function requireAdmin(allowPasswordChange = false): Promise<AdminUser> {
+/**
+ * Two-factor gate. Anyone with an enrolled authenticator must complete the
+ * code step every session. With ADMIN_REQUIRE_MFA=1, accounts without one are
+ * sent to enrol before they can see any personal data.
+ */
+export async function mfaState() {
+  const client = await authClient();
+  const { data, error } = await client.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (error || !data) return { needsCode: false, needsEnrolment: process.env.ADMIN_REQUIRE_MFA === '1' };
+  const enrolled = data.nextLevel === 'aal2';
+  return {
+    needsCode: enrolled && data.currentLevel !== 'aal2',
+    needsEnrolment: !enrolled && process.env.ADMIN_REQUIRE_MFA === '1',
+  };
+}
+export async function requireAdmin(allowPasswordChange = false, allowMfaSetup = false): Promise<AdminUser> {
   const client = await authClient();
   const { data, error } = await client.auth.getUser();
   if (error || !data.user) redirect('/admin/login');
+  if (!allowMfaSetup) {
+    const mfa = await mfaState();
+    if (mfa.needsCode || mfa.needsEnrolment) redirect('/admin/mfa');
+  }
   const { data: user, error: profileError } = await database().from('admin_users').select('*').eq('user_id', data.user.id).eq('active', true).maybeSingle();
   if (profileError || !user) throw new Error('This account has no active admin access.');
   if (user.must_change_password && !allowPasswordChange) redirect('/admin/password');

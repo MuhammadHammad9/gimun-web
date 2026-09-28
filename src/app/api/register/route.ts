@@ -21,17 +21,15 @@ import type {
   GimunDelegationData,
   MootCupTeamData,
 } from '@/lib/types';
-import { formatEventDate, isRegistrationDeadlinePassed } from '@/lib/site-config';
+import { getCanonicalEventDateRange } from '@/lib/site-config';
+import { canRegister } from '@/lib/phase';
+import { feeAmount as numericFee, formatFee } from '@/lib/fees';
+import { pickGimunDelegation, pickGimunIndividual, pickMootTeam } from '@/lib/registration-data';
 import { JsonBodyError, readJsonBody } from '@/lib/server/request';
 
+// Same rule the pages use to show or hide the register buttons.
 async function isTrackOpen(track: 'gimun' | 'moot-cup') {
-  const site = (await getSiteConfig());
-  const manuallyOpen = track === 'gimun'
-    ? site.registrationStatus?.gimunOpen !== false
-    : site.registrationStatus?.mootCupOpen !== false;
-  const deadline = track === 'gimun' ? site.registrationDeadlines.gimun : site.registrationDeadlines.mootCup;
-  const deadlinePassed = isRegistrationDeadlinePassed(deadline);
-  return manuallyOpen && !deadlinePassed;
+  return canRegister(await getSiteConfig(), track === 'gimun' ? 'gimun' : 'mootCup');
 }
 
 export const maxDuration = 60;
@@ -85,14 +83,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const rateLimit = await enforceRateLimit('registration', clientIp(req));
-    if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { success: false, message: 'Too many requests. Please wait before submitting again.' },
-        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } },
-      );
-    }
-
     let errors: ValidationErrors = {};
     const committeeIds = (await getCommittees()).flatMap((committee) => [committee.id, committee.slug]);
     const categoryIds = (await getProblemCategories()).map((category) => category.id);
@@ -114,12 +104,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Counted only for valid submissions, so correcting a form never locks
+    // anyone out; validation itself is cheap and writes nothing.
+    const rateLimit = await enforceRateLimit('registration', clientIp(req));
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { success: false, message: 'Too many requests. Please wait before submitting again.' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } },
+      );
+    }
+
+    // Persist only the fields the forms collect.
+    const storedFormData =
+      applicantType === 'individual'
+        ? pickGimunIndividual(normalizedFormData)
+        : applicantType === 'delegation'
+          ? pickGimunDelegation(normalizedFormData)
+          : pickMootTeam(normalizedFormData);
+
     let applicantName = '';
     let institution = '';
     let email = '';
     let phone = '';
     let summary = '';
     let feeAmount = '';
+    let amountDue: number | null = null;
     let participantCount = 1;
 
     const site = (await getSiteConfig());
@@ -133,6 +142,7 @@ export async function POST(req: NextRequest) {
       const c1 = (await getCommittees()).find((c) => c.id === individual.committeePreference1 || c.slug === individual.committeePreference1)?.name || individual.committeePreference1;
       summary = `1st Pref: ${c1}`;
       feeAmount = site.fees.gimunIndividual;
+      amountDue = numericFee(site, 'gimunIndividual');
     } else if (track === 'gimun') {
       const delegation = normalizedFormData as GimunDelegationData;
       applicantName = `${delegation.delegationHeadName} (Head Delegate)`;
@@ -141,7 +151,11 @@ export async function POST(req: NextRequest) {
       phone = delegation.delegationHeadPhone || '';
       participantCount = delegation.delegates.length;
       summary = `Institutional Delegation (${participantCount} Delegates)`;
-      feeAmount = `${site.fees.gimunDelegationPerDelegate} × ${participantCount} delegates`;
+      const perDelegate = numericFee(site, 'gimunDelegationPerDelegate');
+      amountDue = perDelegate === null ? null : perDelegate * participantCount;
+      feeAmount = amountDue === null
+        ? `${site.fees.gimunDelegationPerDelegate} × ${participantCount} delegates`
+        : `${site.fees.gimunDelegationPerDelegate} × ${participantCount} delegates = ${formatFee(amountDue, site.fees.gimunDelegationPerDelegate)}`;
     } else {
       const team = normalizedFormData as MootCupTeamData;
       applicantName = team.teamName;
@@ -152,16 +166,19 @@ export async function POST(req: NextRequest) {
       const cat = (await getProblemCategories()).find((c) => c.id === team.problemCategoryPreference)?.name || team.problemCategoryPreference;
       summary = `${cat} (${participantCount} Advocates)`;
       feeAmount = site.fees.mootCupTeam;
+      amountDue = numericFee(site, 'mootCupTeam');
     }
 
     const submittedAt = new Date().toISOString();
-    const eventDates = `${formatEventDate(site.eventDates.start)}–${formatEventDate(site.eventDates.end, { day: 'numeric' })}`;
+    const eventDates = getCanonicalEventDateRange(site);
     const delivery = await createRegistration({
       submissionKey,
-      amountDue: Number((applicantType === 'delegation' ? site.fees.gimunDelegationPerDelegate : feeAmount).replace(/[^0-9.]/g, '')) * (applicantType === 'delegation' ? participantCount : 1),
+      // Unparseable fee text must not block registration; the team can set
+      // the amount in the admin and the warning makes the gap visible.
+      amountDue: amountDue ?? (console.warn(`[Registration] No numeric fee for ${track}/${applicantType}; set feeAmounts in settings.`), 0),
       track,
       applicantType,
-      formData: normalizedFormData,
+      formData: storedFormData,
       applicantName,
       institution,
       email,

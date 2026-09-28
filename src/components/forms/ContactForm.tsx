@@ -37,6 +37,8 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [honeypot, setHoneypot] = useState('');
   const formLoadedAt = useRef(0);
+  // One key per message, kept across retries of the same submission.
+  const submissionKey = useRef<string | null>(null);
 
   useEffect(() => {
     formLoadedAt.current = Date.now();
@@ -73,6 +75,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
           _hp: honeypot,
           _ts: formLoadedAt.current,
         }),
@@ -97,6 +100,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
 
       setStatus('success');
       setServerMessage(data.message);
+      submissionKey.current = null;
     } catch {
       console.error('Contact request failed.');
       setStatus('error');

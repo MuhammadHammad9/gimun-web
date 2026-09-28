@@ -1,5 +1,6 @@
 'use server';
 import { z } from 'zod';
+import { unstable_rethrow } from 'next/navigation';
 import { after } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { requirePermission } from '@/lib/server/admin/auth';
@@ -11,7 +12,7 @@ import { certificatePdf } from '@/lib/server/certificate-pdf';
 
 export async function queuePostEvent(input:unknown){
   try {
-    const value=z.object({kind:z.enum(['survey','certificate']),ids:z.array(z.uuid()).min(1).max(25),confirm:z.literal(true)}).parse(input);
+    const value=z.object({kind:z.enum(['survey','certificate']),certificate_kind:z.enum(['participation','award','chair']).default('participation'),ids:z.array(z.uuid()).min(1).max(25),confirm:z.literal(true)}).parse(input);
     await requirePermission(value.kind==='survey'?'feedback':'certificates',true);
     await requirePermission('email',true);
     const config=getServerConfig();if(!config.siteUrl||!config.emailFrom)throw new Error('SITE_URL and EMAIL_FROM must be configured.');
@@ -25,14 +26,14 @@ export async function queuePostEvent(input:unknown){
         const url=new URL(`/survey/${person.survey_token}`,config.siteUrl).toString();
         messages.push({type:'survey',to:person.email,subject:'Your event feedback',html:emailHtml(`Hello ${person.name},\nPlease share your feedback using your private link:\n${url}`)});
       }else{
-        const certificate=await operate('certificates','certificate',{participant_id:person.id,kind:'participation',override:false});
+        const certificate=await operate('certificates','certificate',{participant_id:person.id,kind:value.certificate_kind,override:false});
         const pdf=await certificatePdf({name:person.name,serial:certificate.serial,kind:certificate.kind,code:certificate.verify_code,issuedAt:certificate.issued_at});
         const url=new URL(`/verify/${certificate.verify_code}`,config.siteUrl).toString();
-        messages.push({type:'certificate',to:person.email,subject:'Your participation certificate',html:emailHtml(`Hello ${person.name},\nYour certificate is attached. Verify it online:\n${url}`),attachments:[{filename:`${certificate.serial}.pdf`,content:Buffer.from(pdf).toString('base64')}]});
+        messages.push({type:'certificate',to:person.email,subject:`Your ${value.certificate_kind} certificate`,html:emailHtml(`Hello ${person.name},\nYour certificate is attached. Verify it online:\n${url}`),attachments:[{filename:`${certificate.serial}.pdf`,content:Buffer.from(pdf).toString('base64')}]});
       }
     }
     await operate('email','email',{from:config.emailFrom,messages});
     after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Post-event delivery deferred');}});
     revalidatePath('/admin','layout');return {message:`Queued ${messages.length} emails. Review delivery in Email.`};
-  }catch(error){return {error:error instanceof Error?error.message:'Unable to queue post-event emails.'};}
+  }catch(error){unstable_rethrow(error);return {error:error instanceof Error?error.message:'Unable to queue post-event emails.'};}
 }

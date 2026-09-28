@@ -1,4 +1,5 @@
 'use server';
+import { unstable_rethrow } from 'next/navigation';
 import { updateTag } from 'next/cache';
 import { requirePermission } from '@/lib/server/admin/auth';
 import { requireAdmin } from '@/lib/server/admin/auth';
@@ -13,7 +14,7 @@ export async function saveContent(input: unknown) {
     if (error) return { error: error.message.includes('changed') ? error.message : 'Unable to save. Check for a conflicting ID or pinned announcement.' };
     updateTag(`content:${entry.collection}`);
     return { version: entry.version + 1, entry: { ...entry, version: entry.version + 1 } };
-  } catch { return { error: 'Invalid content or insufficient permission. Check all fields.' }; }
+  } catch (error) { unstable_rethrow(error); return { error: 'Invalid content or insufficient permission. Check all fields.' }; }
 }
 export async function saveSettings(input: unknown, version: number) {
   try {
@@ -26,7 +27,7 @@ export async function saveSettings(input: unknown, version: number) {
     if (error) return { error: 'Settings changed or could not be saved. Reload and try again.' };
     updateTag('content:site');
     return { version: version + 1, data };
-  } catch { return { error: 'Invalid settings or insufficient permission.' }; }
+  } catch (error) { unstable_rethrow(error); return { error: 'Invalid settings or insufficient permission.' }; }
 }
 export async function restoreRevision(id: number, version: number) {
   await requireAdmin();
@@ -46,5 +47,5 @@ export async function saveContentBatch(input: unknown[]) {
     const {error}=await database().rpc('save_content_batch',{p_entries:entries,p_actor:user.user_id});
     if(error)return {error:'Batch not saved. Check IDs, versions and pin conflicts.'};
     updateTag(`content:${collection}`);return {success:true};
-  }catch{return {error:'Invalid batch or insufficient permission.'};}
+  }catch(error){unstable_rethrow(error);return {error:'Invalid batch or insufficient permission.'};}
 }

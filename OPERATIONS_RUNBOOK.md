@@ -18,7 +18,16 @@ Never print or commit credentials. This workspace is inside OneDrive: confirm th
 
 Registration/contact storage and their outbox rows commit atomically. Registration retries use a stable request key; reuse with different payload is rejected. Applicant QR is a server-generated PNG attachment with `content_id=ticket`, matching the token returned to the browser.
 
-Public routes schedule a bounded dispatcher with Next `after()`. Admin broadcasts/post-event sends and cron use a bounded drain. Cron is `0 3 * * *` UTC for Vercel Hobby compatibility. Daily cron is only a safety net: it cannot provide timely retries or drain an arbitrarily large campaign. Use **Email → Process due messages** and check pending/retry/failed/review counts, especially during the event. Consider an authorized external scheduler or an appropriate hosting plan if unattended frequent retries are required.
+Public routes schedule a bounded dispatcher with Next `after()`. Admin broadcasts/post-event sends and cron use a bounded drain. Cron is `0 3 * * *` UTC for Vercel Hobby compatibility. Daily cron is only a safety net: it cannot provide timely retries or drain an arbitrarily large campaign. Use **Email → Process due messages** and check pending/retry/failed/review counts, especially during the event. For unattended delivery, run `supabase/email_scheduler.sql` once per environment: it uses pg_cron and pg_net to call the protected endpoint every two minutes with secrets held in Vault. Messages now stay retryable for 72 hours (migration 0011), so even the daily cron gets at least two attempts.
+
+Registration pages offer **Send invoice** (PDF built from amount due, amount paid and **Settings → paymentInstructions**) and **Resend receipt & QR ticket** (the original receipt, sent to the current contact email). Set **Settings → feeAmounts** to the numeric fees; the display text in `fees` is not used for arithmetic.
+
+## Admin security
+
+- Enable TOTP MFA in Supabase Auth. Admins enrol from **Two-factor** in the admin header; set `ADMIN_REQUIRE_MFA=1` to make enrolment mandatory before any admin page loads.
+- Changing a password requires the current password and signs out the account's other sessions.
+- The database enforces section permissions itself (`admin_can`, migration 0011), and every CSV export writes an audit-log row. Read-only viewers cannot export.
+- `/api/health` returns 200 when configuration is complete and the CMS is reachable; point an uptime monitor at it.
 
 Provider requests use the outbox ID as the idempotency key. Stored payloads must not be edited during retry. Timeout/uncertain responses and concurrent-key HTTP 409 responses can retry within the bounded window; a different-payload conflict fails. If the provider accepted mail but the database acknowledgement failed, the lease remains for safe recovery. A legacy attempted row without a recorded sender requires manual review. Never reset a key/window just to force a resend: first verify the provider outcome.
 
