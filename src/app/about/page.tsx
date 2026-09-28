@@ -1,237 +1,188 @@
-import { PublishedStats } from '@/components/ui/PublishedStats';
-import { getSiteConfig } from '@/lib/content';
-import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  Compass,
-  Scale,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  Sparkles,
-} from "lucide-react";
-import { Button } from "@/components/ui/Button";
-
-import { constructMetadata } from "@/lib/metadata";
-import { getEventYear } from "@/lib/site-config";
-import { canRegister } from "@/lib/phase";
+import type { Metadata } from 'next';
 import { PageHero } from '@/components/ui/PageHero';
 import { CtaBanner } from '@/components/ui/CtaBanner';
+import { PublishedStats } from '@/components/ui/PublishedStats';
+import { Bezel, Eyebrow, FactList, Ledger, PageSection, SectionHeading, TextLink } from '@/components/ui/Editorial';
+import { getCommittees, getMootCategories, getSchedule, getSiteConfig } from '@/lib/content';
+import { constructMetadata } from '@/lib/metadata';
+import { canRegister } from '@/lib/phase';
+import { formatEventDate, getEventYear } from '@/lib/site-config';
+import { formatDateRange } from '@/lib/utils';
 
-export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
-  title: `About the Symposium | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
-  path: '/about',
-  description:
-    "Discover the legacy, academic mission, and institutional heritage of Pakistan’s premier twin diplomatic and legal advocacy championship hosted at GIKI, Topi.",
-}); }
+export async function generateMetadata(): Promise<Metadata> {
+  return await constructMetadata({
+    title: `About GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
+    path: '/about',
+    description:
+      'What GIMUN and the GIKI Moot Court are, how the four days fit together, and who runs them at GIK Institute in Topi.',
+  });
+}
 
 export default async function AboutOverviewPage() {
-  const site=await getSiteConfig();
+  const [site, committees, categories, schedule] = await Promise.all([
+    getSiteConfig(),
+    getCommittees(),
+    getMootCategories(),
+    getSchedule(),
+  ]);
   const gimunOpen = canRegister(site, 'gimun');
   const mootOpen = canRegister(site, 'mootCup');
+  const anyOpen = gimunOpen || mootOpen;
+
+  // One line per conference day, taken from the published schedule.
+  const days = Array.from(new Set(schedule.map((s) => s.day)))
+    .sort((a, b) => a - b)
+    .map((day) => {
+      const sessions = schedule.filter((s) => s.day === day);
+      const label = sessions[0]?.dayLabel ?? `Day ${day}`;
+      const highlights = sessions
+        .filter((s) => !/lunch|check-out|press/i.test(s.title))
+        .slice(0, 3)
+        .map((s) => s.title);
+      return { day, label, highlights };
+    });
+
   return (
-    <div className="space-y-16">
-      {/* 1. Atmospheric Dark Hero Header */}
+    <div className="pb-24">
       <PageHero
         variant="utility"
-        title={'Pakistan\'s Premier Twin Diplomatic & Legal Symposium'}
-        accentWords={['Diplomatic', '&', 'Legal']}
-        description={'Hosted at the GIKI campus in Topi, the symposium brings students together for parliamentary debate, courtroom advocacy, and leadership.'}
-        eyebrow={
-          <div className="flex flex-wrap items-center gap-2.5">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-champagne border border-champagne/30">
-                        <Sparkles className="w-3.5 h-3.5 text-champagne" />
-                        Diplomacy & Advocacy
-                      </span>
-                      <span className="text-xs font-mono text-champagne/70 uppercase tracking-widest">
-                        GIKI Topi
-                      </span>
-                    </div>
-        }
-        actionsSlot={
-          <>
-            <div className="pt-2 flex flex-wrap items-center gap-4">
-                        <Button variant="track-gimun" href="/gimun">
-                          Explore GIMUN
-                        </Button>
-                        <Button variant="track-moot" href="/moot-cup">
-                          Explore GMC
-                        </Button>
-                        <Button variant="secondary" href="/about/team">
-                          Leadership Directory
-                        </Button>
-                      </div>
-          </>
-        }
+        eyebrow={<Eyebrow>About the event</Eyebrow>}
+        title="Two competitions, one campus, four days"
+        accentWords={['one', 'campus,']}
+        description={`GIMUN and the GIKI Moot Court run side by side at ${site.hostInstitution.split(',')[0]}, ${formatDateRange(site.eventDates.start, site.eventDates.end)}. Delegates debate in committee; law students argue before a bench. Both share the ceremonies, meals and evenings.`}
+        actions={[
+          { label: 'Explore GIMUN', href: '/gimun', variant: 'track-gimun' },
+          { label: 'Explore GMC', href: '/moot-cup', variant: 'track-moot' },
+        ]}
       />
 
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 pb-16">
-        {/* 2. Published metrics — omitted entirely until the CMS has real figures. */}
+      <div className="space-y-28 pt-24 md:space-y-36">
         {site.stats?.length ? (
-        <section className="space-y-8">
-          <div className="space-y-1">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
-              Institutional Stature
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream">
-              At a glance
-            </h2>
-          </div>
-
-          <PublishedStats stats={site.stats}/>
-        </section>
+          <PageSection labelledBy="stats-heading">
+            <SectionHeading id="stats-heading" eyebrow="At a glance" title="In numbers" className="mb-10" />
+            <PublishedStats stats={site.stats} />
+          </PageSection>
         ) : null}
 
-        {/* 3. The Twin Flagship Pillars */}
-        <section className="grid md:grid-cols-2 gap-8">
-          {/* GIMUN Pillar */}
-          <div className="p-8 sm:p-10 rounded-2xl bg-overlay/90 text-champagne space-y-6 border border-champagne/30 relative overflow-hidden shadow-xl">
-            <div className="absolute inset-0 bg-brand/20 pointer-events-none" />
-            <div className="relative z-10 flex items-center justify-between">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono uppercase bg-champagne/20 text-cream border border-champagne/40">
-                <Compass className="w-3.5 h-3.5" />
-                <span>Diplomatic Simulation</span>
-              </span>
-              <span className="text-xs font-mono text-champagne/70">Track 01</span>
-            </div>
+        <PageSection labelledBy="tracks-heading">
+          <SectionHeading
+            id="tracks-heading"
+            eyebrow="The two tracks"
+            title="Pick the one you want to be tested in"
+            lead="They share dates and a campus, but the preparation, the rules and the judging are entirely different."
+            className="mb-12"
+          />
+          <div className="grid gap-5 lg:grid-cols-2">
+            <Bezel accent="gimun">
+              <div className="flex h-full flex-col p-8 sm:p-10">
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-crimson-soft">Model United Nations</p>
+                <h3 className="mt-4 text-2xl font-display font-medium text-text">{site.eventNames.gimun}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-text-3">
+                  Delegates represent countries across {committees.length} committees, negotiate in caucus and vote
+                  resolutions through. Enter on your own or with your institution.
+                </p>
+                <FactList
+                  className="mt-8"
+                  items={[
+                    { term: 'Committees', value: committees.map((c) => c.slug.toUpperCase()).join(' · ') },
+                    { term: 'Awards', value: 'Best Delegate, Outstanding Delegate, Best Delegation' },
+                    { term: 'Closes', value: formatEventDate(site.registrationDeadlines.gimun) },
+                  ]}
+                />
+                <TextLink href="/gimun" className="mt-auto pt-8">
+                  GIMUN track
+                </TextLink>
+              </div>
+            </Bezel>
+            <Bezel>
+              <div className="flex h-full flex-col p-8 sm:p-10">
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-champagne">Moot court</p>
+                <h3 className="mt-4 text-2xl font-display font-medium text-text">{site.eventNames.mootCup}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-text-3">
+                  Teams of law students write memorials for both sides of one problem, then argue oral rounds before
+                  benches of practitioners, through to a Grand Final.
+                </p>
+                <FactList
+                  className="mt-8"
+                  items={[
+                    { term: 'Categories', value: `${categories.length} areas of law` },
+                    { term: 'Awards', value: 'Champions, Best Memorial, Best Oralist' },
+                    { term: 'Closes', value: formatEventDate(site.registrationDeadlines.mootCup) },
+                  ]}
+                />
+                <TextLink href="/moot-cup" className="mt-auto pt-8">
+                  GMC track
+                </TextLink>
+              </div>
+            </Bezel>
+          </div>
+        </PageSection>
 
-            <div className="relative z-10 space-y-3">
-              <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
-                GIKI Model United Nations (GIMUN)
-              </h2>
-              <p className="text-xs sm:text-sm text-champagne/85 leading-relaxed">
-                GIMUN immerses delegates in the intricacies of multilateral diplomacy, treaty negotiation, and high-stakes geopolitical crisis management. From the UN Security Council to specialized historic cabinets, delegates defend sovereign mandates under rigorous parliamentary protocols.
-              </p>
-            </div>
-
-            <ul className="relative z-10 space-y-2.5 text-xs text-champagne/90 font-mono">
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Standardized Harvard Parliamentary Rules of Procedure</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Real-time Crisis Directives &amp; Joint Cabinet Interventions</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Best Delegate, Outstanding Delegate &amp; Best Delegation awards</span>
-              </li>
-            </ul>
-
-            <div className="relative z-10 pt-4 border-t border-champagne/15">
-              <Link
-                href="/gimun"
-                className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-champagne hover:text-cream transition-colors"
+        <PageSection labelledBy="days-heading" className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+          <div className="lg:sticky lg:top-32 lg:self-start">
+            <SectionHeading
+              stacked
+              id="days-heading"
+              eyebrow="The four days"
+              title="How the week fits together"
+              lead="Committees and courtrooms run in parallel; ceremonies, meals and evenings are shared."
+              action={{ label: 'Full schedule', href: '/schedule' }}
+            />
+          </div>
+          <ol className="rise-stagger border-b border-line">
+            {days.map((d, i) => (
+              <li
+                key={d.day}
+                style={{ '--i': i } as React.CSSProperties}
+                className="grid gap-2 border-t border-line py-6 sm:grid-cols-[10rem_1fr] sm:gap-6"
               >
-                <span>Explore GIMUN Track Details</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* GMC Pillar */}
-          <div className="p-8 sm:p-10 rounded-2xl bg-overlay/90 text-champagne space-y-6 border border-champagne/30 relative overflow-hidden shadow-xl">
-            <div className="absolute inset-0 bg-champagne/10 pointer-events-none" />
-            <div className="relative z-10 flex items-center justify-between">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono uppercase bg-brand text-cream border border-champagne/30">
-                <Scale className="w-3.5 h-3.5" />
-                <span>Judicial Advocacy</span>
-              </span>
-              <span className="text-xs font-mono text-champagne/70">Track 02</span>
-            </div>
-
-            <div className="relative z-10 space-y-3">
-              <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
-                GIKI Moot Court (GMC)
-              </h2>
-              <p className="text-xs sm:text-sm text-champagne/85 leading-relaxed">
-                The GIKI Moot Court (GMC) is an appellate advocacy competition for law students. Teams write memorials for both Applicant and Respondent, then argue oral rounds before benches of legal practitioners.
-              </p>
-            </div>
-
-            <ul className="relative z-10 space-y-2.5 text-xs text-champagne/90 font-mono">
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Comprehensive Written Memorial Scoring (OSCOLA 4th Ed)</span>
+                <p className="font-display font-medium text-text">{d.label.split('—')[0].trim()}</p>
+                <div>
+                  <p className="text-sm text-text-4">{d.label.split('—')[1]?.trim()}</p>
+                  <ul className="mt-2 space-y-1 text-sm text-text-2">
+                    {d.highlights.map((h) => (
+                      <li key={h}>{h}</li>
+                    ))}
+                  </ul>
+                </div>
               </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Preliminary, Quarter, Semi, and Grand Final Pleading Benches</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Champion Bench Trophy, Best Memorial, and Best Oralist Honors</span>
-              </li>
-            </ul>
+            ))}
+          </ol>
+        </PageSection>
 
-            <div className="relative z-10 pt-4 border-t border-champagne/15">
-              <Link
-                href="/moot-cup"
-                className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-champagne hover:text-cream transition-colors"
-              >
-                <span>Explore GMC Track Details</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+        <PageSection labelledBy="more-heading" className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+          <div className="lg:sticky lg:top-32 lg:self-start">
+            <SectionHeading
+              stacked
+              id="more-heading"
+              eyebrow="Run by students"
+              title="Organized at GIKI"
+              lead="The secretariat, the moot convening committee and the logistics team are GIKI students. Registration is free to submit; accepted participants pay by bank transfer, never on this site."
+            />
           </div>
-        </section>
+          <Ledger
+            rows={[
+              { key: 'team', href: '/about/team', title: 'Organizing team', description: 'Who runs each track, and how to reach them.', meta: ['People'] },
+              { key: 'venue', href: '/about/venue', title: 'Venue & travel', description: 'Getting to Topi, where each session happens, and what to bring.', meta: ['Logistics'] },
+              { key: 'faq', href: '/about/faq', title: 'Frequently asked questions', description: 'Fees, refunds, accommodation, dress code and more.', meta: ['Help'] },
+              { key: 'sponsors', href: '/about/sponsors', title: 'Sponsors & partners', description: 'Supporting organizations and the sponsorship deck.', meta: ['Partners'] },
+              { key: 'contact', href: '/contact', title: 'Contact', description: site.replyTime || 'Questions to the organizing team.', meta: ['Support'] },
+            ]}
+          />
+        </PageSection>
 
-        {/* The six-card "Institutional Directory" that sat here linked to Team,
-            Venue, FAQ, Sponsors, Gallery and Resources — the same six links
-            already in the About menu and the footer, so it was the third copy
-            on the page and pushed the actual content below the fold. The About
-            menu covers navigation; this page now only says what the event is. */}
-
-        <section className="surface flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-          <div className="flex items-start gap-4">
-            <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line bg-crest text-champagne">
-              <ShieldCheck aria-hidden="true" className="h-5 w-5" />
-            </span>
-            <p className="max-w-2xl text-body text-text-3">
-              <span className="font-semibold text-text">
-                Run by GIKI Student Affairs.
-              </span>{' '}
-              Fees are paid through the institute&apos;s own banking channels. Nothing is
-              charged on this site.
-            </p>
-          </div>
-          <Link
-            href="/about/faq#fees"
-            className="shrink-0 rounded-xl border border-line-2 px-4 py-2.5 text-sm font-medium text-champagne transition-colors hover:border-line-3 hover:bg-champagne/5"
-          >
-            Fees &amp; payment
-          </Link>
-        </section>
-
-        {/* 6. Closing Register CTA Banner */}
-        <CtaBanner variant="slab">
-        <div className="text-champagne relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-
-          <div className="absolute inset-0 bg-radial-glow-dual opacity-30 pointer-events-none" />
-          <div className="relative z-10 space-y-2 text-center md:text-left max-w-xl">
-            <span className="text-xs font-mono uppercase font-bold text-champagne tracking-wider">
-              {gimunOpen || mootOpen ? 'Applications open' : 'Registration status'}
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream">
-              Represent Your Institution at GIKI Topi
-            </h2>
-            <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
-              Secure your delegation’s place at Pakistan&apos;s premier diplomatic and legal championship.
-            </p>
-          </div>
-
-          <div className="relative z-10 flex flex-wrap items-center gap-3 shrink-0">
-            <Button variant="track-gimun" href="/register?track=gimun">
-              {gimunOpen ? 'Apply for GIMUN' : 'GIMUN registration status'}
-            </Button>
-            <Button variant="track-moot" href="/register?track=moot-cup">
-              {mootOpen ? 'Register GMC Team' : 'GMC registration status'}
-            </Button>
-          </div>
-        </div>
-      </CtaBanner>
+        <PageSection>
+          <CtaBanner
+            eyebrow={anyOpen ? 'Applications open' : undefined}
+            title="Represent your institution at GIKI"
+            description="Choose a track to see its fees, format and deadlines. Applying is free; you pay only once accepted."
+            footnote="No payment is taken online"
+            actions={[
+              { label: gimunOpen ? 'Apply for GIMUN' : 'GIMUN registration status', href: '/register?track=gimun', variant: 'track-gimun' },
+              { label: mootOpen ? 'Register a GMC team' : 'GMC registration status', href: '/register?track=moot-cup', variant: 'track-moot' },
+            ]}
+          />
+        </PageSection>
       </div>
     </div>
   );

@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Users, Award, BookOpen, Scale, CheckCircle2, Lock } from 'lucide-react';
-import { StaggerChildren } from '@/components/motion/StaggerChildren';
+import { ArrowRight, Lock } from 'lucide-react';
+import { Bezel } from '@/components/ui/Editorial';
 import { formatEventDate } from '@/lib/site-config';
 
 interface TrackChooserProps {
@@ -19,186 +19,127 @@ interface TrackChooserProps {
   };
 }
 
-export function TrackChooser({
-  onSelectTrack,
-  gimunDeadline,
-  mootCupDeadline,
-  gimunOpen,
-  mootCupOpen,
-  fees,
-}: TrackChooserProps) {
-  const formattedGimunDeadline = gimunDeadline
-    ? formatEventDate(gimunDeadline)
-    : 'Deadline pending';
+type TrackOption = {
+  key: 'gimun' | 'moot-cup';
+  label: string;
+  title: string;
+  body: string;
+  price: string;
+  priceNote: string;
+  facts: string[];
+  deadline: string;
+  open: boolean;
+  links: { label: string; href: string }[];
+};
 
-  const formattedMootDeadline = mootCupDeadline
-    ? formatEventDate(mootCupDeadline)
-    : 'Deadline pending';
+export function TrackChooser({ onSelectTrack, gimunDeadline, mootCupDeadline, gimunOpen, mootCupOpen, fees }: TrackChooserProps) {
+  const options: TrackOption[] = [
+    {
+      key: 'gimun',
+      label: 'Track 01 · GIMUN',
+      title: 'Model United Nations',
+      body: 'Represent a country in committee. Apply on your own, or register your institution’s delegation in one form.',
+      price: fees?.gimunIndividual ?? '',
+      priceNote: `individual · ${fees?.gimunDelegationPerDelegate ?? ''} per delegate in a delegation`,
+      facts: ['Individual or delegation of 2–20', 'Three committee preferences', 'Kit, lunches and socials included'],
+      deadline: gimunDeadline,
+      open: gimunOpen,
+      links: [
+        { label: 'Track overview', href: '/gimun' },
+        { label: 'Committees', href: '/gimun/committees' },
+      ],
+    },
+    {
+      key: 'moot-cup',
+      label: 'Track 02 · GMC',
+      title: 'GIKI Moot Court',
+      body: 'Enter a team of law students: memorials for both sides, then oral rounds before a bench.',
+      price: fees?.mootCupTeam ?? '',
+      priceNote: 'per team',
+      facts: ['Teams of 2–4', 'Choose a problem category', 'Memorial feedback included'],
+      deadline: mootCupDeadline,
+      open: mootCupOpen,
+      links: [
+        { label: 'Track overview', href: '/moot-cup' },
+        { label: 'Rules & memorials', href: '/moot-cup/rules' },
+      ],
+    },
+  ];
 
   return (
-    <StaggerChildren className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-      {/* GIMUN Track Card */}
-      <div
-        className="relative group rounded-2xl bg-raised/90 border border-champagne/25 p-6 md:p-8 shadow-xl backdrop-blur-md flex flex-col justify-between space-y-6 hover:border-crimson/50 transition-all"
-      >
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-mono uppercase font-bold bg-crimson/20 text-crimson-soft border border-crimson/40">
-              GIMUN Track
-            </span>
-            {!gimunOpen ? (
-              <span className="inline-flex items-center gap-1 text-[11px] font-mono uppercase font-bold text-crimson-soft bg-brand-deep/70 px-2.5 py-0.5 rounded-full border border-brand/60">
-                <Lock className="w-3 h-3" /> Closed
-              </span>
-            ) : (
-              <span className="text-xs font-mono text-champagne/70">
-                Deadline: <span className="font-semibold text-text">{formattedGimunDeadline}</span>
-              </span>
-            )}
-          </div>
+    <div className="rise-stagger mx-auto grid max-w-5xl gap-5 md:grid-cols-2">
+      {options.map((option, i) => {
+        const gimun = option.key === 'gimun';
+        return (
+          <div key={option.key} style={{ '--i': i } as React.CSSProperties}>
+            <Bezel accent={gimun ? 'gimun' : undefined} className="h-full">
+              <div className="flex h-full flex-col p-8 sm:p-10">
+                <div className="flex items-center justify-between gap-3">
+                  <p className={`font-mono text-[11px] uppercase tracking-[0.18em] ${gimun ? 'text-crimson-soft' : 'text-champagne'}`}>
+                    {option.label}
+                  </p>
+                  {option.open ? (
+                    <p className="text-xs text-text-4">
+                      Closes <span className="text-text-2">{formatEventDate(option.deadline, { month: 'short' })}</span>
+                    </p>
+                  ) : (
+                    <p className="inline-flex items-center gap-1.5 text-xs text-text-3">
+                      <Lock aria-hidden="true" className="h-3.5 w-3.5" /> Not open
+                    </p>
+                  )}
+                </div>
 
-          <div className="space-y-2">
-            <h2 className="text-2xl md:text-3xl font-heading font-extrabold text-text">
-              Model United Nations
-            </h2>
-            <p className="text-sm text-champagne/85 leading-relaxed">
-              Step onto the global diplomatic stage. Represent sovereign nations across General Assembly,
-              Specialized Agencies, and fast-paced Crisis Committees.
-            </p>
-          </div>
+                <h2 className="mt-5 text-2xl font-display font-medium text-text sm:text-3xl">{option.title}</h2>
+                <p className="mt-3 text-sm leading-relaxed text-text-3">{option.body}</p>
 
-          {/* Participation specs */}
-          <div className="space-y-2.5 pt-3 border-t border-champagne/15">
-            <div className="flex items-center gap-2.5 text-xs text-champagne/85">
-              <Users className="w-4 h-4 text-crimson-soft shrink-0" />
-              <span><strong className="text-text">Applicant Modes:</strong> Individual entry or Entering as a delegation</span>
-            </div>
-            <div className="flex items-center gap-2.5 text-xs text-champagne/85">
-              <Award className="w-4 h-4 text-crimson-soft shrink-0" />
-              <span>
-                <strong className="text-text">Registration Fees:</strong> {fees?.gimunIndividual} (Individual) ·{' '}
-                {fees?.gimunDelegationPerDelegate} (Per Delegate in Roster)
-              </span>
-            </div>
-            <div className="flex items-center gap-2.5 text-xs text-champagne/85">
-              <BookOpen className="w-4 h-4 text-crimson-soft shrink-0" />
-              <span>
-                <strong className="text-text">Included:</strong> Committee dossier, matrix allocation, socials pass, delegate kit
-              </span>
-            </div>
-          </div>
-        </div>
+                <p className="mt-7 flex flex-wrap items-baseline gap-x-2">
+                  <span className="text-3xl font-display font-medium tracking-tight text-text tabular-nums">{option.price}</span>
+                  <span className="text-xs text-text-4">{option.priceNote}</span>
+                </p>
 
-        <div className="space-y-3 pt-2">
-          <button
-            type="button"
-            disabled={!gimunOpen}
-            onClick={() => onSelectTrack('gimun')}
-            className={`w-full py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md ${
-              gimunOpen
-                ? 'bg-gradient-to-r from-crimson-hi via-crimson to-crimson-deep text-white hover:brightness-110 active:scale-[0.99] cursor-pointer shadow-[0_4px_20px_-2px_rgba(225,29,72,0.45)]'
-                : 'bg-raised/50 text-champagne/40 border border-champagne/10 cursor-not-allowed shadow-none'
-            }`}
-          >
-            <span>{gimunOpen ? 'Apply for GIMUN' : 'Registration Closed'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-          <div className="flex items-center justify-center gap-3 text-[11px] text-champagne/70">
-            <Link href="/gimun" className="hover:underline hover:text-text">
-              Track Overview
-            </Link>
-            <span>·</span>
-            <Link href="/gimun/committees" className="hover:underline hover:text-text">
-              Committees &amp; Matrix
-            </Link>
-            <span>·</span>
-            <Link href="/gimun/rules" className="hover:underline hover:text-text">
-              Rules of Procedure
-            </Link>
-          </div>
-        </div>
-      </div>
+                <ul className="mt-6 space-y-2.5">
+                  {option.facts.map((fact) => (
+                    <li key={fact} className="flex gap-3 text-sm text-text-2">
+                      <span aria-hidden="true" className={`mt-2 h-1 w-3 shrink-0 rounded-full ${gimun ? 'bg-crimson-soft' : 'bg-champagne'}`} />
+                      {fact}
+                    </li>
+                  ))}
+                </ul>
 
-      {/* GMC Track Card */}
-      <div
-        className="relative group rounded-2xl bg-raised/90 border border-champagne/25 p-6 md:p-8 shadow-xl backdrop-blur-md flex flex-col justify-between space-y-6 hover:border-champagne/50 transition-all"
-      >
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-mono uppercase font-bold bg-champagne/20 text-champagne border border-champagne/40">
-              GMC Track
-            </span>
-            {!mootCupOpen ? (
-              <span className="inline-flex items-center gap-1 text-[11px] font-mono uppercase font-bold text-crimson-soft bg-brand-deep/70 px-2.5 py-0.5 rounded-full border border-brand/60">
-                <Lock className="w-3 h-3" /> Closed
-              </span>
-            ) : (
-              <span className="text-xs font-mono text-champagne/70">
-                Deadline: <span className="font-semibold text-text">{formattedMootDeadline}</span>
-              </span>
-            )}
+                <div className="mt-auto space-y-5 pt-9">
+                  <button
+                    type="button"
+                    disabled={!option.open}
+                    onClick={() => onSelectTrack(option.key)}
+                    className={`group flex h-12 w-full items-center justify-between rounded-full pl-6 pr-1.5 text-sm font-semibold transition-all duration-300 ease-[var(--ease-brand)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-45 ${
+                      gimun
+                        ? 'border border-crimson/40 bg-brand text-champagne-hi hover:bg-brand-lit'
+                        : 'bg-champagne text-canvas hover:bg-champagne-hi'
+                    }`}
+                  >
+                    <span>{option.open ? `Apply for ${gimun ? 'GIMUN' : 'GMC'}` : 'Registration is not open'}</span>
+                    <span
+                      aria-hidden="true"
+                      className={`flex h-9 w-9 items-center justify-center rounded-full transition-transform duration-300 ease-[var(--ease-brand)] group-hover:translate-x-0.5 group-hover:-translate-y-px ${
+                        gimun ? 'bg-champagne/15' : 'bg-canvas/10'
+                      }`}
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </button>
+                  <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs">
+                    {option.links.map((link) => (
+                      <Link key={link.href} href={link.href} className="text-text-3 underline-offset-4 transition-colors hover:text-text hover:underline">
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </Bezel>
           </div>
-
-          <div className="space-y-2">
-            <h2 className="text-2xl md:text-3xl font-heading font-extrabold text-text">
-              GIKI Moot Court (GMC)
-            </h2>
-            <p className="text-sm text-champagne/85 leading-relaxed">
-              Argue before distinguished appellate benches. Submit memorial briefs and compete in simulated
-              oral advocacy rounds resolving cutting-edge legal questions.
-            </p>
-          </div>
-
-          {/* Participation specs */}
-          <div className="space-y-2.5 pt-3 border-t border-champagne/15">
-            <div className="flex items-center gap-2.5 text-xs text-champagne/85">
-              <Users className="w-4 h-4 text-champagne shrink-0" />
-              <span><strong className="text-text">Team Structure:</strong> 2–4 members (2 Oralists + optional Researcher)</span>
-            </div>
-            <div className="flex items-center gap-2.5 text-xs text-champagne/85">
-              <Scale className="w-4 h-4 text-champagne shrink-0" />
-              <span>
-                <strong className="text-text">Team Registration Fee:</strong> {fees?.mootCupTeam} (Full team package)
-              </span>
-            </div>
-            <div className="flex items-center gap-2.5 text-xs text-champagne/85">
-              <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-              <span>
-                <strong className="text-text">Included:</strong> Memorial evaluation, bench sessions, courtroom materials, gala invite
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3 pt-2">
-          <button
-            type="button"
-            disabled={!mootCupOpen}
-            onClick={() => onSelectTrack('moot-cup')}
-            className={`w-full py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md ${
-              mootCupOpen
-                ? 'btn-shimmer-gold text-canvas hover:brightness-110 active:scale-[0.99] cursor-pointer'
-                : 'bg-raised/50 text-champagne/40 border border-champagne/10 cursor-not-allowed shadow-none'
-            }`}
-          >
-            <span>{mootCupOpen ? 'Apply for GMC' : 'Registration Closed'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-          <div className="flex items-center justify-center gap-3 text-[11px] text-champagne/70">
-            <Link href="/moot-cup" className="hover:underline hover:text-text">
-              Track Overview
-            </Link>
-            <span>·</span>
-            <Link href="/moot-cup/categories" className="hover:underline hover:text-text">
-              Compromis &amp; Categories
-            </Link>
-            <span>·</span>
-            <Link href="/moot-cup/rules" className="hover:underline hover:text-text">
-              Rules &amp; Scoring
-            </Link>
-          </div>
-        </div>
-      </div>
-    </StaggerChildren>
+        );
+      })}
+    </div>
   );
 }

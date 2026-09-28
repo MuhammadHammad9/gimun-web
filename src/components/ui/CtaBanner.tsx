@@ -75,7 +75,7 @@ export function CtaBanner({
         {title && (
           <h2
             className={cn(
-              'font-display font-extrabold text-text',
+              'font-display font-medium text-balance text-text',
               isFeature ? 'mx-auto max-w-2xl text-h2' : 'text-h3'
             )}
           >

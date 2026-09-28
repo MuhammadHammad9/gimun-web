@@ -48,11 +48,11 @@ export function FormField({
       <div className="flex items-baseline justify-between gap-2">
         <label
           htmlFor={id}
-          className="block text-xs font-semibold uppercase tracking-wider text-champagne"
+          className="block text-sm font-medium text-text"
         >
           {label}{' '}
           {required && (
-            <span className="text-champagne font-bold">
+            <span aria-hidden="true" className="text-crimson-soft">
               *
             </span>
           )}
@@ -60,7 +60,7 @@ export function FormField({
       </div>
 
       {description && (
-        <p id={descriptionId} className="text-[11px] text-champagne/70 leading-snug">{description}</p>
+        <p id={descriptionId} className="text-xs leading-snug text-text-3">{description}</p>
       )}
 
       {control}

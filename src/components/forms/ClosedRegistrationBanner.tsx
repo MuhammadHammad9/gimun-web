@@ -33,7 +33,8 @@ export function ClosedRegistrationBanner({
     : `GIMUN & GMC ${eventYear}`;
 
   return (
-    <div className="max-w-2xl mx-auto p-6 md:p-10 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl backdrop-blur-md text-center space-y-6">
+    <div className="double-bezel mx-auto max-w-2xl">
+    <div className="double-bezel-inner space-y-6 p-8 text-center md:p-10">
       <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-crest text-champagne border border-champagne/20 mx-auto">
         <Lock className="w-7 h-7" />
       </div>
@@ -42,7 +43,7 @@ export function ClosedRegistrationBanner({
         <span className="px-3.5 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-brand-deep/70 text-crimson-soft border border-brand/60">
           {deadlinePassed ? 'Registration closed' : 'Not open right now'}
         </span>
-        <h2 className="text-2xl md:text-3xl font-heading font-extrabold text-cream">
+        <h2 className="text-2xl md:text-3xl font-display font-medium text-text">
           {trackTitle} registration {deadlinePassed ? 'is closed' : 'is not open'}
         </h2>
         <p className="text-sm text-champagne/80 max-w-lg mx-auto leading-relaxed">
@@ -56,7 +57,7 @@ export function ClosedRegistrationBanner({
       <div className="grid sm:grid-cols-3 gap-3 pt-2 text-left">
         <Link
           href="/contact?type=waitlist"
-          className="p-4 rounded-xl bg-crest/60 border border-champagne/20 hover:border-champagne/40 transition-all group space-y-1.5"
+          className="p-4 rounded-xl border border-line hover:border-line-2 hover:bg-champagne/5 transition-all group space-y-1.5"
         >
           <div className="flex items-center justify-between text-xs font-heading font-bold text-cream">
             <span className="flex items-center gap-1.5">
@@ -72,7 +73,7 @@ export function ClosedRegistrationBanner({
 
         <Link
           href="/schedule"
-          className="p-4 rounded-xl bg-crest/60 border border-champagne/20 hover:border-champagne/40 transition-all group space-y-1.5"
+          className="p-4 rounded-xl border border-line hover:border-line-2 hover:bg-champagne/5 transition-all group space-y-1.5"
         >
           <div className="flex items-center justify-between text-xs font-heading font-bold text-cream">
             <span className="flex items-center gap-1.5">
@@ -88,7 +89,7 @@ export function ClosedRegistrationBanner({
 
         <Link
           href="/resources"
-          className="p-4 rounded-xl bg-crest/60 border border-champagne/20 hover:border-champagne/40 transition-all group space-y-1.5"
+          className="p-4 rounded-xl border border-line hover:border-line-2 hover:bg-champagne/5 transition-all group space-y-1.5"
         >
           <div className="flex items-center justify-between text-xs font-heading font-bold text-cream">
             <span className="flex items-center gap-1.5">
@@ -115,6 +116,7 @@ export function ClosedRegistrationBanner({
           </button>
         </div>
       )}
+    </div>
     </div>
   );
 }

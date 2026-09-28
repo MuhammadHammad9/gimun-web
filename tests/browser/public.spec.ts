@@ -46,12 +46,7 @@ for (const route of publicRoutes) {
     await page.goto(route, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('h1')).toHaveCount(1);
     if (route === '/register') {
-      await expect(page.getByText('GIMUN Track', { exact: true }).first()).toBeVisible();
-      await page.waitForFunction(
-        () => Array.from(document.querySelectorAll('.double-bezel.relative')).every((element) => getComputedStyle(element).opacity === '1'),
-        undefined,
-        { timeout: 30_000 },
-      );
+      await expect(page.getByRole('heading', { name: 'Model United Nations' })).toBeVisible();
     }
     await page.waitForTimeout(1_000);
     const results = await new AxeBuilder({ page }).analyze();

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ArrowRight, ArrowUpRight, Gavel, Globe2, CalendarDays, FileText } from 'lucide-react';
+import { ArrowRight, Gavel, Globe2, CalendarDays, FileText } from 'lucide-react';
 
 import { PageHero } from '@/components/ui/PageHero';
 import { SectionRail } from '@/components/ui/SectionRail';
@@ -11,6 +11,7 @@ import { CtaBanner } from '@/components/ui/CtaBanner';
 import { SponsorStrip } from '@/components/ui/SponsorStrip';
 import { CountdownChip } from '@/components/ui/CountdownChip';
 import { TrackBadge } from '@/components/ui/TrackBadge';
+import { Ledger, type LedgerRow } from '@/components/ui/Editorial';
 
 import { canRegister as canTrackRegister, eventPhase } from '@/lib/phase';
 import { formatDateRange } from '@/lib/utils';
@@ -403,8 +404,6 @@ export default async function Home() {
   );
 }
 
-type LedgerRow = { key: string; href: string; title: string; description: string; meta: string[] };
-
 function TrackLedger({
   id,
   track,
@@ -435,37 +434,9 @@ function TrackLedger({
         <p className="max-w-lg text-lead text-pretty text-text-3">{lead}</p>
       </div>
 
-      <ol className="rise-stagger mt-8 border-b border-line">
-        {rows.map((row, i) => (
-          <li key={row.key} style={{ '--i': i } as React.CSSProperties}>
-            <Link
-              href={row.href}
-              className="group -mx-3 grid grid-cols-[2.25rem_1fr_auto] items-start gap-x-3 rounded-xl border-t border-line px-3 py-6 transition-colors duration-200 hover:bg-raised/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
-            >
-              <span className={`pt-1 font-mono text-xs tabular-nums ${accent}`}>
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span className="min-w-0 space-y-2">
-                <span className="block text-lg font-display font-medium leading-snug text-text transition-colors group-hover:text-champagne">
-                  {row.title}
-                </span>
-                <span className="line-clamp-2 block text-sm leading-relaxed text-text-3">
-                  {row.description}
-                </span>
-                <span className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] capitalize text-text-4">
-                  {row.meta.map((m) => (
-                    <span key={m}>{m}</span>
-                  ))}
-                </span>
-              </span>
-              <ArrowUpRight
-                aria-hidden="true"
-                className="mt-1 h-4 w-4 text-text-4 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-champagne"
-              />
-            </Link>
-          </li>
-        ))}
-      </ol>
+      <div className="mt-8">
+        <Ledger rows={rows} tone={track === 'gimun' ? 'crimson' : 'champagne'} />
+      </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
         <Link

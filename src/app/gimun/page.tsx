@@ -1,395 +1,231 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { PageHero } from '@/components/ui/PageHero';
 import { Button } from '@/components/ui/Button';
-import { TrackBadge } from '@/components/ui/TrackBadge';
-import { ContentCard } from '@/components/ui/ContentCard';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import {
-  Globe2,
-  Users2,
-  FileCheck,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-  ShieldCheck,
-} from 'lucide-react';
-import { getCommittees, getSiteConfig } from '@/lib/content';
+import { CtaBanner } from '@/components/ui/CtaBanner';
+import { KeyDates } from '@/components/ui/KeyDates';
+import { Bezel, Eyebrow, FactList, Ledger, PageSection, SectionHeading, Steps, TextLink } from '@/components/ui/Editorial';
+import { getCommittees, getDocuments, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister } from '@/lib/phase';
-import { KeyDates } from '@/components/ui/KeyDates';
-import { formatEventMonth, getEventYear } from '@/lib/site-config';
+import { formatEventDate, getEventYear } from '@/lib/site-config';
+import { formatDateRange } from '@/lib/utils';
 
-export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
-  title: 'GIMUN Track | Model United Nations Diplomacy',
-  description: `Experience premier diplomatic negotiation, parliamentary debate, and crisis simulation at GIKI Model United Nations ${getEventYear(await getSiteConfig())}.`,
-  path: '/gimun',
-  image: '/images/og/gimun.jpg',
-}); }
+export async function generateMetadata(): Promise<Metadata> {
+  return await constructMetadata({
+    title: `GIMUN ${getEventYear(await getSiteConfig())} | GIKI Model United Nations`,
+    description: `Committees, format, fees and key dates for GIKI Model United Nations ${getEventYear(await getSiteConfig())}. Register on your own or as a delegation.`,
+    path: '/gimun',
+    image: '/images/og/gimun.jpg',
+  });
+}
+
+const HOW_IT_WORKS = [
+  {
+    title: 'Receive a country',
+    body: 'The secretariat assigns you a country and a committee. You research its foreign policy and represent it, whatever your own view.',
+  },
+  {
+    title: 'Speak and caucus',
+    body: 'Formal speeches from the speakers’ list, then moderated caucuses on specific sub-issues under tight time limits.',
+  },
+  {
+    title: 'Build a bloc',
+    body: 'In unmoderated time you negotiate with allies and rivals to assemble the votes a resolution needs.',
+  },
+  {
+    title: 'Pass a resolution',
+    body: 'Sponsor a draft, defend its operative clauses through amendments, and carry it to a final vote.',
+  },
+];
 
 export default async function GimunOverviewPage() {
-  const committees = (await getCommittees());
-  const siteConfig = (await getSiteConfig());
+  const [committees, siteConfig, documents] = await Promise.all([getCommittees(), getSiteConfig(), getDocuments()]);
   const open = canRegister(siteConfig, 'gimun');
+  const guides = documents.filter((d) => d.track === 'gimun' && d.type === 'background-guide');
+  const rules = documents.find((d) => d.track === 'gimun' && d.type === 'rules');
 
   return (
-    <div className="space-y-16 sm:space-y-24 pb-20">
-      {/* 1. TRACK HERO SECTION (PRD §15.2 - Dark Diplomatic Command Center) */}
+    <div className="pb-24">
       <PageHero
         variant="gimun"
-        eyebrow={
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-brand/20 border border-brand/30 text-champagne shadow-xs">
-            <TrackBadge track="gimun" size="sm" />
-            <span>Track 01 • Multilateral Diplomacy & Statecraft</span>
-          </div>
-        }
-        title={'Simulate Diplomacy. Defend Sovereignty. Lead Nations.'}
-        accentWords={['Defend', 'Sovereignty.']}
-        description="The GIKI Model United Nations (GIMUN) convenes Pakistan's brightest student delegates to debate global crises, draft multilateral treaties, and master parliamentary diplomacy across specialized UN bodies."
+        eyebrow={<Eyebrow tone="crimson">Track 01 · Model United Nations</Eyebrow>}
+        title="Represent a nation. Win the room."
+        accentWords={['Win', 'the', 'room.']}
+        description={`GIKI Model United Nations brings student delegates to Topi for ${committees.length} committees of debate, negotiation and crisis, ${formatDateRange(siteConfig.eventDates.start, siteConfig.eventDates.end)}.`}
         actions={[
           { label: open ? 'Register for GIMUN' : 'Registration status', href: '/register?track=gimun', variant: 'track-gimun' },
-          { label: 'Browse Committees', href: '/gimun/committees', variant: 'secondary' },
+          { label: 'Browse committees', href: '/gimun/committees', variant: 'secondary' },
         ]}
         aside={
-          <div className="glass-card-dark rounded-2xl p-6 sm:p-8 space-y-4 border border-brand/40">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-champagne font-bold">
-                At a Glance
-              </span>
-              <span className="px-2 py-0.5 rounded-full bg-brand/40 text-champagne text-[10px] font-mono font-semibold">
-                {formatEventMonth(siteConfig.eventDates.start)}
-              </span>
+          <Bezel accent="gimun">
+            <div className="p-7 sm:p-8">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-crimson-soft">At a glance</p>
+              <FactList
+                className="mt-4"
+                items={[
+                  { term: 'Committees', value: committees.map((c) => c.slug.toUpperCase()).join(' · ') },
+                  { term: 'Format', value: 'Parliamentary debate and live crisis' },
+                  { term: 'Enter as', value: 'An individual, or a delegation of 2–20' },
+                  { term: 'Awards', value: 'Best Delegate, Outstanding Delegate, Best Delegation' },
+                  { term: 'Registration closes', value: formatEventDate(siteConfig.registrationDeadlines.gimun) },
+                ]}
+              />
+              {rules && (
+                <TextLink href="/gimun/rules" className="mt-6">
+                  Rules of procedure
+                </TextLink>
+              )}
             </div>
-            <h2 className="font-heading font-bold text-xl text-white">
-              At a glance
-            </h2>
-            <ul className="space-y-3 text-xs sm:text-sm text-text-2">
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-clay shrink-0 mt-0.5" />
-                <span><strong>Format:</strong> Standard Model UN parliamentary debate &amp; crisis simulations</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-clay shrink-0 mt-0.5" />
-                <span><strong>Participation:</strong> Individual delegates or faculty-led institutional delegations</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-clay shrink-0 mt-0.5" />
-                <span><strong>Chambers:</strong> {committees.map((c) => c.slug.toUpperCase()).join(', ')}</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-clay shrink-0 mt-0.5" />
-                <span><strong>Recognition:</strong> Best Delegate, Outstanding Delegate &amp; Best Delegation</span>
-              </li>
-            </ul>
-            <div className="pt-2 border-t border-white/10">
-              <Link
-                href="/gimun/rules"
-                className="text-xs font-semibold text-champagne hover:text-white inline-flex items-center gap-1.5 transition-colors"
-              >
-                <span>Read Rules of Procedure (RoP)</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
+          </Bezel>
         }
       />
 
-      {/* 2. FORMAT EXPLAINER (PRD §15.2 - Step-by-Step Modern Flow) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal>
-          <div className="max-w-3xl mb-10">
-            <span className="text-xs font-mono uppercase tracking-widest text-crimson-hi font-bold">
-              Conference Mechanics
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-text mt-1">
-              How GIMUN works
-            </h2>
-            <p className="text-champagne/80 text-sm sm:text-base mt-2 leading-relaxed">
-              Never attended a Model United Nations before? GIMUN is structured so that both first-time debaters and experienced veterans can participate effectively.
-            </p>
-          </div>
+      <div className="space-y-28 pt-24 md:space-y-36">
+        <PageSection labelledBy="how-heading">
+          <SectionHeading
+            id="how-heading"
+            eyebrow="How it works"
+            tone="crimson"
+            title="Four days, one resolution"
+            lead="First conference or fifteenth, the format is the same: represent your country, find allies, and get your text passed."
+            className="mb-14"
+          />
+          <Steps steps={HOW_IT_WORKS} tone="crimson" />
+        </PageSection>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="card-glass-luxury p-6 rounded-2xl border border-champagne/30 shadow-md space-y-3 relative overflow-hidden group hover:border-champagne/60 transition-colors backdrop-blur-md">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-champagne/15 border border-champagne/30 flex items-center justify-center text-champagne shadow-xs">
-                  <Globe2 className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-mono font-bold text-champagne">01</span>
-              </div>
-              <h3 className="font-heading font-bold text-lg text-text">
-                Country Assignment
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                You are assigned a country to represent within your committee. Your task is to research and champion that nation&apos;s foreign policy and real-world interests.
-              </p>
-            </div>
-
-            <div className="card-glass-luxury p-6 rounded-2xl border border-champagne/30 shadow-md space-y-3 relative overflow-hidden group hover:border-champagne/60 transition-colors backdrop-blur-md">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-champagne/15 border border-champagne/30 flex items-center justify-center text-champagne shadow-xs">
-                  <Users2 className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-mono font-bold text-champagne">02</span>
-              </div>
-              <h3 className="font-heading font-bold text-lg text-text">
-                Formal &amp; Caucusing
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                Deliver formal policy speeches from the Speaker&apos;s List, then initiate Moderated Caucuses to debate specific sub-issues under strict time limits.
-              </p>
-            </div>
-
-            <div className="card-glass-luxury p-6 rounded-2xl border border-champagne/30 shadow-md space-y-3 relative overflow-hidden group hover:border-champagne/60 transition-colors backdrop-blur-md">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-champagne/15 border border-champagne/30 flex items-center justify-center text-champagne shadow-xs">
-                  <Users2 className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-mono font-bold text-champagne">03</span>
-              </div>
-              <h3 className="font-heading font-bold text-lg text-text">
-                Bloc Building
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                Step off the podium during unmoderated sessions to negotiate with regional allies, compromise with rival factions, and build a unified voting majority.
-              </p>
-            </div>
-
-            <div className="card-glass-luxury p-6 rounded-2xl border border-champagne/30 shadow-md space-y-3 relative overflow-hidden group hover:border-champagne/60 transition-colors backdrop-blur-md">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-champagne/15 border border-champagne/30 flex items-center justify-center text-champagne shadow-xs">
-                  <FileCheck className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-mono font-bold text-champagne">04</span>
-              </div>
-              <h3 className="font-heading font-bold text-lg text-text">
-                Draft Resolutions
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                Co-sponsor and introduce a comprehensive Draft Resolution. Defend its operative clauses during amendments and carry it through final plenary voting.
-              </p>
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      {/* 3. ELIGIBILITY & REGISTRATION OPTIONS (PRD §10.1, §15.2) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Individual entry Card */}
-            <div className="double-bezel">
-              <div className="double-bezel-inner p-8 space-y-4 border-l-4 border-l-champagne">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase tracking-wider text-champagne font-bold">
-                    Participation Path A
-                  </span>
-                  <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-champagne/20 text-champagne font-semibold border border-champagne/30">
-                    Individual
-                  </span>
-                </div>
-                <h3 className="font-heading font-bold text-2xl text-cream">
-                  Entering on your own
-                </h3>
-                <p className="text-sm text-champagne/80 leading-relaxed">
-                  Ideal for independent delegates, high school seniors, and university scholars seeking solo committee allocation without requiring a registered institution delegation.
-                </p>
-                <ul className="space-y-2 text-xs sm:text-sm text-cream font-medium pt-2">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-champagne" />
-                    <span>Select top 3 committee preferences</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-champagne" />
-                    <span>Full access to delegate socials &amp; gala</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-champagne" />
-                    <span>Eligible for all individual committee awards</span>
-                  </li>
-                </ul>
-                <div className="pt-4 border-t border-champagne/20">
-                  <Button variant="track-gimun" href="/register?track=gimun&type=individual">
-                    {open ? 'Register as Individual entry' : 'Registration status'}
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Entering as a delegation Card */}
-            <div className="double-bezel">
-              <div className="double-bezel-inner p-8 space-y-4 border-l-4 border-l-champagne">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase tracking-wider text-champagne font-bold">
-                    Participation Path B
-                  </span>
-                  <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-champagne/20 text-champagne font-semibold border border-champagne/30">
-                    Group Delegation
-                  </span>
-                </div>
-                <h3 className="font-heading font-bold text-2xl text-cream">
-                  Entering as a delegation
-                </h3>
-                <p className="text-sm text-champagne/80 leading-relaxed">
-                  Head Delegates and faculty advisors can register entire institutional squads in a single form submission, competing for the coveted Best delegation.
-                </p>
-                <ul className="space-y-2 text-xs sm:text-sm text-cream font-medium pt-2">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-champagne" />
-                    <span>Unified delegation registration in one flow</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-champagne" />
-                    <span>One per-delegate rate for the whole delegation</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-champagne" />
-                    <span>Contend for the Best delegation</span>
-                  </li>
-                </ul>
-                <div className="pt-4 border-t border-champagne/20">
-                  <Button variant="secondary" href="/register?track=gimun&type=delegation">
-                    {open ? 'Register Group Delegation' : 'Registration status'}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      <KeyDates
-        title="GIMUN key dates"
-        dates={[
-          { label: 'Registration closes', date: siteConfig.registrationDeadlines.gimun, note: '23:59 Pakistan time' },
-          { label: 'Position papers due', note: 'At least 7 days before Day 1' },
-          { label: 'Conference opens', date: siteConfig.eventDates.start, note: 'Check-in from 09:00' },
-          { label: 'Awards gala', date: siteConfig.galaDate },
-        ]}
-      />
-
-      {/* 4. FEE & STRICT NON-PAYMENT NOTICE (PRD §6.2) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal>
-          <div className="card-glass-luxury p-8 sm:p-10 rounded-2xl border border-champagne/30 shadow-xl space-y-6 backdrop-blur-md">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-champagne/70 font-semibold">
-                  Investment &amp; Inclusions
-                </span>
-                <h3 className="font-heading font-bold text-2xl text-text mt-0.5">
-                  Fees and what they cover
-                </h3>
-              </div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-semibold bg-champagne/20 text-champagne border border-champagne/30">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Zero Online Surcharges</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-1">
-                <div className="text-xs font-mono text-champagne/70">Individual entry</div>
-                <div className="text-2xl font-heading font-extrabold text-text">
-                  {siteConfig.fees?.gimunIndividual}
-                </div>
-                <div className="text-xs text-champagne/70">Includes sessions, delegate kit, lunch and tea on conference days, and socials</div>
-              </div>
-
-              <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-1">
-                <div className="text-xs font-mono text-champagne/70">Rate per delegate</div>
-                <div className="text-2xl font-heading font-extrabold text-champagne">
-                  {siteConfig.fees?.gimunDelegationPerDelegate}
-                </div>
-                <div className="text-xs text-champagne/70">Per delegate for registered institutional teams</div>
-              </div>
-
-              <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-1">
-                <div className="text-xs font-mono text-champagne/70">On-Campus Accommodation</div>
-                <div className="text-2xl font-heading font-extrabold text-champagne">
-                  Available on Request
-                </div>
-                <div className="text-xs text-champagne/70">On-campus hostel places for outstation participants; confirmed with acceptance</div>
-              </div>
-            </div>
-
-            {/* Strict Non-Payment Statement (PRD §6.2) */}
-            <div className="p-4 rounded-xl bg-raised/90 border border-champagne/30 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-champagne shrink-0 mt-0.5" />
-              <div className="space-y-1 text-xs sm:text-sm text-champagne/90 leading-relaxed">
-                <strong className="text-text font-semibold">Important Non-Payment Assurance:</strong>{' '}
-                Submitting the online registration form does not charge you anything. The Organizing Committee will review your applicant profile and committee preferences, and reach out via email with your official acceptance package and verified payment instructions.
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      {/* 5. COMMITTEES PREVIEW (PRD §16.1) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-champagne font-bold">
-              Substantive Bodies
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream mt-1">
-              GIMUN {getEventYear(await getSiteConfig())} Committee Roster
-            </h2>
-          </div>
-          <Link
-            href="/gimun/committees"
-            className="text-xs font-mono font-semibold text-champagne hover:underline inline-flex items-center gap-1"
-          >
-            <span>View All Committees &amp; Country Matrices</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {committees.map((com) => (
-            <ContentCard
-              key={com.id}
-              track="gimun"
-              title={com.name}
-              description={com.shortDescription}
-              eyebrow={com.type.replace('-', ' ')}
-              meta={`Capacity: ${com.capacity ? `${com.capacity} Delegates` : 'Open'} • ${com.countryList.length} Country Portfolios`}
-              actionHref={`/gimun/committees/${com.slug}`}
-              actionLabel="View Committee Details"
+        {/* Two ways in, each with its own price, so fees are read in context. */}
+        <PageSection labelledBy="entry-heading">
+          <SectionHeading
+            id="entry-heading"
+            eyebrow="Ways to enter"
+            tone="crimson"
+            title="On your own, or with your institution"
+            className="mb-12"
+          />
+          <div className="grid gap-5 lg:grid-cols-2">
+            <EntryPath
+              label="Individual delegate"
+              price={siteConfig.fees.gimunIndividual}
+              priceNote="per delegate"
+              body="For students applying on their own. Rank three committees; the secretariat allocates your country."
+              points={['Three committee preferences', 'Eligible for individual awards', 'Delegate kit, meals and socials included']}
+              action={{ label: open ? 'Register as an individual' : 'Registration status', href: '/register?track=gimun&type=individual', variant: 'track-gimun' }}
             />
-          ))}
-        </div>
-      </section>
-
-      {/* 6. CALL TO ACTION FOOTER */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <ScrollReveal>
-          <div className="double-bezel">
-            <div className="double-bezel-inner p-8 sm:p-12 space-y-6">
-              <span className="text-xs font-mono uppercase tracking-widest text-champagne font-bold">
-                Step into the Shoes of a Diplomat
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream max-w-xl mx-auto">
-                Ready to take a seat?
-              </h2>
-              <p className="text-sm text-champagne/80 max-w-lg mx-auto">
-                Registrations are processed on a rolling priority basis. Early submissions receive priority committee and country preferences.
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-                <Button variant="track-gimun" size="lg" href="/register?track=gimun">
-                  {open ? 'Register for GIMUN' : 'Registration status'}
-                </Button>
-                <Button variant="secondary" size="lg" href="/gimun/rules">
-                  Rules of Procedure
-                </Button>
-                <Button variant="ghost" size="lg" href="/resources">
-                  Download Background Guides
-                </Button>
-              </div>
-            </div>
+            <EntryPath
+              label="Institutional delegation"
+              price={siteConfig.fees.gimunDelegationPerDelegate}
+              priceNote="per delegate"
+              body="A head delegate or faculty advisor registers the whole team, 2 to 20 delegates, in one form."
+              points={['One form for the full roster', 'Contends for Best Delegation', 'One invoice for the institution']}
+              action={{ label: open ? 'Register a delegation' : 'Registration status', href: '/register?track=gimun&type=delegation', variant: 'secondary' }}
+            />
           </div>
-        </ScrollReveal>
-      </section>
+          <p className="mt-6 max-w-3xl text-sm leading-relaxed text-text-3">
+            Nothing is charged when you apply. If your application is accepted, the organizing team emails an invoice
+            with bank transfer details. On-campus accommodation is available on request.{' '}
+            <TextLink href="/about/faq#fees" className="inline-flex">
+              Fees and refunds
+            </TextLink>
+          </p>
+        </PageSection>
+
+        <KeyDates
+          title="GIMUN key dates"
+          dates={[
+            { label: 'Registration closes', date: siteConfig.registrationDeadlines.gimun, note: '23:59 Pakistan time' },
+            { label: 'Position papers due', note: 'At least 7 days before Day 1' },
+            { label: 'Conference opens', date: siteConfig.eventDates.start, note: 'Check-in from 09:00' },
+            { label: 'Awards gala', date: siteConfig.galaDate },
+          ]}
+        />
+
+        <PageSection labelledBy="committees-heading" className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+          <div className="lg:sticky lg:top-32 lg:self-start">
+            <SectionHeading
+              stacked
+              id="committees-heading"
+              eyebrow="Committees"
+              tone="crimson"
+              title={`${committees.length} chambers for ${getEventYear(siteConfig)}`}
+              lead="Each committee page has its agenda, background guide and the countries still open for allocation."
+              action={{ label: 'All committees', href: '/gimun/committees' }}
+            />
+            {guides.length > 0 && (
+              <p className="mt-8 text-sm text-text-3">
+                {guides.length} background guides are in the{' '}
+                <TextLink href="/resources" className="inline-flex">
+                  Resource Hub
+                </TextLink>
+              </p>
+            )}
+          </div>
+          <Ledger
+            tone="crimson"
+            rows={committees.map((com) => ({
+              key: com.id,
+              href: `/gimun/committees/${com.slug}`,
+              title: com.name,
+              description: com.shortDescription,
+              meta: [com.capacity ? `${com.capacity} delegates` : 'Open seating', com.type.replace(/-/g, ' ')],
+            }))}
+          />
+        </PageSection>
+
+        <PageSection>
+          <CtaBanner
+            eyebrow={open ? 'Registration open' : undefined}
+            title="Ready to take a seat?"
+            description="Applications are reviewed on a rolling basis, so earlier applicants have more committees and countries to choose from."
+            footnote="No payment is taken online"
+            actions={[
+              { label: open ? 'Register for GIMUN' : 'Registration status', href: '/register?track=gimun', variant: 'track-gimun' },
+              { label: 'Rules of procedure', href: '/gimun/rules', variant: 'secondary' },
+            ]}
+          />
+        </PageSection>
+      </div>
     </div>
+  );
+}
+
+function EntryPath({
+  label,
+  price,
+  priceNote,
+  body,
+  points,
+  action,
+}: {
+  label: string;
+  price: string;
+  priceNote: string;
+  body: string;
+  points: string[];
+  action: { label: string; href: string; variant: 'track-gimun' | 'secondary' };
+}) {
+  return (
+    <Bezel accent="gimun">
+      <div className="flex h-full flex-col p-8 sm:p-10">
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-crimson-soft">{label}</p>
+        <p className="mt-6 flex items-baseline gap-2">
+          <span className="text-4xl font-display font-medium tracking-tight text-text tabular-nums">{price}</span>
+          <span className="text-sm text-text-4">{priceNote}</span>
+        </p>
+        <p className="mt-4 max-w-md text-sm leading-relaxed text-text-3">{body}</p>
+        <ul className="mt-6 space-y-2.5">
+          {points.map((point) => (
+            <li key={point} className="flex gap-3 text-sm text-text-2">
+              <span aria-hidden="true" className="mt-2 h-1 w-3 shrink-0 rounded-full bg-crimson-soft" />
+              {point}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-auto pt-8">
+          <Button variant={action.variant} href={action.href} withArrow>
+            {action.label}
+          </Button>
+        </div>
+      </div>
+    </Bezel>
   );
 }

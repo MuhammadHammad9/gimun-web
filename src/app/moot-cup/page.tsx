@@ -1,367 +1,178 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { PageHero } from '@/components/ui/PageHero';
 import { Button } from '@/components/ui/Button';
-import { TrackBadge } from '@/components/ui/TrackBadge';
-import { ContentCard } from '@/components/ui/ContentCard';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import {
-  Scale,
-  Gavel,
-  FileText,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-  ShieldCheck,
-} from 'lucide-react';
+import { CtaBanner } from '@/components/ui/CtaBanner';
+import { KeyDates } from '@/components/ui/KeyDates';
+import { Bezel, Eyebrow, FactList, Ledger, PageSection, SectionHeading, Steps, TextLink } from '@/components/ui/Editorial';
 import { getMootCategories, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister } from '@/lib/phase';
-import { KeyDates } from '@/components/ui/KeyDates';
-import { formatEventMonth } from '@/lib/site-config';
+import { formatEventDate, formatPublishedDate, getEventYear } from '@/lib/site-config';
 
-export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
-  title: 'GIKI Moot Court (GMC) | Appellate Courtroom Advocacy',
-  description:
-    'Premier national appellate advocacy championship testing legal research, memorial drafting, and courtroom advocacy before esteemed jurists.',
-  path: '/moot-cup',
-  image: '/images/og/moot-cup.jpg',
-}); }
+export async function generateMetadata(): Promise<Metadata> {
+  return await constructMetadata({
+    title: `GMC ${getEventYear(await getSiteConfig())} | GIKI Moot Court`,
+    description: `Problem categories, format, team rules, fees and key dates for the GIKI Moot Court ${getEventYear(await getSiteConfig())}.`,
+    path: '/moot-cup',
+    image: '/images/og/moot-cup.jpg',
+  });
+}
+
+const HOW_IT_WORKS = [
+  {
+    title: 'Take the problem',
+    body: 'Every team receives the same moot problem (the compromis): a dispute on a point of law, with no witnesses and no new facts.',
+  },
+  {
+    title: 'Write both sides',
+    body: 'Draft a memorial for the Applicant and one for the Respondent, cited in OSCOLA and submitted anonymously under a team code.',
+  },
+  {
+    title: 'Argue before the bench',
+    body: 'Two oralists share 30 minutes per side and answer the judges’ questions as they come, then reserve time for rebuttal.',
+  },
+  {
+    title: 'Advance to the final',
+    body: 'After two guaranteed preliminary rounds the strongest teams go through the quarter-finals and semi-finals to the Grand Final.',
+  },
+];
 
 export default async function MootCupOverviewPage() {
-  const categories = (await getMootCategories());
-  const siteConfig = (await getSiteConfig());
+  const [categories, siteConfig] = await Promise.all([getMootCategories(), getSiteConfig()]);
   const open = canRegister(siteConfig, 'mootCup');
+  const scoring = siteConfig.mootScoring;
 
   return (
-    <div className="space-y-16 sm:space-y-24 pb-20">
-      {/* 1. TRACK HERO SECTION (PRD §15.2 - Supreme Court Appellate Theme) */}
+    <div className="pb-24">
       <PageHero
         variant="moot"
-        eyebrow={
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-champagne/20 border border-champagne/30 text-champagne shadow-xs">
-            <TrackBadge track="moot-cup" size="sm" />
-            <span>Track 02 • GMC Appellate Courtroom Advocacy</span>
-          </div>
-        }
-        title={'Master the Law. Plead Your Case. Convince the Bench.'}
-        accentWords={['Plead', 'Your', 'Case.']}
-        description="The GIKI Moot Court (GMC) challenges aspiring advocates to analyze complex case problems, draft written arguments (memorials), and present oral submissions before a panel of experienced judges."
+        eyebrow={<Eyebrow>Track 02 · GIKI Moot Court</Eyebrow>}
+        title="Read the problem. Argue the law."
+        accentWords={['law.']}
+        description="The GIKI Moot Court is an appellate advocacy competition for law students: written memorials for both sides, then oral rounds before benches of legal practitioners."
         actions={[
-          { label: open ? 'Register for GMC' : 'Registration status', href: '/register?track=moot-cup', variant: 'track-moot' },
-          { label: 'Explore Problem Tracks', href: '/moot-cup/categories', variant: 'secondary' },
+          { label: open ? 'Register your team' : 'Registration status', href: '/register?track=moot-cup', variant: 'track-moot' },
+          { label: 'Problem categories', href: '/moot-cup/categories', variant: 'secondary' },
         ]}
         aside={
-          <div className="glass-card-dark rounded-2xl p-6 sm:p-8 space-y-4 border border-champagne/30">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase tracking-wider text-champagne font-bold">
-                Competition At a Glance
-              </span>
-              <span className="px-2 py-0.5 rounded-full bg-champagne/20 text-champagne text-[10px] font-mono font-semibold">
-                {formatEventMonth(siteConfig.eventDates.start)}
-              </span>
+          <Bezel>
+            <div className="p-7 sm:p-8">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-champagne">At a glance</p>
+              <FactList
+                className="mt-4"
+                items={[
+                  { term: 'Team', value: '2–4 members: two oralists, up to two researchers' },
+                  { term: 'Written round', value: 'Applicant and Respondent memorials' },
+                  { term: 'Scoring', value: scoring ? `Memorial ${scoring.memorialWeight}% · Oral ${scoring.oralWeight}%` : 'Published with the rules' },
+                  { term: 'Awards', value: 'Champions, Best Memorial, Best Oralist' },
+                  { term: 'Registration closes', value: formatEventDate(siteConfig.registrationDeadlines.mootCup) },
+                ]}
+              />
+              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+                <TextLink href="/moot-cup/rules">Rules &amp; memorials</TextLink>
+                <TextLink href="/moot-cup/clarifications">Clarifications</TextLink>
+              </div>
             </div>
-            <h2 className="font-heading font-bold text-xl text-white">
-              At a glance
-            </h2>
-            <ul className="space-y-3 text-xs sm:text-sm text-text-2">
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
-                <span><strong>Team Size:</strong> 2 to 4 members (2 Oralists + 1-2 Researchers)</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
-                <span><strong>Format:</strong> Dual Written Briefs (Applicant &amp; Respondent) + Knockout Courtroom Rounds</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
-                <span><strong>Adjudication:</strong> Bench of retired High Court judges &amp; senior advocates</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
-                <span><strong>Accolades:</strong> Champion Trophy, Best Memorial &amp; Best Oralist</span>
-              </li>
-            </ul>
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
-              <Link
-                href="/moot-cup/rules"
-                className="font-semibold text-champagne hover:text-white inline-flex items-center gap-1.5 transition-colors"
-              >
-                <span>Rules &amp; Written Arguments</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-              <Link
-                href="/moot-cup/clarifications"
-                className="font-semibold text-text-2 hover:text-white transition-colors"
-              >
-                Clarifications Log
-              </Link>
-            </div>
-          </div>
+          </Bezel>
         }
       />
 
-      {/* 2. FORMAT EXPLAINER (PRD §15.2 - Courtroom mechanics 4-Step Flow) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal>
-          <div className="max-w-3xl mb-10">
-            <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
-              Courtroom Procedure
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-text mt-1">
-              How the Moot Court works
-            </h2>
-            <p className="text-champagne/80 text-sm sm:text-base mt-2 leading-relaxed">
-              Moot court simulates an appellate or constitutional judicial review proceeding. There are no witnesses or cross-examinations; advocates debate points of substantive law directly before the judges.
-            </p>
-          </div>
+      <div className="space-y-28 pt-24 md:space-y-36">
+        <PageSection labelledBy="how-heading">
+          <SectionHeading
+            id="how-heading"
+            eyebrow="How it works"
+            title="From problem to Grand Final"
+            lead="Moot court is an appeal hearing, not a trial. You argue points of law directly to the judges, who will interrupt you."
+            className="mb-14"
+          />
+          <Steps steps={HOW_IT_WORKS} />
+        </PageSection>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="card-glass-luxury p-6 rounded-2xl border border-champagne/30 shadow-xl space-y-3 relative overflow-hidden group hover:border-champagne/60 hover:shadow-[0_12px_32px_rgba(0,0,0,0.4)] transition-all">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-brand/80 border border-champagne/25 flex items-center justify-center text-champagne shadow-xs">
-                  <FileText className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-mono font-bold text-champagne/70">01</span>
-              </div>
-              <h3 className="font-heading font-bold text-lg text-text">
-                The case problem
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                Teams receive a detailed legal case problem presenting complex legal disputes across constitutional, international, or human rights law.
-              </p>
-            </div>
-
-            <div className="card-glass-luxury p-6 rounded-2xl border border-champagne/30 shadow-xl space-y-3 relative overflow-hidden group hover:border-champagne/60 hover:shadow-[0_12px_32px_rgba(0,0,0,0.4)] transition-all">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-brand/80 border border-champagne/25 flex items-center justify-center text-champagne shadow-xs">
-                  <FileText className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-mono font-bold text-champagne/70">02</span>
-              </div>
-              <h3 className="font-heading font-bold text-lg text-text">
-                Written arguments
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                Draft two comprehensive legal briefs (Applicant and Respondent) following standard citation guidelines and institutional anonymity.
-              </p>
-            </div>
-
-            <div className="card-glass-luxury p-6 rounded-2xl border border-champagne/30 shadow-xl space-y-3 relative overflow-hidden group hover:border-champagne/60 hover:shadow-[0_12px_32px_rgba(0,0,0,0.4)] transition-all">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-brand/80 border border-champagne/25 flex items-center justify-center text-champagne shadow-xs">
-                  <Scale className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-mono font-bold text-champagne/70">03</span>
-              </div>
-              <h3 className="font-heading font-bold text-lg text-text">
-                Oral Advocacy
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                Argue your case in high-intensity 30-minute rounds. Two oralists deliver submissions while handling spontaneous judicial questioning from senior judges.
-              </p>
-            </div>
-
-            <div className="card-glass-luxury p-6 rounded-2xl border border-champagne/30 shadow-xl space-y-3 relative overflow-hidden group hover:border-champagne/60 hover:shadow-[0_12px_32px_rgba(0,0,0,0.4)] transition-all">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-brand/80 border border-champagne/25 flex items-center justify-center text-champagne shadow-xs">
-                  <Gavel className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-mono font-bold text-champagne/70">04</span>
-              </div>
-              <h3 className="font-heading font-bold text-lg text-text">
-                The final
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                Top teams advance through the quarter-finals and semi-finals to the Grand Final in the AHA Auditorium, before an expanded bench.
-              </p>
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      {/* 3. ELIGIBILITY & TEAM COMPOSITION (PRD §10.2, §15.2) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal>
-          <div className="double-bezel">
-            <div className="double-bezel-inner p-8 sm:p-10 space-y-6 border-l-4 border-l-champagne">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
-                    Eligibility Guidelines
-                  </span>
-                  <h3 className="font-heading font-bold text-2xl text-text mt-1">
-                    Who can enter
-                  </h3>
-                </div>
-                <div className="text-xs font-mono px-3 py-1 rounded-full bg-champagne/20 border border-champagne/30 text-text font-bold self-start">
-                  2 to 4 Advocates Per Team
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-champagne/80">
-                <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-2">
-                  <div className="font-heading font-bold text-sm text-text">Academic Standing</div>
-                  <p className="text-xs leading-relaxed">Open to currently enrolled undergraduate law students (LL.B., B.A. LL.B.) and university debate societies across accredited domestic &amp; international faculties.</p>
-                </div>
-
-                <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-2">
-                  <div className="font-heading font-bold text-sm text-text">Team Allocation</div>
-                  <p className="text-xs leading-relaxed">Each team consists of two primary Oral Advocates and up to two designated Researchers. Multiple teams from the same law school or university are permitted.</p>
-                </div>
-
-                <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-2">
-                  <div className="font-heading font-bold text-sm text-text">Strict Anonymity</div>
-                  <p className="text-xs leading-relaxed">All memorial submissions and oral arguments must maintain complete institutional anonymity. Teams are assigned blind identity codes (e.g. TC-14).</p>
-                </div>
-              </div>
-
-              <div className="pt-2 flex flex-wrap items-center gap-4">
-                <Button variant="track-moot" href="/register?track=moot-cup">
-                  {open ? 'Register Your GMC Team' : 'Registration status'}
-                </Button>
-                <Button variant="secondary" href="/moot-cup/rules">
-                  View Written Argument Rules
-                </Button>
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      <KeyDates
-        title="GMC key dates"
-        dates={[
-          { label: 'Registration closes', date: siteConfig.registrationDeadlines.mootCup, note: '23:59 Pakistan time' },
-          { label: 'Memorials due', date: siteConfig.memorialDeadline, note: '23:59 Pakistan time, by email' },
-          { label: 'Preliminary rounds', date: siteConfig.eventDates.start },
-          { label: 'Grand Final', date: siteConfig.galaDate },
-        ]}
-      />
-
-      {/* 4. FEE & STRICT NON-PAYMENT NOTICE (PRD §6.2) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal>
-          <div className="card-glass-luxury p-8 sm:p-10 rounded-2xl border border-champagne/30 shadow-xl space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-champagne/70 font-semibold">
-                  Team Investment
-                </span>
-                <h3 className="font-heading font-bold text-2xl text-text mt-0.5">
-                  Fees and what they cover
-                </h3>
-              </div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-semibold bg-elevated/70 border border-champagne-lo/40 text-champagne">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Zero Online Payment Gateway</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-1">
-                <div className="text-xs font-mono text-champagne/70">Complete Team Fee (2–4 Members)</div>
-                <div className="text-2xl font-heading font-extrabold text-champagne">
-                  {siteConfig.fees?.mootCupTeam}
-                </div>
-                <div className="text-xs text-champagne/80">Includes oral round entries, judicial evaluation dossiers, kits &amp; social passes</div>
-              </div>
-
-              <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-1">
-                <div className="text-xs font-mono text-champagne/70">Written Brief Evaluation</div>
-                <div className="text-2xl font-heading font-extrabold text-text">
-                  Detailed Feedback
-                </div>
-                <div className="text-xs text-champagne/80">Written scoring matrix and commentary from senior legal practitioners</div>
-              </div>
-
-              <div className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-1">
-                <div className="text-xs font-mono text-champagne/70">Lodging &amp; Campus Board</div>
-                <div className="text-2xl font-heading font-extrabold text-champagne">
-                  Available on Request
-                </div>
-                <div className="text-xs text-champagne/80">On-campus hostel places for outstation teams; confirmed with acceptance</div>
-              </div>
-            </div>
-
-            {/* Strict Non-Payment Statement (PRD §6.2) */}
-            <div className="p-4 rounded-xl bg-raised/90 border border-champagne/30 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-champagne shrink-0 mt-0.5" />
-              <div className="space-y-1 text-xs sm:text-sm text-champagne/90 leading-relaxed">
-                <strong className="text-text font-semibold">Important Non-Payment Assurance:</strong>{' '}
-                Submitting this application does not charge your team anything online. The GMC Convening Committee will examine your team roster and email team credentials, Team Code assignment, and official payment confirmation instructions directly to your designated contact person.
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      {/* 5. PROBLEM CATEGORIES PREVIEW (PRD §16.2) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <PageSection labelledBy="team-heading" className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
-              Substantive Jurisprudence
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream mt-1">
-              Active Moot Problem Categories
-            </h2>
-          </div>
-          <Link
-            href="/moot-cup/categories"
-            className="text-xs font-mono font-semibold text-champagne hover:underline inline-flex items-center gap-1 transition-colors"
-          >
-            <span>Explore All Categories &amp; Propositions</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {categories.map((cat) => (
-            <ContentCard
-              key={cat.id}
-              track="moot-cup"
-              title={cat.name}
-              description={cat.description}
-              eyebrow={cat.areaOfLaw}
-              meta={`Last Updated: ${cat.lastUpdated}`}
-              actionHref="/moot-cup/categories"
-              actionLabel="Download Case Problem"
-              updatedFlag={true}
+            <SectionHeading id="team-heading" eyebrow="Who can enter" title="A team of law students" className="mb-10" />
+            <FactList
+              items={[
+                { term: 'Eligibility', value: 'Students currently enrolled in an LL.B. or equivalent law programme, or a university moot court society.' },
+                { term: 'Team size', value: 'Two oralists and up to two researchers. Several teams from one institution are welcome.' },
+                { term: 'Anonymity', value: 'Memorials and rounds use a team code only. Names or institutions in a memorial are penalised.' },
+                { term: 'Memorials due', value: siteConfig.memorialDeadline ? `${formatEventDate(siteConfig.memorialDeadline)}, 23:59 Pakistan time` : 'Announced with the problem' },
+              ]}
             />
-          ))}
-        </div>
-      </section>
-
-      {/* 6. CALL TO ACTION FOOTER */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <ScrollReveal>
-          <div className="double-bezel">
-            <div className="double-bezel-inner p-8 sm:p-12 space-y-6">
-              <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
-                Step Up to the Bar
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream max-w-xl mx-auto">
-                Ready to argue your case?
-              </h2>
-              <p className="text-sm text-champagne/80 max-w-lg mx-auto">
-                Early registration ensures timely receipt of team codes and priority access to the official clarifications process.
+          </div>
+          <Bezel className="self-start">
+            <div className="p-8 sm:p-10">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-champagne">Team fee</p>
+              <p className="mt-6 flex items-baseline gap-2">
+                <span className="text-4xl font-display font-medium tracking-tight text-text tabular-nums">{siteConfig.fees.mootCupTeam}</span>
+                <span className="text-sm text-text-4">per team</span>
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-                <Button variant="track-moot" size="lg" href="/register?track=moot-cup">
-                  {open ? 'Register GMC Team' : 'Registration status'}
-                </Button>
-                <Button variant="secondary" size="lg" href="/moot-cup/rules">
-                  Rules &amp; Written Arguments
-                </Button>
-                <Button variant="ghost" size="lg" href="/moot-cup/clarifications">
-                  Clarifications Log
+              <ul className="mt-6 space-y-2.5">
+                {['Memorial scoring with written feedback', 'All rounds, meals on conference days and socials', 'Accommodation on request, confirmed on acceptance'].map((point) => (
+                  <li key={point} className="flex gap-3 text-sm text-text-2">
+                    <span aria-hidden="true" className="mt-2 h-1 w-3 shrink-0 rounded-full bg-champagne" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-6 text-sm leading-relaxed text-text-3">
+                Nothing is charged when you apply. Accepted teams receive an invoice with bank transfer details.
+              </p>
+              <div className="mt-8">
+                <Button variant="track-moot" href="/register?track=moot-cup" withArrow>
+                  {open ? 'Register your team' : 'Registration status'}
                 </Button>
               </div>
             </div>
+          </Bezel>
+        </PageSection>
+
+        <KeyDates
+          title="GMC key dates"
+          dates={[
+            { label: 'Registration closes', date: siteConfig.registrationDeadlines.mootCup, note: '23:59 Pakistan time' },
+            { label: 'Memorials due', date: siteConfig.memorialDeadline, note: '23:59 Pakistan time, by email' },
+            { label: 'Preliminary rounds', date: siteConfig.eventDates.start },
+            { label: 'Grand Final', date: siteConfig.galaDate },
+          ]}
+        />
+
+        <PageSection labelledBy="categories-heading" className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+          <div className="lg:sticky lg:top-32 lg:self-start">
+            <SectionHeading
+              stacked
+              id="categories-heading"
+              eyebrow="Problem categories"
+              title={`${categories.length} areas of law`}
+              lead="Choose the category your team prefers when you register. Questions about the problem go through the clarifications log, answered for every team at once."
+              action={{ label: 'All categories', href: '/moot-cup/categories' }}
+            />
           </div>
-        </ScrollReveal>
-      </section>
+          <Ledger
+            rows={categories.map((cat) => ({
+              key: cat.id,
+              href: '/moot-cup/categories',
+              title: cat.name,
+              description: cat.description,
+              meta: [cat.areaOfLaw, `Revised ${formatPublishedDate(cat.lastUpdated)}`],
+            }))}
+          />
+        </PageSection>
+
+        <PageSection>
+          <CtaBanner
+            eyebrow={open ? 'Registration open' : undefined}
+            title="Bring your best advocates"
+            description="Register the team now and add the final roster details before the deadline. Clarification questions are open to every registered team."
+            footnote="No payment is taken online"
+            actions={[
+              { label: open ? 'Register your team' : 'Registration status', href: '/register?track=moot-cup', variant: 'track-moot' },
+              { label: 'Rules & memorials', href: '/moot-cup/rules', variant: 'secondary' },
+            ]}
+          />
+        </PageSection>
+      </div>
     </div>
   );
 }

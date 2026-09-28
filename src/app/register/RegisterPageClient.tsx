@@ -110,14 +110,14 @@ function RegisterContent({ committees, categories, siteConfig, initialTrack }: R
           <button
             type="button"
             onClick={() => setOverrideTrack(null)}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-champagne hover:text-cream transition-colors px-3.5 py-1.5 rounded-xl bg-overlay/90 border border-champagne/25 shadow-md hover:bg-crest"
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-line-2 px-4 text-sm font-medium text-text-2 transition-colors hover:border-line-3 hover:text-text"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-champagne" />
+            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             <span>Change Competition Track</span>
           </button>
 
-          <span className="text-xs font-mono text-champagne/80">
-            Active Track:{' '}
+          <span className="text-sm text-text-4">
+            Applying for{' '}
             <strong className={selectedTrack === 'gimun' ? 'text-crimson-soft' : 'text-champagne'}>
               {selectedTrack === 'gimun' ? 'Model United Nations (GIMUN)' : 'Moot Court (GMC)'}
             </strong>

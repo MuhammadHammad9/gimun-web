@@ -57,6 +57,6 @@ test.describe('public form interaction coverage', () => {
 
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/register');
-    await expect(page.getByRole('heading', { name: 'Delegate & Team Registration' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /Apply for GIMUN/ })).toBeVisible();
   });
 });
