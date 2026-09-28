@@ -6,15 +6,26 @@ This record separates local engineering verification from production readiness. 
 
 - Seed schema validation: all 13 files pass.
 - Unit tests: 27 pass, including permissions, dates, CSV injection handling, registration idempotency and Resend retry classification.
-- PostgreSQL: migrations 0001–0009 apply in PGlite. Tests cover private grants, idempotency conflicts, configurable years/large counters, participant normalization, optimistic revisions, check-in eligibility, certificate issuance, country reservation/capacity conflicts, guarded counter reset and retention dry-run/anonymization.
-- Production compilation, TypeScript and ESLint passed before the final verification run; the final run status will be recorded below.
+- PostgreSQL: migrations 0001–0010 apply in PGlite. Tests cover private grants, idempotency conflicts, configurable years/large counters, participant normalization, optimistic revisions, check-in eligibility, certificate issuance, country reservation/capacity conflicts, guarded counter reset and retention dry-run/anonymization.
+- Production compilation, TypeScript and ESLint pass against the final source.
 - Link, static accessibility, SEO and submission architecture audits passed independently. Static accessibility checks use actual theme tokens and do not certify WCAG conformance.
 - Seven HTTP form/security scenarios pass against the isolated memory backend.
-- Earlier isolated admin workflow passed publication/restore, emergency update, QR attachment, payment/check-in, certificate PDF, survey invitation, duplicate-response prevention and feedback averages. The strengthened integrated-branch test adds actual results visibility and rendered admin accessibility checks.
+- The isolated admin workflow passes publication/restore, emergency update, QR attachment, payment/check-in, certificate PDF, survey invitation, duplicate-response prevention, feedback averages, actual results visibility, dynamic committee publishing and rendered admin accessibility checks.
 
 ## Final integrated run
 
-In progress. This entry is updated only after the commands finish.
+- `npm run typecheck`, `npm run lint` and `npm run build`: pass.
+- `npm run test:unit`: 27/27 pass.
+- `npm run test:migrations`: all migrations and database invariants pass.
+- Link audit: 1,030 internal route links, 9 documents and 82 hash anchors verified with no failures.
+- Static accessibility audit: 11/11 checks pass. Rendered axe checks also pass across the public route matrix and admin workflow.
+- SEO audit: 62/62 checks pass, including canonical URLs and all 25 sitemap entries.
+- Submission architecture audit: 15/15 checks pass.
+- Browser suite: 270 pass and 15 intentional viewport-specific checks skip across 375 px, 390 px, 768 px, 1,024 px and 1,440 px viewports.
+- Admin workflow: 1/1 end-to-end scenario passes.
+- Production dependency audit: 0 known vulnerabilities.
+
+The browser runner restarts the production server for each viewport and does not override `SITE_URL`. This prevents long-run server loss from cascading into unrelated failures and prevents ISR test traffic from rewriting canonical metadata with the test server origin.
 
 ## Launch gate and external acceptance
 

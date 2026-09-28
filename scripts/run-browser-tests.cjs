@@ -60,51 +60,76 @@ function killProcessTree(child) {
   });
 }
 
-async function main() {
-  let serverProcess;
-  let testProcess;
-  let shuttingDown = false;
+let activeServer;
+let activeTests;
+let interrupted = false;
 
-  const shutdown = async (exitCode) => {
-    if (shuttingDown) return;
-    shuttingDown = true;
-    if (testProcess && !testProcess.killed) await killProcessTree(testProcess);
-    if (serverProcess && !serverProcess.killed) await killProcessTree(serverProcess);
-    process.exit(exitCode);
-  };
+async function stopActiveProcesses() {
+  const tests = activeTests;
+  const server = activeServer;
+  activeTests = undefined;
+  activeServer = undefined;
+  if (tests && !tests.killed) await killProcessTree(tests);
+  if (server && !server.killed) await killProcessTree(server);
+}
 
-  process.on('SIGINT', () => void shutdown(130));
-  process.on('SIGTERM', () => void shutdown(143));
-
-  serverProcess = spawn(process.execPath, [nextBin, 'start', '-H', '127.0.0.1', '-p', port], {
+async function runShard(testArgs) {
+  activeServer = spawn(process.execPath, [nextBin, 'start', '-H', '127.0.0.1', '-p', port], {
     cwd: rootDir,
     env: {
       ...process.env,
       SUBMISSIONS_BACKEND: 'memory',
       ALLOW_IN_MEMORY_SUBMISSIONS: '1',
       SUBMISSIONS_TEST_MODE: '1',
-      SITE_URL: baseUrl,
     },
     stdio: 'inherit',
   });
 
   try {
     await waitForServer();
-    testProcess = spawn(process.execPath, [playwrightCli, 'test', ...process.argv.slice(2)], {
+    if (interrupted) return 130;
+    activeTests = spawn(process.execPath, [playwrightCli, 'test', ...testArgs], {
       cwd: rootDir,
-      env: { ...process.env, PLAYWRIGHT_MANAGED_SERVER: '1', SITE_URL: baseUrl },
+      env: { ...process.env, PLAYWRIGHT_MANAGED_SERVER: '1' },
       stdio: 'inherit',
     });
 
     const testExitCode = await new Promise((resolve, reject) => {
-      testProcess.once('error', reject);
-      testProcess.once('exit', (code, signal) => resolve(code ?? (signal ? 1 : 0)));
+      activeTests.once('error', reject);
+      activeTests.once('exit', (code, signal) => resolve(code ?? (signal ? 1 : 0)));
     });
-    await shutdown(testExitCode);
+    return testExitCode;
   } catch (error) {
     console.error(error instanceof Error ? error.message : error);
-    await shutdown(1);
+    return 1;
+  } finally {
+    await stopActiveProcesses();
   }
 }
 
-void main();
+async function main() {
+  const requestedArgs = process.argv.slice(2);
+  const shards = requestedArgs.length > 0
+    ? [requestedArgs]
+    : ['mobile-375', 'mobile-390', 'tablet-768', 'desktop-1024', 'desktop-1440']
+        .map((project) => [`--project=${project}`]);
+
+  for (const shard of shards) {
+    if (interrupted) return 130;
+    const exitCode = await runShard(shard);
+    if (exitCode !== 0) return exitCode;
+  }
+  return 0;
+}
+
+async function interrupt(exitCode) {
+  if (interrupted) return;
+  interrupted = true;
+  await stopActiveProcesses();
+  process.exit(exitCode);
+}
+
+process.on('SIGINT', () => void interrupt(130));
+process.on('SIGTERM', () => void interrupt(143));
+
+void main().then((exitCode) => process.exit(exitCode));
