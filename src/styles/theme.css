@@ -1,0 +1,236 @@
+/* ==============================================================================
+   THEMES AND TONES
+
+   Dark is the default: the colour tokens in globals.css @theme. Light applies
+   when the pre-paint script in layout.tsx sets html[data-theme="light"].
+
+   A tone is a chapter ground. Each one re-declares the ink tokens for its
+   subtree, so every utility inside it (text-text-2, border-line, bg-raised,
+   text-accent-gimun) follows the tone without a single per-component
+   override. Every text token clears 4.5:1 on every ground it can sit on;
+   tests/unit/tone-contrast.test.ts checks the numbers in this file.
+   ============================================================================== */
+
+@theme {
+  /* Chapter grounds (dark theme values; light values below). */
+  --color-wine: #2b0806;
+  --color-paper: #f3e8d5;
+  --color-paper-2: #e9dcc4;
+  --color-ink: #1a0605;
+  --color-gold-ink: #7a5a2b;
+
+  /* Track accents that stay readable as small text on the current ground.
+     --color-crimson / --color-champagne remain the brand swatches for fills,
+     rules and large type. */
+  --color-accent-gimun: #fda4af;
+  --color-accent-gmc: #ecd8b7;
+  --color-focus: #ecd8b7;
+  --color-on-accent: #140302;
+
+  /* Type. Display tops out at 6rem; mega is decorative art (aria-hidden). */
+  --text-mega: clamp(4.5rem, 15vw, 14rem);
+  --text-mega--line-height: 0.82;
+  --text-mega--letter-spacing: -0.045em;
+
+  --text-manifesto: clamp(1.75rem, 3.4vw, 3rem);
+  --text-manifesto--line-height: 1.14;
+  --text-manifesto--letter-spacing: -0.02em;
+
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.55;
+
+  /* Layout */
+  --container-page: 88rem;
+  --container-prose: 42rem;
+  --radius-sheet: 2rem;
+  --radius-placard: 0.625rem;
+}
+
+:root {
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --section-y: clamp(5rem, 11vw, 10rem);
+  --tone-deep: #2b0806;
+  --tone-crest: #440c07;
+  --tone-inverse: #f3e8d5;
+  --grain-opacity: 0.035;
+}
+
+/* --- Light theme ----------------------------------------------------------- */
+html[data-theme="light"] {
+  color-scheme: light;
+  --background: #fff7ea;
+  --foreground: #24140e;
+
+  --color-void: #fffaf1;
+  --color-canvas: #fff7ea;
+  --color-raised: #fffdf8;
+  --color-elevated: #f8ead4;
+  --color-overlay: #efd4b4;
+  --color-crest: #c99668;
+
+  --color-brand: #7a1709;
+  --color-brand-hi: #a53d2a;
+  --color-brand-deep: #5f1108;
+  --color-brand-lit: #922611;
+  --color-brand-soft: #8b5f53;
+
+  --color-champagne: #6f3c16;
+  --color-champagne-hi: #3b1f0d;
+  --color-champagne-lo: #8a5a1f;
+
+  --color-crimson: #bd123c;
+  --color-crimson-hi: #a50f33;
+  --color-crimson-lo: #86152b;
+  --color-crimson-deep: #9f1239;
+  --color-crimson-soft: #a50f33;
+  --color-clay: #a93418;
+
+  --color-cream: #2d2118;
+  --color-ink-warm: #4f3929;
+  --color-gimun: #bd123c;
+  --color-moot: #6f3c16;
+
+  --color-text: #24140e;
+  --color-text-2: #4e4039;
+  --color-text-3: #65574f;
+  --color-text-4: #70635b;
+
+  --color-line: rgba(116, 66, 35, 0.16);
+  --color-line-2: rgba(116, 66, 35, 0.32);
+  --color-line-3: rgba(92, 56, 33, 0.62);
+
+  --color-ok: #4f6b2e;
+  --color-warn: #8a5a1f;
+  --color-err: #bd123c;
+
+  --color-accent-gimun: #bd123c;
+  --color-accent-gmc: #6f3c16;
+  --color-focus: #6f3c16;
+  --color-on-accent: #fff7ea;
+
+  --shadow-hairline: inset 0 0 0 1px rgba(116, 66, 35, 0.1);
+  --shadow-raise: 0 1px 2px rgba(91, 48, 24, 0.12), 0 18px 44px -30px rgba(91, 48, 24, 0.42);
+  --shadow-panel: 0 2px 4px rgba(91, 48, 24, 0.1), 0 24px 64px -38px rgba(91, 48, 24, 0.36);
+
+  --tone-deep: #f5e6cc;
+  --tone-crest: #4b0e04;
+  --tone-inverse: #1a0605;
+  --grain-opacity: 0.05;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* --- Tones ------------------------------------------------------------------
+   Grounds: deep (a step darker than the page), crest (the brand's lacquer
+   maroon, always light ink), inverse (paper in the dark theme, ink in the
+   light theme). */
+.tone-deep,
+.tone-crest,
+.tone-inverse {
+  --color-canvas: var(--tone-bg);
+  background-color: var(--tone-bg);
+  color: var(--color-text);
+}
+
+.tone-deep {
+  --tone-bg: var(--tone-deep);
+}
+
+/* Light ink (light text) on the dark grounds a tone can create. */
+.tone-crest,
+html[data-theme="light"] .tone-inverse {
+  --color-text: #fffdf9;
+  --color-text-2: rgba(236, 216, 183, 0.88);
+  --color-text-3: rgba(236, 216, 183, 0.76);
+  --color-text-4: rgba(236, 216, 183, 0.66);
+  --color-line: rgba(236, 216, 183, 0.18);
+  --color-line-2: rgba(236, 216, 183, 0.38);
+  --color-line-3: rgba(236, 216, 183, 0.6);
+  --color-champagne: #ecd8b7;
+  --color-champagne-hi: #fff5e6;
+  --color-champagne-lo: #cca876;
+  --color-crimson: #e11d48;
+  --color-crimson-soft: #fda4af;
+  --color-accent-gimun: #fda4af;
+  --color-accent-gmc: #ecd8b7;
+  --color-focus: #ecd8b7;
+  --color-on-accent: #140302;
+}
+
+.tone-crest {
+  --tone-bg: var(--tone-crest);
+  --color-raised: color-mix(in srgb, var(--tone-bg) 93%, #ecd8b7);
+  --color-elevated: color-mix(in srgb, var(--tone-bg) 88%, #ecd8b7);
+}
+
+.tone-inverse {
+  --tone-bg: var(--tone-inverse);
+}
+
+/* Paper ink: the dark theme's inverse chapters read like the printed page. */
+html:not([data-theme="light"]) .tone-inverse {
+  color-scheme: light;
+  --color-raised: #faf3e6;
+  --color-elevated: #e9dcc4;
+  --color-overlay: #dfcfb2;
+  --color-text: #1a0605;
+  --color-text-2: #4b3934;
+  --color-text-3: #615049;
+  --color-text-4: #6c5b54;
+  --color-line: rgba(26, 6, 5, 0.14);
+  --color-line-2: rgba(26, 6, 5, 0.28);
+  --color-line-3: rgba(26, 6, 5, 0.5);
+  --color-champagne: #7a5a2b;
+  --color-champagne-hi: #5a3f1a;
+  --color-champagne-lo: #7a5a2b;
+  --color-crimson: #b3123a;
+  --color-crimson-soft: #b3123a;
+  --color-accent-gimun: #b3123a;
+  --color-accent-gmc: #7a5a2b;
+  --color-focus: #5e1205;
+  --color-on-accent: #faf3e6;
+}
+
+html[data-theme="light"] .tone-inverse {
+  color-scheme: dark;
+  --color-raised: #240907;
+  --color-elevated: #2e0c09;
+}
+
+/* --- Browser surfaces -------------------------------------------------------
+   The parts nobody draws still carry the palette. */
+::selection {
+  background: var(--color-champagne);
+  color: var(--color-on-accent);
+}
+
+html {
+  accent-color: var(--color-champagne);
+  caret-color: var(--color-champagne);
+  scrollbar-color: color-mix(in srgb, var(--color-champagne) 38%, transparent) transparent;
+  text-underline-offset: 0.2em;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html :focus-visible {
+  outline-color: var(--color-focus);
+}
+
+.tabular,
+time,
+[data-numeric] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Headings: balanced lines, never an orphan at display sizes. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}

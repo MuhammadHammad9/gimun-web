@@ -8,6 +8,7 @@ import { constructMetadata } from '@/lib/metadata';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { getAnalyticsMeasurementId } from '@/lib/site-config';
 import { serverRenderTime } from '@/lib/phase';
+import { THEME_BOOT_SCRIPT } from '@/lib/theme';
 
 const satoshi = localFont({
   src: '../assets/fonts/Satoshi-Variable.woff2',
@@ -58,8 +59,13 @@ export default async function RootLayout({
     announcements.find((a) => a.pinnedFlag) || announcements[0];
 
   return (
-    <html lang="en" className={`${satoshi.variable} ${generalSans.variable} ${jetbrainsMono.variable}`}>
-      <body className="min-h-screen flex flex-col bg-canvas text-text antialiased selection:bg-champagne selection:text-canvas">
+    // The boot script sets data-theme before first paint, so <html> differs
+    // from the server markup by design.
+    <html lang="en" suppressHydrationWarning className={`${satoshi.variable} ${generalSans.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+      </head>
+      <body className="min-h-screen flex flex-col bg-canvas text-text antialiased">
         <GoogleAnalytics measurementId={getAnalyticsMeasurementId()} />
         <SiteConfigProvider value={siteConfig} renderedAt={renderedAt}>
           <SiteChrome site={siteConfig} announcement={activeAnnouncement} sponsors={sponsors}>

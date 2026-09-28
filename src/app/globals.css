@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "../styles/theme.css";
+@import "../styles/motion.css";
 
 /* ==============================================================================
    GIMUN & GMC 2027 — DESIGN TOKENS
@@ -78,33 +80,33 @@
   --font-body: var(--font-body-sans), "General Sans", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Scale modelled on img.ly: restrained sizes, medium weight, tight tracking.
-     Their h1 is 52px/500 and h2 is 42px/500 at 1440 — hierarchy comes from
-     weight and colour, not from a 7.5rem display size. */
-  --text-display: clamp(2.5rem, 4.6vw, 4.25rem);
-  --text-display--line-height: 1.06;
-  --text-display--letter-spacing: -0.022em;
+  /* Scale for the printed-programme redesign: one display moment per page,
+     capped at 6rem, with tight but legible tracking (floor -0.04em). Weight
+     stays at 500-600; size and space carry the hierarchy. */
+  --text-display: clamp(2.75rem, 6.4vw, 6rem);
+  --text-display--line-height: 0.96;
+  --text-display--letter-spacing: -0.035em;
 
-  --text-h1: clamp(2.125rem, 3.6vw, 3.25rem);
-  --text-h1--line-height: 1.1;
-  --text-h1--letter-spacing: -0.02em;
+  --text-h1: clamp(2.5rem, 5vw, 4.5rem);
+  --text-h1--line-height: 1;
+  --text-h1--letter-spacing: -0.03em;
 
-  --text-h2: clamp(1.75rem, 2.9vw, 2.625rem);
-  --text-h2--line-height: 1.15;
-  --text-h2--letter-spacing: -0.014em;
+  --text-h2: clamp(2rem, 3.8vw, 3.375rem);
+  --text-h2--line-height: 1.04;
+  --text-h2--letter-spacing: -0.025em;
 
-  --text-h3: clamp(1.125rem, 1.5vw, 1.375rem);
-  --text-h3--line-height: 1.3;
-  --text-h3--letter-spacing: -0.01em;
+  --text-h3: clamp(1.25rem, 1.7vw, 1.625rem);
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.012em;
 
-  /* Body runs large, like img.ly's 20px/27px. Small text is the exception. */
-  --text-lead: clamp(1.0625rem, 1.15vw, 1.25rem);
-  --text-lead--line-height: 1.55;
+  /* Body runs large. Small text is the exception. */
+  --text-lead: clamp(1.125rem, 1.35vw, 1.3125rem);
+  --text-lead--line-height: 1.5;
 
   --text-body: 1.0625rem;
-  --text-body--line-height: 1.6;
+  --text-body--line-height: 1.62;
 
-  --text-meta: 0.6875rem;
+  --text-meta: 0.75rem;
   --text-meta--line-height: 1.4;
   --text-meta--letter-spacing: 0.14em;
 
