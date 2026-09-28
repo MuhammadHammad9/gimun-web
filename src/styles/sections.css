@@ -203,14 +203,12 @@
   width: min(100%, 30rem);
 }
 
+/* Below desktop the seal steps aside: at phone width it would sit behind
+   the headline, and as the largest paint it would also become the LCP
+   element in place of the headline. */
 @media (max-width: 1023px) {
   .home-hero__art {
-    position: absolute;
-    top: -3rem;
-    right: calc(var(--gutter) * -1 - 10rem);
-    z-index: -1;
-    width: 22rem;
-    opacity: 0.2;
+    display: none;
   }
 }
 
@@ -295,11 +293,15 @@
   }
 }
 
+/* Set in the display face, which is preloaded: the ring is large enough to
+   be the page's largest paint, so it must not wait for the (unpreloaded)
+   mono face. */
 .seal__lettering {
   fill: var(--color-text-3);
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-size: 13px;
-  letter-spacing: 0.24em;
+  font-weight: 500;
+  letter-spacing: 0.26em;
 }
 
 .seal__ticks line {
