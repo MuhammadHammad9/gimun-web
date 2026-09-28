@@ -1,0 +1,42 @@
+{
+  "/": {
+    "jsGzip": 208612,
+    "cssGzip": 18598,
+    "fontBytes": 80720
+  },
+  "/register": {
+    "jsGzip": 238123,
+    "cssGzip": 18598,
+    "fontBytes": 80720
+  },
+  "/resources": {
+    "jsGzip": 211462,
+    "cssGzip": 18598,
+    "fontBytes": 80720
+  },
+  "/gimun": {
+    "jsGzip": 206905,
+    "cssGzip": 18598,
+    "fontBytes": 80720
+  },
+  "/moot-cup": {
+    "jsGzip": 206905,
+    "cssGzip": 18598,
+    "fontBytes": 80720
+  },
+  "/about": {
+    "jsGzip": 206905,
+    "cssGzip": 18598,
+    "fontBytes": 80720
+  },
+  "/schedule": {
+    "jsGzip": 211614,
+    "cssGzip": 18598,
+    "fontBytes": 80720
+  },
+  "/contact": {
+    "jsGzip": 213149,
+    "cssGzip": 18598,
+    "fontBytes": 80720
+  }
+}

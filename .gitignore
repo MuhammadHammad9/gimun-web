@@ -69,3 +69,8 @@ artifacts/
 scratch/
 
 *.docx
+
+# Design-skill local state and binaries (reinstalled by `npx impeccable install`)
+.impeccable/config.local.json
+.hallmark/
+.claude/skills/impeccable/scripts/bin/
