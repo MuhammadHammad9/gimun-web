@@ -19,10 +19,17 @@ class ContentUnavailableError extends Error {}
 
 type Health = { fallback: boolean; reason: string; transient: boolean };
 
-// Empty collections are intentional (e.g. all entries unpublished), not a reason
-// to resurrect bundled data. Missing settings indicates the CMS was never seeded.
-export async function contentHealth(): Promise<Health> {
-  if (!hasDatabase()) return { fallback: true, reason: 'Database is not configured.', transient: false };
+const CMS_OUTAGE_RETRY_MS = 30_000;
+let healthCheckInFlight: Promise<Health> | null = null;
+let cmsUnavailableUntil = 0;
+let outageWarningShownUntil = 0;
+
+function hasContentDatabase() {
+  return process.env.CMS_BACKEND !== 'bundled' && hasDatabase();
+}
+
+async function probeContentHealth(): Promise<Health> {
+  if (!hasContentDatabase()) return { fallback: true, reason: 'Bundled content is configured.', transient: false };
   try {
     const { data, error } = await database().from('site_settings').select('id').eq('id', 'site').maybeSingle();
     if (error) return { fallback: true, reason: 'CMS is unavailable.', transient: true };
@@ -32,11 +39,38 @@ export async function contentHealth(): Promise<Health> {
   }
 }
 
+// Empty collections are intentional (e.g. all entries unpublished), not a reason
+// to resurrect bundled data. Missing settings indicates the CMS was never seeded.
+export async function contentHealth(): Promise<Health> {
+  if (Date.now() < cmsUnavailableUntil) {
+    return { fallback: true, reason: 'CMS is unavailable.', transient: true };
+  }
+
+  // Layout, metadata and page rendering can all ask for content at once. Share
+  // their availability probe instead of making every collection wait on the
+  // same failing provider independently.
+  if (!healthCheckInFlight) {
+    healthCheckInFlight = probeContentHealth().then((health) => {
+      if (health.transient) cmsUnavailableUntil = Date.now() + CMS_OUTAGE_RETRY_MS;
+      return health;
+    }).finally(() => {
+      healthCheckInFlight = null;
+    });
+  }
+  return healthCheckInFlight;
+}
+
 async function withSeedFallback<T>(label: string, read: () => Promise<T>, seed: () => T): Promise<T> {
   try {
     return await read();
   } catch (error) {
-    console.error(`[CMS] ${label}: ${error instanceof Error ? error.message : 'read failed'}; serving bundled content for this request.`);
+    // A provider outage is expected to degrade to bundled content. Keep it in
+    // server logs, but do not use console.error: Next's development overlay
+    // treats that as an application error even though the request succeeded.
+    if (Date.now() >= outageWarningShownUntil) {
+      outageWarningShownUntil = Date.now() + CMS_OUTAGE_RETRY_MS;
+      console.warn(`[CMS] ${label}: ${error instanceof Error ? error.message : 'read failed'}; serving bundled content while the CMS is unavailable.`);
+    }
     return seed();
   }
 }
@@ -80,7 +114,9 @@ export async function readCollection<T>(collection: Collection, seed: T[]): Prom
 export async function readSite(seed: unknown) {
   const cached = unstable_cache(
     async () => {
-      if (!hasDatabase()) return siteSchema.parse(seed);
+      const health = await contentHealth();
+      if (health.transient) throw new ContentUnavailableError(health.reason);
+      if (health.fallback) return siteSchema.parse(seed);
       const { data, error } = await database().from('site_settings').select('data').eq('id', 'site').maybeSingle();
       if (error) throw new ContentUnavailableError(error.message);
       if (!data) return siteSchema.parse(seed);

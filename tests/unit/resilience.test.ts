@@ -66,6 +66,7 @@ describe('rate limiting', () => {
 describe('content reads', () => {
   const seed = [{ id: 'seed-faq', category: 'general', question: 'Seed?', answer: 'Seed.' }];
   beforeEach(() => {
+    vi.stubEnv('CMS_BACKEND', 'supabase');
     state.configured = true;
     state.settings = { data: { id: 'site' }, error: null };
   });
@@ -85,10 +86,11 @@ describe('content reads', () => {
   });
 
   it('falls back to seed content only when the database fails on a cold cache', async () => {
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const warnings = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     state.settings = { data: null, error: { message: 'timeout' } };
     await expect(readCollection('faq', seed)).resolves.toEqual(seed);
-    errors.mockRestore();
+    expect(warnings).toHaveBeenCalledTimes(1);
+    warnings.mockRestore();
   });
 
   it('serves the seed deliberately when no database is configured', async () => {
