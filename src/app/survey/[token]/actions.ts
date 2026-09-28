@@ -4,6 +4,10 @@ import { headers } from 'next/headers';
 import { database } from '@/lib/server/supabase';
 import { enforceRateLimit,clientIp } from '@/lib/server/submissions';
 export async function submitSurvey(token:string,answers:Record<string,unknown>){
+  try{return await saveSurvey(token,answers);}
+  catch{console.error('[Survey] Submission failed');return {error:'Could not save right now. Please try again in a moment.'};}
+}
+async function saveSurvey(token:string,answers:Record<string,unknown>):Promise<{error?:string;success?:boolean}>{
   if(!z.uuid().safeParse(token).success)return {error:'Invalid survey link.'};
   if(!(await enforceRateLimit('survey',clientIp(new Request('http://localhost',{headers:await headers()})))).allowed)return {error:'Too many attempts. Try again later.'};
   const db=database();const {data:p,error}=await db.from('participants').select('id').eq('survey_token',token).maybeSingle();if(error||!p)return {error:'Invalid survey link.'};

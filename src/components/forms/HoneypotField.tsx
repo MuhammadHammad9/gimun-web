@@ -22,7 +22,7 @@ export function HoneypotField({ value, onChange }: HoneypotFieldProps) {
         pointerEvents: 'none',
       }}
     >
-      <label htmlFor={HONEYPOT_FIELD}>Do not fill this field</label>
+      <label htmlFor={HONEYPOT_FIELD}>Leave empty</label>
       <input
         type="text"
         id={HONEYPOT_FIELD}

@@ -22,8 +22,11 @@ export interface SponsorStripProps {
  * seamless. Only the first copy is reachable by keyboard or screen reader; the
  * duplicate is inert.
  */
-export function SponsorStrip({ sponsors, title, className }: SponsorStripProps) {
+export function SponsorStrip({ sponsors: allSponsors, title, className }: SponsorStripProps) {
   const pauseId = useId();
+  // A partner without a logo has nothing to show in a logo strip (and an
+  // empty image source would throw).
+  const sponsors = (allSponsors ?? []).filter((sponsor) => sponsor.logo);
   if (!sponsors || sponsors.length === 0) {
     return null;
   }

@@ -2,6 +2,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import { createClient } from '@supabase/supabase-js';
 import { authClient, requireAdmin } from '@/lib/server/admin/auth';
 import { database } from '@/lib/server/supabase';
 import { clientIp, enforceRateLimit } from '@/lib/server/submissions';
@@ -28,9 +29,19 @@ export async function changePassword(_previous: string, form: FormData) {
   if (current.data === password.data) return 'Choose a password different from the current one.';
   const client = await authClient();
   // Proves the person at the keyboard knows the password, not just that a
-  // session cookie is present on an unattended machine.
-  const check = await client.auth.signInWithPassword({ email: user.email, password: current.data });
+  // session cookie is present on an unattended machine. The check runs on a
+  // throwaway client so the admin's own (possibly two-factor) session is
+  // left untouched, then that extra session is revoked.
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) return 'Password changes are unavailable. Check the server configuration.';
+  // Same per-account limit as sign-in, so a stolen session cannot be used to
+  // guess the password through this form.
+  if (!(await enforceRateLimit('admin-login-account', user.email.toLowerCase())).allowed) return 'Too many attempts. Please try later.';
+  const verifier = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const check = await verifier.auth.signInWithPassword({ email: user.email, password: current.data });
   if (check.error) return 'The current password is incorrect.';
+  await verifier.auth.signOut({ scope: 'local' }).catch(() => undefined);
   const { error } = await client.auth.updateUser({ password: password.data });
   if (error) return 'The password could not be changed.';
   // Any other signed-in browser keeps the old credentials' session; end them.

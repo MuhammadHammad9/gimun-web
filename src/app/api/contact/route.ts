@@ -1,6 +1,5 @@
 import { after, NextRequest, NextResponse } from 'next/server';
 import { normalizeFormStrings, validateContactForm } from '@/lib/validation';
-import { MIN_FILL_TIME_MS } from '@/lib/honeypot';
 import {
   dispatchEmailOutbox,
   clientIp,
@@ -9,7 +8,7 @@ import {
   SubmissionServiceError,
 } from '@/lib/server/submissions';
 import type { ContactFormData } from '@/lib/types';
-import { JsonBodyError, readJsonBody } from '@/lib/server/request';
+import { JsonBodyError, looksAutomated, readJsonBody } from '@/lib/server/request';
 
 export const maxDuration = 60;
 
@@ -29,12 +28,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Request body must be a JSON object.' }, { status: 400 });
     }
 
-    const { name, email, queryType, message, kind, submission_key, _hp, _ts } = body as Record<string, unknown>;
+    const { name, email, queryType, message, kind, submission_key } = body as Record<string, unknown>;
     const submissionKey =
       typeof submission_key === 'string' && /^[0-9a-f-]{36}$/i.test(submission_key) ? submission_key : undefined;
 
-    const loadedAt = Number(_ts);
-    if ((_hp && String(_hp).trim()) || (process.env.NODE_ENV === 'production' && !_ts) || (_ts && (!Number.isFinite(loadedAt) || Date.now() - loadedAt < MIN_FILL_TIME_MS))) {
+    if (looksAutomated(body as Record<string, unknown>)) {
       return NextResponse.json({ success: true, message: 'Thank you for reaching out. The Secretariat has received your message.' }, { status: 201 });
     }
 

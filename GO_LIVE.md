@@ -32,7 +32,7 @@ Create a Redis database and copy its REST URL and REST token.
 
 ## 4. Vercel (hosting)
 
-1. Import the repository. Framework: Next.js (from `vercel.json`).
+1. Import the repository. Framework: Next.js (from `vercel.json`). Use a Pro team for the event: Vercel's Hobby plan is for non-commercial use and has lower limits.
 2. **Settings → Environment Variables.** Set these separately for Production and for Preview, and point Preview at the **staging** Supabase project so preview deployments never touch real data:
 
 | Variable | Value |
@@ -50,7 +50,7 @@ Create a Redis database and copy its REST URL and REST token.
 | `ADMIN_REQUIRE_MFA` | `1` (every admin must set up two-factor sign-in) |
 | `ANALYTICS_MEASUREMENT_ID` | Optional GA4 ID; loads only after visitor consent |
 
-   A production deployment with any of these missing refuses to start and names the missing variables in the build logs.
+   `scripts/check-env.mjs` runs before every Vercel build. A **production** build with a missing, malformed or mismatched variable fails and lists the problems, so the live site is never replaced by one that cannot take registrations. Preview builds only warn. To test a set of values locally: `npm run check:env -- --strict`.
 3. **Settings → Domains:** add the domain and follow the DNS instructions. HTTPS is automatic.
 
 ## 5. Email delivery schedule

@@ -27,7 +27,8 @@
     "test:admin": "node scripts/test-admin-e2e.mjs",
     "content:seed": "tsx scripts/seed-content.ts",
     "content:export": "node scripts/export-content.mjs",
-    "admin:owner": "node scripts/provision-owner.mjs"
+    "admin:owner": "node scripts/provision-owner.mjs",
+    "check:env": "node scripts/check-env.mjs"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",

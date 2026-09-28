@@ -11,8 +11,9 @@ export async function register() {
   if(serverHost&&browserHost&&serverHost!==browserHost)missing.push('SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL (different projects)');
   if(!missing.length)return;
   const message=`[Configuration] Missing or invalid: ${[...new Set(missing)].join(', ')}. See OPERATIONS_RUNBOOK.md.`;
-  // A production deployment that boots without its configuration looks healthy
-  // but fails every registration. Refuse to start instead; previews only warn.
-  if(process.env.VERCEL_ENV==='production')throw new Error(message);
-  console.warn(`${message} Public seed content remains available; submission and admin services need configuration.`);
+  // Never throw here: that would take every page down, including the public
+  // information visitors need. The build-time check (scripts/check-env.mjs)
+  // stops a misconfigured production deploy; at runtime we only log, forms
+  // answer 503 and /api/health reports the problem.
+  console.error(`${message} Public content remains available; submission and admin services need configuration.`);
 }

@@ -27,7 +27,16 @@ Registration pages offer **Send invoice** (PDF built from amount due, amount pai
 - Enable TOTP MFA in Supabase Auth. Admins enrol from **Two-factor** in the admin header; set `ADMIN_REQUIRE_MFA=1` to make enrolment mandatory before any admin page loads.
 - Changing a password requires the current password and signs out the account's other sessions.
 - The database enforces section permissions itself (`admin_can`, migration 0011), and every CSV export writes an audit-log row. Read-only viewers cannot export.
-- `/api/health` returns 200 when configuration is complete and the CMS is reachable; point an uptime monitor at it.
+- `/api/health` returns 200 when configuration is complete, the CMS is reachable and the database has migration 0011 (`schema: "outdated"` means migrations are behind the code); point an uptime monitor at it.
+
+## How the backend degrades
+
+- **Supabase slow or down:** public pages keep serving the last good content from cache; a cold cache serves the bundled content. Forms answer "temporarily unavailable" (503) and the visitor's draft and submission key are kept, so retrying later cannot double-register.
+- **Upstash down:** rate limiting falls back to per-server limits and logs `[RateLimit]`; registration keeps working.
+- **Resend down or rate-limited:** messages stay in the outbox and retry with backoff for 72 hours. Check **Email** for failed or needs-review rows.
+- **A malformed CMS entry:** that entry is skipped and logged `[CMS] Skipping invalid …`; the rest of the collection still shows. Invalid saved settings fall back field by field to the bundled defaults.
+- **Missing configuration at runtime:** logged as `[Configuration]`, never shown to visitors; `/api/health` reports it. Production builds refuse to deploy with it (see `scripts/check-env.mjs`).
+- **Certificate batches:** a participant whose name the certificate font cannot print, or who has no valid email, is skipped and named in the result; everyone else's certificate is still sent.
 
 Provider requests use the outbox ID as the idempotency key. Stored payloads must not be edited during retry. Timeout/uncertain responses and concurrent-key HTTP 409 responses can retry within the bounded window; a different-payload conflict fails. If the provider accepted mail but the database acknowledgement failed, the lease remains for safe recovery. A legacy attempted row without a recorded sender requires manual review. Never reset a key/window just to force a resend: first verify the provider outcome.
 

@@ -1,3 +1,5 @@
+import { MIN_FILL_TIME_MS } from '@/lib/honeypot';
+
 export const MAX_JSON_BODY_BYTES = 256 * 1024;
 
 export class JsonBodyError extends Error {
@@ -66,4 +68,29 @@ function safeHost(value: string | undefined) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Honeypot and fill-time check for public forms.
+ *
+ * Clients send `_elapsed`, the fill time measured on their own clock, so a
+ * device whose clock is off never matters. Older cached clients send only
+ * `_ts` (their clock's load time); that is judged "too fast" only when it is
+ * a plausible recent timestamp. Previously a phone clock running a few
+ * seconds fast made a real application look instantaneous: the visitor got a
+ * decoy success and nothing was stored.
+ */
+export function looksAutomated(body: Record<string, unknown>) {
+  if (body._hp && String(body._hp).trim()) return true;
+  if (body._elapsed !== undefined && body._elapsed !== null) {
+    const elapsed = Number(body._elapsed);
+    return !Number.isFinite(elapsed) || elapsed < MIN_FILL_TIME_MS;
+  }
+  if (body._ts === undefined || body._ts === null || body._ts === '') {
+    return process.env.NODE_ENV === 'production';
+  }
+  const loadedAt = Number(body._ts);
+  if (!Number.isFinite(loadedAt)) return true;
+  const sinceLoad = Date.now() - loadedAt;
+  return sinceLoad >= 0 && sinceLoad < MIN_FILL_TIME_MS;
 }

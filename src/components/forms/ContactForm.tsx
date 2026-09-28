@@ -79,6 +79,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
           submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
           _hp: honeypot,
           _ts: formLoadedAt.current,
+          _elapsed: Date.now() - formLoadedAt.current,
         }),
       });
 

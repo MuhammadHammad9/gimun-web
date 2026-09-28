@@ -1,5 +1,7 @@
-// Honeypot field name (obscured to not tip off automated bots)
-export const HONEYPOT_FIELD = 'company_fax';
+// Honeypot field name. Deliberately meaningless: a name like "company_fax"
+// matches browser autofill heuristics, and an autofilled trap would silently
+// discard a real person's application.
+export const HONEYPOT_FIELD = 'gm_hp_x7';
 
 // Minimum form fill time in milliseconds (2000ms velocity trap per QA security requirements)
 export const MIN_FILL_TIME_MS = 2000;

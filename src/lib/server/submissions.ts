@@ -60,6 +60,8 @@ type OutboxMessage = {
   locked_by?: string | null;
 };
 
+const UNAVAILABLE = 'Submissions are temporarily unavailable. Please try again shortly or email the organizing team.';
+
 class OutboxDispatchError extends Error {
   constructor(
     message: string,
@@ -80,7 +82,8 @@ const memoryContacts: Array<{ id: string; submittedAt: string; data: ContactForm
 function backendMode() {
   const backend = getServerConfig().backend;
   if (backend !== 'memory' && backend !== 'supabase') {
-    throw new SubmissionServiceError('Submission service has an invalid SUBMISSIONS_BACKEND value.');
+    console.error(`[Configuration] SUBMISSIONS_BACKEND has an invalid value: ${backend}.`);
+    throw new SubmissionServiceError(UNAVAILABLE);
   }
   return backend;
 }
@@ -93,24 +96,36 @@ function ensureProductionBackend(options: { emailDelivery?: boolean } = {}) {
     backendMode() === 'memory' &&
     !isExplicitMemoryTestBackend()
   ) {
-    throw new SubmissionServiceError('The in-memory submission backend is disabled in production.');
+    console.error('[Configuration] SUBMISSIONS_BACKEND=memory is not allowed in production.');
+    throw new SubmissionServiceError(UNAVAILABLE);
   }
 
   const missing = getMissingProductionConfig(options);
   if (missing.length > 0) {
-    throw new SubmissionServiceError(`Production submission configuration is missing: ${missing.join(', ')}.`);
+    // Variable names go to the logs, not to the visitor.
+    console.error(`[Configuration] Submission service is missing: ${missing.join(', ')}.`);
+    throw new SubmissionServiceError(UNAVAILABLE);
   }
 }
 
 function getRequiredEnv(name: string): string {
   const value = process.env[name];
-  if (!value) throw new SubmissionServiceError(`Submission service is missing ${name}.`);
+  if (!value) {
+    console.error(`[Configuration] Submission service is missing ${name}.`);
+    throw new SubmissionServiceError(UNAVAILABLE);
+  }
   return value;
 }
 
 async function supabaseRpc<T>(functionName: string, body: Record<string, unknown>): Promise<T> {
   const { data, error } = await database().rpc(functionName, body);
-  if (error) throw new SubmissionServiceError(error.message.includes('payload mismatch') ? 'Submission key was already used for different details. Reload the form.' : 'Submission storage is unavailable.', error.message.includes('payload mismatch') ? 409 : 503);
+  if (error) {
+    if (error.message.includes('payload mismatch')) {
+      throw new SubmissionServiceError('Submission key was already used for different details. Reload the form.', 409);
+    }
+    console.error(`[Submissions] ${functionName} failed: ${error.message}`);
+    throw new SubmissionServiceError(UNAVAILABLE, 503);
+  }
   return data as T;
 }
 
@@ -131,7 +146,8 @@ function recipientList() {
     .filter(Boolean);
 
   if (process.env.NODE_ENV === 'production' && recipients.length === 0 && !isExplicitMemoryTestBackend()) {
-    throw new SubmissionServiceError('Submission service is missing NOTIFICATION_EMAIL.');
+    console.error('[Configuration] Submission service is missing NOTIFICATION_EMAIL.');
+    throw new SubmissionServiceError(UNAVAILABLE);
   }
 
   return recipients;
@@ -160,20 +176,27 @@ export function rateLimitSubject(ip: string) {
 // sign-in must keep working when, say, NOTIFICATION_EMAIL is missing.
 export async function enforceRateLimit(bucket: RateLimitBucket, ip: string) {
   const RATE_LIMIT = RATE_LIMITS[bucket];
-  const usingExplicitMemoryTestBackend =
-    backendMode() === 'memory' && (process.env.NODE_ENV !== 'production' || isExplicitMemoryTestBackend());
   const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
   const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
   const hmacSecret = process.env.RATE_LIMIT_HMAC_SECRET;
+  const production = process.env.NODE_ENV === 'production' && !isExplicitMemoryTestBackend();
 
-  if (process.env.NODE_ENV === 'production' && !usingExplicitMemoryTestBackend && !hmacSecret) {
-    throw new SubmissionServiceError('Production rate limiting is missing RATE_LIMIT_HMAC_SECRET.');
+  // A rate-limit outage must never take registration down with it. Missing or
+  // failing infrastructure degrades to a per-instance limit and is logged
+  // loudly; the build-time check (scripts/check-env.mjs) keeps it configured.
+  if (production && !hmacSecret) {
+    console.error('[RateLimit] RATE_LIMIT_HMAC_SECRET is missing; using per-instance limits.');
+  }
+  if (production && (!upstashUrl || !upstashToken)) {
+    console.error('[RateLimit] Upstash is not configured; using per-instance limits.');
   }
 
   const digest = createHmac('sha256', hmacSecret || 'development-rate-limit-secret').update(rateLimitSubject(ip)).digest('hex');
   const key = `gimun:${bucket}:${digest}`;
 
-  if (upstashUrl && upstashToken) {
+  // Only send keyed hashes to the shared store; never a key made with the
+  // public fallback secret.
+  if (upstashUrl && upstashToken && (hmacSecret || !production)) {
     try {
       const response = await fetch(upstashUrl.replace(/\/$/, ''), {
         method: 'POST',
@@ -195,19 +218,10 @@ export async function enforceRateLimit(bucket: RateLimitBucket, ip: string) {
 
         return { allowed: count <= RATE_LIMIT.maxRequests, retryAfterSeconds: Math.ceil(RATE_LIMIT.windowMs / 1000) };
       }
+      console.error(`[RateLimit] Upstash returned HTTP ${response.status}; using per-instance limits.`);
     } catch {
-      if (process.env.NODE_ENV === 'production' && !usingExplicitMemoryTestBackend) {
-        throw new SubmissionServiceError('Production rate limiting is temporarily unavailable.');
-      }
+      console.error('[RateLimit] Upstash is unreachable; using per-instance limits.');
     }
-
-    if (process.env.NODE_ENV === 'production' && !usingExplicitMemoryTestBackend) {
-      throw new SubmissionServiceError('Production rate limiting is temporarily unavailable.');
-    }
-  }
-
-  if (process.env.NODE_ENV === 'production' && !usingExplicitMemoryTestBackend && (!upstashUrl || !upstashToken)) {
-    throw new SubmissionServiceError('Production rate limiting is not configured.');
   }
 
   const now = Date.now();
@@ -666,7 +680,10 @@ export async function dispatchEmailOutbox(limit = 4) {
   let failed = 0;
   let needsReview = 0;
 
-  for (const message of claimed || []) {
+  for (const [index, message] of (claimed || []).entries()) {
+    // Resend allows about two requests a second per account; pace the batch
+    // so a burst of registrations does not turn into a burst of 429 retries.
+    if (index > 0) await new Promise((resolve) => setTimeout(resolve, 550));
     let providerAccepted = false;
     try {
       if (!message.from_address) {

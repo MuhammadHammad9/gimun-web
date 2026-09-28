@@ -55,6 +55,7 @@ export function ClarificationForm() {
           message: `[GMC Compromis Clarification]\nCompromis Citation: ${paragraphRef.trim()}\n\nQuestion:\n${questionText.trim()}`,
           _hp: honeypot,
           _ts: formLoadedAt.current,
+          _elapsed: Date.now() - formLoadedAt.current,
         }),
       });
 

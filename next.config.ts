@@ -23,6 +23,12 @@ const contentSecurityPolicy = [
 const nextConfig: NextConfig = {
   distDir: process.env.ADMIN_TEST_BUILD === '1' ? '.next-admin-test' : '.next',
   typescript: process.env.ADMIN_TEST_BUILD === '1' ? { tsconfigPath: 'tsconfig.admin-test.json' } : {},
+  // PDFs embed this font from disk. Tracing finds it today; listing it keeps
+  // certificate and invoice generation from breaking after a refactor.
+  outputFileTracingIncludes: {
+    '/admin/**': ['./src/assets/fonts/GeneralSans-Variable.woff2'],
+    '/verify/**': ['./src/assets/fonts/GeneralSans-Variable.woff2'],
+  },
   images: {
     qualities: [75, 85, 90],
     remotePatterns: process.env.NEXT_PUBLIC_SUPABASE_URL ? [{ protocol: 'https', hostname: new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname, pathname: '/storage/v1/object/public/media/**' }] : [],

@@ -15,7 +15,6 @@ import {
   enforceRateLimit,
   SubmissionServiceError,
 } from '@/lib/server/submissions';
-import { MIN_FILL_TIME_MS } from '@/lib/honeypot';
 import type {
   GimunIndividualData,
   GimunDelegationData,
@@ -25,7 +24,7 @@ import { getCanonicalEventDateRange } from '@/lib/site-config';
 import { canRegister } from '@/lib/phase';
 import { feeAmount as numericFee, formatFee } from '@/lib/fees';
 import { pickGimunDelegation, pickGimunIndividual, pickMootTeam } from '@/lib/registration-data';
-import { JsonBodyError, readJsonBody } from '@/lib/server/request';
+import { JsonBodyError, looksAutomated, readJsonBody } from '@/lib/server/request';
 
 // Same rule the pages use to show or hide the register buttons.
 async function isTrackOpen(track: 'gimun' | 'moot-cup') {
@@ -51,10 +50,9 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = body as Record<string, unknown>;
-    const { track: trackValue, applicantType: applicantTypeValue, formData, _hp, _ts } = payload;
+    const { track: trackValue, applicantType: applicantTypeValue, formData } = payload;
 
-    const loadedAt = Number(_ts);
-    if ((_hp && String(_hp).trim()) || (process.env.NODE_ENV === 'production' && !_ts) || (_ts && (!Number.isFinite(loadedAt) || Date.now() - loadedAt < MIN_FILL_TIME_MS))) {
+    if (looksAutomated(payload)) {
       return NextResponse.json({ success: true, referenceId: `REG-${trackValue === 'moot-cup' ? 'MOOT' : 'GIMUN'}-${new Date().getFullYear()}-0000`, message: 'Application received successfully.' }, { status: 201 });
     }
 

@@ -153,6 +153,8 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         formData,
         _hp: honeypot,
         _ts: formLoadedAt.current,
+        // Fill time on the visitor's own clock; the server never compares clocks.
+        _elapsed: Date.now() - formLoadedAt.current,
         submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
       };
 
