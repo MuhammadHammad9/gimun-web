@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Download,
   Search,
@@ -109,7 +108,7 @@ const MOTIONS_DATA: MotionItem[] = [
     second: "Yes",
     vote: "2/3 Majority Required",
     precedence: 8,
-    proTip: "Once passed, committee doors lock, all note passing ceases, and no one may enter or exit the chamber.",
+    proTip: "Once passed, committee doors lock, all note passing ceases, and no one may enter orthe chamber.",
   },
 ];
 
@@ -190,7 +189,7 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
               Procedural Blueprint
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream mt-0.5">
-              The 5 Stages of Parliamentary Debate
+              How a debate runs
             </h2>
           </div>
           <span className="text-xs font-mono text-champagne/70">
@@ -260,13 +259,9 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
         </div>
 
         {/* Active Stage Deep-Dive Showcase Box */}
-        <AnimatePresence mode="wait">
-          <motion.div
+        <>
+          <div
             key={activeStage}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
             className="double-bezel"
           >
             <div className="double-bezel-inner p-6 sm:p-8 space-y-5">
@@ -319,8 +314,8 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
                 </div>
               </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        </>
       </section>
 
       {/* 2. SEARCHABLE PARLIAMENTARY MOTIONS CHEAT SHEET */}
@@ -331,7 +326,7 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
               Floor Motions Reference
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream mt-0.5">
-              Motions &amp; Points Precedence Matrix
+              Motions and points, in order
             </h2>
           </div>
           <div className="text-xs font-mono text-champagne/70">
@@ -433,7 +428,7 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
             Floor Management
           </span>
           <h2 className="text-2xl font-heading font-bold text-cream mt-0.5">
-            The Three Yield Protocols (GSL Speeches)
+            Three ways to yield your time
           </h2>
           <p className="text-xs text-champagne/80 mt-1">
             When concluding your substantive speech on the General Speakers List before time expires, you must formally yield the floor in one of three ways:
@@ -502,7 +497,7 @@ export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
               Official Literature
             </span>
             <h3 className="text-xl sm:text-3xl font-heading font-extrabold text-cream">
-              Download the Full GIMUN RoP Handbook
+              Download the full rules
             </h3>
             <p className="text-xs sm:text-sm text-champagne/80 max-w-xl">
               Contains complete codified clauses on working paper formatting, committee caucusing etiquette, and resolution amendment precedence.

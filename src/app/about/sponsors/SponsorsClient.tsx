@@ -20,6 +20,8 @@ import { CtaBanner } from '@/components/ui/CtaBanner';
 
 interface SponsorsClientProps {
   initialSponsors: Sponsor[];
+  /** The sponsorship deck PDF, or the Resource Hub when none is published. */
+  deckUrl: string;
 }
 
 const TIER_ORDER: Sponsor['tier'][] = ['title', 'gold', 'silver', 'partner', 'media-partner'];
@@ -52,7 +54,7 @@ const TIER_LABELS: Record<Sponsor['tier'], { label: string; badge: string; color
   },
 };
 
-export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
+export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps) {
   const site=useSiteConfig();
   const eventYear = getEventYear(site);
   // Group sponsors by tier
@@ -71,7 +73,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
             Partner Value Proposition
           </span>
           <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream">
-            Why Sponsor GIMUN &amp; GMC?
+            Why sponsor us?
           </h2>
           <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl leading-relaxed">
             Direct access to Pakistan&apos;s most articulate, legally minded, and ambitious student leaders,
@@ -89,7 +91,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
         <div className="space-y-2 text-center md:text-left">
           <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-champagne">
             <Sparkles className="w-4 h-4 text-champagne" />
-            <span>Corporate Partnerships Deck</span>
+            <span>Sponsorship pack</span>
           </span>
           <h3 className="text-xl sm:text-2xl font-heading font-bold text-cream">
             Download the {eventYear} Sponsorship Prospectus
@@ -102,7 +104,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
 
         <div className="flex flex-wrap items-center gap-3 shrink-0">
           <Link
-            href="/resources"
+            href={deckUrl}
             className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest text-xs font-bold hover:brightness-110 transition-all shadow-md"
           >
             <Download className="w-4 h-4" />
@@ -126,10 +128,12 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
             Institutional Roster
           </span>
           <h2 className="text-2xl font-heading font-bold text-cream">
-            Current Edition Sponsors &amp; Patrons
+            This year&apos;s sponsors
           </h2>
           <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
-            We express our deepest gratitude to our statutory patrons, government boards, and legal institutions.
+            {groupedSponsors.length > 0
+              ? "Thank you to the organizations supporting this year's conference."
+              : 'Partnerships for 2027 are being finalised. Partners will be listed here once agreements are signed.'}
           </p>
         </div>
 

@@ -54,9 +54,17 @@ export function isRegistrationDeadlinePassed(deadline: string, now = Date.now())
   return !Number.isFinite(deadlineAt) || now > deadlineAt;
 }
 
+/** "March 18–21, 2027", widening to "March 30 – April 2, 2027" or full dates when needed. */
 export function getCanonicalEventDateRange(siteConfig: SiteConfig) {
-  const config = siteConfig as SiteConfig;
-  return `${formatEventDate(config.eventDates.start)}–${formatEventDate(config.eventDates.end, { day: 'numeric' })}`;
+  const { start, end } = siteConfig.eventDates;
+  if (!isValidIsoDate(start) || !isValidIsoDate(end)) return `${start}–${end}`;
+  const [sy, sm] = start.split('-');
+  const [ey, em] = end.split('-');
+  if (sy !== ey) return `${formatEventDate(start)} – ${formatEventDate(end)}`;
+  if (sm !== em) {
+    return `${formatEventDate(start, { year: undefined })} – ${formatEventDate(end)}`;
+  }
+  return `${formatEventDate(start, { year: undefined })}–${Number(end.slice(8, 10))}, ${ey}`;
 }
 
 export function getCanonicalVenue(siteConfig: SiteConfig) {

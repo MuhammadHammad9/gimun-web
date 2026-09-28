@@ -2,7 +2,6 @@
 
 import React, { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
 import type { Announcement } from '@/lib/types';
 import { X, Sparkles } from 'lucide-react';
 
@@ -21,10 +20,7 @@ export function AnnouncementBanner({
   linkText = 'Read Announcement',
   linkHref = '/announcements',
 }: AnnouncementBannerProps) {
-  const displayMessage =
-    announcement?.title ||
-    message ||
-    'Early Bird Registration now open for delegations and moot court teams.';
+  const displayMessage = announcement?.title || message || '';
   const targetHref =
     announcement?.actionUrl ||
     (announcement?.id ? `/announcements#${announcement.id}` : linkHref);
@@ -56,43 +52,47 @@ export function AnnouncementBanner({
 
   const dismissed = isDismissedInStorage || manuallyDismissed;
 
-  return (
-    <AnimatePresence>
-      {!dismissed && (
-        <motion.aside
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 'auto', opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-          className="overflow-hidden bg-elevated text-white border-b border-champagne/15"
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between text-xs font-medium gap-3">
-            <div className="flex items-center gap-2.5 truncate">
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-brand/60 text-champagne shrink-0">
-                <Sparkles className="w-3 h-3 animate-pulse" />
-              </span>
-              <span className="truncate text-white/90">
-                {displayMessage}
-              </span>
-              <Link
-                href={targetHref}
-                className="underline underline-offset-2 font-semibold text-champagne hover:text-white shrink-0 ml-1 transition-colors"
-              >
-                {linkText} →
-              </Link>
-            </div>
+  // Dismissal is a one-way collapse, so it does not need an exit animation
+  // framework: the element unmounts and CSS handles the rest. Keeping
+  // framer-motion out of the site chrome keeps it out of every page's bundle.
+  if (dismissed || (!announcement && !message)) return null;
 
-            <button
-              onClick={handleDismiss}
-              type="button"
-              className="p-1 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2"
-              aria-label="Dismiss notice"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </motion.aside>
-      )}
-    </AnimatePresence>
+  // Runs while the HTML is parsed, before first paint, so a visitor who
+  // already dismissed this notice never sees it appear and then vanish.
+  const hideIfDismissed = `try{if(localStorage.getItem(${JSON.stringify(storageKey).replace(/</g, '\\u003c')})==='true')document.documentElement.dataset.bannerDismissed='1'}catch(e){}`;
+
+  return (
+    <>
+    <script dangerouslySetInnerHTML={{ __html: hideIfDismissed }} />
+    <aside
+      data-announcement-banner=""
+      aria-label="Site announcement"
+      className="banner-collapse overflow-hidden border-b border-line bg-elevated text-white"
+    >
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5 text-xs font-medium sm:px-6 lg:px-8">
+        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+          <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/60 text-champagne">
+            <Sparkles aria-hidden="true" className="h-3 w-3" />
+          </span>
+          <span className="min-w-0 flex-1 truncate text-white/90" title={displayMessage}>{displayMessage}</span>
+          <Link
+            href={targetHref}
+            className="ml-1 shrink-0 font-semibold text-champagne underline underline-offset-2 transition-colors hover:text-white"
+          >
+            {linkText}
+          </Link>
+        </div>
+
+        <button
+          onClick={handleDismiss}
+          type="button"
+          className="ml-2 shrink-0 rounded p-1 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+          aria-label="Dismiss notice"
+        >
+          <X aria-hidden="true" className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    </aside>
+    </>
   );
 }

@@ -2,7 +2,7 @@
   {
     "id": "com-unsc",
     "name": "United Nations Security Council (UNSC)",
-    "type": "specialized-agency",
+    "type": "other",
     "slug": "unsc",
     "topics": [
       "Securing International Maritime Corridors Against Non-State Actors",
@@ -12,34 +12,69 @@
       "Addressing asymmetric threats to commercial navigation, legal jurisdictional ambiguity in straits, and multilateral naval task force mandates under Chapter VII.",
       "Balancing targeted sanctions compliance with preventing systemic civilian harm and humanitarian supply chain blockages in fragile states."
     ],
-    "chairs": [
-      {
-        "id": "chair-01",
-        "name": "Zaid Malik",
-        "role": "President of the Security Council",
-        "group": "secretariat",
-        "photo": "",
-        "bio": "Senior law undergraduate and 4-time Best Delegate with specialization in international humanitarian law.",
-        "links": { "email": "unsc.chair@gimungiki.org" }
-      }
-    ],
+    "chairs": [],
     "backgroundGuideDocId": "doc-bg-unsc",
     "countryList": [
-      { "country": "United States", "status": "reserved" },
-      { "country": "United Kingdom", "status": "available" },
-      { "country": "France", "status": "available" },
-      { "country": "China", "status": "assigned" },
-      { "country": "Russian Federation", "status": "assigned" },
-      { "country": "Pakistan", "status": "reserved" },
-      { "country": "Japan", "status": "available" },
-      { "country": "Switzerland", "status": "available" },
-      { "country": "Algeria", "status": "available" },
-      { "country": "Guyana", "status": "available" },
-      { "country": "Republic of Korea", "status": "assigned" },
-      { "country": "Sierra Leone", "status": "available" },
-      { "country": "Slovenia", "status": "available" },
-      { "country": "Ecuador", "status": "available" },
-      { "country": "Malta", "status": "available" }
+      {
+        "country": "United States",
+        "status": "reserved"
+      },
+      {
+        "country": "United Kingdom",
+        "status": "available"
+      },
+      {
+        "country": "France",
+        "status": "available"
+      },
+      {
+        "country": "China",
+        "status": "assigned"
+      },
+      {
+        "country": "Russian Federation",
+        "status": "assigned"
+      },
+      {
+        "country": "Pakistan",
+        "status": "reserved"
+      },
+      {
+        "country": "Japan",
+        "status": "available"
+      },
+      {
+        "country": "Switzerland",
+        "status": "available"
+      },
+      {
+        "country": "Algeria",
+        "status": "available"
+      },
+      {
+        "country": "Guyana",
+        "status": "available"
+      },
+      {
+        "country": "Republic of Korea",
+        "status": "assigned"
+      },
+      {
+        "country": "Sierra Leone",
+        "status": "available"
+      },
+      {
+        "country": "Slovenia",
+        "status": "available"
+      },
+      {
+        "country": "Ecuador",
+        "status": "available"
+      },
+      {
+        "country": "Malta",
+        "status": "available"
+      }
     ],
     "capacity": 15,
     "shortDescription": "The pinnacle of international diplomatic crises, handling rapid-response mandates and binding security resolutions."
@@ -57,31 +92,51 @@
       "Setting international norms for AI-guided kinetic weaponry under Article 36 Geneva Convention legal reviews and automated command accountability.",
       "Stemming the flow of small arms and light weapons through multilateral tracking, biometric tracing, and cross-border security cooperation."
     ],
-    "chairs": [
-      {
-        "id": "chair-02",
-        "name": "Amina Tariq",
-        "role": "DISEC Committee Director",
-        "group": "secretariat",
-        "photo": "",
-        "bio": "President of GIKI Literary & Debating Society with multiple national MUN accolades.",
-        "links": { "email": "disec.chair@gimungiki.org" }
-      }
-    ],
+    "chairs": [],
     "backgroundGuideDocId": "doc-bg-disec",
     "countryList": [
-      { "country": "Germany", "status": "available" },
-      { "country": "Brazil", "status": "available" },
-      { "country": "South Africa", "status": "available" },
-      { "country": "India", "status": "assigned" },
-      { "country": "Turkey", "status": "available" },
-      { "country": "Canada", "status": "available" },
-      { "country": "Australia", "status": "available" },
-      { "country": "Iran", "status": "reserved" },
-      { "country": "Saudi Arabia", "status": "available" },
-      { "country": "Indonesia", "status": "available" }
+      {
+        "country": "Germany",
+        "status": "available"
+      },
+      {
+        "country": "Brazil",
+        "status": "available"
+      },
+      {
+        "country": "South Africa",
+        "status": "available"
+      },
+      {
+        "country": "India",
+        "status": "assigned"
+      },
+      {
+        "country": "Turkey",
+        "status": "available"
+      },
+      {
+        "country": "Canada",
+        "status": "available"
+      },
+      {
+        "country": "Australia",
+        "status": "available"
+      },
+      {
+        "country": "Iran",
+        "status": "reserved"
+      },
+      {
+        "country": "Saudi Arabia",
+        "status": "available"
+      },
+      {
+        "country": "Indonesia",
+        "status": "available"
+      }
     ],
-    "capacity": 40,
+    "capacity": 10,
     "shortDescription": "The UN General Assembly First Committee focusing on disarmament, global non-proliferation, and security challenges."
   },
   {
@@ -97,29 +152,43 @@
       "Establishing multilateral oversight protocols against indiscriminate facial recognition, predictive policing, and state digital tracking regimes.",
       "Defining the legal classification, non-refoulement protections, and international aid mandates for populations displaced by extreme climate catastrophes."
     ],
-    "chairs": [
-      {
-        "id": "chair-03",
-        "name": "Hamza Khattak",
-        "role": "UNHRC President",
-        "group": "secretariat",
-        "photo": "",
-        "bio": "Diplomacy researcher and senior debater with focus on international refugee law and public policy.",
-        "links": { "email": "unhrc.chair@gimungiki.org" }
-      }
-    ],
+    "chairs": [],
     "backgroundGuideDocId": "doc-bg-unhrc",
     "countryList": [
-      { "country": "Argentina", "status": "available" },
-      { "country": "Bangladesh", "status": "available" },
-      { "country": "Belgium", "status": "available" },
-      { "country": "Chile", "status": "assigned" },
-      { "country": "Costa Rica", "status": "available" },
-      { "country": "Finland", "status": "available" },
-      { "country": "Morocco", "status": "reserved" },
-      { "country": "Vietnam", "status": "available" }
+      {
+        "country": "Argentina",
+        "status": "available"
+      },
+      {
+        "country": "Bangladesh",
+        "status": "available"
+      },
+      {
+        "country": "Belgium",
+        "status": "available"
+      },
+      {
+        "country": "Chile",
+        "status": "assigned"
+      },
+      {
+        "country": "Costa Rica",
+        "status": "available"
+      },
+      {
+        "country": "Finland",
+        "status": "available"
+      },
+      {
+        "country": "Morocco",
+        "status": "reserved"
+      },
+      {
+        "country": "Vietnam",
+        "status": "available"
+      }
     ],
-    "capacity": 30,
+    "capacity": 8,
     "shortDescription": "Championing universal human rights, investigative mandates into civil liberties violations, and legal protection treaties."
   },
   {
@@ -135,29 +204,43 @@
       "Navigating fiscal deficit negotiations with international lenders while preventing inflationary shocks on domestic power tariffs.",
       "Formulating emergency legislation to secure critical civilian digital infrastructure against hostile state cyber intrusion."
     ],
-    "chairs": [
+    "chairs": [],
+    "backgroundGuideDocId": "",
+    "countryList": [
       {
-        "id": "chair-04",
-        "name": "Shahmeer Khan",
-        "role": "Speaker of the House",
-        "group": "secretariat",
-        "photo": "",
-        "bio": "Veteran parliamentary debater and political science scholar with experience across parliamentary simulation circuits.",
-        "links": { "email": "pna.speaker@gimungiki.org" }
+        "country": "Prime Minister",
+        "status": "assigned"
+      },
+      {
+        "country": "Leader of the Opposition",
+        "status": "assigned"
+      },
+      {
+        "country": "Minister of Finance",
+        "status": "reserved"
+      },
+      {
+        "country": "Minister of Energy",
+        "status": "available"
+      },
+      {
+        "country": "Minister of Interior",
+        "status": "available"
+      },
+      {
+        "country": "Minister of Foreign Affairs",
+        "status": "available"
+      },
+      {
+        "country": "Chairman Senate",
+        "status": "available"
+      },
+      {
+        "country": "Chief Whip (Treasury)",
+        "status": "available"
       }
     ],
-    "backgroundGuideDocId": "doc-gimun-rop",
-    "countryList": [
-      { "country": "Prime Minister", "status": "assigned" },
-      { "country": "Leader of the Opposition", "status": "assigned" },
-      { "country": "Minister of Finance", "status": "reserved" },
-      { "country": "Minister of Energy", "status": "available" },
-      { "country": "Minister of Interior", "status": "available" },
-      { "country": "Minister of Foreign Affairs", "status": "available" },
-      { "country": "Chairman Senate", "status": "available" },
-      { "country": "Chief Whip (Treasury)", "status": "available" }
-    ],
-    "capacity": 25,
+    "capacity": 8,
     "shortDescription": "Dynamic parliamentary crisis simulation with real-time portfolio powers, legislative directives, and rapid ministerial caucusing."
   }
 ]

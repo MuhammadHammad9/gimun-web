@@ -11,7 +11,9 @@ export const escapeHtml = (s: string) => s.replace(/[&<>"']/g,c => ({'&':'&amp;'
 export function emailHtml(body: string) { return `<div style="font-family:Arial,sans-serif;line-height:1.6">${escapeHtml(body).replace(/\n/g,'<br />')}</div>`; }
 export function renderTemplate(template: string, variables: Record<string,string>) {
   return template.replace(/\{\{([a-z_]+)\}\}/g,(_,key:string) => {
-    if (!['name','reference','status','payment_status','event_name','survey_url','certificate_url'].includes(key) || !(key in variables)) throw new Error(`Unknown template variable: ${key}`);
+    // Only variables every sender supplies, so a template fails at queue time
+    // instead of halfway through a broadcast.
+    if (!['name','reference','status','payment_status','event_name','amount_due','fee'].includes(key) || !(key in variables)) throw new Error(`Unknown template variable: ${key}. Use name, reference, status, payment_status, event_name, amount_due or fee.`);
     return variables[key];
   });
 }

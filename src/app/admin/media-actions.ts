@@ -9,7 +9,8 @@ export async function startUpload(input:unknown){
   const user=await requirePermission('media',true);
   const parsed=z.object({mime:z.enum(['image/jpeg','image/png','image/webp','application/pdf']),size:z.number().int().positive(),alt:z.string().min(1).max(500)}).parse(input);
   if(parsed.size>(parsed.mime==='application/pdf'?25:5)*1024*1024)throw new Error('File is too large. Images: 5 MB; PDFs: 25 MB.');
-  const path=`${user.user_id}/${randomUUID()}.${types[parsed.mime]}`;
+  // Random object name only: public URLs must not reveal which admin uploaded the file.
+  const path=`${randomUUID()}.${types[parsed.mime]}`;
   const db=database();const {data,error}=await db.storage.from('media').createSignedUploadUrl(path,{upsert:false});
   if(error)throw new Error('Unable to create upload URL. Configure the media bucket.');
   const {error:insertError}=await db.from('media_assets').insert({path,mime:parsed.mime,size:parsed.size,alt:parsed.alt,uploaded_by:user.user_id});
@@ -21,7 +22,29 @@ export async function finishUpload(path:string){
   const {data:asset,error}=await db.from('media_assets').select('*').eq('path',path).eq('uploaded_by',user.user_id).single();
   if(error||!asset)throw new Error('Upload is not owned by this account.');
   const {data:info,error:infoError}=await db.storage.from('media').info(path);
-  if(infoError||info.size!==asset.size||info.contentType!==asset.mime)throw new Error('Uploaded file does not match its declared size/type.');
+  if(infoError||info.size!==asset.size||info.contentType!==asset.mime){
+    // Do not leave a metadata row pointing at a missing or mismatched file.
+    await db.storage.from('media').remove([path]);await db.from('media_assets').delete().eq('path',path);
+    throw new Error('Uploaded file does not match its declared size/type, so it was discarded. Try again.');
+  }
   revalidatePath('/admin/media');
   return {url:db.storage.from('media').getPublicUrl(path).data.publicUrl,size:asset.size,mime:asset.mime};
+}
+/** Clears a row whose upload never completed (the browser upload failed or was abandoned). */
+export async function abandonUpload(path:string){
+  const user=await requirePermission('media',true);const db=database();
+  await db.storage.from('media').remove([path]);await db.from('media_assets').delete().eq('path',path).eq('uploaded_by',user.user_id);
+}
+/** Deletes a file only when no content entry or setting still links to it. */
+export async function deleteMedia(id:string){
+  await requirePermission('media',true);const db=database();
+  const {data:asset,error}=await db.from('media_assets').select('path').eq('id',z.uuid().parse(id)).single();
+  if(error||!asset)return {error:'Media not found.'};
+  const url=db.storage.from('media').getPublicUrl(asset.path).data.publicUrl;
+  const [entries,settings]=await Promise.all([db.from('content_entries').select('collection,id,data'),db.from('site_settings').select('data')]);
+  if(entries.error||settings.error)return {error:'Unable to check where this file is used.'};
+  const usedIn=[...entries.data.filter(e=>JSON.stringify(e.data).includes(url)).map(e=>`${e.collection}/${e.id}`),...settings.data.filter(s=>JSON.stringify(s.data).includes(url)).map(()=>'settings')];
+  if(usedIn.length)return {error:`Still used in ${usedIn.join(', ')}. Remove those links first.`};
+  const removed=await db.storage.from('media').remove([asset.path]);if(removed.error)return {error:'Unable to delete the file.'};
+  await db.from('media_assets').delete().eq('id',id);revalidatePath('/admin/media');return {result:'Deleted.'};
 }

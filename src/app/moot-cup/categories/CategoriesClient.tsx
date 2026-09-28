@@ -4,7 +4,6 @@ import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Scale,
   Download,
@@ -20,6 +19,7 @@ import { Button } from "@/components/ui/Button";
 import type { ProblemCategory, Document } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { getEventYear } from "@/lib/site-config";
+import { HelpCallout } from '@/components/ui/HelpCallout';
 
 interface CategoriesClientProps {
   categories: ProblemCategory[];
@@ -180,13 +180,9 @@ export function CategoriesClient({ categories, documents }: CategoriesClientProp
       </div>
 
       {/* Main Active Case File Showcase */}
-      <AnimatePresence mode="wait">
-        <motion.div
+      <>
+        <div
           key={currentCategory.id}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25 }}
           className="space-y-8"
         >
           {/* Dossier Header Card */}
@@ -252,7 +248,7 @@ export function CategoriesClient({ categories, documents }: CategoriesClientProp
             <div className="p-6 sm:p-7 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl space-y-3">
               <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-champagne">
                 <Scale className="w-4 h-4 text-champagne" />
-                <span>Applicant Core Thesis</span>
+                <span>Main argument</span>
               </div>
               <h3 className="font-heading font-bold text-lg text-cream">
                 State Claims &amp; Inviolability
@@ -283,7 +279,7 @@ export function CategoriesClient({ categories, documents }: CategoriesClientProp
                 Appellate Inquiries
               </span>
               <h3 className="text-xl sm:text-2xl font-heading font-bold text-cream mt-0.5">
-                Core Legal Issues for Memorial Submission
+                Issues to address
               </h3>
             </div>
 
@@ -321,13 +317,9 @@ export function CategoriesClient({ categories, documents }: CategoriesClientProp
                       />
                     </button>
 
-                    <AnimatePresence initial={false}>
+                    <>
                       {isOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.2 }}
+                        <div
                           className="overflow-hidden"
                         >
                           <div className="px-6 pb-6 pt-1 space-y-3 border-t border-champagne/20">
@@ -343,9 +335,9 @@ export function CategoriesClient({ categories, documents }: CategoriesClientProp
                               ))}
                             </ul>
                           </div>
-                        </motion.div>
+                        </div>
                       )}
-                    </AnimatePresence>
+                    </>
                   </div>
                 );
               })}
@@ -370,28 +362,16 @@ export function CategoriesClient({ categories, documents }: CategoriesClientProp
               ))}
             </div>
           </div>
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      </>
 
-      {/* Bottom Information Notice */}
-      <section className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div className="space-y-1">
-          <h3 className="font-heading font-bold text-lg text-cream">
-            Have inquiries regarding memorial citation standards?
-          </h3>
-          <p className="text-xs sm:text-sm text-champagne/80">
-            Inspect our comprehensive Rules of Procedure detailing the OSCOLA citation system and Rule 1.1 anonymity safeguards.
-          </p>
-        </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <Button variant="secondary" size="sm" href="/moot-cup/rules">
-            Memorial Rules &amp; Rubric
-          </Button>
-          <Button variant="track-moot" size="sm" href="/moot-cup/clarifications">
-            Clarifications Portal
-          </Button>
-        </div>
-      </section>
+      <HelpCallout
+        question="Need the citation or formatting rules?"
+        actions={[
+          { label: 'Rules & memorials', href: '/moot-cup/rules' },
+          { label: 'Clarifications', href: '/moot-cup/clarifications' },
+        ]}
+      />
     </div>
   );
 }

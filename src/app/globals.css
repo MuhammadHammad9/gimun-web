@@ -50,10 +50,14 @@
 
   /* --- Text ----------------------------------------------------------------
      Opacity is baked in so the /70 /80 /85 guesswork across 40 files stops. */
+  /* Every step is checked against the canvas for WCAG AA at small sizes.
+     0.38 was the old floor and measured 2.7:1 — it failed axe on every route
+     that used it. 0.60 is the lowest champagne alpha that still clears 4.5:1,
+     so it is the floor: anything fainter is for borders and icons, not text. */
   --color-text: #fffdf9;
-  --color-text-2: rgba(236, 216, 183, 0.82);
-  --color-text-3: rgba(236, 216, 183, 0.58);
-  --color-text-4: rgba(236, 216, 183, 0.38);
+  --color-text-2: rgba(236, 216, 183, 0.88);
+  --color-text-3: rgba(236, 216, 183, 0.72);
+  --color-text-4: rgba(236, 216, 183, 0.6);
 
   /* --- Lines ---------------------------------------------------------------- */
   --color-line: rgba(236, 216, 183, 0.18);
@@ -66,46 +70,61 @@
   --color-err: #f43f5e;
 
   /* --- Typography ----------------------------------------------------------- */
-  --font-display: var(--font-display), "Satoshi", system-ui, sans-serif;
+  /* next/font exposes the face as --font-satoshi. It must not share the
+     theme token's name, or the token would reference itself and resolve to
+     nothing. `font-heading` is kept as an alias because components use it. */
+  --font-display: var(--font-satoshi), "Satoshi", system-ui, sans-serif;
+  --font-heading: var(--font-satoshi), "Satoshi", system-ui, sans-serif;
   --font-body: var(--font-body-sans), "General Sans", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Fluid scale. Replaces the flat xs/sm to 2xl jump the audit flagged. */
-  --text-display: clamp(2.75rem, 8vw, 7.5rem);
-  --text-display--line-height: 0.92;
-  --text-display--letter-spacing: -0.04em;
+  /* Scale modelled on img.ly: restrained sizes, medium weight, tight tracking.
+     Their h1 is 52px/500 and h2 is 42px/500 at 1440 — hierarchy comes from
+     weight and colour, not from a 7.5rem display size. */
+  --text-display: clamp(2.5rem, 4.6vw, 4.25rem);
+  --text-display--line-height: 1.06;
+  --text-display--letter-spacing: -0.022em;
 
-  --text-h1: clamp(2.25rem, 5vw, 4.5rem);
-  --text-h1--line-height: 1.02;
-  --text-h1--letter-spacing: -0.035em;
+  --text-h1: clamp(2.125rem, 3.6vw, 3.25rem);
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.02em;
 
-  --text-h2: clamp(1.75rem, 3.2vw, 3rem);
-  --text-h2--line-height: 1.08;
-  --text-h2--letter-spacing: -0.025em;
+  --text-h2: clamp(1.75rem, 2.9vw, 2.625rem);
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.014em;
 
-  --text-h3: clamp(1.25rem, 2vw, 1.75rem);
-  --text-h3--line-height: 1.2;
-  --text-h3--letter-spacing: -0.015em;
+  --text-h3: clamp(1.125rem, 1.5vw, 1.375rem);
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.01em;
 
-  --text-lead: clamp(1.0625rem, 1.4vw, 1.375rem);
-  --text-lead--line-height: 1.6;
+  /* Body runs large, like img.ly's 20px/27px. Small text is the exception. */
+  --text-lead: clamp(1.0625rem, 1.15vw, 1.25rem);
+  --text-lead--line-height: 1.55;
+
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.6;
 
   --text-meta: 0.6875rem;
   --text-meta--line-height: 1.4;
   --text-meta--letter-spacing: 0.14em;
 
-  /* --- Shape ---------------------------------------------------------------- */
-  --radius-card: 1.25rem;
+  /* --- Shape -----------------------------------------------------------------
+     Large, confident radii. img.ly runs 40px on its feature cards. */
+  --radius-card: 1.5rem;
+  --radius-panel: 2rem;
+  --radius-section: 2.5rem;
   --radius-button: 0.75rem;
   --radius-pill: 9999px;
-  --radius-section: 2rem;
 
-  /* --- Elevation (tinted to the brand hue, never flat gray) ----------------- */
-  --shadow-card: 0 8px 32px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(236, 216, 183, 0.18);
-  --shadow-card-hover: 0 18px 48px -6px rgba(0, 0, 0, 0.8), 0 0 28px -4px rgba(225, 29, 72, 0.25);
-  --shadow-brand-diffusion: 0 20px 40px -15px rgba(94, 18, 5, 0.16);
-  --shadow-button: 0 4px 18px -2px rgba(236, 216, 183, 0.4);
-  --shadow-lift: 0 24px 60px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(236, 216, 183, 0.14);
+  /* --- Elevation -------------------------------------------------------------
+     Deliberately almost nothing. img.ly's feature cards are `box-shadow: none`
+     with a 0.8px hairline border; the glow-heavy shadows this replaces were
+     the single loudest "generated" tell in the old build. Depth now comes from
+     surface colour steps and borders. */
+  --shadow-card: none;
+  --shadow-hairline: inset 0 0 0 1px rgba(236, 216, 183, 0.1);
+  --shadow-raise: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  --shadow-panel: 0 2px 4px rgba(0, 0, 0, 0.25), 0 18px 48px -24px rgba(0, 0, 0, 0.6);
 
   /* --- Motion --------------------------------------------------------------- */
   --ease-brand: cubic-bezier(0.32, 0.72, 0, 1);
@@ -124,30 +143,34 @@
   --chrome-h: 4.5rem;
 }
 
-/* `overflow-x: hidden` on `body` alone propagates to the viewport and leaves
-   body itself non-clipping, so on mobile Chromium the layout viewport expands
-   to fit the widest content on the page — the sponsor marquee's intrinsic
-   width (~6600px) pushed `innerWidth` to 539 on a 390px device, shifting every
-   fixed overlay off-screen. Clipping on `html` prevents that expansion without
-   creating a scroll container. */
-html {
-  overflow-x: clip;
-  max-width: 100%;
-}
+/* Horizontal overflow is contained per-component (see `.marquee-clip`), not by
+   clipping the document. Setting `overflow-x` on `html` turns it into a scroll
+   container, which silently disables `position: sticky` for every descendant —
+   it took out the navbar and the section rail at once. */
 
 body {
   background-color: var(--background);
-  background-image:
-    radial-gradient(circle at 18% 12%, rgba(225, 29, 72, 0.22) 0%, transparent 45%),
-    radial-gradient(circle at 82% 18%, rgba(236, 216, 183, 0.14) 0%, transparent 42%),
-    radial-gradient(circle at 50% 80%, rgba(153, 27, 27, 0.28) 0%, transparent 55%),
-    radial-gradient(circle at 30% 60%, rgba(185, 28, 28, 0.15) 0%, transparent 40%);
-  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* Ambient atmosphere. A single fixed, composited layer rather than a
+   fixed-attachment body background: `background-attachment: fixed` repaints
+   the whole viewport on every scroll frame, and iOS Safari ignores it. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(225, 29, 72, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 82% 18%, rgba(236, 216, 183, 0.14) 0%, transparent 42%),
+    radial-gradient(circle at 50% 80%, rgba(153, 27, 27, 0.28) 0%, transparent 55%),
+    radial-gradient(circle at 30% 60%, rgba(185, 28, 28, 0.15) 0%, transparent 40%);
 }
 
 /* Film grain. Sits above content but never intercepts pointer events. */
@@ -241,138 +264,238 @@ h1, h2, h3, h4, h5, h6 {
 /* ==============================================================================
    SURFACES
    ============================================================================== */
-.glass-card-dark {
-  background: rgba(22, 5, 4, 0.84);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(236, 216, 183, 0.16);
-  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(236, 216, 183, 0.15);
+/* ==============================================================================
+   SURFACES
+
+   The material language is borrowed from img.ly and adapted to the dark brand:
+   a hairline border, a flat surface colour, generous radius, and no shadow.
+   Depth is communicated by stepping up the canvas ramp, not by glow.
+   ============================================================================== */
+
+/* The workhorse card. Replaces the glow-and-gradient stack that read as
+   generated. One border, one surface, one radius. */
+.surface {
+  background: var(--color-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-panel);
+  transition:
+    border-color 0.35s var(--ease-brand),
+    background-color 0.35s var(--ease-brand),
+    transform 0.35s var(--ease-brand);
 }
 
-.glass-card-dark:hover {
-  border-color: rgba(236, 216, 183, 0.32);
-  box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(236, 216, 183, 0.25);
+.surface:hover {
+  border-color: var(--color-line-2);
+  background: var(--color-elevated);
+}
+
+/* Interactive cards lift by exactly one pixel. Anything more reads as a toy. */
+.surface-interactive:hover {
+  transform: translateY(-1px);
+}
+
+/* A quieter variant for cards sitting on an already-raised band. */
+.surface-inset {
+  background: color-mix(in srgb, var(--color-void) 55%, transparent);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+}
+
+/* Full-bleed media inside a card: the image runs to the card's edge and keeps
+   the card's corner radius on the side it touches. img.ly uses this on every
+   feature tile and it is most of why those cards feel designed. */
+.surface-media {
+  position: relative;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.surface-media img,
+.surface-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Alternating page bands. Sections alternate canvas / raised so the page has
+   rhythm without every section needing its own card. */
+.band {
+  background: var(--color-canvas);
+}
+
+.band-raised {
+  background: color-mix(in srgb, var(--color-raised) 60%, var(--color-canvas));
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* Legacy aliases. The old names are still referenced across the route files;
+   they now resolve to the new flat material instead of the glow stack. */
+.glass-card-dark,
+.card-glass-luxury {
+  background: var(--color-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-panel);
+  transition:
+    border-color 0.35s var(--ease-brand),
+    background-color 0.35s var(--ease-brand),
+    transform 0.35s var(--ease-brand);
+}
+
+.glass-card-dark:hover,
+.card-glass-luxury:hover {
+  border-color: var(--color-line-2);
+  background: var(--color-elevated);
+  transform: translateY(-1px);
 }
 
 .glass-card-light {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(153, 27, 27, 0.1);
-  box-shadow: 0 10px 30px -5px rgba(153, 27, 27, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(94, 18, 5, 0.12);
+  border-radius: var(--radius-panel);
 }
 
-/* The signature frame-inside-a-frame card. */
+/* The double bezel survives as the one piece of signature chrome, but the
+   frame is now a hairline rather than a lit rim. */
 .double-bezel {
-  background: rgba(236, 216, 183, 0.08);
-  box-shadow: 0 0 0 1px rgba(236, 216, 183, 0.16);
+  background: color-mix(in srgb, var(--color-champagne) 5%, transparent);
   padding: 0.375rem;
   border-radius: var(--radius-section);
-  transition: background 0.4s var(--ease-brand), box-shadow 0.4s var(--ease-brand),
-    transform 0.4s var(--ease-brand);
+  border: 1px solid var(--color-line);
+  transition:
+    border-color 0.35s var(--ease-brand),
+    background-color 0.35s var(--ease-brand);
 }
 
 .double-bezel:hover {
-  background: rgba(236, 216, 183, 0.14);
-  box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(236, 216, 183, 0.35);
-  transform: translateY(-2px);
+  border-color: var(--color-line-2);
+  background: color-mix(in srgb, var(--color-champagne) 8%, transparent);
 }
 
 .double-bezel-inner {
-  background: linear-gradient(145deg, rgba(32, 6, 5, 0.85) 0%, rgba(18, 3, 2, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--color-raised);
   border-radius: calc(var(--radius-section) - 0.375rem);
-  box-shadow: inset 0 1px 0 rgba(236, 216, 183, 0.2);
-  border: 1px solid rgba(236, 216, 183, 0.16);
-  color: #fffdf9;
-}
-
-.card-glass-luxury {
-  background: linear-gradient(145deg, rgba(36, 7, 6, 0.75) 0%, rgba(18, 3, 2, 0.92) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(236, 216, 183, 0.18);
-  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(236, 216, 183, 0.18);
-  transition: border-color 0.4s var(--ease-brand), box-shadow 0.4s var(--ease-brand),
-    transform 0.4s var(--ease-brand);
-}
-
-.card-glass-luxury:hover {
-  border-color: rgba(236, 216, 183, 0.45);
-  box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.8), 0 0 28px -4px rgba(225, 29, 72, 0.25),
-    inset 0 1px 0 rgba(236, 216, 183, 0.3);
-  transform: translateY(-3px);
-}
-
-/* Cursor spotlight. --mx/--my are written by SpotlightCard as percentages;
-   the gradient is painted on a pseudo-element so it never repaints the card's
-   own background and never triggers a React re-render. */
-.spotlight {
-  position: relative;
-  isolation: isolate;
-}
-
-.spotlight::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  z-index: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s var(--ease-brand);
-  background: radial-gradient(
-    22rem circle at var(--mx, 50%) var(--my, 50%),
-    rgba(236, 216, 183, 0.14),
-    transparent 60%
-  );
-}
-
-.spotlight:hover::before,
-.spotlight:focus-within::before {
-  opacity: 1;
+  border: 1px solid var(--color-line);
+  color: var(--color-text);
 }
 
 /* ==============================================================================
-   BUTTONS
+   CONTROLS
    ============================================================================== */
+
+/* Primary action: a solid champagne pill. No shimmer, no glow — the old
+   gradient-plus-glow treatment is a textbook generated-UI tell. */
 .btn-shimmer-gold {
-  background: linear-gradient(135deg, #ffffff 0%, #fff3e0 25%, #ecd8b7 60%, #cca876 100%);
-  color: #140302;
-  font-weight: 700;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 4px 20px -2px rgba(236, 216, 183, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.9);
-  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  background: var(--color-champagne);
+  color: var(--color-canvas);
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition:
+    background-color 0.2s var(--ease-brand),
+    transform 0.2s var(--ease-brand);
 }
 
 .btn-shimmer-gold:hover {
-  background: linear-gradient(135deg, #ffffff 0%, #ffffff 40%, #ecd8b7 100%);
-  box-shadow: 0 6px 28px rgba(236, 216, 183, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.95);
-  transform: translateY(-2px) scale(1.02);
+  background: var(--color-champagne-hi);
+}
+
+.btn-shimmer-gold:active {
+  transform: translateY(1px);
 }
 
 .btn-crimson-glow {
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #be123c 100%);
-  color: #ffffff;
-  font-weight: 700;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 20px -2px rgba(225, 29, 72, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4);
-  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  background: var(--color-brand);
+  color: var(--color-champagne-hi);
+  font-weight: 600;
+  border: 1px solid color-mix(in srgb, var(--color-crimson) 35%, transparent);
+  transition:
+    background-color 0.2s var(--ease-brand),
+    border-color 0.2s var(--ease-brand),
+    transform 0.2s var(--ease-brand);
 }
 
 .btn-crimson-glow:hover {
-  background: linear-gradient(135deg, #fb7185 0%, #f43f5e 50%, #e11d48 100%);
-  box-shadow: 0 6px 28px rgba(225, 29, 72, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.6);
-  transform: translateY(-2px) scale(1.02);
+  background: var(--color-brand-lit);
+  border-color: color-mix(in srgb, var(--color-crimson) 60%, transparent);
 }
 
-/* ==============================================================================
-   KEYFRAMES
-   ============================================================================== */
+.btn-crimson-glow:active {
+  transform: translateY(1px);
+}
+
+/* Circular ghost arrow that sits in a card corner and signals "this opens".
+   Lifted from img.ly's feature tiles. */
+.arrow-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-line-2);
+  color: var(--color-text-2);
+  transition:
+    background-color 0.25s var(--ease-brand),
+    color 0.25s var(--ease-brand),
+    border-color 0.25s var(--ease-brand),
+    transform 0.25s var(--ease-brand);
+}
+
+.group:hover .arrow-chip {
+  background: var(--color-champagne);
+  border-color: var(--color-champagne);
+  color: var(--color-canvas);
+  transform: translate(2px, -2px);
+}
+
+/* Segmented control. One shared pill slides between options via the
+   `--seg-x` / `--seg-w` custom properties set by the component. */
+.segmented {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3125rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-void) 75%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.segmented::before {
+  content: "";
+  position: absolute;
+  top: 0.3125rem;
+  bottom: 0.3125rem;
+  left: 0;
+  width: var(--seg-w, 0px);
+  transform: translateX(var(--seg-x, 0px));
+  border-radius: var(--radius-pill);
+  background: var(--color-champagne);
+  transition:
+    transform 0.4s var(--ease-out-expo),
+    width 0.4s var(--ease-out-expo);
+  pointer-events: none;
+}
+
 @keyframes marquee {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
+}
+
+/* The marquee track is intrinsically thousands of pixels wide. Left in normal
+   flow that width leaks into the layout: on mobile Chromium it stretched the
+   layout viewport to 539px on a 390px device, which pushed every fixed overlay
+   off-screen. `contain` plus a zero-basis flex track keeps the intrinsic width
+   from reaching the page, without clipping the document. */
+.marquee-clip {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  contain: layout paint;
 }
 
 .animate-marquee {
@@ -381,7 +504,13 @@ h1, h2, h3, h4, h5, h6 {
   animation: marquee 35s linear infinite;
 }
 
-.animate-marquee:hover {
+html[data-banner-dismissed] [data-announcement-banner] {
+  display: none;
+}
+
+.animate-marquee:hover,
+.marquee-clip:focus-within .animate-marquee,
+.marquee-pause:checked ~ .marquee-clip .animate-marquee {
   animation-play-state: paused;
 }
 
@@ -461,19 +590,286 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==============================================================================
-   SMOOTH SCROLL (Lenis)
+   HERO MOSAIC ("warp")
+
+   img.ly opens on a scattered field of product tiles that starts zoomed in and
+   settles back as you scroll, with the headline sitting on top. This is that
+   effect, built on CSS scroll-driven animation so it costs no JavaScript and
+   no main-thread work — which is also what keeps it off the LCP critical path.
+
+   Browsers without `animation-timeline` simply get the settled state.
    ============================================================================== */
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-stopped {
+.warp {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
+  pointer-events: none;
+  /* Settled state is the default, so no-JS and unsupported browsers are correct. */
+  transform: scale(1);
+  opacity: 0.55;
+}
+
+.warp-grid {
+  position: absolute;
+  inset: -10%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(0.75rem, 1.6vw, 1.5rem);
+  align-content: center;
+}
+
+@media (min-width: 640px) {
+  .warp-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .warp-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+/* A delegate name card. Deliberately cheap to style: flat rgba fills rather
+   than gradients or color-mix(), and the body font rather than the display
+   face, because this block is repeated across the whole field and it sits
+   ahead of the headline in the style pass. Profiling an earlier version with
+   gradients and color-mix on 48 tiles put ~1.2s of style/layout in front of
+   LCP on a throttled mobile profile. */
+.wtile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1875rem;
+  min-height: 4.5rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(236, 216, 183, 0.14);
+  background: rgba(236, 216, 183, 0.055);
+  overflow: hidden;
+}
+
+.wtile-chamber {
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(225, 29, 72, 0.75);
+}
+
+.wtile-name {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: rgba(236, 216, 183, 0.72);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.warp-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 62% 48% at 50% 44%, var(--color-canvas) 18%, color-mix(in srgb, var(--color-canvas) 55%, transparent) 55%, transparent 82%),
+    linear-gradient(to bottom, var(--color-canvas) 0%, transparent 22%, transparent 68%, var(--color-canvas) 100%);
+}
+
+/* The field is legible from the first frame — it is the page's opening image,
+   not a reveal. Only the scale travels far; opacity moves just enough to let
+   the headline win on landing. */
+@keyframes warp-settle {
+  from {
+    transform: scale(1.5);
+    opacity: 0.4;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0.62;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .warp {
+    animation: warp-settle linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 62vh;
+  }
+}
+
+/* ==============================================================================
+   SECTION ENTRANCES
+
+   A CSS cascade rather than a per-element observer. `--i` sets the position in
+   the stagger; the whole group animates from one timeline.
+   ============================================================================== */
+@keyframes rise-in {
+  from {
+    transform: translate3d(0, 1.25rem, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .rise {
+    animation: rise-in 0.7s var(--ease-out-expo) both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 26%;
+  }
+
+  .rise-stagger > * {
+    animation: rise-in 0.7s var(--ease-out-expo) both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+    animation-delay: calc(var(--i, 0) * var(--stagger, 60ms));
+  }
+}
+
+/* Menus and overlays enter with a short scale-and-lift. Mount-only: closing is
+   an unmount, which reads as responsive rather than sluggish. */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pop-in {
+  animation: pop-in 0.22s var(--ease-out-expo) both;
+}
+
+/* ==============================================================================
+   SCROLL PROGRESS
+   A scroll-driven animation rather than a subscribed motion value: no React,
+   no listener, and the compositor owns the whole thing.
+   ============================================================================== */
+.scroll-progress {
+  display: none;
+}
+
+@keyframes progress-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    display: block;
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 50;
+    height: 2px;
+    transform-origin: 0 50%;
+    background: linear-gradient(to right, var(--color-crimson), var(--color-champagne));
+    animation: progress-grow linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* The announcement bar expands once on mount and unmounts on dismiss. */
+@keyframes banner-open {
+  from { grid-template-rows: 0fr; opacity: 0; }
+  to { grid-template-rows: 1fr; opacity: 1; }
+}
+
+.banner-collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: banner-open 0.3s var(--ease-brand) both;
+}
+
+.banner-collapse > * {
+  min-height: 0;
+}
+
+/* Validation errors announce themselves with a short shake. Keyed on the
+   message so a new error replays it. Suppressed under reduced motion by the
+   global reduce rule. */
+@keyframes field-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-5px); }
+  30% { transform: translateX(5px); }
+  45% { transform: translateX(-3px); }
+  60% { transform: translateX(3px); }
+  75% { transform: translateX(-1px); }
+}
+
+.field-error {
+  animation: field-shake 0.4s ease-in-out both;
+}
+
+/* `content-visibility: auto` was tried on the page bands to keep offscreen
+   style and layout off the critical path. It is not used: these sections vary
+   a lot in height, so realising them against a fixed `contain-intrinsic-size`
+   produced layout shifts as bad as 0.94 CLS, and it bought no measurable LCP.
+   Left documented so it is not retried blind. */
+
+/* ==============================================================================
+   SCROLL REVEALS
+
+   Driven by CSS scroll-driven animation rather than an IntersectionObserver
+   per element. The resting state is the finished state, so browsers without
+   `animation-timeline` — and anyone with reduced motion — see the content
+   immediately rather than a blank box.
+   ============================================================================== */
+/* Transform only — deliberately no opacity.
+   Fading in from zero leaves text genuinely invisible until it scrolls into
+   range, which axe flags as a contrast failure on every offscreen element and,
+   more importantly, means a reader who lands mid-page or whose browser skips
+   the animation can be shown nothing. Sliding into place reads as a reveal
+   while the content is legible the entire time. */
+@keyframes reveal-up { from { transform: translate3d(0, 1.5rem, 0); } }
+@keyframes reveal-down { from { transform: translate3d(0, -1.5rem, 0); } }
+@keyframes reveal-left { from { transform: translate3d(1.5rem, 0, 0); } }
+@keyframes reveal-right { from { transform: translate3d(-1.5rem, 0, 0); } }
+@keyframes reveal-scale { from { transform: scale(0.985) translate3d(0, 0.75rem, 0); } }
+@keyframes reveal-blur { from { filter: blur(6px); transform: translate3d(0, 0.75rem, 0); } }
+@keyframes reveal-mask { from { transform: translate3d(0, 100%, 0); } }
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation-duration: 0.7s;
+    animation-timing-function: var(--ease-out-expo);
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 28%;
+  }
+
+  .reveal-up { animation-name: reveal-up; }
+  .reveal-down { animation-name: reveal-down; }
+  .reveal-left { animation-name: reveal-left; }
+  .reveal-right { animation-name: reveal-right; }
+  .reveal-scale { animation-name: reveal-scale; }
+  .reveal-blur { animation-name: reveal-blur; }
+
+  .reveal-mask {
+    display: block;
+    overflow: hidden;
+    animation-name: reveal-mask;
+  }
+}
+
+/* ==============================================================================
+   STICKY SECTION RAIL
+
+   The segmented control that follows the page and tracks which stacked
+   section is in view.
+   ============================================================================== */
+.rail {
+  position: sticky;
+  top: calc(var(--chrome-h) + 0.75rem);
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.rail > * {
+  pointer-events: auto;
 }
 
 /* ==============================================================================

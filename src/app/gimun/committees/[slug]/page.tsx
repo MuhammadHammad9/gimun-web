@@ -1,6 +1,6 @@
 import { getSiteConfig } from '@/lib/content';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { TrackBadge } from '@/components/ui/TrackBadge';
@@ -10,7 +10,8 @@ import { Download, ArrowLeft } from 'lucide-react';
 import { getCommittees, getCommitteeBySlug, getDocuments } from '@/lib/content';
 
 import { constructMetadata } from '@/lib/metadata';
-import { getEventYear } from '@/lib/site-config';
+import { canRegister } from '@/lib/phase';
+import { formatEventDate, getEventYear } from '@/lib/site-config';
 
 interface CommitteePageProps {
   params: Promise<{ slug: string }>;
@@ -36,20 +37,26 @@ export async function generateMetadata({ params }: CommitteePageProps): Promise<
   return (await constructMetadata({
     title: `${committee.name} | GIMUN ${getEventYear(await getSiteConfig())} Committee Dossier`,
     description: committee.shortDescription,
-    path: `/gimun/committees/${slug}`,
+    path: `/gimun/committees/${committee.slug}`,
   }));
 }
 
 export default async function CommitteeDetailPage({ params }: CommitteePageProps) {
   const { slug } = await params;
   const committee = (await getCommitteeBySlug(slug));
+  const open = canRegister(await getSiteConfig(), 'gimun');
 
   if (!committee) {
     notFound();
   }
+  // Old links may use the internal id (com-unsc); send them to the one canonical URL.
+  if (committee.slug !== slug) {
+    permanentRedirect(`/gimun/committees/${committee.slug}`);
+  }
 
   const documents = (await getDocuments());
-  const backgroundGuide = documents.find((d) => d.id === committee.backgroundGuideDocId);
+  // Only a real background guide; never another document type under that label.
+  const backgroundGuide = documents.find((d) => d.id === committee.backgroundGuideDocId && d.type === 'background-guide');
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
@@ -87,7 +94,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
             variant="track-gimun"
             href={`/register?track=gimun&committee=${committee.slug}`}
           >
-            Apply for this Committee
+            {open ? 'Apply for this Committee' : 'Registration status'}
           </Button>
           {backgroundGuide && (
             <Button
@@ -95,7 +102,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
               href={backgroundGuide.fileUrl}
               icon={<Download className="w-4 h-4" />}
             >
-              Background Guide ({backgroundGuide.fileSize})
+              Background Guide ({backgroundGuide.fileSize}, updated {formatEventDate(backgroundGuide.versionDate, { month: 'short' })})
             </Button>
           )}
         </div>
@@ -108,7 +115,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
             Substantive Agenda
           </span>
           <h2 className="text-2xl font-heading font-bold text-cream mt-0.5">
-            Committee Topics &amp; Dossiers
+            Topics
           </h2>
         </div>
 
@@ -133,17 +140,20 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
         </div>
       </section>
 
-      {/* Dais Leadership */}
+      {/* Chairs */}
       <section className="space-y-6">
         <div className="border-b border-champagne/20 pb-3">
           <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
             Adjudication &amp; Governance
           </span>
           <h2 className="text-2xl font-heading font-bold text-cream mt-0.5">
-            Dais Leadership
+            Chairs
           </h2>
         </div>
 
+        {committee.chairs.length === 0 && (
+          <p className="text-sm text-text-3">The chairs for this committee will be announced with country allocations.</p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {committee.chairs.map((chair, idx) => (
             <div key={idx} className="p-6 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl space-y-3">
@@ -173,7 +183,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
               Portfolio Allocations
             </span>
             <h2 className="text-2xl font-heading font-bold text-cream mt-0.5">
-              Live Country Allocation Matrix
+              Country allocation
             </h2>
           </div>
           <p className="text-xs text-champagne/70">
@@ -198,7 +208,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           variant="track-gimun"
           href={`/register?track=gimun&committee=${committee.slug}`}
         >
-          Proceed to Registration
+          {open ? 'Proceed to Registration' : 'Registration status'}
         </Button>
       </div>
     </div>

@@ -9,9 +9,9 @@ import type {
   MootCupTeamData,
   RegistrationSubmission,
 } from '@/lib/types';
-import { RATE_LIMIT } from '@/lib/honeypot';
-import { getSiteConfig } from '@/lib/content';
-import { formatEventDate, getEventYear } from '@/lib/site-config';
+import { RATE_LIMITS, type RateLimitBucket } from '@/lib/honeypot';
+import { getCommittees, getProblemCategories, getSiteConfig } from '@/lib/content';
+import { getCanonicalEventDateRange, getEventYear } from '@/lib/site-config';
 import { getMissingProductionConfig, getServerConfig, isExplicitMemoryTestBackend } from '@/lib/server/config';
 
 export class SubmissionServiceError extends Error {
@@ -60,6 +60,8 @@ type OutboxMessage = {
   locked_by?: string | null;
 };
 
+const UNAVAILABLE = 'Submissions are temporarily unavailable. Please try again shortly or email the organizing team.';
+
 class OutboxDispatchError extends Error {
   constructor(
     message: string,
@@ -80,7 +82,8 @@ const memoryContacts: Array<{ id: string; submittedAt: string; data: ContactForm
 function backendMode() {
   const backend = getServerConfig().backend;
   if (backend !== 'memory' && backend !== 'supabase') {
-    throw new SubmissionServiceError('Submission service has an invalid SUBMISSIONS_BACKEND value.');
+    console.error(`[Configuration] SUBMISSIONS_BACKEND has an invalid value: ${backend}.`);
+    throw new SubmissionServiceError(UNAVAILABLE);
   }
   return backend;
 }
@@ -93,24 +96,36 @@ function ensureProductionBackend(options: { emailDelivery?: boolean } = {}) {
     backendMode() === 'memory' &&
     !isExplicitMemoryTestBackend()
   ) {
-    throw new SubmissionServiceError('The in-memory submission backend is disabled in production.');
+    console.error('[Configuration] SUBMISSIONS_BACKEND=memory is not allowed in production.');
+    throw new SubmissionServiceError(UNAVAILABLE);
   }
 
   const missing = getMissingProductionConfig(options);
   if (missing.length > 0) {
-    throw new SubmissionServiceError(`Production submission configuration is missing: ${missing.join(', ')}.`);
+    // Variable names go to the logs, not to the visitor.
+    console.error(`[Configuration] Submission service is missing: ${missing.join(', ')}.`);
+    throw new SubmissionServiceError(UNAVAILABLE);
   }
 }
 
 function getRequiredEnv(name: string): string {
   const value = process.env[name];
-  if (!value) throw new SubmissionServiceError(`Submission service is missing ${name}.`);
+  if (!value) {
+    console.error(`[Configuration] Submission service is missing ${name}.`);
+    throw new SubmissionServiceError(UNAVAILABLE);
+  }
   return value;
 }
 
 async function supabaseRpc<T>(functionName: string, body: Record<string, unknown>): Promise<T> {
   const { data, error } = await database().rpc(functionName, body);
-  if (error) throw new SubmissionServiceError(error.message.includes('payload mismatch') ? 'Submission key was already used for different details. Reload the form.' : 'Submission storage is unavailable.', error.message.includes('payload mismatch') ? 409 : 503);
+  if (error) {
+    if (error.message.includes('payload mismatch')) {
+      throw new SubmissionServiceError('Submission key was already used for different details. Reload the form.', 409);
+    }
+    console.error(`[Submissions] ${functionName} failed: ${error.message}`);
+    throw new SubmissionServiceError(UNAVAILABLE, 503);
+  }
   return data as T;
 }
 
@@ -131,7 +146,8 @@ function recipientList() {
     .filter(Boolean);
 
   if (process.env.NODE_ENV === 'production' && recipients.length === 0 && !isExplicitMemoryTestBackend()) {
-    throw new SubmissionServiceError('Submission service is missing NOTIFICATION_EMAIL.');
+    console.error('[Configuration] Submission service is missing NOTIFICATION_EMAIL.');
+    throw new SubmissionServiceError(UNAVAILABLE);
   }
 
   return recipients;
@@ -143,22 +159,44 @@ function buildRegistrationReference(track: Track, year: string) {
   return `${prefix}-${String(memoryCounters[track]).padStart(4, '0')}`;
 }
 
-export async function enforceRateLimit(bucket: string, ip: string) {
-  ensureProductionBackend();
-  const usingExplicitMemoryTestBackend =
-    backendMode() === 'memory' && (process.env.NODE_ENV !== 'production' || isExplicitMemoryTestBackend());
+/**
+ * IPv6 clients usually control a whole /64, so limiting single addresses lets
+ * one host rotate freely. Keys use the /64 prefix; IPv4 is used as-is.
+ */
+export function rateLimitSubject(ip: string) {
+  if (!ip.includes(':')) return ip;
+  const [head, tail = ''] = ip.toLowerCase().split('::');
+  const left = head ? head.split(':') : [];
+  const right = tail ? tail.split(':') : [];
+  const groups = ip.includes('::') ? [...left, ...Array(Math.max(0, 8 - left.length - right.length)).fill('0'), ...right] : left;
+  return `${groups.slice(0, 4).map((g) => g.replace(/^0+(?=.)/, '')).join(':')}::/64`;
+}
+
+// Deliberately independent of the submission/email configuration: admin
+// sign-in must keep working when, say, NOTIFICATION_EMAIL is missing.
+export async function enforceRateLimit(bucket: RateLimitBucket, ip: string) {
+  const RATE_LIMIT = RATE_LIMITS[bucket];
   const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
   const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
   const hmacSecret = process.env.RATE_LIMIT_HMAC_SECRET;
+  const production = process.env.NODE_ENV === 'production' && !isExplicitMemoryTestBackend();
 
-  if (process.env.NODE_ENV === 'production' && !usingExplicitMemoryTestBackend && !hmacSecret) {
-    throw new SubmissionServiceError('Production rate limiting is missing RATE_LIMIT_HMAC_SECRET.');
+  // A rate-limit outage must never take registration down with it. Missing or
+  // failing infrastructure degrades to a per-instance limit and is logged
+  // loudly; the build-time check (scripts/check-env.mjs) keeps it configured.
+  if (production && !hmacSecret) {
+    console.error('[RateLimit] RATE_LIMIT_HMAC_SECRET is missing; using per-instance limits.');
+  }
+  if (production && (!upstashUrl || !upstashToken)) {
+    console.error('[RateLimit] Upstash is not configured; using per-instance limits.');
   }
 
-  const digest = createHmac('sha256', hmacSecret || 'development-rate-limit-secret').update(ip).digest('hex');
+  const digest = createHmac('sha256', hmacSecret || 'development-rate-limit-secret').update(rateLimitSubject(ip)).digest('hex');
   const key = `gimun:${bucket}:${digest}`;
 
-  if (upstashUrl && upstashToken) {
+  // Only send keyed hashes to the shared store; never a key made with the
+  // public fallback secret.
+  if (upstashUrl && upstashToken && (hmacSecret || !production)) {
     try {
       const response = await fetch(upstashUrl.replace(/\/$/, ''), {
         method: 'POST',
@@ -180,19 +218,10 @@ export async function enforceRateLimit(bucket: string, ip: string) {
 
         return { allowed: count <= RATE_LIMIT.maxRequests, retryAfterSeconds: Math.ceil(RATE_LIMIT.windowMs / 1000) };
       }
+      console.error(`[RateLimit] Upstash returned HTTP ${response.status}; using per-instance limits.`);
     } catch {
-      if (process.env.NODE_ENV === 'production' && !usingExplicitMemoryTestBackend) {
-        throw new SubmissionServiceError('Production rate limiting is temporarily unavailable.');
-      }
+      console.error('[RateLimit] Upstash is unreachable; using per-instance limits.');
     }
-
-    if (process.env.NODE_ENV === 'production' && !usingExplicitMemoryTestBackend) {
-      throw new SubmissionServiceError('Production rate limiting is temporarily unavailable.');
-    }
-  }
-
-  if (process.env.NODE_ENV === 'production' && !usingExplicitMemoryTestBackend && (!upstashUrl || !upstashToken)) {
-    throw new SubmissionServiceError('Production rate limiting is not configured.');
   }
 
   const now = Date.now();
@@ -223,6 +252,67 @@ export function clientIp(request: Request) {
   return trustedVercelIp || realIp || forwarded?.at(-1) || 'unknown';
 }
 
+/**
+ * What the applicant actually submitted, in readable form: preferences for
+ * individuals, the roster for delegations and teams. Used by both the
+ * applicant receipt and the organizer notification so neither has to be
+ * cross-checked against the admin panel.
+ */
+async function submittedDetails(record: RegistrationRecord) {
+  const committees = await getCommittees();
+  const categories = await getProblemCategories();
+  const committeeName = (id: string) =>
+    id ? committees.find((c) => c.id === id || c.slug === id)?.name || id : '';
+  const rows: { label: string; value: string }[] = [];
+  let roster: { heading: string[]; rows: string[][] } | null = null;
+
+  if (record.applicantType === 'individual') {
+    const d = record.formData as GimunIndividualData;
+    const prefs = [d.committeePreference1, d.committeePreference2, d.committeePreference3].map(committeeName).filter(Boolean);
+    rows.push({ label: 'Committee preferences', value: prefs.join(' → ') });
+    if (d.countryPreference) rows.push({ label: 'Country preference', value: d.countryPreference });
+  } else if (record.applicantType === 'delegation') {
+    const d = record.formData as GimunDelegationData;
+    roster = {
+      heading: ['Delegate', 'Email', 'Preferences'],
+      rows: d.delegates.map((del) => [
+        del.name,
+        del.email,
+        [del.committeePreference1, del.committeePreference2].map(committeeName).filter(Boolean).join(' → ') +
+          (del.countryPreference ? ` (${del.countryPreference})` : ''),
+      ]),
+    };
+  } else {
+    const d = record.formData as MootCupTeamData;
+    const category = categories.find((c) => c.id === d.problemCategoryPreference)?.name || d.problemCategoryPreference;
+    rows.push({ label: 'Team name', value: d.teamName }, { label: 'Problem category', value: category });
+    roster = {
+      heading: ['Member', 'Email', 'Role'],
+      rows: d.members.map((m) => [m.fullName, m.email, m.role.replace(/-/g, ' ')]),
+    };
+  }
+  return { rows, roster };
+}
+
+function detailsHtml(details: Awaited<ReturnType<typeof submittedDetails>>) {
+  const cell = 'padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; vertical-align: top;';
+  const rows = details.rows
+    .map((r) => `<tr><td style="${cell} color: #64748b; width: 34%;">${escapeHtml(r.label)}</td><td style="${cell} color: #0f172a;">${escapeHtml(r.value)}</td></tr>`)
+    .join('');
+  const roster = details.roster
+    ? `<table style="width: 100%; border-collapse: collapse; margin-top: 8px;"><thead><tr>${details.roster.heading
+        .map((h) => `<th style="${cell} text-align: left; color: #64748b; font-weight: 600;">${escapeHtml(h)}</th>`)
+        .join('')}</tr></thead><tbody>${details.roster.rows
+        .map((r) => `<tr>${r.map((v) => `<td style="${cell} color: #0f172a;">${escapeHtml(v)}</td>`).join('')}</tr>`)
+        .join('')}</tbody></table>`
+    : '';
+  if (!rows && !roster) return '';
+  return `<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 4px; margin-bottom: 24px;">
+        <div style="font-size: 11px; font-family: monospace; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; padding: 0 12px 6px;">What you submitted</div>
+        ${rows ? `<table style="width: 100%; border-collapse: collapse;">${rows}</table>` : ''}${roster}
+      </div>`;
+}
+
 async function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: string, qrDataUrl?: string | null): Promise<string> {
   const isMoot = record.track === 'moot-cup';
   const trackNameShort = isMoot ? 'GMC' : 'GIMUN';
@@ -237,7 +327,8 @@ async function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId
   const feeDisplay = record.feeAmount || 'Fee pending confirmation';
 
   const site = (await getSiteConfig());
-    const eventDates = `${formatEventDate(site.eventDates.start)}–${formatEventDate(site.eventDates.end, { day: 'numeric' })}`;
+  const eventDates = getCanonicalEventDateRange(site);
+  const submitted = detailsHtml(await submittedDetails(record));
   const venueTitle = site.hostInstitution;
   const venueLocation = site.venue;
   const safeReferenceId = escapeHtml(referenceId);
@@ -253,7 +344,7 @@ async function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GIMUN Application Received — Ref #${safeReferenceId}</title>
+  <title>${trackNameShort} application received — Ref #${safeReferenceId}</title>
 </head>
 <body style="margin: 0; padding: 28px 12px; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
   <div style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04); border: 1px solid #e2e8f0;">
@@ -262,7 +353,7 @@ async function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId
     <div style="background-color: #111827; padding: 36px 24px 28px; text-align: center;">
       <!-- GIMUN Golden Badge -->
       <div style="display: inline-block; background-color: #fbbf24; color: #000000; font-size: 15px; font-weight: 900; letter-spacing: 5px; padding: 7px 22px; border-radius: 4px; text-transform: uppercase;">
-        GIMUN
+        ${trackNameShort}
       </div>
       <div style="margin-top: 14px;">
         <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 9999px; padding: 4px 14px; color: #e0e7ff; font-size: 10px; font-family: -apple-system, BlinkMacSystemFont, monospace; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">
@@ -346,6 +437,8 @@ async function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId
         </table>
       </div>
 
+      ${submitted}
+
       <!-- Event Details Card (Explicitly Included) -->
       <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #f59e0b; border-radius: 6px; padding: 16px 18px; margin-bottom: 24px;">
         <div style="font-size: 11px; font-family: monospace; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
@@ -381,7 +474,7 @@ async function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId
       <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 14px 18px; margin-bottom: 24px; font-size: 12px; color: #166534; line-height: 1.55;">
         <strong style="display: block; margin-bottom: 4px; font-size: 13px;">What Happens Next:</strong>
         1. <strong>Dossier Evaluation:</strong> ${escapeHtml(site.replyTime || 'The Secretariat will review your application.')}<br>
-        2. <strong>Bank Transfer Invoice:</strong> Official invoice with university bank account details will be emailed.<br>
+        2. <strong>Payment:</strong> ${site.paymentInstructions ? escapeHtml(site.paymentInstructions).replace(/\n/g, '<br>') : 'Once your application is accepted, an invoice with bank transfer details will be emailed to you.'}<br>
         3. <strong>Seat Confirmation:</strong> Upon payment verification, your status will be updated to <strong>Confirmed</strong> and your final badge credentials will be released.
       </div>
 
@@ -393,7 +486,7 @@ async function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId
     <!-- Branded Footer (Matching User Reference Image) -->
     <div style="background-color: #fafaf9; border-top: 1px solid #f1f5f9; padding: 22px 24px; text-align: center;">
       <div style="font-size: 11px; font-weight: 800; color: #b45309; letter-spacing: 1px; text-transform: uppercase;">
-        GIMUN — GIK Institute of Engineering Sciences &amp; Technology
+        ${escapeHtml(site.eventNames.combined)} — ${escapeHtml(site.hostInstitution)}
       </div>
       <div style="font-size: 10px; color: #94a3b8; margin-top: 5px;">
         This is an automated message. Please do not reply directly to this email.
@@ -448,6 +541,8 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
   <p><strong>Email:</strong> ${escapeHtml(record.email)}</p>
   <p><strong>Applicant type:</strong> ${escapeHtml(record.applicantType)}</p>
   <p><strong>Participants:</strong> ${record.participantCount}</p>
+  <p><strong>Amount:</strong> ${escapeHtml(record.feeAmount || 'Not set')}</p>
+  ${detailsHtml(await submittedDetails(record))}
 </body>
 </html>`;
 
@@ -464,7 +559,7 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
     p_submitted_at: record.submittedAt,
     p_status: 'received',
     p_form_data: record.formData,
-    p_receipt_subject: `GIMUN Application Received — ${trackName}`,
+    p_receipt_subject: `${trackName} application received`,
     p_receipt_html: receiptHtml,
     p_notification_recipients: recipients,
     p_notification_subject: `New ${trackName} registration received`,
@@ -481,13 +576,18 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
   return { referenceId, checkinToken: persistedToken, emailQueued: true, notificationQueued: recipients.length > 0 };
 }
 
-export async function createContactMessage(data: ContactFormData) {
+export async function createContactMessage(data: ContactFormData, submissionKey?: string) {
   ensureProductionBackend();
-  const id = `INQ-${Date.now().toString(36).toUpperCase()}-${randomUUID().slice(0, 8).toUpperCase()}`;
+  // A client key makes the id deterministic, so a retried request returns the
+  // stored inquiry instead of creating a duplicate (see create_contact_v2).
+  const id = submissionKey
+    ? `INQ-${createHash('sha256').update(submissionKey).digest('hex').slice(0, 16).toUpperCase()}`
+    : `INQ-${Date.now().toString(36).toUpperCase()}-${randomUUID().slice(0, 8).toUpperCase()}`;
   const submittedAt = new Date().toISOString();
   const recipients = recipientList();
 
   if (backendMode() === 'memory') {
+    if (memoryContacts.some((c) => c.id === id)) return { id, notificationQueued: false };
     memoryContacts.push({ id, submittedAt, data });
     return { id, notificationQueued: false };
   }
@@ -580,7 +680,10 @@ export async function dispatchEmailOutbox(limit = 4) {
   let failed = 0;
   let needsReview = 0;
 
-  for (const message of claimed || []) {
+  for (const [index, message] of (claimed || []).entries()) {
+    // Resend allows about two requests a second per account; pace the batch
+    // so a burst of registrations does not turn into a burst of 429 retries.
+    if (index > 0) await new Promise((resolve) => setTimeout(resolve, 550));
     let providerAccepted = false;
     try {
       if (!message.from_address) {

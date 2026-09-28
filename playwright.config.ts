@@ -34,7 +34,6 @@ export default defineConfig({
       SUBMISSIONS_BACKEND: 'memory',
       ALLOW_IN_MEMORY_SUBMISSIONS: '1',
       SUBMISSIONS_TEST_MODE: '1',
-      SITE_URL: 'http://127.0.0.1:3100',
     },
   },
 });

@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import type { Committee, ProblemCategory, SiteConfig } from '@/lib/types';
 import { TrackChooser } from '@/components/forms/TrackChooser';
@@ -10,12 +9,44 @@ import { GimunRegisterForm } from '@/components/forms/GimunRegisterForm';
 import { MootRegisterForm } from '@/components/forms/MootRegisterForm';
 import { ClosedRegistrationBanner } from '@/components/forms/ClosedRegistrationBanner';
 import { RegistrationSuccess } from '@/components/forms/RegistrationSuccess';
-import { isRegistrationDeadlinePassed } from '@/lib/site-config';
+import { canRegister } from '@/lib/phase';
+import { useRenderedAt } from '@/components/SiteConfigProvider';
 
 interface RegisterPageClientProps {
   committees: Committee[];
   categories: ProblemCategory[];
   siteConfig: SiteConfig;
+}
+
+interface RegisterContentProps extends RegisterPageClientProps {
+  /** Track requested in the URL (?track=, or implied by ?committee= / ?category=). */
+  initialTrack: 'gimun' | 'moot-cup' | null;
+}
+
+function RegisterWithParams(props: RegisterPageClientProps) {
+  const query = useSearchParams();
+  const track = query.get('track');
+  const initialTrack =
+    track === 'gimun' || track === 'moot-cup'
+      ? track
+      : query.has('committee')
+        ? 'gimun'
+        : query.has('category')
+          ? 'moot-cup'
+          : null;
+  return <RegisterContent key={initialTrack ?? 'chooser'} {...props} initialTrack={initialTrack} />;
+}
+
+/**
+ * Keeps /register statically cached: the server HTML is the track chooser,
+ * and a ?track= link opens the matching form as soon as the page hydrates.
+ */
+export function RegisterPageClient(props: RegisterPageClientProps) {
+  return (
+    <Suspense fallback={<RegisterContent {...props} initialTrack={null} />}>
+      <RegisterWithParams {...props} />
+    </Suspense>
+  );
 }
 
 interface SuccessState {
@@ -37,35 +68,27 @@ interface SuccessState {
   };
 }
 
-function RegisterContent({ committees, categories, siteConfig }: RegisterPageClientProps) {
-  const searchParams = useSearchParams();
-  const trackQuery = searchParams.get('track') || (searchParams.has('committee') ? 'gimun' : searchParams.has('category') ? 'moot-cup' : null);
+function RegisterContent({ committees, categories, siteConfig, initialTrack }: RegisterContentProps) {
+  const renderedAt = useRenderedAt();
 
   const [overrideTrack, setOverrideTrack] = useState<'gimun' | 'moot-cup' | null | undefined>(undefined);
   const selectedTrack: 'gimun' | 'moot-cup' | null =
     overrideTrack !== undefined
       ? overrideTrack
-      : trackQuery === 'gimun' || trackQuery === 'moot-cup'
-      ? trackQuery
-      : null;
-  const setSelectedTrack = (track: 'gimun' | 'moot-cup' | null) => setOverrideTrack(track);
+      : initialTrack;
 
   const [successData, setSuccessData] = useState<SuccessState | null>(null);
 
-  // Check deadline & manual kill-switch status
-  const isGimunOpen = () => {
-    const manualOpen = siteConfig.registrationStatus?.gimunOpen !== false;
-    const deadline = siteConfig.registrationDeadlines.gimun;
-    const pastDeadline = isRegistrationDeadlinePassed(deadline);
-    return manualOpen && !pastDeadline;
-  };
+  // Same rule as every other page (phase, manual switch, deadline); the API enforces it again.
+  const isGimunOpen = () => canRegister(siteConfig, 'gimun', renderedAt);
+  const isMootOpen = () => canRegister(siteConfig, 'mootCup', renderedAt);
 
-  const isMootOpen = () => {
-    const manualOpen = siteConfig.registrationStatus?.mootCupOpen !== false;
-    const deadline = siteConfig.registrationDeadlines.mootCup;
-    const pastDeadline = isRegistrationDeadlinePassed(deadline);
-    return manualOpen && !pastDeadline;
-  };
+  // Forms stay mounted once opened, so switching tracks and back keeps what
+  // the visitor already typed instead of silently wiping it.
+  const [openedTracks, setOpenedTracks] = useState<Set<'gimun' | 'moot-cup'>>(new Set());
+  if (selectedTrack && !openedTracks.has(selectedTrack)) {
+    setOpenedTracks(new Set(openedTracks).add(selectedTrack));
+  }
 
   const handleSelectTrack = (track: 'gimun' | 'moot-cup') => {
     setOverrideTrack(track);
@@ -87,14 +110,14 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
           <button
             type="button"
             onClick={() => setOverrideTrack(null)}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-champagne hover:text-cream transition-colors px-3.5 py-1.5 rounded-xl bg-overlay/90 border border-champagne/25 shadow-md hover:bg-crest"
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-line-2 px-4 text-sm font-medium text-text-2 transition-colors hover:border-line-3 hover:text-text"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-champagne" />
+            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             <span>Change Competition Track</span>
           </button>
 
-          <span className="text-xs font-mono text-champagne/80">
-            Active Track:{' '}
+          <span className="text-sm text-text-4">
+            Applying for{' '}
             <strong className={selectedTrack === 'gimun' ? 'text-crimson-soft' : 'text-champagne'}>
               {selectedTrack === 'gimun' ? 'Model United Nations (GIMUN)' : 'Moot Court (GMC)'}
             </strong>
@@ -102,33 +125,19 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
         </div>
       )}
 
-      {/* Main View Transition */}
-      <AnimatePresence mode="wait">
-        {successData ? (
-          <motion.div
-            key="success-view"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.3 }}
-          >
-            <RegistrationSuccess
-              referenceId={successData.referenceId}
-              applicantName={successData.applicantName}
-              track={successData.track}
-              applicantType={successData.applicantType}
-              details={successData.details}
-              onReset={handleReset}
-            />
-          </motion.div>
-        ) : selectedTrack === null ? (
-          <motion.div
-            key="chooser-view"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
-          >
+      {/* Main view */}
+      {successData ? (
+        <RegistrationSuccess
+          referenceId={successData.referenceId}
+          applicantName={successData.applicantName}
+          track={successData.track}
+          applicantType={successData.applicantType}
+          details={successData.details}
+          onReset={handleReset}
+        />
+      ) : (
+        <>
+          {selectedTrack === null && (
             <TrackChooser
               onSelectTrack={handleSelectTrack}
               gimunDeadline={siteConfig.registrationDeadlines.gimun}
@@ -137,83 +146,63 @@ function RegisterContent({ committees, categories, siteConfig }: RegisterPageCli
               mootCupOpen={isMootOpen()}
               fees={siteConfig.fees}
             />
-          </motion.div>
-        ) : selectedTrack === 'gimun' ? (
-          <motion.div
-            key="gimun-view"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
-          >
-            {isGimunOpen() ? (
-              <GimunRegisterForm
-                committees={committees}
-                onSuccess={(refId, name, type, details) => {
-                  setSuccessData({
-                    referenceId: refId,
-                    applicantName: name,
-                    track: 'gimun',
-                    applicantType: type,
-                    details,
-                  });
-                  window.scrollTo({ top: 100, behavior: 'smooth' });
-                }}
-              />
-            ) : (
-              <ClosedRegistrationBanner
-                track="gimun"
-                deadline={siteConfig.registrationDeadlines.gimun}
-                onSwitchTrack={() => setOverrideTrack('moot-cup')}
-              />
-            )}
-          </motion.div>
-        ) : (
-          <motion.div
-            key="moot-view"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
-          >
-            {isMootOpen() ? (
-              <MootRegisterForm
-                categories={categories}
-                onSuccess={(refId, name, details) => {
-                  setSuccessData({
-                    referenceId: refId,
-                    applicantName: name,
-                    track: 'moot-cup',
-                    applicantType: 'team',
-                    details,
-                  });
-                  window.scrollTo({ top: 100, behavior: 'smooth' });
-                }}
-              />
-            ) : (
-              <ClosedRegistrationBanner
-                track="moot-cup"
-                deadline={siteConfig.registrationDeadlines.mootCup}
-                onSwitchTrack={() => setSelectedTrack('gimun')}
-              />
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
+          )}
 
-export function RegisterPageClient(props: RegisterPageClientProps) {
-  return (
-    <Suspense
-      fallback={
-        <div className="max-w-4xl mx-auto p-12 text-center text-sm font-mono text-champagne/70 animate-pulse">
-          Loading Official Registration Portal…
-        </div>
-      }
-    >
-      <RegisterContent {...props} />
-    </Suspense>
+          {openedTracks.has('gimun') && (
+            <div hidden={selectedTrack !== 'gimun'}>
+              {isGimunOpen() ? (
+                <GimunRegisterForm
+                  committees={committees}
+                  onSuccess={(refId, name, type, details) => {
+                    setSuccessData({
+                      referenceId: refId,
+                      applicantName: name,
+                      track: 'gimun',
+                      applicantType: type,
+                      details,
+                    });
+                    setOpenedTracks(new Set());
+                    window.scrollTo({ top: 100, behavior: 'smooth' });
+                  }}
+                />
+              ) : (
+                <ClosedRegistrationBanner
+                  track="gimun"
+                  deadline={siteConfig.registrationDeadlines.gimun}
+                  onSwitchTrack={() => setOverrideTrack('moot-cup')}
+                />
+              )}
+            </div>
+          )}
+
+          {openedTracks.has('moot-cup') && (
+            <div hidden={selectedTrack !== 'moot-cup'}>
+              {isMootOpen() ? (
+                <MootRegisterForm
+                  categories={categories}
+                  onSuccess={(refId, name, details) => {
+                    setSuccessData({
+                      referenceId: refId,
+                      applicantName: name,
+                      track: 'moot-cup',
+                      applicantType: 'team',
+                      details,
+                    });
+                    setOpenedTracks(new Set());
+                    window.scrollTo({ top: 100, behavior: 'smooth' });
+                  }}
+                />
+              ) : (
+                <ClosedRegistrationBanner
+                  track="moot-cup"
+                  deadline={siteConfig.registrationDeadlines.mootCup}
+                  onSwitchTrack={() => setOverrideTrack('gimun')}
+                />
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 }

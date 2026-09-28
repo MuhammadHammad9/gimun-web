@@ -1,10 +1,8 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from './Button';
-import { TextReveal } from '@/components/motion/TextReveal';
-import { Parallax } from '@/components/motion/Parallax';
 import { Breadcrumbs, type Crumb } from './Breadcrumbs';
-import { ArrowRight } from 'lucide-react';
+import { HeroMosaic, type Placard } from './HeroMosaic';
 
 type HeroVariant = 'home' | 'gimun' | 'moot' | 'utility';
 
@@ -15,53 +13,43 @@ export interface HeroAction {
 }
 
 export interface PageHeroProps {
-  /** Small mono label above the headline, or a node for badge rows. */
+  /** Small label above the headline, or a node for badge rows. */
   eyebrow?: React.ReactNode;
-  /** The headline, as plain text so it can be revealed word by word. */
+  /** The headline, as plain text. */
   title: string;
-  /** Words inside `title` to paint with the track accent. */
+  /**
+   * Words inside `title` to set in champagne. A colour shift, not a gradient
+   * fill: gradient text on a large heading is one of the loudest generated-UI
+   * tells and it also wrecks contrast.
+   */
   accentWords?: string[];
   description?: string;
   actions?: HeroAction[];
-  /**
-   * Raw JSX for the action row, used instead of `actions` when a page needs
-   * conditional buttons, icons or extra meta rows that the declarative
-   * `actions` shape cannot express.
-   */
+  /** Raw JSX for the action row, when `actions` cannot express it. */
   actionsSlot?: React.ReactNode;
-  /** Right-hand column: spotlight cards, stats, media. */
+  /** Right-hand column. Omit for the centred treatment. */
   aside?: React.ReactNode;
+  /** Short affirmative points under the description. */
+  bullets?: string[];
+  /** Decorative placard field behind the headline. Homepage only. */
+  mosaic?: Placard[];
   breadcrumbs?: Crumb[];
   variant?: HeroVariant;
-  /** `display` for the homepage, `h1` everywhere else. */
   size?: 'display' | 'h1';
+  /** Centre the column. Used with `mosaic` for the homepage masthead. */
+  align?: 'start' | 'center';
   className?: string;
 }
 
-const GLOW: Record<HeroVariant, string> = {
-  home: 'bg-radial-glow-dual',
-  gimun: 'bg-glow-crimson',
-  moot: 'bg-glow-champagne',
-  utility: 'bg-radial-glow',
-};
-
-const ACCENT: Record<HeroVariant, string> = {
-  home: 'text-gradient-champagne',
-  gimun: 'text-gradient-crimson',
-  moot: 'text-gradient-champagne',
-  utility: 'text-gradient-champagne',
-};
+const strip = (word: string) => word.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
 
 /**
- * The one hero.
+ * The one hero, for every public route.
  *
- * Replaces thirteen hand-copied hero slabs that had drifted apart in gradient,
- * padding, type scale and badge treatment. Every public route's masthead comes
- * through here, which is what makes the page-to-page rhythm consistent.
- *
- * A server component: the headline text is in the initial HTML, so it is a
- * valid LCP candidate and is never gated behind hydration. `TextReveal` and
- * `Parallax` are the only client islands inside it.
+ * A server component with no animation wrapper around the headline: the text
+ * is in the initial HTML at full opacity, which is what keeps it a valid LCP
+ * candidate. Motion in this section is CSS only — the mosaic settles on a
+ * scroll-driven timeline, and nothing waits for hydration.
  */
 export function PageHero({
   eyebrow,
@@ -71,96 +59,131 @@ export function PageHero({
   actions,
   actionsSlot,
   aside,
+  bullets,
+  mosaic,
   breadcrumbs,
   variant = 'utility',
   size = 'h1',
+  align = 'start',
   className,
 }: PageHeroProps) {
   const hasAside = Boolean(aside);
+  const centered = align === 'center';
+  const accentSet = new Set((accentWords ?? []).map(strip));
+
+  const accentClass = variant === 'gimun' ? 'text-crimson-soft' : 'text-champagne';
+
+  const heading = (
+    <h1
+      className={cn(
+        'font-display text-text',
+        // Medium weight, not extrabold. Hierarchy comes from scale and colour.
+        'font-medium',
+        size === 'display' ? 'text-display' : 'text-h1',
+        centered && 'mx-auto max-w-4xl text-balance'
+      )}
+    >
+      {accentSet.size === 0
+        ? title
+        : title.split(' ').map((word, i) => (
+            <React.Fragment key={`${word}-${i}`}>
+              {i > 0 ? ' ' : ''}
+              <span className={accentSet.has(strip(word)) ? accentClass : undefined}>
+                {word}
+              </span>
+            </React.Fragment>
+          ))}
+    </h1>
+  );
 
   return (
     <section
       className={cn(
-        'relative isolate overflow-hidden border-b border-line',
-        hasAside
-          ? 'pt-12 pb-16 md:pt-20 md:pb-24'
-          : 'pt-12 pb-14 md:pt-20 md:pb-20',
-        'px-4 sm:px-6 lg:px-8',
-        GLOW[variant],
+        'relative isolate overflow-hidden border-b border-line px-4 sm:px-6 lg:px-8',
+        mosaic ? 'pt-16 pb-20 md:pt-24 md:pb-28' : 'pt-12 pb-14 md:pt-20 md:pb-20',
         className
       )}
     >
-      {/* Atmosphere. Decorative only, never intercepts pointer events. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-tech-grid opacity-60"
-      />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <Parallax distance={90} className="absolute -top-24 left-1/4 -translate-x-1/2">
-          <div
-            className={cn(
-              'h-[28rem] w-[28rem] rounded-full blur-3xl animate-float-slow',
-              variant === 'moot' ? 'bg-champagne/15' : 'bg-crimson/20'
-            )}
-          />
-        </Parallax>
-        <Parallax distance={-70} className="absolute -top-10 right-1/4 translate-x-1/2">
-          <div
-            className={cn(
-              'h-[26rem] w-[26rem] rounded-full blur-3xl animate-float-slower',
-              variant === 'gimun' ? 'bg-crimson/15' : 'bg-champagne/15'
-            )}
-          />
-        </Parallax>
-      </div>
+      {mosaic && mosaic.length > 0 && <HeroMosaic placards={mosaic} />}
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {breadcrumbs && breadcrumbs.length > 0 && (
-          <Breadcrumbs items={breadcrumbs} className="mb-6" />
+          <Breadcrumbs items={breadcrumbs} className="mb-8" />
         )}
 
         <div
           className={cn(
-            'grid grid-cols-1 items-center gap-12 lg:gap-10',
+            'grid grid-cols-1 items-center gap-12 lg:gap-16',
             hasAside && 'lg:grid-cols-12'
           )}
         >
           <div
             className={cn(
-              'flex flex-col items-start text-left',
-              hasAside ? 'lg:col-span-7 xl:col-span-7' : 'max-w-4xl'
+              'flex flex-col',
+              centered ? 'items-center text-center' : 'items-start text-left',
+              hasAside ? 'lg:col-span-7' : centered ? 'mx-auto max-w-3xl' : 'max-w-3xl'
             )}
           >
-            {eyebrow && <div className="mb-6">{eyebrow}</div>}
+            {eyebrow && <div className="mb-7">{eyebrow}</div>}
 
-            <TextReveal
-              as="h1"
-              text={title}
-              accentWords={accentWords}
-              accentClassName={ACCENT[variant]}
-              immediate
-              className={cn(
-                'font-display font-extrabold text-text',
-                size === 'display' ? 'text-display' : 'text-h1'
-              )}
-            />
+            {heading}
 
             {description && (
-              <p className="mt-6 max-w-2xl text-lead text-text-2">{description}</p>
+              <p
+                className={cn(
+                  'mt-6 text-lead text-text-3',
+                  centered ? 'mx-auto max-w-2xl text-balance' : 'max-w-2xl'
+                )}
+              >
+                {description}
+              </p>
             )}
 
-            {actionsSlot && <div className="mt-9 w-full space-y-6">{actionsSlot}</div>}
+            {bullets && bullets.length > 0 && (
+              <ul
+                className={cn(
+                  'mt-8 space-y-2.5 text-body text-text-2',
+                  centered && 'inline-flex flex-col items-start text-left'
+                )}
+              >
+                {bullets.map((bullet) => (
+                  <li key={bullet} className="flex items-start gap-3">
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 16 16"
+                      className="mt-1.5 h-3.5 w-3.5 shrink-0 text-champagne"
+                    >
+                      <path
+                        d="M2 8.5l4 4 8-9"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {actionsSlot && <div className="mt-10 w-full space-y-6">{actionsSlot}</div>}
 
             {!actionsSlot && actions && actions.length > 0 && (
-              <div className="mt-9 flex w-full flex-wrap items-center gap-4 sm:w-auto">
+              <div
+                className={cn(
+                  'mt-10 flex flex-wrap items-center gap-3',
+                  centered && 'justify-center'
+                )}
+              >
                 {actions.map((action, i) => (
                   <Button
                     key={action.href + action.label}
                     href={action.href}
                     size="lg"
                     variant={action.variant ?? (i === 0 ? 'primary' : 'secondary')}
-                    magnetic={i === 0}
-                    icon={i === 0 ? <ArrowRight className="h-4 w-4" /> : undefined}
+                    withArrow={i === 0}
                   >
                     {action.label}
                   </Button>
@@ -169,9 +192,7 @@ export function PageHero({
             )}
           </div>
 
-          {hasAside && (
-            <div className="w-full lg:col-span-5 xl:col-span-5">{aside}</div>
-          )}
+          {hasAside && <div className="w-full lg:col-span-5">{aside}</div>}
         </div>
       </div>
     </section>

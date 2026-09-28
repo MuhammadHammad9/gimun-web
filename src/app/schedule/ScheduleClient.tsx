@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   Clock,
   MapPin,
@@ -16,14 +15,55 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import type { ScheduleItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { CtaBanner } from '@/components/ui/CtaBanner';
+import { useSiteConfig } from '@/components/SiteConfigProvider';
+
+/** Absolute instant for a session clock time, in Pakistan time (UTC+5, no DST). */
+function sessionInstant(eventStart: string, day: number, time: string) {
+  const base = new Date(`${eventStart}T${time}:00+05:00`).getTime();
+  return base + (day - 1) * 86_400_000;
+}
 
 interface ScheduleClientProps {
   initialSchedule: ScheduleItem[];
 }
 
 export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
+  const site = useSiteConfig();
   const days = Array.from(new Set(initialSchedule.map((s) => s.day))).sort((a,b) => a-b);
   const [selectedDay, setSelectedDay] = useState<number>(days[0] || 1);
+  // Null until mounted: the page HTML is cached, so "now" is only known in the
+  // browser. Ticks each minute so the live marker moves without a reload.
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    const tick = () => setNow(Date.now());
+    tick();
+    const timer = window.setInterval(tick, 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const liveSessionIds = new Set(
+    now === null
+      ? []
+      : initialSchedule
+          .filter((s) => {
+            const start = sessionInstant(site.eventDates.start, s.day, s.startTime);
+            const end = sessionInstant(site.eventDates.start, s.day, s.endTime);
+            return Number.isFinite(start) && now >= start && now < end;
+          })
+          .map((s) => s.id)
+  );
+
+  // During the event, open on today's tab once. The visitor's own choice wins after that.
+  const [autoSelected, setAutoSelected] = useState(false);
+  if (now !== null && !autoSelected) {
+    setAutoSelected(true);
+    const today = days.find((day) => {
+      const dayStart = sessionInstant(site.eventDates.start, day, '00:00');
+      return now >= dayStart && now < dayStart + 86_400_000;
+    });
+    if (today !== undefined) setSelectedDay(today);
+  }
   const [trackFilter, setTrackFilter] = useState<string>("all");
 
   const filterOptions = [
@@ -42,9 +82,6 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
 
   const currentDayLabel =
     currentDaySessions[0]?.dayLabel || `Day ${selectedDay}`;
-
-  // Determine an active/highlighted session for Day 1
-  const activeSessionId = null;
 
   return (
     <div className="space-y-10">
@@ -66,7 +103,9 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
               </span>
             </div>
             <p className="text-xs sm:text-sm text-champagne/90">
-              All four days are scheduled at GIKI Campus. Delegates must carry valid NFC tags or reference passes at every chamber gate.
+              {liveSessionIds.size > 0
+                ? `Happening now: ${initialSchedule.filter((s) => liveSessionIds.has(s.id)).map((s) => s.title).join(' · ')}`
+                : 'All sessions take place on the GIKI campus. Keep your registration confirmation and QR ticket with you.'}
             </p>
           </div>
         </div>
@@ -108,10 +147,8 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                 )}
               >
                 {isSelected && (
-                  <motion.div
-                    layoutId="activeScheduleDay"
+                  <div
                     className="absolute inset-0 bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo rounded-xl shadow-md"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
                 <span
@@ -145,19 +182,11 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
 
       {/* 3. SESSIONS TIMELINE */}
       <div className="space-y-4">
-        <h2 className="sr-only">Itinerary Timeline &amp; Session Schedules</h2>
+        <h2 className="sr-only">Day-by-day schedule</h2>
         {filteredSessions.map((session, idx) => {
-          const isFeaturedLive = session.id === activeSessionId;
+          const isFeaturedLive = liveSessionIds.has(session.id);
           const isGimun = session.track === "gimun";
           const isMoot = session.track === "moot-cup";
-
-          // Deduce dress code tag from notes
-          let dressCode = "Business Formal";
-          if (session.notes.toLowerCase().includes("traditional") || session.notes.toLowerCase().includes("diplomatic")) {
-            dressCode = "Diplomatic / Traditional";
-          } else if (session.notes.toLowerCase().includes("social") || session.notes.toLowerCase().includes("dinner")) {
-            dressCode = "Black Tie / Formal Evening";
-          }
 
           return (
             <ScrollReveal key={session.id} delay={idx * 0.04}>
@@ -194,7 +223,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                       {isFeaturedLive && (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-elevated/80 text-champagne border border-champagne-lo/50">
                           <span className="w-1.5 h-1.5 rounded-full bg-champagne animate-pulse" />
-                          Plenary Session
+                          Happening now
                         </span>
                       )}
                       {session.updatedFlag && (
@@ -215,11 +244,6 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                         {session.notes}
                       </p>
                     )}
-                    <div className="pt-1 flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-mono bg-crest text-champagne/90 border border-champagne/25">
-                        Dress Code: {dressCode}
-                      </span>
-                    </div>
                   </div>
 
                   {/* Right: Location & Venue */}

@@ -30,23 +30,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDate(dateString: string): string {
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString;
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(date);
-  } catch {
-    return dateString;
-  }
-}
-
-export function formatTime(timeString: string): string {
-  return timeString;
-}
 
 export function formatDateRange(startStr?: string, endStr?: string): string {
   if (!startStr) return 'Event dates pending';

@@ -4,7 +4,6 @@ import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React, { useState } from "react";
 import { TrackBadge } from "@/components/ui/TrackBadge";
-import { Button } from "@/components/ui/Button";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { FilterBar } from "@/components/ui/FilterBar";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -13,6 +12,7 @@ import { Download, Sparkles } from "lucide-react";
 import type { Document } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { getEventYear } from "@/lib/site-config";
+import { HelpCallout } from '@/components/ui/HelpCallout';
 
 interface ResourcesClientProps {
   initialDocuments: Document[];
@@ -66,7 +66,7 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-champagne" />
           <h2 className="text-xs font-mono uppercase font-bold tracking-wider text-champagne/80">
-            Essential Starter Guides
+            Start here
           </h2>
         </div>
 
@@ -270,25 +270,10 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
         )}
       </div>
 
-      {/* 4. ASSISTANCE CALLOUT */}
-      <section className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div className="space-y-1">
-          <h3 className="font-heading font-bold text-lg text-cream">
-            Looking for a Specialized Document or Country Dossier?
-          </h3>
-          <p className="text-xs sm:text-sm text-champagne/80">
-            Contact the Secretariat or the GMC Directorate directly for institutional invoice vouchers or custom research packs.
-          </p>
-        </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <Button variant="secondary" size="sm" href="/contact">
-            Contact Directorate
-          </Button>
-          <Button variant="primary" size="sm" href="/about/faq">
-            Browse FAQ
-          </Button>
-        </div>
-      </section>
+      <HelpCallout
+        question="Looking for a document that isn't here?"
+        actions={[{ label: 'Read the FAQ', href: '/about/faq' }]}
+      />
     </div>
   );
 }

@@ -3,21 +3,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import type { SiteConfig } from '@/lib/types';
-import { eventPhase } from '@/lib/phase';
+import { canRegister, eventPhase } from '@/lib/phase';
 import { navigationTree } from '@/lib/navigation';
-import { useSiteConfig } from '@/components/SiteConfigProvider';
+import { useRenderedAt, useSiteConfig } from '@/components/SiteConfigProvider';
 import { MobileMenu } from './MobileMenu';
 
-interface NavbarProps {
-  siteConfig?: SiteConfig;
-}
-
-export function Navbar({ siteConfig }: NavbarProps = {}) {
+export function Navbar() {
   const site = useSiteConfig();
-  const registrationOpen=eventPhase(site)==='registration-open';
+  const renderedAt = useRenderedAt();
+  const registrationOpen = eventPhase(site, renderedAt) === 'registration-open';
+  const gimunOpen = canRegister(site, 'gimun', renderedAt);
+  const mootOpen = canRegister(site, 'mootCup', renderedAt);
   const NAV_ITEMS = navigationTree(site.navigation, 'header');
   const pathname = usePathname();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -74,14 +71,14 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
           {/* Logo / Brand Name */}
           <Link
             href="/"
-            className="flex items-center gap-2 text-white font-heading font-bold text-base tracking-tight shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne rounded-lg"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg pr-2 text-base font-bold tracking-tight text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
           >
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded-full bg-crimson" title="GIMUN Track" />
               <span className="w-2.5 h-2.5 rounded-full bg-champagne" title="GMC Track" />
             </span>
             <span className="hidden sm:inline font-bold">
-              {siteConfig?.eventNames?.combined || 'GIMUN & GMC'}
+              {site.eventNames?.combined || 'GIMUN & GMC'}
             </span>
             <span className="sm:hidden font-bold">GIMUN & GMC</span>
           </Link>
@@ -90,13 +87,9 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
           <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-1 lg:gap-2">
             {NAV_ITEMS.map((item) => {
               const isActive =
-                item.label === 'Info'
-                  ? pathname.startsWith('/about') || pathname.startsWith('/announcements') || pathname.startsWith('/contact')
-                  : item.href === '/'
-                    ? pathname === '/'
-                    : pathname.startsWith(item.href);
+                item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
 
-              const hasDropdown = Boolean(item.dropdown);
+              const hasDropdown = item.dropdown.length > 0;
 
               return (
                 <div
@@ -111,48 +104,52 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                     }
                   }}
                 >
-                  <Link
-                    aria-expanded={hasDropdown ? activeDropdown === item.label : undefined}
-                    aria-current={isActive ? 'page' : undefined}
-                    href={item.href}
-                    className={`relative px-3 py-1.5 rounded-xl text-xs font-medium tracking-wide transition-colors flex items-center gap-1 ${
-                      isActive
-                        ? 'text-champagne font-semibold'
-                        : 'text-white/80 hover:text-champagne hover:bg-white/10'
-                    }`}
-                  >
-                    {/* Shared layout id: the pill slides between sections on
-                        navigation rather than cutting, which makes the change
-                        of place legible on a 23-route site. */}
-                    {isActive && (
-                      <motion.span
-                        layoutId="nav-active-pill"
-                        aria-hidden="true"
-                        className="absolute inset-0 -z-10 rounded-xl bg-white/15 shadow-sm"
-                        transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                      />
-                    )}
-                    <span>{item.label}</span>
+                  <div className="flex items-center">
+                    <Link
+                      aria-current={isActive ? 'page' : undefined}
+                      href={item.href}
+                      className={`relative px-3 py-1.5 rounded-xl text-xs font-medium tracking-wide transition-colors flex items-center gap-1 ${
+                        isActive
+                          ? 'text-champagne font-semibold'
+                          : 'text-white/80 hover:text-champagne hover:bg-white/10'
+                      } ${hasDropdown ? 'pr-1' : ''}`}
+                    >
+                      {isActive && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-0 -z-10 rounded-xl bg-white/15"
+                        />
+                      )}
+                      <span>{item.label}</span>
+                    </Link>
+                    {/* Separate toggle so touch tablets (no hover) can open the
+                        menu without navigating away, and so aria-expanded sits
+                        on a button rather than a link. */}
                     {hasDropdown && (
-                      <ChevronDown
-                        className={`w-3 h-3 transition-transform duration-200 ${
-                          activeDropdown === item.label ? 'rotate-180' : ''
-                        }`}
-                      />
+                      <button
+                        type="button"
+                        aria-expanded={activeDropdown === item.label}
+                        aria-label={`${item.label} pages`}
+                        onClick={() =>
+                          setActiveDropdown(activeDropdown === item.label ? null : item.label)
+                        }
+                        className="inline-flex h-8 w-6 items-center justify-center rounded-lg text-white/70 transition-colors hover:text-champagne"
+                      >
+                        <ChevronDown
+                          aria-hidden="true"
+                          className={`w-3 h-3 transition-transform duration-200 ${
+                            activeDropdown === item.label ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
                     )}
-                  </Link>
+                  </div>
 
                   {/* Dropdown Menu with Spring Scale-in */}
                   {hasDropdown && (
-                    <AnimatePresence>
+                    <>
                       {activeDropdown === item.label && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.96, y: 6 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.96, y: 6 }}
-                          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                          className="absolute left-0 mt-2 w-64 bg-raised/95 backdrop-blur-2xl border border-champagne/25 rounded-xl shadow-2xl p-2 z-50 overflow-hidden"
-                        >
+                        <div className="pop-in absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-line-2 bg-raised/95 p-2 backdrop-blur-xl">
                           <div className="space-y-1">
                             {item.dropdown?.map((sub) => (
                               <Link
@@ -161,19 +158,13 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                                 onClick={() => setActiveDropdown(null)}
                                 className="group block px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
                               >
-                                <div className="flex items-center justify-between text-xs font-semibold text-white group-hover:text-champagne transition-colors">
-                                  <span>{sub.label}</span>
-                                  {sub.trackBadge && (
-                                    <span
-                                      className={`text-[9px] font-mono px-1.5 py-0.5 rounded uppercase font-bold ${
-                                        sub.trackBadge === 'GIMUN'
-                                          ? 'bg-crimson/20 text-crimson-soft border border-crimson/40'
-                                          : 'bg-champagne/20 text-champagne border border-champagne/40'
-                                      }`}
-                                    >
-                                      {sub.trackBadge}
-                                    </span>
-                                  )}
+                                {/* No per-item track badge: the dropdown is
+                                    already scoped to one track, so repeating
+                                    it on every row said nothing. The old
+                                    implementation never rendered anyway —
+                                    the value was hard-coded to undefined. */}
+                                <div className="text-xs font-semibold text-white transition-colors group-hover:text-champagne">
+                                  {sub.label}
                                 </div>
                                 {sub.description && (
                                   <p className="text-[11px] text-white/60 leading-tight mt-0.5">
@@ -183,9 +174,9 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                               </Link>
                             ))}
                           </div>
-                        </motion.div>
+                        </div>
                       )}
-                    </AnimatePresence>
+                    </>
                   )}
                 </div>
               );
@@ -193,7 +184,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
           </nav>
 
           {/* Right Action: Register Split-Dropdown + Mobile Toggle */}
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             {/* Desktop: split-dropdown register button */}
             <div
               className="relative hidden md:block"
@@ -213,15 +204,9 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                 />
               </button>
 
-              <AnimatePresence>
+              <>
                 {registerOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.96, y: 6 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.96, y: 6 }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                    className="absolute right-0 mt-2 w-52 bg-raised/95 backdrop-blur-2xl border border-champagne/25 rounded-xl shadow-2xl p-2 z-50"
-                  >
+                  <div className="pop-in absolute right-0 z-50 mt-2 w-52 rounded-xl border border-line-2 bg-raised/95 p-2 backdrop-blur-xl">
                     <p className="text-[10px] font-mono text-champagne/60 uppercase tracking-wider px-3 pt-1 pb-2">
                       Choose your track
                     </p>
@@ -233,7 +218,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                       <span className="w-2.5 h-2.5 rounded-full bg-crimson shrink-0" />
                       <div>
                         <div className="text-xs font-bold text-white group-hover:text-crimson-soft transition-colors">GIMUN (Model UN)</div>
-                        <div className="text-[10px] text-white/50">{site.registrationStatus.gimunOpen&&registrationOpen?'Diplomacy & debate':'Registration closed'}</div>
+                        <div className="text-[10px] text-white/50">{gimunOpen ? 'Diplomacy & debate' : 'Registration closed'}</div>
                       </div>
                     </Link>
                     <Link
@@ -244,20 +229,22 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
                       <span className="w-2.5 h-2.5 rounded-full bg-champagne shrink-0" />
                       <div>
                         <div className="text-xs font-bold text-white group-hover:text-champagne transition-colors">GMC (Moot Court)</div>
-                        <div className="text-[10px] text-white/50">{site.registrationStatus.mootCupOpen&&registrationOpen?'Legal advocacy':'Registration closed'}</div>
+                        <div className="text-[10px] text-white/50">{mootOpen ? 'Legal advocacy' : 'Registration closed'}</div>
                       </div>
                     </Link>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              </>
             </div>
 
-            {/* Mobile: plain register link */}
+            {/* Mobile: short register link. The long "Registration status"
+                label overflowed the 375px row and squeezed the menu button out
+                of its own hit area, which made the menu untappable. */}
             <Link
               href="/register"
-              className="btn-shimmer-gold md:hidden px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all"
+              className="btn-shimmer-gold md:hidden inline-flex min-h-11 shrink items-center whitespace-nowrap rounded-full px-4 text-xs font-bold uppercase tracking-wider"
             >
-              {registrationOpen?'Register':'Registration status'}
+              {registrationOpen ? 'Register' : 'Status'}
             </Link>
 
             {/* Hamburger Button that morphs to X */}
@@ -265,7 +252,7 @@ export function Navbar({ siteConfig }: NavbarProps = {}) {
               ref={mobileToggleRef}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
-              className="md:hidden p-2 rounded-xl text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
+              className="md:hidden inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
               aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileMenuOpen}
             >

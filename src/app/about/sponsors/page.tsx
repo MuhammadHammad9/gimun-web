@@ -1,7 +1,7 @@
 import { getSiteConfig } from '@/lib/content';
 import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
-import { getSponsors } from "@/lib/content";
+import { getDocuments, getSponsors } from "@/lib/content";
 import { SponsorsClient } from "./SponsorsClient";
 import { Briefcase, Download } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -17,6 +17,8 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 
 export default async function SponsorsPage() {
   const sponsors = (await getSponsors());
+  const deck = (await getDocuments()).find((doc) => doc.type === 'sponsorship-deck');
+  const deckUrl = deck?.fileUrl ?? '/resources';
 
   return (
     <div className="space-y-12">
@@ -40,13 +42,13 @@ export default async function SponsorsPage() {
         actionsSlot={
           <>
             <p className="text-sm sm:text-base text-text-2 max-w-3xl leading-relaxed">
-                        Proudly supported by visionary academic councils, public sector technology boards, leading law firms, and media publications. Explore sponsorship tier benefits, recruitment touchpoints, and our active institutional partners.
+                        Partner with a student conference that brings delegates and law students from across Pakistan to GIKI. The sponsorship deck sets out the tiers and what each includes.
                       </p>
 
                       <div className="pt-2 flex flex-wrap items-center gap-4">
                         <Button
                           variant="track-gimun"
-                          href="/resources"
+                          href={deckUrl}
                           icon={<Download className="w-4 h-4" />}
                         >
                           Download Sponsorship Deck (PDF)
@@ -61,7 +63,7 @@ export default async function SponsorsPage() {
 
       {/* Main Interactive Body */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <SponsorsClient initialSponsors={sponsors} />
+        <SponsorsClient initialSponsors={sponsors} deckUrl={deckUrl} />
       </div>
     </div>
   );

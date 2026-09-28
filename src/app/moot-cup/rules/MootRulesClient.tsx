@@ -2,7 +2,6 @@
 
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Scale,
   Download,
@@ -55,7 +54,7 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
                 Rule 1.1 Mandate
               </span>
               <h2 className="font-heading font-extrabold text-base sm:text-lg text-cream">
-                Absolute Memorial &amp; Courtroom Anonymity Gate
+                Keep your memorial anonymous
               </h2>
             </div>
             <p className="text-xs sm:text-sm leading-relaxed text-champagne-hi/90">
@@ -73,7 +72,7 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
               Drafting Rigor
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream mt-0.5">
-              Written Memorial Specifications
+              Memorial format
             </h2>
           </div>
           <span className="text-xs font-mono text-champagne/70">
@@ -132,7 +131,7 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
                   Interactive Sandbox
                 </span>
                 <h3 className="text-lg sm:text-xl font-heading font-bold text-cream">
-                  Memorial Compliance &amp; Deduction Calculator
+                  Check your word count
                 </h3>
               </div>
               <span className="text-xs font-mono text-champagne/70">
@@ -196,7 +195,7 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
               Courtroom Advocacy
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream mt-0.5">
-              Oral Rounds Procedure &amp; Time Allocation
+              How oral rounds run
             </h2>
           </div>
           <span className="text-xs font-mono text-champagne/70">
@@ -249,10 +248,10 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
         <div className="p-5 sm:p-6 rounded-2xl bg-overlay/90 text-champagne border border-champagne/25 shadow-xl space-y-3">
           <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-champagne">
             <Sparkles className="w-4 h-4" />
-            <span>Bench Interventions &amp; Courtroom Decorum</span>
+            <span>Handling questions from the bench</span>
           </div>
           <p className="text-xs sm:text-sm text-champagne/90 leading-relaxed">
-            Judges are permitted to interrupt counsel at any juncture to test legal reasoning. The speaking clock DOES NOT pause during judicial questions. Address the bench as <em>&ldquo;Your Honour&rdquo;</em> or <em>&ldquo;May it please the Court&rdquo;</em>. When concluding answers, transition seamlessly back to your roadmap: <em>&ldquo;If that satisfies the Court, I shall now turn to my second submission…&rdquo;</em>
+            Judges are permitted to interrupt counsel at any juncture to test legal reasoning. The speaking clock DOES NOT pause during judicial questions. Address the bench as <em>&ldquo;Your Honour&rdquo;</em> or <em>&ldquo;May it please the Court&rdquo;</em>. When concluding answers,seamlessly back to your roadmap: <em>&ldquo;If that satisfies the Court, I shall now turn to my second submission…&rdquo;</em>
           </p>
         </div>
       </section>
@@ -265,7 +264,7 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
               Adjudication Standards
             </span>
             <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream mt-0.5">
-              Composite Scoring Matrix (100 Points)
+              How you are scored, out of 100
             </h2>
           </div>
 
@@ -297,14 +296,10 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
         </div>
 
         {/* Rubric Cards */}
-        <AnimatePresence mode="wait">
+        <>
           {scoringTab === "memorial" ? (
-            <motion.div
+            <div
               key="memorial"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             >
               <div className="p-5 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl space-y-2">
@@ -313,7 +308,7 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
                   <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-champagne/20 border border-champagne/30 text-cream">12 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-cream">
-                  Knowledge of Law &amp; Precedent
+                  Knowledge of the law
                 </h3>
                 <p className="text-xs text-champagne/80 leading-relaxed">
                   Rigorous synthesis of ICJ case law, treaty interpretations, and customary international doctrines.
@@ -326,7 +321,7 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
                   <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-champagne/20 border border-champagne/30 text-cream">10 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-cream">
-                  Logical Structure &amp; Persuasiveness
+                  Structure and persuasiveness
                 </h3>
                 <p className="text-xs text-champagne/80 leading-relaxed">
                   Cohesive roadmap, sound syllogistic deductions, and effective application of facts to law.
@@ -339,7 +334,7 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
                   <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-champagne/20 border border-champagne/30 text-cream">10 Pts</span>
                 </div>
                 <h3 className="font-heading font-bold text-base text-cream">
-                  Depth of Research &amp; Authority
+                  Research and sources
                 </h3>
                 <p className="text-xs text-champagne/80 leading-relaxed">
                   Broad spectrum of primary sources, state practice, scholar treaties, and arbitral awards.
@@ -358,14 +353,10 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
                   Immaculate footnote formatting, flawless cross-referencing, grammar, and typography discipline.
                 </p>
               </div>
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
+            <div
               key="oral"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             >
               <div className="p-5 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl space-y-2">
@@ -419,9 +410,9 @@ export function MootRulesClient({ rulesDocumentUrl }: MootRulesClientProps) {
                   Strict adherence to time limits, elegant prayer delivery, and targeted counter-advocacy.
                 </p>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </>
       </section>
 
       {/* 5. BOTTOM ACTION CALLOUT */}

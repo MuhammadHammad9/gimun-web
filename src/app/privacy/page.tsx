@@ -4,6 +4,7 @@ import { PageHero } from '@/components/ui/PageHero';
 import type { Metadata } from 'next';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
+import { AnalyticsChoiceButton } from './AnalyticsChoiceButton';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Privacy & Data Handling | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
@@ -26,9 +27,11 @@ export default async function PrivacyPage() {
         accentWords={['Data', 'Handling']}
         description="Registration, contact, and clarification information is collected only to review applications, coordinate event logistics, answer inquiries, and communicate official updates."
         actionsSlot={
-          <p className="inline-flex rounded-full border border-line-2 bg-crest px-3.5 py-1 text-xs font-semibold text-champagne">
-            Draft notice — institutional retention and legal-contact terms are pending approval.
-          </p>
+          site.privacyNotice ? undefined : (
+            <p className="inline-flex rounded-full border border-line-2 bg-crest px-3.5 py-1 text-xs font-semibold text-champagne">
+              Draft notice — institutional retention and legal-contact terms are pending approval.
+            </p>
+          )
         }
       />
 
@@ -49,6 +52,24 @@ export default async function PrivacyPage() {
             The Organizing Committee uses this information for application review, allocation, venue and
             accommodation planning, official notices, and responses to inquiries. We do not publish rosters
             or sell participant information. Published award results and certificate verification links can show participant names; clarification answers may be published after editorial review.
+          </p>
+        </section>
+        <section className="space-y-3">
+          <h2 className="font-heading text-2xl font-bold text-cream">Services that process your data</h2>
+          <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-champagne/85">
+            <li><strong className="text-cream">Supabase</strong> stores registrations, messages and admin records.</li>
+            <li><strong className="text-cream">Resend</strong> delivers receipts, invoices, certificates and replies by email.</li>
+            <li><strong className="text-cream">Upstash</strong> counts requests to stop form abuse. It stores a one-way hash of your IP address, not the address itself, for a few minutes.</li>
+            <li><strong className="text-cream">Vercel</strong> hosts the website and keeps short-lived server logs.</li>
+          </ul>
+        </section>
+        <section id="analytics" className="scroll-mt-28 space-y-3">
+          <h2 className="font-heading text-2xl font-bold text-cream">Analytics and browser storage</h2>
+          <p className="text-sm leading-relaxed text-champagne/85">
+            Google Analytics runs only if you choose Allow in the analytics prompt; it then sets cookies to count
+            visits, with IP anonymisation. Without your consent no analytics script is loaded. The site also keeps
+            two small preferences in your browser: whether you dismissed the announcement bar, and your analytics
+            choice. <AnalyticsChoiceButton />.
           </p>
         </section>
         <section className="space-y-3">

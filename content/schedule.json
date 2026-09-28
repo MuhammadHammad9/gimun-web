@@ -7,7 +7,7 @@
     "endTime": "11:00",
     "title": "Registration Check-in & Delegate Kit Distribution",
     "track": "shared",
-    "location": "Agha Hasan Abedi (AHA) Auditorium Foyer",
+    "location": "AHA Auditorium foyer",
     "notes": "Bring your institutional ID card and confirmation email",
     "updatedFlag": false
   },
@@ -19,8 +19,20 @@
     "endTime": "13:00",
     "title": "Joint Opening Ceremony & Keynote Address",
     "track": "shared",
-    "location": "Main Auditorium (AHA)",
+    "location": "AHA Auditorium",
     "notes": "Formal Western / Traditional diplomatic attire",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-14",
+    "day": 1,
+    "dayLabel": "Day 1 — Thursday, March 18",
+    "startTime": "13:00",
+    "endTime": "14:30",
+    "title": "Lunch",
+    "track": "shared",
+    "location": "GIKI central dining hall",
+    "notes": "",
     "updatedFlag": false
   },
   {
@@ -31,7 +43,7 @@
     "endTime": "17:30",
     "title": "GIMUN Committee Session I",
     "track": "gimun",
-    "location": "Academic Block Rooms 201-208",
+    "location": "Academic Block, Rooms 201–208",
     "notes": "Setting the agenda and opening statements",
     "updatedFlag": false
   },
@@ -43,8 +55,20 @@
     "endTime": "17:30",
     "title": "GMC Preliminary Round I",
     "track": "moot-cup",
-    "location": "Moot Courtrooms A & B (Faculty of Law Wing)",
+    "location": "Academic Block moot courtrooms",
     "notes": "Oral submissions for Applicant and Respondent",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-15",
+    "day": 1,
+    "dayLabel": "Day 1 — Thursday, March 18",
+    "startTime": "20:00",
+    "endTime": "22:00",
+    "title": "Delegates' social evening",
+    "track": "shared",
+    "location": "GIKI central lawn",
+    "notes": "Smart casual.",
     "updatedFlag": false
   },
   {
@@ -55,7 +79,7 @@
     "endTime": "13:00",
     "title": "GIMUN Committee Session II (Working Paper Drafting)",
     "track": "gimun",
-    "location": "Academic Block Rooms 201-208",
+    "location": "Academic Block, Rooms 201–208",
     "notes": "Informal caucuses and multilateral bloc negotiations",
     "updatedFlag": false
   },
@@ -67,9 +91,57 @@
     "endTime": "13:00",
     "title": "GMC Preliminary Round II & Quarter-Finals",
     "track": "moot-cup",
-    "location": "Moot Courtrooms A, B, C",
+    "location": "Academic Block moot courtrooms",
     "notes": "Bench questions and rebuttal rounds",
     "updatedFlag": true
+  },
+  {
+    "id": "sch-16",
+    "day": 2,
+    "dayLabel": "Day 2 — Friday, March 19",
+    "startTime": "13:00",
+    "endTime": "14:00",
+    "title": "Lunch",
+    "track": "shared",
+    "location": "GIKI central dining hall",
+    "notes": "",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-17",
+    "day": 2,
+    "dayLabel": "Day 2 — Friday, March 19",
+    "startTime": "14:00",
+    "endTime": "17:30",
+    "title": "GIMUN Committee Session III (Crisis & Moderated Caucus)",
+    "track": "gimun",
+    "location": "Academic Block, Rooms 201–208",
+    "notes": "",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-18",
+    "day": 2,
+    "dayLabel": "Day 2 — Friday, March 19",
+    "startTime": "14:30",
+    "endTime": "17:30",
+    "title": "GMC Semi-Finals",
+    "track": "moot-cup",
+    "location": "Academic Block moot courtrooms",
+    "notes": "",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-19",
+    "day": 2,
+    "dayLabel": "Day 2 — Friday, March 19",
+    "startTime": "20:00",
+    "endTime": "22:00",
+    "title": "Cultural night",
+    "track": "shared",
+    "location": "AHA Auditorium",
+    "notes": "Smart casual.",
+    "updatedFlag": false
   },
   {
     "id": "sch-7",
@@ -77,10 +149,22 @@
     "dayLabel": "Day 3 — Saturday, March 20",
     "startTime": "10:00",
     "endTime": "13:00",
-    "title": "GIMUN Committee Session III (Draft Resolution Voting)",
+    "title": "GIMUN Committee Session IV (Draft Resolution Voting)",
     "track": "gimun",
-    "location": "Academic Block Rooms 201-208",
+    "location": "Academic Block, Rooms 201–208",
     "notes": "Formal voting procedures under RoP",
+    "updatedFlag": false
+  },
+  {
+    "id": "sch-20",
+    "day": 3,
+    "dayLabel": "Day 3 — Saturday, March 20",
+    "startTime": "13:00",
+    "endTime": "14:00",
+    "title": "Lunch",
+    "track": "shared",
+    "location": "GIKI central dining hall",
+    "notes": "",
     "updatedFlag": false
   },
   {
@@ -91,7 +175,7 @@
     "endTime": "16:30",
     "title": "GMC Grand Final Before Full Bench",
     "track": "moot-cup",
-    "location": "AHA Main Stage",
+    "location": "AHA Auditorium",
     "notes": "Open to all delegates and faculty advisors",
     "updatedFlag": false
   },
@@ -103,7 +187,7 @@
     "endTime": "19:30",
     "title": "Grand Closing Ceremony & Awards Gala",
     "track": "shared",
-    "location": "AHA Main Auditorium",
+    "location": "AHA Auditorium",
     "notes": "Announcement of Best Delegate, Best Team & Trophies",
     "updatedFlag": false
   },
@@ -115,7 +199,7 @@
     "endTime": "11:00",
     "title": "Executive Secretariat & Bench Debrief",
     "track": "shared",
-    "location": "AHA Executive Council Chamber",
+    "location": "AHA Auditorium council room",
     "notes": "Post-conference debrief with Faculty Advisors, Head Delegates, and Secretariat",
     "updatedFlag": false
   },
@@ -127,7 +211,7 @@
     "endTime": "13:30",
     "title": "Official Certificate Distribution & Delegation Check-out Desk",
     "track": "shared",
-    "location": "Agha Hasan Abedi (AHA) Auditorium Foyer",
+    "location": "AHA Auditorium foyer",
     "notes": "Collection of verified participation certificates, awards dossiers, and hostel checkout",
     "updatedFlag": false
   },
@@ -137,10 +221,10 @@
     "dayLabel": "Day 4 — Sunday, March 21",
     "startTime": "14:00",
     "endTime": "17:00",
-    "title": "Optional GIKI Campus & Tarbela Dam Scenic Excursion",
+    "title": "Optional campus and Tarbela Dam excursion",
     "track": "shared",
-    "location": "GIKI Main Gate / Transport Bay",
-    "notes": "Guided tour of campus facilities and Tarbela reservoir viewpoint for visiting delegations",
+    "location": "GIKI main gate",
+    "notes": "Optional; places are limited and confirmed on Day 3.",
     "updatedFlag": false
   },
   {
@@ -149,9 +233,9 @@
     "dayLabel": "Day 4 — Sunday, March 21",
     "startTime": "17:30",
     "endTime": "18:30",
-    "title": "Official Press Release & Delegation Farewell Dispatch",
+    "title": "Results and press release published online",
     "track": "shared",
-    "location": "Central Media Cell / Online Portal",
+    "location": "Online",
     "notes": "Final media communique and official closing of the symposium registry",
     "updatedFlag": false
   }

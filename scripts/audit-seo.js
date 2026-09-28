@@ -22,11 +22,8 @@ const srcDir = path.join(rootDir, 'src');
 const appDir = path.join(srcDir, 'app');
 const contentDir = path.join(rootDir, 'content');
 const nextAppBuildDir = path.join(rootDir, '.next', 'server', 'app');
-const localEnvPath = path.join(rootDir, '.env.local');
-const localSiteUrl = fs.existsSync(localEnvPath)
-  ? (fs.readFileSync(localEnvPath, 'utf8').match(/^SITE_URL=(.*)$/m)?.[1] || '').trim()
-  : '';
-const siteUrl = (process.env.SITE_URL || localSiteUrl || 'https://gimungiki.org').replace(/\/$/, '');
+require('@next/env').loadEnvConfig(rootDir, false);
+const siteUrl = new URL(process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://gimungiki.org').origin;
 
 let canonicalEventYear = 'unknown';
 try {
@@ -323,7 +320,8 @@ if (fs.existsSync(sitemapBodyFile)) {
   for (const match of urlMatches) {
     const block = match[1];
     if (!block.includes('<loc>')) sitemapIssues.push('Sitemap <url> block missing <loc>');
-    if (!block.includes('<lastmod>')) sitemapIssues.push('Sitemap <url> block missing <lastmod>');
+    const lastmod=block.match(/<lastmod>(.*?)<\/lastmod>/)?.[1];
+    if(lastmod && !Number.isFinite(Date.parse(lastmod)))sitemapIssues.push('Invalid optional lastmod timestamp');
     if (!block.includes('<changefreq>')) sitemapIssues.push('Sitemap <url> block missing <changefreq>');
     if (!block.includes('<priority>')) sitemapIssues.push('Sitemap <url> block missing <priority>');
   }
@@ -337,7 +335,7 @@ if (fs.existsSync(sitemapBodyFile)) {
   }
 
   if (sitemapValid && sitemapIssues.length === 0) {
-    console.log(`  [PASS] sitemap.xml format valid: ${locMatches.length} URLs indexed with <loc>, <lastmod>, <changefreq>, and <priority>.`);
+    console.log(`  [PASS] sitemap.xml format valid: ${locMatches.length} URLs indexed with <loc>, <changefreq>, and <priority>; lastmod is optional.`);
   } else {
     console.error(`  [FAIL] sitemap.xml validation issues:`, sitemapIssues);
   }

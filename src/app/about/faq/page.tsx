@@ -55,6 +55,22 @@ export default async function FaqPage() {
         }
       />
 
+      <script
+        type="application/ld+json"
+        // Plain text answers from the CMS; escape "<" so no value can close the tag.
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.question,
+              acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+            })),
+          }).replace(/</g, '\\u003c'),
+        }}
+      />
+
       {/* Main Interactive Body */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <FaqClient initialFaqs={faqs} />

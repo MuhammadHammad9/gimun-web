@@ -1,8 +1,8 @@
 'use client';
+import { ComingSoon } from '@/components/ui/ComingSoon';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   ChevronLeft,
@@ -109,6 +109,16 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
 
   const activeItem = activeLightboxIndex !== null ? filteredItems[activeLightboxIndex] : null;
 
+  if (initialItems.length === 0) {
+    return (
+      <ComingSoon
+        title="Photos will appear after the conference"
+        description="The gallery is published with approved photographs from GIMUN and GMC 2027. Follow the announcements for press coverage and highlights."
+        links={[{ label: 'Announcements', href: '/announcements' }]}
+      />
+    );
+  }
+
   return (
     <div className="space-y-10">
       {/* Category Filter Navigation */}
@@ -132,20 +142,14 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
       </div>
 
       {/* Asymmetric Bento Media Grid */}
-      <h2 className="sr-only">Visual Archive Albums and Curated Sessions</h2>
+      <h2 className="sr-only">Photo albums</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.map((item, index) => {
           const isWide = item.aspectRatio === 'wide';
 
           return (
-            <motion.div
-              key={item.id}
-              layout
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.3 }}
-              className={`group relative overflow-hidden rounded-2xl border border-champagne/25 bg-overlay/90 shadow-xl hover:border-champagne/45 transition-all duration-300 cursor-pointer ${
+            <div
+              key={item.id}className={`group relative overflow-hidden rounded-2xl border border-champagne/25 bg-overlay/90 shadow-xl hover:border-champagne/45 transition-all duration-300 cursor-pointer ${
                 isWide ? 'sm:col-span-2' : 'col-span-1'
               }`}
               role="button"
@@ -222,28 +226,21 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   </span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           );
         })}
       </div>
 
       {/* Lightbox Modal */}
-      <AnimatePresence>
+      <>
         {activeItem && activeLightboxIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/90 backdrop-blur-md"
             role="presentation"
             onClick={closeLightbox}
           >
             {/* Modal Container */}
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+            <div
               onClick={(e) => e.stopPropagation()}
               ref={dialogRef}
               role="dialog"
@@ -362,10 +359,10 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

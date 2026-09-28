@@ -15,6 +15,7 @@ import { validateMootCupTeam, type ValidationErrors } from '@/lib/validation';
 import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
 import { NonPaymentNotice } from './NonPaymentNotice';
+import { FormErrorSummary, focusFirstError } from './FormErrorSummary';
 import { PrivacyStatement } from './PrivacyStatement';
 import { getEventYear } from '@/lib/site-config';
 
@@ -138,11 +139,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
 
     if (Object.keys(validationResult).length > 0) {
       setErrors(validationResult);
-      const firstErrorKey = Object.keys(validationResult)[0];
-      const el = document.getElementById(`field-${firstErrorKey}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      focusFirstError(validationResult);
       return;
     }
 
@@ -156,6 +153,8 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         formData,
         _hp: honeypot,
         _ts: formLoadedAt.current,
+        // Fill time on the visitor's own clock; the server never compares clocks.
+        _elapsed: Date.now() - formLoadedAt.current,
         submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
       };
 
@@ -171,6 +170,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         setStatus('error');
         if (data.errors) {
           setErrors(data.errors);
+          focusFirstError(data.errors);
         } else {
           setServerError(data.message || 'An unexpected error occurred. Please try again.');
         }
@@ -207,17 +207,18 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
     }
   };
   return (
+    <div className="double-bezel mx-auto max-w-3xl">
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="card-glass-luxury max-w-3xl mx-auto p-6 md:p-10 rounded-2xl border border-champagne/30 shadow-2xl backdrop-blur-md space-y-8 text-champagne"
+      className="double-bezel-inner space-y-10 p-6 text-text-2 sm:p-10"
     >
       {/* Header */}
-      <div className="space-y-2 pb-3 border-b border-champagne/15">
+      <div className="space-y-2 pb-3 border-b border-line">
         <span className="text-[11px] font-mono uppercase tracking-wider text-champagne font-bold">
           GMC Track Registration
         </span>
-        <h2 className="text-xl md:text-2xl font-heading font-extrabold text-text">
+        <h2 className="text-2xl md:text-3xl font-display font-medium text-text">
           Law Team Registration Form
         </h2>
         <p className="text-xs text-champagne/80 leading-relaxed">
@@ -226,7 +227,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
       </div>
 
       {serverError && (
-        <div className="p-4 rounded-xl bg-brand-deep/80 border border-brand text-crimson-soft flex items-start gap-3">
+        <div role="alert" className="p-4 rounded-xl bg-brand-deep/80 border border-brand text-crimson-soft flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-crimson-hi shrink-0 mt-0.5" />
           <div className="text-xs space-y-1">
             <span className="font-bold block">Submission Error</span>
@@ -257,7 +258,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
               value={formData.teamName}
               onChange={(e) => handleChange('teamName', e.target.value)}
               placeholder="e.g. Quaid-e-Azam Law Society Team A"
-              className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+              className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
             />
           </FormField>
 
@@ -275,14 +276,14 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
               value={formData.institution}
               onChange={(e) => handleChange('institution', e.target.value)}
               placeholder="e.g. LUMS School of Law, Punjab University"
-              className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+              className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
             />
           </FormField>
         </div>
       </div>
 
       {/* Section 2: Team Members (2-4) */}
-      <div className="space-y-4 pt-3 border-t border-champagne/15">
+      <div className="space-y-4 pt-3 border-t border-line">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-0.5">
             <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-champagne flex items-center gap-2">
@@ -306,7 +307,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
               key={idx}
               className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-4 relative shadow-md"
             >
-              <div className="flex items-center justify-between gap-2 border-b border-champagne/15 pb-2">
+              <div className="flex items-center justify-between gap-2 border-b border-line pb-2">
                 <span className="text-xs font-mono font-bold uppercase text-text">
                   {idx === 0
                     ? 'Member #1 (Lead Oralist / Primary Contact)'
@@ -341,7 +342,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
                     value={member.fullName}
                     onChange={(e) => handleMemberChange(idx, 'fullName', e.target.value)}
                     placeholder="Advocate's full name"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
                   />
                 </FormField>
 
@@ -360,7 +361,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
                     value={member.email}
                     onChange={(e) => handleMemberChange(idx, 'email', e.target.value)}
                     placeholder="advocate@institution.edu.pk"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
                   />
                 </FormField>
               </div>
@@ -381,7 +382,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
                     value={member.phone}
                     onChange={(e) => handleMemberChange(idx, 'phone', e.target.value)}
                     placeholder="+92 3XX XXXXXXX"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
                   />
                 </FormField>
 
@@ -398,7 +399,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
                     onChange={(e) =>
                       handleMemberChange(idx, 'role', e.target.value as MootTeamMember['role'])
                     }
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-champagne/30 bg-canvas text-text text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
                   >
                     <option value="lead-oralist" className="bg-canvas text-champagne">Lead Oralist</option>
                     <option value="second-oralist" className="bg-canvas text-champagne">Second Oralist</option>
@@ -424,7 +425,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
       </div>
 
       {/* Section 3: Problem Category Preference */}
-      <div className="space-y-4 pt-3 border-t border-champagne/15">
+      <div className="space-y-4 pt-3 border-t border-line">
         <div className="space-y-1">
           <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-champagne flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-champagne" />
@@ -446,7 +447,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
             id="field-problemCategoryPreference"
             value={formData.problemCategoryPreference}
             onChange={(e) => handleChange('problemCategoryPreference', e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+            className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
           >
             <option value="" className="bg-canvas text-champagne">Select problem area...</option>
             {categories.map((cat) => (
@@ -459,7 +460,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
       </div>
 
       {/* Section 4: Prior Moot Experience */}
-      <div className="space-y-4 pt-3 border-t border-champagne/15">
+      <div className="space-y-4 pt-3 border-t border-line">
         <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-champagne flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-champagne" />
           <span>4. Prior Moot Court Experience</span>
@@ -511,7 +512,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
                 value={formData.experienceDetails}
                 onChange={(e) => handleChange('experienceDetails', e.target.value)}
                 placeholder="e.g. National Rounds Jessup 2025 (Quarter-finalist), LUMS Moot 2024 (Best Memorial)..."
-                className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
               />
             </FormField>
           )}
@@ -519,7 +520,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
       </div>
 
       {/* Section 5: Logistics & Referral */}
-      <div className="space-y-4 pt-3 border-t border-champagne/15">
+      <div className="space-y-4 pt-3 border-t border-line">
         <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-champagne flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-champagne" />
           <span>5. Logistics &amp; Referral</span>
@@ -538,7 +539,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
             value={formData.dietaryAccessibility}
             onChange={(e) => handleChange('dietaryAccessibility', e.target.value)}
             placeholder="State any dietary requirements (halal, celiac, vegetarian) or campus access needs..."
-            className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+            className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
           />
         </FormField>
 
@@ -558,7 +559,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
                 e.target.value as MootCupTeamData['referralSource']
               )
             }
-            className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+            className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
           >
             <option value="" className="bg-canvas text-champagne">Select referral channel...</option>
             <option value="social-media" className="bg-canvas text-champagne">Social Media (Instagram / Facebook / LinkedIn)</option>
@@ -578,7 +579,8 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
       <NonPaymentNotice track="moot-cup" />
 
       {/* Submit Action Block */}
-      <div className="space-y-4 pt-3 border-t border-champagne/15">
+      <div className="space-y-4 pt-3 border-t border-line">
+        <FormErrorSummary errors={errors} />
         <button
           type="submit"
           disabled={status === 'submitting'}
@@ -601,5 +603,6 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         <PrivacyStatement />
       </div>
     </form>
+    </div>
   );
 }

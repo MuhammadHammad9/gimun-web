@@ -15,7 +15,7 @@
     "id": "faq-3",
     "category": "general",
     "question": "Will participants receive official certificates?",
-    "answer": "Yes. Every registered delegate and advocate who attends all required committee sessions or pleading rounds will receive a verified Certificate of Participation bearing official seals from GIKI and our academic patrons. In addition, Best Delegate, Outstanding Diplomat, Best Memorial, and Championship winners receive formal distinction gavels and shields."
+    "answer": "Yes. Every participant who attends the required committee sessions or pleading rounds receives a Certificate of Participation with an online verification link. Award winners (Best Delegate, Outstanding Delegate and Best Delegation for GIMUN; Best Memorial, Best Oralist and Champions for GMC) also receive certificates of distinction."
   },
   {
     "id": "faq-4",
@@ -33,7 +33,7 @@
     "id": "faq-6",
     "category": "registration-fees",
     "question": "What is included in the delegate and team registration fees?",
-    "answer": "Delegate and delegation fees cover access to all formal committee/courtroom sessions, conference background dossiers or compromis materials, official delegate stationery kits, access to four days of catered dining (lunches, formal dinners, tea breaks), entry to evening social events, and secure hostel accommodation on campus."
+    "answer": "Registration covers all committee and courtroom sessions, background guides or the moot problem, a delegate kit, lunch and tea on conference days, and entry to the evening social events. On-campus accommodation is available on request and is confirmed, with any charge, when your application is accepted."
   },
   {
     "id": "faq-7",
@@ -69,7 +69,7 @@
     "id": "faq-12",
     "category": "moot-cup-specific",
     "question": "What is the team composition and oralist speaking order?",
-    "answer": "Each team comprises 2 to 4 students. Exactly two members must be designated as Lead Oralist and Second Oralist; additional members serve as Legal Researchers or Advocates of Counsel. In each match, the Lead Oralist presents first (e.g. 15 minutes) followed by the Second Oralist (e.g. 15 minutes), with up to 3 minutes reserved for rebuttal or sur-rebuttal."
+    "answer": "Each team has 2 to 4 members. Two are designated Lead Oralist and Second Oralist; any others serve as researchers. Each side has 30 minutes, normally 15 minutes per oralist (each must speak for 12 to 18 minutes), and may reserve up to 3 minutes for rebuttal or sur-rebuttal."
   },
   {
     "id": "faq-13",
@@ -81,18 +81,66 @@
     "id": "faq-14",
     "category": "logistics",
     "question": "Is on-campus accommodation provided for outstation participants?",
-    "answer": "Yes. GIKI offers secure on-campus student residential hostel accommodation for outstation delegations. Separate hostel wings are designated for male and female participants with 24/7 campus security oversight. Faculty advisors and VIP judges are accommodated in the GIKI Executive Guest House."
+    "answer": "Yes, on request and subject to availability. GIKI can house outstation participants in on-campus hostels with separate wings for male and female participants. Request accommodation in your application; the organizing team confirms places and any charge when your application is accepted."
   },
   {
     "id": "faq-15",
     "category": "logistics",
     "question": "How do outstation delegations reach the GIKI campus in Topi?",
-    "answer": "GIKI is located in Topi, Khyber Pakhtunkhwa, approximately 90 minutes from Islamabad via the M-1 Motorway (Swabi / Topi Interchange). Dedicated event shuttle coaches will operate from Islamabad International Airport (ISB) and major Rawalpindi/Islamabad bus terminals on the morning of Day 1 and following the Closing Ceremony."
+    "answer": "GIKI is in Topi, Khyber Pakhtunkhwa, about 90 minutes from Islamabad via the M-1 Motorway (Swabi interchange). Any group transport arranged by the organizers will be announced on the Announcements page and emailed to accepted participants."
   },
   {
     "id": "faq-16",
     "category": "logistics",
     "question": "What are the campus security and entry protocols?",
-    "answer": "GIKI maintains strict perimeter security. Confirmed participants must present original government-issued CNIC or B-Form alongside their official GIMUN / GMC Registration Reference Letter at the main security gate to receive their campus access passes. Delegations traveling via institutional buses must register vehicle registration numbers in advance."
+    "answer": "The campus has controlled entry. Bring a photo ID (CNIC, B-Form or student card) and your registration confirmation or QR ticket. Delegations arriving by institutional bus should send the vehicle number to the organizing team in advance."
+  },
+  {
+    "id": "faq-17",
+    "category": "registration-fees",
+    "question": "Can I get a refund if I cannot attend?",
+    "answer": "Tell the organizing team as soon as possible. Requests received before the registration deadline are reviewed case by case; after the deadline, fees are generally not refundable because places and catering are already committed."
+  },
+  {
+    "id": "faq-18",
+    "category": "registration-fees",
+    "question": "Can someone else take my place?",
+    "answer": "Yes, with notice. Email the organizing team with your reference number and the substitute's details before the registration deadline so the roster and certificates show the right name."
+  },
+  {
+    "id": "faq-19",
+    "category": "registration-fees",
+    "question": "How soon will I hear back after applying?",
+    "answer": "You receive an automatic receipt with your reference number straight away. We reply to messages within 3 working days, and application decisions follow the review timeline announced on the Announcements page."
+  },
+  {
+    "id": "faq-20",
+    "category": "logistics",
+    "question": "What is the dress code?",
+    "answer": "Business formal (Western or traditional) for all committee sessions, courtroom rounds and ceremonies. Smart casual is fine for evening socials unless an event says otherwise."
+  },
+  {
+    "id": "faq-21",
+    "category": "logistics",
+    "question": "What should I bring?",
+    "answer": "A photo ID, your QR ticket (on your phone or printed), a laptop or notebook, your position paper or memorial materials, formal clothing, and any medication you need."
+  },
+  {
+    "id": "faq-22",
+    "category": "logistics",
+    "question": "Can you provide an invitation letter for visa or institutional leave?",
+    "answer": "Yes. Accepted participants can request an official invitation letter from the organizing team; include your full name as on your passport or ID and your reference number."
+  },
+  {
+    "id": "faq-23",
+    "category": "logistics",
+    "question": "Can dietary or accessibility needs be accommodated?",
+    "answer": "Yes. Note them in the dietary and accessibility field of the registration form, or email the organizing team, and we will confirm the arrangements with you."
+  },
+  {
+    "id": "faq-24",
+    "category": "general",
+    "question": "Is there a code of conduct?",
+    "answer": "Yes. All participants are expected to act with respect and academic integrity, follow campus rules and the instructions of chairs, judges and organizers. Harassment, discrimination and plagiarism lead to disqualification and may lead to removal from the event."
   }
 ]

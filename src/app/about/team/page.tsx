@@ -26,7 +26,7 @@ export default async function TeamPage() {
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'Team' }]}
         title={'Executive Secretariat & Directorate'}
         accentWords={['Directorate']}
-        description={'Led by seasoned parliamentary debaters, appellate moot champions, and campus operations directors. Our student leadership is committed to delivering unmatched competitive rigor, impartial adjudication, and warm GIKI hospitality.'}
+        description={'GIMUN and GMC are run by GIKI students: the secretariat and committee chairs, the moot convening committee, and the organizers who look after logistics.'}
         eyebrow={
           <div className="flex items-center gap-2">
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-white/10 text-text-2 border border-champagne/20">
