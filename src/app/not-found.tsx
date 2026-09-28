@@ -3,6 +3,11 @@ import { NotFoundActions } from '@/components/errors/NotFoundActions';
 export default function NotFound() {
   return (
     <section className="not-found" aria-labelledby="not-found-title">
+      <div className="not-found__signal" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
       <div className="not-found__content">
         <p className="not-found__code" data-text="404" aria-hidden="true">404</p>
         <h1 id="not-found-title" className="not-found__title">Page not found</h1>
