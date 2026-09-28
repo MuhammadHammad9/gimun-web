@@ -3,7 +3,7 @@
 import { useRenderedAt, useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { Lock, Mail, Calendar, FileText, ArrowRight, RefreshCw } from 'lucide-react';
 import { formatEventDate, getEventYear, isRegistrationDeadlinePassed } from '@/lib/site-config';
 

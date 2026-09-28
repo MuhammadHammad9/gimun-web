@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ShieldAlert } from 'lucide-react';
 
 export default function CertificateNotFound() {

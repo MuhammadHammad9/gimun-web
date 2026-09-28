@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ArrowRight, Lock } from 'lucide-react';
 import { Bezel } from '@/components/ui/Editorial';
 import { formatEventDate } from '@/lib/site-config';

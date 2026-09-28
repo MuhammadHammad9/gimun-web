@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { X, ArrowRight, ChevronDown } from 'lucide-react';
 import { eventPhase } from '@/lib/phase';
 import { navigationTree } from '@/lib/navigation';

@@ -3,7 +3,7 @@
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React, { useState } from "react";
-import Link from "next/link";
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import {
   Scale,
   Download,

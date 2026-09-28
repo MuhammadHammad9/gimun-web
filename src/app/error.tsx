@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (

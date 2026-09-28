@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { Lock } from 'lucide-react';
 
 export function PrivacyStatement() {

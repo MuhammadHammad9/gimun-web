@@ -1,6 +1,6 @@
 import React, { useId } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { cn } from '@/lib/utils';
 import type { Sponsor } from '@/lib/types';
 

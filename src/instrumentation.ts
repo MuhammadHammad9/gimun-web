@@ -3,7 +3,9 @@ export async function register() {
   const {getMissingProductionConfig,isExplicitMemoryTestBackend}=await import('./lib/server/config');
   if(isExplicitMemoryTestBackend())return;
   const missing=getMissingProductionConfig({emailDelivery:true});
-  for(const name of ['NEXT_PUBLIC_SUPABASE_URL','NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY'])if(!process.env[name])missing.push(name);
+  // Bundled mode is an intentional local setup: public pages use checked-in
+  // content and provider-backed admin features remain disabled.
+  if(process.env.CMS_BACKEND!=='bundled')for(const name of ['NEXT_PUBLIC_SUPABASE_URL','NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY'])if(!process.env[name])missing.push(name);
   // Server and browser keys must belong to the same Supabase project, or admin
   // sign-in succeeds against one project while data is read from another.
   const host=(value?:string)=>{try{return value?new URL(value).host:null;}catch{return null;}};

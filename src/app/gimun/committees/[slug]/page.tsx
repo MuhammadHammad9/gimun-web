@@ -1,7 +1,7 @@
 import { getSiteConfig } from '@/lib/content';
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { Button } from '@/components/ui/Button';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';

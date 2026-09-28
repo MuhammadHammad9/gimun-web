@@ -6,6 +6,8 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
+import { TransitionProvider } from '@/components/motion/TransitionProvider';
+import { isKnownPublicPath } from '@/lib/motion/routes';
 
 /**
  * The public site shell: skip link, announcement bar, navbar, main, footer.
@@ -30,8 +32,15 @@ export function SiteChrome({
     return <main id="main-content">{children}</main>;
   }
 
+  // Unmatched routes are a focused recovery state. Omitting the regular
+  // chrome keeps hidden navigation out of the accessibility tree as well as
+  // out of sight behind the fixed 404 surface.
+  if (!isKnownPublicPath(path)) {
+    return <main id="main-content">{children}</main>;
+  }
+
   return (
-    <>
+    <TransitionProvider>
       <ScrollProgress />
 
       <a
@@ -57,6 +66,6 @@ export function SiteChrome({
       <div className="print:hidden">
         <Footer siteConfig={site} sponsors={sponsors} />
       </div>
-    </>
+    </TransitionProvider>
   );
 }

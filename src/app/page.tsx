@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import type { Metadata } from 'next';
 import { ArrowRight, Gavel, Globe2, CalendarDays, FileText } from 'lucide-react';
 

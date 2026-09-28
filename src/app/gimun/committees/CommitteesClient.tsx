@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 import { Button } from '@/components/ui/Button';
 import { FilterBar } from '@/components/ui/FilterBar';

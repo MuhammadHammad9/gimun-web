@@ -7,7 +7,7 @@ import { FilterBar } from '@/components/ui/FilterBar';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Radio, Pin, Calendar } from 'lucide-react';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { Button } from '@/components/ui/Button';
 import type { Announcement, Track } from '@/lib/types';
 import { formatPublishedDate } from '@/lib/site-config';

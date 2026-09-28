@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 
 /**
  * Deliberate "not published yet" state for sections waiting on approved

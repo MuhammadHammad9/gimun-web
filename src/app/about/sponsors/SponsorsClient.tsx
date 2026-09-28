@@ -5,7 +5,7 @@ import { useSiteConfig } from '@/components/SiteConfigProvider';
 import React from 'react';
 import { PublishedStats } from '@/components/ui/PublishedStats';
 import Image from 'next/image';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import {
   Download,
   ExternalLink,
