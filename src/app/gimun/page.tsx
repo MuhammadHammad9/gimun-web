@@ -17,6 +17,7 @@ import {
 import { getCommittees, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister } from '@/lib/phase';
+import { KeyDates } from '@/components/ui/KeyDates';
 import { formatEventMonth, getEventYear } from '@/lib/site-config';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
@@ -256,6 +257,16 @@ export default async function GimunOverviewPage() {
           </div>
         </ScrollReveal>
       </section>
+
+      <KeyDates
+        title="GIMUN key dates"
+        dates={[
+          { label: 'Registration closes', date: siteConfig.registrationDeadlines.gimun, note: '23:59 Pakistan time' },
+          { label: 'Position papers due', note: 'At least 7 days before Day 1' },
+          { label: 'Conference opens', date: siteConfig.eventDates.start, note: 'Check-in from 09:00' },
+          { label: 'Awards gala', date: siteConfig.galaDate },
+        ]}
+      />
 
       {/* 4. FEE & STRICT NON-PAYMENT NOTICE (PRD §6.2) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

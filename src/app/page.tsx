@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ArrowRight, Gavel, Globe2, CalendarDays, FileText } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Gavel, Globe2, CalendarDays, FileText } from 'lucide-react';
 
 import { PageHero } from '@/components/ui/PageHero';
 import { SectionRail } from '@/components/ui/SectionRail';
@@ -190,14 +190,16 @@ export default async function Home() {
       />
 
       {/* ------------------------------------------------------ partner band */}
-      <section className="band-raised py-12">
-        <h2 className="px-4 text-center font-mono text-meta uppercase tracking-[0.14em] text-text-4">
-          Institutional &amp; corporate partners
-        </h2>
-        <div className="mt-8">
-          <SponsorStrip sponsors={sponsors} />
-        </div>
-      </section>
+      {sponsors.length > 0 && (
+        <section className="band-raised py-12">
+          <h2 className="px-4 text-center font-mono text-meta uppercase tracking-[0.14em] text-text-4">
+            Institutional &amp; corporate partners
+          </h2>
+          <div className="mt-8">
+            <SponsorStrip sponsors={sponsors} />
+          </div>
+        </section>
+      )}
 
       {/* ------------------------------------------------- stacked programmes */}
       <div className="band">
@@ -213,113 +215,43 @@ export default async function Home() {
 
         <SectionRail items={RAIL} />
 
-        {/* ---- GIMUN ---- */}
-        <section
-          id="gimun"
-          aria-labelledby="gimun-heading"
-          className="mx-auto max-w-7xl scroll-mt-32 px-4 pt-16 pb-8 sm:px-6 lg:px-8"
-        >
-          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-xl space-y-3">
-              <TrackBadge track="gimun" />
-              <h3 id="gimun-heading" className="text-h2 font-display font-medium text-text">
-                Model United Nations
-              </h3>
-              <p className="text-lead text-text-3">
-                {committees.length} chambers running standard parliamentary procedure, from
-                general assembly debate to live crisis.
-              </p>
-            </div>
-            <Link
-              href="/gimun/committees"
-              className="group inline-flex shrink-0 items-center gap-2 text-sm font-medium text-champagne transition-colors hover:text-text"
-            >
-              All committees
-              <ArrowRight
-                aria-hidden="true"
-                className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
-              />
-            </Link>
-          </div>
-
-          {/* Asymmetric: the lead chamber takes two columns, the rest follow. */}
-          <div className="rise-stagger grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-6">
-            {committees.slice(0, 4).map((com, i) => (
-              <div
-                key={com.id}
-                style={{ '--i': i } as React.CSSProperties}
-                className={i === 0 ? 'lg:col-span-4' : 'lg:col-span-2'}
-              >
-                <FeatureCard
-                  track="gimun"
-                  icon={<Globe2 aria-hidden="true" className="h-4 w-4" />}
-                  label={`${com.name}.`}
-                  description={com.shortDescription}
-                  href={`/gimun/committees/${com.slug}`}
-                  facts={[
-                    {
-                      term: 'Delegates',
-                      value: com.capacity ? String(com.capacity) : 'Open',
-                    },
-                    { term: 'Format', value: com.type.replace(/-/g, ' ') },
-                  ]}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ---- GMC ---- */}
-        <section
-          id="gmc"
-          aria-labelledby="gmc-heading"
-          className="mx-auto max-w-7xl scroll-mt-32 px-4 pt-16 pb-8 sm:px-6 lg:px-8"
-        >
-          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-xl space-y-3">
-              <TrackBadge track="moot-cup" />
-              <h3 id="gmc-heading" className="text-h2 font-display font-medium text-text">
-                GIKI Moot Court
-              </h3>
-              <p className="text-lead text-text-3">
-                {mootCategories.length} problem categories. Draft memorials for both sides,
-                then defend them against a bench that will interrupt you on the law.
-              </p>
-            </div>
-            <Link
-              href="/moot-cup/categories"
-              className="group inline-flex shrink-0 items-center gap-2 text-sm font-medium text-champagne transition-colors hover:text-text"
-            >
-              All categories
-              <ArrowRight
-                aria-hidden="true"
-                className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
-              />
-            </Link>
-          </div>
-
-          <div className="rise-stagger grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-6">
-            {mootCategories.slice(0, 3).map((cat, i) => (
-              <div
-                key={cat.id}
-                style={{ '--i': i } as React.CSSProperties}
-                className={i === 2 ? 'lg:col-span-4' : 'lg:col-span-2'}
-              >
-                <FeatureCard
-                  track="moot-cup"
-                  icon={<Gavel aria-hidden="true" className="h-4 w-4" />}
-                  label={`${cat.name}.`}
-                  description={cat.description}
-                  href="/moot-cup/categories"
-                  facts={[
-                    { term: 'Area of law', value: cat.areaOfLaw },
-                    { term: 'Revised', value: formatPublishedDate(cat.lastUpdated) },
-                  ]}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-16 px-4 pt-16 pb-8 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:px-8">
+          <TrackLedger
+            id="gimun"
+            track="gimun"
+            title="Model United Nations"
+            lead={`${committees.length} chambers running standard parliamentary procedure, from general assembly debate to live crisis.`}
+            allHref="/gimun/committees"
+            allLabel="All committees"
+            action={gimunAction}
+            rows={committees.map((com) => ({
+              key: com.id,
+              href: `/gimun/committees/${com.slug}`,
+              title: com.name,
+              description: com.shortDescription,
+              meta: [
+                com.capacity ? `${com.capacity} delegates` : 'Open seating',
+                com.type.replace(/-/g, ' '),
+              ],
+            }))}
+          />
+          <TrackLedger
+            id="gmc"
+            track="moot-cup"
+            title="GIKI Moot Court"
+            lead={`${mootCategories.length} problem categories. Draft memorials for both sides, then defend them before a bench that will question you on the law.`}
+            allHref="/moot-cup/categories"
+            allLabel="All categories"
+            action={mootAction}
+            rows={mootCategories.map((cat) => ({
+              key: cat.id,
+              href: '/moot-cup/categories',
+              title: cat.name,
+              description: cat.description,
+              meta: [cat.areaOfLaw, `Revised ${formatPublishedDate(cat.lastUpdated)}`],
+            }))}
+          />
+        </div>
 
         {/* ---- Roadmap ---- */}
         <section
@@ -429,5 +361,85 @@ export default async function Home() {
         />
       </section>
     </div>
+  );
+}
+
+type LedgerRow = { key: string; href: string; title: string; description: string; meta: string[] };
+
+function TrackLedger({
+  id,
+  track,
+  title,
+  lead,
+  allHref,
+  allLabel,
+  action,
+  rows,
+}: {
+  id: string;
+  track: 'gimun' | 'moot-cup';
+  title: string;
+  lead: string;
+  allHref: string;
+  allLabel: string;
+  action: { label: string; href: string };
+  rows: LedgerRow[];
+}) {
+  const accent = track === 'gimun' ? 'text-crimson-soft' : 'text-champagne';
+  return (
+    <section id={id} aria-labelledby={`${id}-heading`} className="scroll-mt-32">
+      <div className="space-y-3">
+        <TrackBadge track={track} />
+        <h3 id={`${id}-heading`} className="text-h2 font-display font-medium text-balance text-text">
+          {title}
+        </h3>
+        <p className="max-w-lg text-lead text-pretty text-text-3">{lead}</p>
+      </div>
+
+      <ol className="rise-stagger mt-8 border-b border-line">
+        {rows.map((row, i) => (
+          <li key={row.key} style={{ '--i': i } as React.CSSProperties}>
+            <Link
+              href={row.href}
+              className="group -mx-3 grid grid-cols-[2.25rem_1fr_auto] items-start gap-x-3 rounded-xl border-t border-line px-3 py-6 transition-colors duration-200 hover:bg-raised/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
+            >
+              <span className={`pt-1 font-mono text-xs tabular-nums ${accent}`}>
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span className="min-w-0 space-y-2">
+                <span className="block text-lg font-display font-medium leading-snug text-text transition-colors group-hover:text-champagne">
+                  {row.title}
+                </span>
+                <span className="line-clamp-2 block text-sm leading-relaxed text-text-3">
+                  {row.description}
+                </span>
+                <span className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] capitalize text-text-4">
+                  {row.meta.map((m) => (
+                    <span key={m}>{m}</span>
+                  ))}
+                </span>
+              </span>
+              <ArrowUpRight
+                aria-hidden="true"
+                className="mt-1 h-4 w-4 text-text-4 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-champagne"
+              />
+            </Link>
+          </li>
+        ))}
+      </ol>
+
+      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <Link
+          href={action.href}
+          className={`group inline-flex items-center gap-2 text-sm font-semibold ${accent} transition-colors hover:text-text`}
+        >
+          {action.label}
+          <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+        </Link>
+        <Link href={allHref} className="text-sm text-text-3 underline-offset-4 transition-colors hover:text-text hover:underline">
+          {allLabel}
+        </Link>
+      </div>
+    </section>
   );
 }

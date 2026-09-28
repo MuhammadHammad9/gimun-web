@@ -42,7 +42,7 @@ export default async function SponsorsPage() {
         actionsSlot={
           <>
             <p className="text-sm sm:text-base text-text-2 max-w-3xl leading-relaxed">
-                        Proudly supported by visionary academic councils, public sector technology boards, leading law firms, and media publications. Explore sponsorship tier benefits, recruitment touchpoints, and our active institutional partners.
+                        Partner with a student conference that brings delegates and law students from across Pakistan to GIKI. The sponsorship deck sets out the tiers and what each includes.
                       </p>
 
                       <div className="pt-2 flex flex-wrap items-center gap-4">

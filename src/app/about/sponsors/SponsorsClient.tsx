@@ -131,7 +131,9 @@ export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps
             This year&apos;s sponsors
           </h2>
           <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
-            We express our deepest gratitude to our statutory patrons, government boards, and legal institutions.
+            {groupedSponsors.length > 0
+              ? "Thank you to the organizations supporting this year's conference."
+              : 'Partnerships for 2027 are being finalised. Partners will be listed here once agreements are signed.'}
           </p>
         </div>
 

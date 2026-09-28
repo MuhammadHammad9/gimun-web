@@ -135,6 +135,24 @@ export default async function ContactPage({
               </div>
             </div>
 
+            {/* Official social accounts, only those configured in settings */}
+            {Object.values(config.socialLinks || {}).some(Boolean) && (
+              <div className="p-6 rounded-2xl border border-line space-y-3">
+                <h2 className="text-lg font-heading font-bold text-cream">Follow updates</h2>
+                <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+                  {([['Instagram', config.socialLinks.instagram], ['Facebook', config.socialLinks.facebook], ['LinkedIn', config.socialLinks.linkedin], ['X (Twitter)', config.socialLinks.twitter]] as const)
+                    .filter(([, href]) => href)
+                    .map(([label, href]) => (
+                      <li key={label}>
+                        <a href={href} target="_blank" rel="noopener noreferrer" className="text-champagne underline-offset-4 hover:underline">
+                          {label}<span className="sr-only"> (opens in a new tab)</span>
+                        </a>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
+
             {/* Campus Venue Box */}
             <div className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-4">
               <h2 className="text-lg font-heading font-bold text-cream flex items-center gap-2">

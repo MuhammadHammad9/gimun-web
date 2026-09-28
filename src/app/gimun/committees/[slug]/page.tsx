@@ -11,7 +11,7 @@ import { getCommittees, getCommitteeBySlug, getDocuments } from '@/lib/content';
 
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister } from '@/lib/phase';
-import { getEventYear } from '@/lib/site-config';
+import { formatEventDate, getEventYear } from '@/lib/site-config';
 
 interface CommitteePageProps {
   params: Promise<{ slug: string }>;
@@ -55,7 +55,8 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
   }
 
   const documents = (await getDocuments());
-  const backgroundGuide = documents.find((d) => d.id === committee.backgroundGuideDocId);
+  // Only a real background guide; never another document type under that label.
+  const backgroundGuide = documents.find((d) => d.id === committee.backgroundGuideDocId && d.type === 'background-guide');
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
@@ -101,7 +102,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
               href={backgroundGuide.fileUrl}
               icon={<Download className="w-4 h-4" />}
             >
-              Background Guide ({backgroundGuide.fileSize})
+              Background Guide ({backgroundGuide.fileSize}, updated {formatEventDate(backgroundGuide.versionDate, { month: 'short' })})
             </Button>
           )}
         </div>
@@ -150,6 +151,9 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           </h2>
         </div>
 
+        {committee.chairs.length === 0 && (
+          <p className="text-sm text-text-3">The chairs for this committee will be announced with country allocations.</p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {committee.chairs.map((chair, idx) => (
             <div key={idx} className="p-6 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl space-y-3">

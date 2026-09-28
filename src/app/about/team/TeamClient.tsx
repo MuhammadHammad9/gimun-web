@@ -1,4 +1,5 @@
 "use client";
+import { ComingSoon } from '@/components/ui/ComingSoon';
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -53,6 +54,16 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
       (m.bio && m.bio.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesGroup && matchesSearch;
   });
+
+  if (initialMembers.length === 0) {
+    return (
+      <ComingSoon
+        title="The 2027 organizing team will be introduced here"
+        description="Profiles of the secretariat, convening committee and organizers are published once the team is confirmed. Until then, the organizing team is reachable through the contact page."
+        links={[{ label: 'Contact the organizing team', href: '/contact' }]}
+      />
+    );
+  }
 
   return (
     <div className="space-y-10">

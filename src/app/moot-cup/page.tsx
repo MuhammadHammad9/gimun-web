@@ -17,6 +17,7 @@ import {
 import { getMootCategories, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister } from '@/lib/phase';
+import { KeyDates } from '@/components/ui/KeyDates';
 import { formatEventMonth } from '@/lib/site-config';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
@@ -227,6 +228,16 @@ export default async function MootCupOverviewPage() {
           </div>
         </ScrollReveal>
       </section>
+
+      <KeyDates
+        title="GMC key dates"
+        dates={[
+          { label: 'Registration closes', date: siteConfig.registrationDeadlines.mootCup, note: '23:59 Pakistan time' },
+          { label: 'Memorials due', date: siteConfig.memorialDeadline, note: '23:59 Pakistan time, by email' },
+          { label: 'Preliminary rounds', date: siteConfig.eventDates.start },
+          { label: 'Grand Final', date: siteConfig.galaDate },
+        ]}
+      />
 
       {/* 4. FEE & STRICT NON-PAYMENT NOTICE (PRD §6.2) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

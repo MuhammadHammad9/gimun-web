@@ -133,7 +133,7 @@ export function CommitteesClient({ initialCommittees }: CommitteesClientProps) {
                       <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-champagne/80 pt-2 border-t border-champagne/20">
                         <div className="flex items-center gap-1.5">
                           <Users2 className="w-4 h-4 text-champagne" />
-                          <span>Chairs: {committee.chairs.map((c) => c.name).join(', ')}</span>
+                          <span>Chairs: {committee.chairs.length ? committee.chairs.map((c) => c.name).join(', ') : 'To be announced'}</span>
                         </div>
                         <div className="font-mono text-champagne font-semibold bg-crest/70 border border-champagne/20 px-2.5 py-1 rounded-md text-xs">
                           {committee.countryList.filter((c) => c.status === 'available').length} Available Country Slots

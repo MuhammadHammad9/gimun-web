@@ -1,4 +1,5 @@
 'use client';
+import { ComingSoon } from '@/components/ui/ComingSoon';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
@@ -107,6 +108,16 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
   }, [activeLightboxIndex]);
 
   const activeItem = activeLightboxIndex !== null ? filteredItems[activeLightboxIndex] : null;
+
+  if (initialItems.length === 0) {
+    return (
+      <ComingSoon
+        title="Photos will appear after the conference"
+        description="The gallery is published with approved photographs from GIMUN and GMC 2027. Follow the announcements for press coverage and highlights."
+        links={[{ label: 'Announcements', href: '/announcements' }]}
+      />
+    );
+  }
 
   return (
     <div className="space-y-10">

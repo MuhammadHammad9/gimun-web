@@ -28,7 +28,8 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
     formLoadedAt.current = Date.now();
   }, []);
 
-  const filteredClarifications = initialClarifications.filter((c) => {
+  // Newest ruling first: teams check this log for what changed since their last visit.
+  const filteredClarifications = [...initialClarifications].sort((a, b) => b.number - a.number).filter((c) => {
     const matchesSearch =
       c.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||

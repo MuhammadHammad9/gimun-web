@@ -26,7 +26,7 @@ export default async function GalleryPage() {
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'Gallery' }]}
         title={'Photographic Gallery & Archives'}
         accentWords={['Gallery', '&', 'Archives']}
-        description={'A visual retrospective capturing multilateral committee debates, tense appellate court oral pleadings, vibrant cultural social nights, and prestigious gala awards at GIKI Topi.'}
+        description={'Photographs from committee sessions, courtroom rounds, ceremonies and campus life at GIKI, published after each edition.'}
         eyebrow={
           <div className="flex items-center gap-2">
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-white/10 text-text-2 border border-champagne/20">
@@ -42,13 +42,13 @@ export default async function GalleryPage() {
           <>
             <div className="pt-2 flex flex-wrap items-center gap-4">
                         <Button variant="track-gimun" href="/gimun">
-                          GIMUN Debates
+                          About GIMUN
                         </Button>
                         <Button variant="track-moot" href="/moot-cup">
-                          GMC Courtrooms
+                          About GMC
                         </Button>
                         <Button variant="secondary" href="/results">
-                          Hall of Fame Awards
+                          Results
                         </Button>
                       </div>
           </>
