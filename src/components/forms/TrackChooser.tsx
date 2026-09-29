@@ -75,7 +75,7 @@ export function TrackChooser({ onSelectTrack, gimunDeadline, mootCupDeadline, gi
             <Bezel accent={gimun ? 'gimun' : undefined} className="h-full">
               <div className="flex h-full flex-col p-8 sm:p-10">
                 <div className="flex items-center justify-between gap-3">
-                  <p className={`font-mono text-[11px] uppercase tracking-[0.18em] ${gimun ? 'text-crimson-soft' : 'text-champagne'}`}>
+                  <p className={`font-mono text-[11px] uppercase tracking-[0.18em] ${gimun ? 'text-accent-gimun' : 'text-champagne'}`}>
                     {option.label}
                   </p>
                   {option.open ? (
@@ -113,7 +113,7 @@ export function TrackChooser({ onSelectTrack, gimunDeadline, mootCupDeadline, gi
                     onClick={() => onSelectTrack(option.key)}
                     className={`group flex h-12 w-full items-center justify-between rounded-full pl-6 pr-1.5 text-sm font-semibold transition-all duration-300 ease-[var(--ease-brand)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-45 ${
                       gimun
-                        ? 'border border-crimson/40 bg-brand text-champagne-hi hover:bg-brand-lit'
+                        ? 'border border-accent-gimun/40 bg-gimun-fill text-on-gimun hover:bg-gimun-fill-hi'
                         : 'bg-champagne text-canvas hover:bg-champagne-hi'
                     }`}
                   >

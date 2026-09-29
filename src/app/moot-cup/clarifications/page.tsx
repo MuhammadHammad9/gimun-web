@@ -3,9 +3,7 @@ import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
 import { getClarifications, getDocuments } from "@/lib/content";
 import { ClarificationsClient } from "./ClarificationsClient";
-import { TrackBadge } from "@/components/ui/TrackBadge";
-import { Button } from "@/components/ui/Button";
-import { Download } from "lucide-react";
+import { TransitionLink } from "@/components/motion/TransitionLink";
 import { getEventYear } from "@/lib/site-config";
 import { PageHero } from '@/components/ui/PageHero';
 
@@ -23,46 +21,32 @@ export default async function ClarificationsPage() {
   );
 
   return (
-    <div className="space-y-12">
-      {/* Modern Supreme Court Appellate Hero */}
+    <>
       <PageHero
         variant="moot"
         breadcrumbs={[{ label: 'GMC', href: '/moot-cup' }, { label: 'Clarifications' }]}
-        title={'Official Clarifications Log'}
-        accentWords={['Clarifications', 'Log']}
-        description={'Questions submitted by registered teams and official rulings issued by the GMC Bench Committee. All clarifications published here form binding additions to the case problem.'}
-        eyebrow={
-          <div className="flex items-center gap-2">
-                      <TrackBadge track="moot-cup" />
-                      <span className="text-xs font-mono text-champagne/70 uppercase tracking-widest">
-                        Questions &amp; Official Bench Answers
-                      </span>
-                    </div>
-        }
+        meta={[`${clarifications.length} published`, 'Binding on every team']}
+        title="The clarifications log."
+        accentPhrase="clarifications log."
+        description="Questions from registered teams and the bench's answers. Every clarification published here forms part of the case problem, for every team at once."
         actionsSlot={
-          <>
-            <div className="pt-2 flex flex-wrap items-center gap-4">
-                        {propositionDocument && (
-                          <Button
-                            variant="track-moot"
-                            href={propositionDocument.fileUrl}
-                            icon={<Download className="w-4 h-4" />}
-                          >
-                            Download Case Problem (PDF)
-                          </Button>
-                        )}
-                        <Button variant="secondary" href="/moot-cup/rules">
-                          Review Written Argument Guidelines
-                        </Button>
-                      </div>
-          </>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            {propositionDocument && (
+              <a href={propositionDocument.fileUrl} className="text-link" data-no-transition="">
+                The compromis (PDF)
+              </a>
+            )}
+            <TransitionLink href="/moot-cup/rules" className="text-link">
+              Rules &amp; memorials
+            </TransitionLink>
+          </div>
         }
       />
-
-      {/* Main Interactive Body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <ClarificationsClient initialClarifications={clarifications} />
-      </div>
-    </div>
+      <section className="handoff__sheet tone-deep chapter" aria-label="Clarifications">
+        <div className="wrap">
+          <ClarificationsClient initialClarifications={clarifications} />
+        </div>
+      </section>
+    </>
   );
 }

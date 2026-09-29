@@ -1340,6 +1340,83 @@
   font-weight: 500;
 }
 
+/* --- Motions reference ------------------------------------------------- */
+.motions {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.motion-row {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 0.5rem 1.25rem;
+  padding-block: 1.75rem;
+  border-top: 1px solid var(--color-line);
+}
+
+@media (min-width: 1024px) {
+  .motion-row {
+    grid-template-columns: 3.5rem minmax(0, 1fr) 20rem;
+    gap: 2rem;
+  }
+}
+
+.motion-row__rank {
+  color: var(--color-accent-gimun);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.motion-row__name {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.motion-row__purpose {
+  margin-top: 0.5rem;
+  color: var(--color-text-2);
+}
+
+.motion-row__tip {
+  margin-top: 0.75rem;
+  color: var(--color-text-3);
+  font-size: var(--text-small);
+}
+
+.motion-row__facts {
+  display: grid;
+  grid-column: 2;
+  gap: 0.5rem;
+  font-size: var(--text-small);
+}
+
+@media (min-width: 1024px) {
+  .motion-row__facts {
+    grid-column: 3;
+  }
+}
+
+.motion-row__facts div {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.motion-row__facts dt {
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.8;
+}
+
+.motion-row__facts dd {
+  color: var(--color-text);
+}
+
 /* --- Help row ------------------------------------------------------------ */
 .help-callout {
   display: grid;

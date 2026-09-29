@@ -45,13 +45,13 @@ export function ContentCard({
           <div className="flex items-center gap-2 flex-wrap">
             {track && <TrackBadge track={track} size="sm" />}
             {eyebrow && (
-              <span className="text-xs font-mono uppercase tracking-wider text-champagne/70">
+              <span className="text-xs font-mono uppercase tracking-wider text-text-3">
                 {eyebrow}
               </span>
             )}
           </div>
           {updatedFlag && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-champagne/20 text-champagne border border-champagne/40">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-champagne/20 text-champagne border border-line-2">
               Updated
             </span>
           )}
@@ -60,17 +60,17 @@ export function ContentCard({
         {/* Icon & Title */}
         <div className="flex items-start gap-3.5 mb-2.5">
           {icon && (
-            <div className="p-2.5 rounded-xl bg-champagne/10 text-champagne border border-champagne/20 shrink-0 transition-colors group-hover:bg-champagne/20">
+            <div className="p-2.5 rounded-xl bg-champagne/10 text-champagne border border-line shrink-0 transition-colors group-hover:bg-champagne/20">
               {icon}
             </div>
           )}
-          <h3 className="font-heading text-lg sm:text-xl font-bold text-cream leading-snug group-hover:text-champagne transition-colors">
+          <h3 className="font-heading text-lg sm:text-xl font-bold text-text leading-snug group-hover:text-champagne transition-colors">
             {title}
           </h3>
         </div>
 
         {/* Description */}
-        <p className="text-sm sm:text-base text-champagne/80 leading-relaxed mb-4">
+        <p className="text-sm sm:text-base text-text-2 leading-relaxed mb-4">
           {description}
         </p>
 
@@ -80,10 +80,10 @@ export function ContentCard({
 
       {/* Footer / Action */}
       {(meta || actionHref) && (
-        <div className="pt-4 mt-auto border-t border-champagne/20 flex items-center justify-between gap-4 text-xs font-medium">
-          {meta && <span className="text-champagne/60 font-mono">{meta}</span>}
+        <div className="pt-4 mt-auto border-t border-line flex items-center justify-between gap-4 text-xs font-medium">
+          {meta && <span className="text-text-3 font-mono">{meta}</span>}
           {actionHref && (
-            <span className="inline-flex items-center gap-1 text-champagne font-semibold group-hover:text-cream transition-colors ml-auto">
+            <span className="inline-flex items-center gap-1 text-champagne font-semibold group-hover:text-text transition-colors ml-auto">
               {actionLabel || 'Learn more'}
               <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </span>
@@ -97,7 +97,7 @@ export function ContentCard({
     <div className={cn('double-bezel h-full', className)}>
       <div className="double-bezel-inner h-full">
         {actionHref ? (
-          <Link href={actionHref} className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne rounded-[1.625rem]">
+          <Link href={actionHref} className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-[1.625rem]">
             {cardContent}
           </Link>
         ) : (

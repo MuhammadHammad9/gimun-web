@@ -113,14 +113,14 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
   if (status === 'success') {
     return (
       <div
-        className="p-8 rounded-2xl bg-raised/95 border border-champagne/30 text-center space-y-4 shadow-xl"
+        className="p-8 rounded-2xl bg-raised/95 border border-line-2 text-center space-y-4 shadow-xl"
       >
-        <div className="w-12 h-12 rounded-full bg-elevated text-champagne flex items-center justify-center mx-auto border border-champagne/30">
+        <div className="w-12 h-12 rounded-full bg-elevated text-champagne flex items-center justify-center mx-auto border border-line-2">
           <CheckCircle2 className="w-7 h-7" />
         </div>
         <div className="space-y-1.5">
-          <h3 className="text-xl font-heading font-bold text-text">Message Dispatched</h3>
-          <p className="text-xs text-champagne/85 max-w-sm mx-auto leading-relaxed">
+          <h3 className="text-xl font-display font-medium text-text">Message Dispatched</h3>
+          <p className="text-xs text-text-2 max-w-sm mx-auto leading-relaxed">
             {serverMessage || 'Thank you for reaching out. The Secretariat has received your dispatch and will respond via email.'}
           </p>
         </div>
@@ -145,9 +145,9 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="space-y-5 p-6 md:p-8 rounded-2xl bg-raised/90 border border-champagne/25 shadow-xl"
+      className="space-y-5 p-6 md:p-8 rounded-2xl bg-raised/90 border border-line shadow-xl"
     >
-      <div className="flex items-center gap-2 pb-2 border-b border-champagne/15">
+      <div className="flex items-center gap-2 pb-2 border-b border-line">
         <MessageSquare className="w-4 h-4 text-champagne" />
         <h2 className="text-sm font-mono uppercase font-bold text-text tracking-wide">
           Direct Inquiry Dispatch
@@ -155,7 +155,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
       </div>
 
       {serverMessage && status === 'error' && (
-        <div role="alert" className="p-3.5 rounded-xl bg-brand-deep/80 border border-crimson/50 text-crimson-soft flex items-start gap-2.5 text-xs">
+        <div role="alert" className="p-3.5 rounded-xl bg-accent-gimun/8 border border-accent-gimun/40 text-accent-gimun flex items-start gap-2.5 text-xs">
           <AlertCircle className="w-4 h-4 text-crimson-hi shrink-0 mt-0.5" />
           <span>{serverMessage}</span>
         </div>
@@ -170,7 +170,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
             value={formData.name}
             onChange={(e) => handleChange('name', e.target.value)}
             placeholder="e.g. Ayesha Tariq"
-            className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder:text-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+            className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas/90 text-text placeholder:text-text-4 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
           />
         </FormField>
 
@@ -182,7 +182,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
             value={formData.email}
             onChange={(e) => handleChange('email', e.target.value)}
             placeholder="ayesha@institution.edu.pk"
-            className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder:text-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+            className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas/90 text-text placeholder:text-text-4 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
           />
         </FormField>
       </div>
@@ -192,7 +192,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
           id="field-queryType"
           value={formData.queryType}
           onChange={(e) => handleChange('queryType', e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+          className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas/90 text-text text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
         >
           <option value="other" className="bg-canvas text-text">General questions, logistics &amp; travel</option>
           <option value="gimun" className="bg-canvas text-text">GIMUN Secretariat (Committees, Country Matrix, Delegations)</option>
@@ -216,7 +216,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
           value={formData.message}
           onChange={(e) => handleChange('message', e.target.value)}
           placeholder="Your question about registration, committees, the moot problem or travel…"
-          className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder:text-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+          className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas/90 text-text placeholder:text-text-4 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
         />
       </FormField>
 

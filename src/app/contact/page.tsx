@@ -26,18 +26,18 @@ export default async function ContactPage() {
         description={'Have a question about eligibility, committee selection, the GMC case problem, sponsorship, or getting to campus? Send a message to the relevant team below.'}
         eyebrow={
           <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-champagne border border-champagne/30">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-champagne border border-line-2">
                         <Headphones className="w-3.5 h-3.5 text-champagne" />
                         Get in Touch
                       </span>
-                      <span className="text-xs font-mono text-champagne/70 uppercase tracking-widest">
+                      <span className="text-xs font-mono text-text-3 uppercase tracking-widest">
                         {config.replyTime || 'Replies are sent by the organizing team'}
                       </span>
                     </div>
         }
         actionsSlot={
           <>
-            <div className="flex flex-wrap items-center gap-6 pt-1 text-xs font-mono text-champagne/80">
+            <div className="flex flex-wrap items-center gap-6 pt-1 text-xs font-mono text-text-2">
                         <div className="flex items-center gap-2">
                           <Clock className="w-3.5 h-3.5 text-champagne" />
                           <span>{config.checkinDesk || 'Contact us for current desk hours'}</span>
@@ -62,38 +62,38 @@ export default async function ContactPage() {
           {/* Right Column: Directorate Channels & Campus Venue (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
             {/* Department Inboxes */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-6">
-              <div className="space-y-1 pb-3 border-b border-champagne/15">
-                <h2 className="text-lg font-heading font-bold text-cream flex items-center gap-2">
+            <div className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-line shadow-xl space-y-6">
+              <div className="space-y-1 pb-3 border-b border-line">
+                <h2 className="text-lg font-display font-medium text-text flex items-center gap-2">
                   <Mail className="w-4 h-4 text-champagne" />
                   <span>Who to email</span>
                 </h2>
-                <p className="text-xs text-champagne/75">
+                <p className="text-xs text-text-3">
                   Email the team that owns your question, or use the form.
                 </p>
               </div>
 
               <div className="space-y-4 text-xs">
-                <div className="space-y-1 p-3 rounded-xl bg-crest/70 border border-champagne/20">
-                  <div className="font-mono uppercase text-[10px] text-champagne/70 font-bold">
+                <div className="space-y-1 p-3 rounded-xl bg-elevated border border-line">
+                  <div className="font-mono uppercase text-[10px] text-text-3 font-bold">
                     General Inquiries &amp; Secretariat
                   </div>
                   <a
                     href={`mailto:${config.contactEmails.general}`}
-                    className="text-cream font-bold hover:text-champagne block text-sm font-mono transition-colors"
+                    className="text-text font-bold hover:text-champagne block text-sm font-mono transition-colors"
                   >
                     {config.contactEmails.general}
                   </a>
                 </div>
 
                 {config.contactEmails.gimun && (
-                  <div className="space-y-1 p-3 rounded-xl bg-crest/70 border border-champagne/20">
-                    <div className="font-mono uppercase text-[10px] text-champagne/70 font-bold">
+                  <div className="space-y-1 p-3 rounded-xl bg-elevated border border-line">
+                    <div className="font-mono uppercase text-[10px] text-text-3 font-bold">
                       GIMUN Secretariat (Committees &amp; Matrix)
                     </div>
                     <a
                       href={`mailto:${config.contactEmails.gimun}`}
-                      className="text-cream font-bold hover:text-champagne block text-sm font-mono transition-colors"
+                      className="text-text font-bold hover:text-champagne block text-sm font-mono transition-colors"
                     >
                       {config.contactEmails.gimun}
                     </a>
@@ -101,13 +101,13 @@ export default async function ContactPage() {
                 )}
 
                 {config.contactEmails.mootCup && (
-                  <div className="space-y-1 p-3 rounded-xl bg-crest/70 border border-champagne/20">
-                    <div className="font-mono uppercase text-[10px] text-champagne/70 font-bold">
+                  <div className="space-y-1 p-3 rounded-xl bg-elevated border border-line">
+                    <div className="font-mono uppercase text-[10px] text-text-3 font-bold">
                       GMC Bench Directorate (Advocacy &amp; Briefs)
                     </div>
                     <a
                       href={`mailto:${config.contactEmails.mootCup}`}
-                      className="text-cream font-bold hover:text-champagne block text-sm font-mono transition-colors"
+                      className="text-text font-bold hover:text-champagne block text-sm font-mono transition-colors"
                     >
                       {config.contactEmails.mootCup}
                     </a>
@@ -115,13 +115,13 @@ export default async function ContactPage() {
                 )}
 
                 {config.contactEmails.sponsorship && (
-                  <div className="space-y-1 p-3 rounded-xl bg-crest/70 border border-champagne/20">
-                    <div className="font-mono uppercase text-[10px] text-champagne/70 font-bold">
+                  <div className="space-y-1 p-3 rounded-xl bg-elevated border border-line">
+                    <div className="font-mono uppercase text-[10px] text-text-3 font-bold">
                       Corporate Partnerships &amp; Media
                     </div>
                     <a
                       href={`mailto:${config.contactEmails.sponsorship}`}
-                      className="text-cream font-bold hover:text-champagne block text-sm font-mono transition-colors"
+                      className="text-text font-bold hover:text-champagne block text-sm font-mono transition-colors"
                     >
                       {config.contactEmails.sponsorship}
                     </a>
@@ -133,7 +133,7 @@ export default async function ContactPage() {
             {/* Official social accounts, only those configured in settings */}
             {Object.values(config.socialLinks || {}).some(Boolean) && (
               <div className="p-6 rounded-2xl border border-line space-y-3">
-                <h2 className="text-lg font-heading font-bold text-cream">Follow updates</h2>
+                <h2 className="text-lg font-display font-medium text-text">Follow updates</h2>
                 <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
                   {([['Instagram', config.socialLinks.instagram], ['Facebook', config.socialLinks.facebook], ['LinkedIn', config.socialLinks.linkedin], ['X (Twitter)', config.socialLinks.twitter]] as const)
                     .filter(([, href]) => href)
@@ -149,21 +149,21 @@ export default async function ContactPage() {
             )}
 
             {/* Campus Venue Box */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-4">
-              <h2 className="text-lg font-heading font-bold text-cream flex items-center gap-2">
+            <div className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-line shadow-xl space-y-4">
+              <h2 className="text-lg font-display font-medium text-text flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-champagne" />
                 <span>Where we are</span>
               </h2>
-              <p className="text-xs text-champagne/80 leading-relaxed">
+              <p className="text-xs text-text-2 leading-relaxed">
                 {config.hostInstitution}
                 <br />
                 Topi 23640, Swabi District, Khyber Pakhtunkhwa, Pakistan
               </p>
-              <div className="pt-3 border-t border-champagne/15 flex items-center justify-between text-xs font-mono text-champagne/70">
+              <div className="pt-3 border-t border-line flex items-center justify-between text-xs font-mono text-text-3">
                 <span>M-1 Motorway Swabi Exit (14 km)</span>
                 <a
                   href="/about/venue"
-                  className="font-bold text-champagne hover:text-cream transition-colors"
+                  className="font-bold text-champagne hover:text-text transition-colors"
                 >
                   Venue Guide &rarr;
                 </a>
@@ -171,10 +171,10 @@ export default async function ContactPage() {
             </div>
 
             {/* Governance Assurance */}
-            <div className="p-4 rounded-xl bg-overlay/90 border border-champagne/25 text-xs text-champagne/90 flex items-start gap-2.5 shadow-md">
+            <div className="p-4 rounded-xl bg-overlay/90 border border-line text-xs text-text-2 flex items-start gap-2.5 shadow-md">
               <ShieldCheck className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
               <span>
-                Messages are handled as described in our <a href="/privacy" className="underline underline-offset-2 hover:text-cream">privacy notice</a> and used only to answer your question.
+                Messages are handled as described in our <a href="/privacy" className="underline underline-offset-2 hover:text-text">privacy notice</a> and used only to answer your question.
               </span>
             </div>
           </div>

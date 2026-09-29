@@ -30,7 +30,7 @@ export default async function SponsorsPage() {
         accentWords={['Partners']}
         eyebrow={
           <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-white/10 text-text-2 border border-white/15">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-text/10 text-text-2 border border-line">
                         <Briefcase className="w-3.5 h-3.5 text-champagne" />
                         Strategic Alliances
                       </span>

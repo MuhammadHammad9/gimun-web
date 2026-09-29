@@ -68,7 +68,7 @@ export function ResultsClient({
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
       {/* Organizer Preview Bar / Banner */}
       {!resultsPublished && (
-        <div className="rounded-2xl bg-crest/90 border border-champagne-lo/40 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-champagne-hi shadow-xl">
+        <div className="rounded-2xl bg-elevated border border-champagne-lo/40 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-champagne-hi shadow-xl">
           <div className="flex items-center gap-2.5 font-mono">
             <ShieldCheck className="w-4 h-4 text-champagne shrink-0" />
             <span>
@@ -80,16 +80,16 @@ export function ResultsClient({
 
       {/* Header */}
       <header className="space-y-4 max-w-3xl">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-champagne/20 border border-champagne/30 text-cream">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-champagne/20 border border-line-2 text-text">
           <Trophy className="w-3.5 h-3.5 text-champagne" />
           <span>
             {isDisplayingResults ? 'Official Hall of Fame & Accolades' : 'Conclave Honors & Adjudication Framework'}
           </span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-heading font-extrabold text-cream tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-display font-medium text-text tracking-tight">
           {isDisplayingResults ? 'Results & Awardees' : 'Awards, Honors & Adjudication'}
         </h1>
-        <p className="text-sm sm:text-base text-champagne/80 leading-relaxed">
+        <p className="text-sm sm:text-base text-text-2 leading-relaxed">
           {isDisplayingResults
             ? 'Celebrating outstanding parliamentary diplomacy, rigorous legal scholarship, and persuasive advocacy across GIKI Model United Nations and GIKI Moot Court.'
             : `Official adjudication criteria, flagship awards prospectus, and promulgation protocols for GIMUN and GMC ${eventYear}.`}
@@ -99,32 +99,32 @@ export function ResultsClient({
       {/* Flagship Trophies Banner (Common to both states) */}
       <section>
         <ScrollReveal>
-          <div className="rounded-3xl bg-overlay/95 text-white p-8 sm:p-10 border border-champagne/25 shadow-2xl relative overflow-hidden">
+          <div className="rounded-3xl bg-overlay/95 text-text p-8 sm:p-10 border border-line shadow-2xl relative overflow-hidden">
             <div className="relative z-10 space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                  <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
+                  <span className="text-xs font-mono uppercase tracking-widest text-text-2 font-bold">
                     Supreme Conclave Honors
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream">
+                  <h2 className="text-2xl sm:text-3xl font-display font-medium text-text">
                     {eventYear} Main awards
                   </h2>
                 </div>
-                <div className="px-3 py-1 rounded-full bg-champagne/20 text-cream text-xs font-mono font-bold self-start sm:self-auto flex items-center gap-1.5 border border-champagne/30">
+                <div className="px-3 py-1 rounded-full bg-champagne/20 text-text text-xs font-mono font-bold self-start sm:self-auto flex items-center gap-1.5 border border-line-2">
                   <Sparkles className="w-3.5 h-3.5 text-champagne" />
                   {isDisplayingResults ? 'Promulgated on Merit' : 'Adjudicated on Pure Merit'}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-                <div className="p-6 rounded-2xl bg-crest/70 border border-champagne/20 space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-champagne/20 text-champagne flex items-center justify-center border border-champagne/30">
+                <div className="p-6 rounded-2xl bg-elevated border border-line space-y-3">
+                  <div className="w-10 h-10 rounded-xl bg-champagne/20 text-champagne flex items-center justify-center border border-line-2">
                     <Crown className="w-5 h-5" />
                   </div>
-                  <h3 className="font-heading font-bold text-lg text-cream">
+                  <h3 className="font-display font-medium text-lg text-text">
                     Best delegation
                   </h3>
-                  <p className="text-xs text-champagne/80 leading-relaxed">
+                  <p className="text-xs text-text-2 leading-relaxed">
                     Awarded to the overall highest-performing institutional delegation accumulating points across all UN committee chambers.
                   </p>
                   <div className="pt-2 text-[11px] font-mono text-champagne">
@@ -132,14 +132,14 @@ export function ResultsClient({
                   </div>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-crest/70 border border-champagne/20 space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-brand text-champagne flex items-center justify-center border border-champagne/30">
+                <div className="p-6 rounded-2xl bg-elevated border border-line space-y-3">
+                  <div className="w-10 h-10 rounded-xl bg-gimun-fill text-on-gimun flex items-center justify-center border border-line-2">
                     <Medal className="w-5 h-5" />
                   </div>
-                  <h3 className="font-heading font-bold text-lg text-cream">
+                  <h3 className="font-display font-medium text-lg text-text">
                     Best delegate
                   </h3>
-                  <p className="text-xs text-champagne/80 leading-relaxed">
+                  <p className="text-xs text-text-2 leading-relaxed">
                     Conferred by committee Dais panels for exceptional resolution drafting, unmoderated caucusing, and sovereign policy defense.
                   </p>
                   <div className="pt-2 text-[11px] font-mono text-champagne">
@@ -147,14 +147,14 @@ export function ResultsClient({
                   </div>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-crest/70 border border-champagne/20 space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-champagne/20 text-champagne flex items-center justify-center border border-champagne/30">
+                <div className="p-6 rounded-2xl bg-elevated border border-line space-y-3">
+                  <div className="w-10 h-10 rounded-xl bg-champagne/20 text-champagne flex items-center justify-center border border-line-2">
                     <Trophy className="w-5 h-5" />
                   </div>
-                  <h3 className="font-heading font-bold text-lg text-cream">
+                  <h3 className="font-display font-medium text-lg text-text">
                     Winning team
                   </h3>
-                  <p className="text-xs text-champagne/80 leading-relaxed">
+                  <p className="text-xs text-text-2 leading-relaxed">
                     Awarded to the Grand Final winning legal team following intense appellate advocacy before the High Court judicial panel.
                   </p>
                   <div className="pt-2 text-[11px] font-mono text-champagne">
@@ -179,40 +179,40 @@ export function ResultsClient({
                     <Clock className="w-4 h-4 text-champagne" />
                     <span>Official Announcement Protocol</span>
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream">
+                  <h2 className="text-2xl sm:text-3xl font-display font-medium text-text">
                     Published after the awards ceremony
                   </h2>
                 </div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-overlay/80 border border-champagne/30 text-cream font-mono text-xs font-semibold shrink-0">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-overlay/80 border border-line-2 text-text font-mono text-xs font-semibold shrink-0">
                   <Calendar className="w-4 h-4 text-champagne" />
                   <span>{galaDate}</span>
                 </div>
               </div>
 
-              <p className="text-sm sm:text-base text-champagne/80 leading-relaxed max-w-4xl">
+              <p className="text-sm sm:text-base text-text-2 leading-relaxed max-w-4xl">
                 In strict adherence to academic rigor and blind tabulation security, awards are announced at the Closing Ceremony and Awards Gala on Day 3 of the conference and published here afterwards. Scores are tabulated by the academic team and checked before release.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-                <div className="p-4 rounded-xl bg-overlay/80 border border-champagne/20 space-y-1.5">
-                  <span className="text-xs font-mono text-champagne/70 uppercase">Stage 1</span>
-                  <div className="font-heading font-bold text-sm text-cream">Session Scoring</div>
-                  <p className="text-xs text-champagne/80">Committee Dais &amp; Bench scoring completed after final sessions.</p>
+                <div className="p-4 rounded-xl bg-overlay/80 border border-line space-y-1.5">
+                  <span className="text-xs font-mono text-text-3 uppercase">Stage 1</span>
+                  <div className="font-display font-medium text-sm text-text">Session Scoring</div>
+                  <p className="text-xs text-text-2">Committee Dais &amp; Bench scoring completed after final sessions.</p>
                 </div>
-                <div className="p-4 rounded-xl bg-overlay/80 border border-champagne/20 space-y-1.5">
-                  <span className="text-xs font-mono text-champagne/70 uppercase">Stage 2</span>
-                  <div className="font-heading font-bold text-sm text-cream">Blind Audit</div>
-                  <p className="text-xs text-champagne/80">Discrepancy review and delegation point aggregation by Secretariat.</p>
+                <div className="p-4 rounded-xl bg-overlay/80 border border-line space-y-1.5">
+                  <span className="text-xs font-mono text-text-3 uppercase">Stage 2</span>
+                  <div className="font-display font-medium text-sm text-text">Blind Audit</div>
+                  <p className="text-xs text-text-2">Discrepancy review and delegation point aggregation by Secretariat.</p>
                 </div>
-                <div className="p-4 rounded-xl bg-overlay/80 border border-champagne/20 space-y-1.5">
-                  <span className="text-xs font-mono text-champagne/70 uppercase">Stage 3</span>
-                  <div className="font-heading font-bold text-sm text-cream">Gala Conferral</div>
-                  <p className="text-xs text-champagne/80">Live physical ceremony and trophy distribution in Main Auditorium.</p>
+                <div className="p-4 rounded-xl bg-overlay/80 border border-line space-y-1.5">
+                  <span className="text-xs font-mono text-text-3 uppercase">Stage 3</span>
+                  <div className="font-display font-medium text-sm text-text">Gala Conferral</div>
+                  <p className="text-xs text-text-2">Live physical ceremony and trophy distribution in Main Auditorium.</p>
                 </div>
-                <div className="p-4 rounded-xl bg-overlay/80 border border-champagne/20 space-y-1.5">
-                  <span className="text-xs font-mono text-champagne/70 uppercase">Stage 4</span>
-                  <div className="font-heading font-bold text-sm text-cream">Digital Registry</div>
-                  <p className="text-xs text-champagne/80">Instant publication of all awardees on this portal with verification IDs.</p>
+                <div className="p-4 rounded-xl bg-overlay/80 border border-line space-y-1.5">
+                  <span className="text-xs font-mono text-text-3 uppercase">Stage 4</span>
+                  <div className="font-display font-medium text-sm text-text">Digital Registry</div>
+                  <p className="text-xs text-text-2">Instant publication of all awardees on this portal with verification IDs.</p>
                 </div>
               </div>
             </div>
@@ -221,13 +221,13 @@ export function ResultsClient({
           {/* Adjudication Criteria & Rubrics Section */}
           <section className="space-y-6">
             <div className="space-y-2">
-              <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
+              <span className="text-xs font-mono uppercase tracking-widest text-text-2 font-bold">
                 Evaluation Standards
               </span>
-              <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream">
+              <h2 className="text-2xl sm:text-3xl font-display font-medium text-text">
                 How winners are chosen
               </h2>
-              <p className="text-sm text-champagne/80">
+              <p className="text-sm text-text-2">
                 All awards across both tracks are adjudicated by specialized panels based on transparent, pre-published criteria.
               </p>
             </div>
@@ -238,17 +238,17 @@ export function ResultsClient({
                 <div className="double-bezel-inner p-8 space-y-6">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-brand text-champagne border border-champagne/30 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-lg bg-gimun-fill text-on-gimun border border-line-2 flex items-center justify-center">
                         <Globe2 className="w-4 h-4" />
                       </div>
-                      <h3 className="font-heading font-bold text-xl text-cream">
+                      <h3 className="font-display font-medium text-xl text-text">
                         GIMUN scoring
                       </h3>
                     </div>
                     <TrackBadge track="gimun" size="sm" />
                   </div>
 
-                  <p className="text-xs text-champagne/80 leading-relaxed">
+                  <p className="text-xs text-text-2 leading-relaxed">
                     Evaluated continuously across all committee sessions by Dais chairs using the published event rubric.
                   </p>
 
@@ -261,17 +261,17 @@ export function ResultsClient({
                 <div className="double-bezel-inner p-8 space-y-6">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-brand text-champagne flex items-center justify-center border border-champagne/30">
+                      <div className="w-8 h-8 rounded-lg bg-gimun-fill text-on-gimun flex items-center justify-center border border-line-2">
                         <Scale className="w-4 h-4" />
                       </div>
-                      <h3 className="font-heading font-bold text-xl text-cream">
+                      <h3 className="font-display font-medium text-xl text-text">
                         Moot Court scoring
                       </h3>
                     </div>
                     <TrackBadge track="moot-cup" size="sm" />
                   </div>
 
-                  <p className="text-xs text-champagne/80 leading-relaxed">
+                  <p className="text-xs text-text-2 leading-relaxed">
                     Evaluated by appellate judges, senior advocates, and legal faculty based on oral advocacy and blind written memorials.
                   </p>
 
@@ -283,10 +283,10 @@ export function ResultsClient({
 
           {/* Hall of Fame Distinction & Previous Laureates */}
           <section className="space-y-4">
-            <h3 className="text-xl font-heading font-bold text-cream">
+            <h3 className="text-xl font-display font-medium text-text">
               Award winners
             </h3>
-            <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
+            <p className="text-xs sm:text-sm text-text-2 leading-relaxed">
               Upon conclusion of the {eventYear} edition, full names of winning advocates, best delegates, honorable mentions, and university delegations will be permanently archived in the institutional registry accessible on this page.
             </p>
           </section>
@@ -295,7 +295,7 @@ export function ResultsClient({
         /* CONDITIONAL RENDERING: POST-EVENT / PUBLISHED STATE */
         <section className="space-y-8">
           {/* Filter & Search Bar */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-champagne/20">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-line">
             <FilterBar
               options={filterOptions}
               activeValue={selectedTrack}
@@ -312,7 +312,7 @@ export function ResultsClient({
 
           {/* Awardees Roster */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono text-champagne/70 pb-2">
+            <div className="flex items-center justify-between text-xs font-mono text-text-3 pb-2">
               <span>Official Award Registry ({filtered.length})</span>
               <span className="flex items-center gap-1.5 text-champagne font-semibold">
                 <CheckCircle2 className="w-3.5 h-3.5 text-champagne" />
@@ -328,26 +328,26 @@ export function ResultsClient({
                       <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">
                           <TrackBadge track={item.track as Track} size="sm" />
-                          <span className="text-[11px] font-mono text-champagne/70">
+                          <span className="text-[11px] font-mono text-text-3">
                             Edition {eventYear}
                           </span>
                         </div>
 
                         <div>
-                          <span className="text-xs font-mono uppercase text-champagne/70 block mb-1">
+                          <span className="text-xs font-mono uppercase text-text-3 block mb-1">
                             {item.categoryOrCommittee}
                           </span>
-                          <h3 className="text-lg font-heading font-bold text-cream leading-snug">
+                          <h3 className="text-lg font-display font-medium text-text leading-snug">
                             {item.awardName}
                           </h3>
                         </div>
                       </div>
 
-                      <div className="pt-4 border-t border-champagne/20 space-y-1">
-                        <div className="font-heading font-bold text-base text-champagne">
+                      <div className="pt-4 border-t border-line space-y-1">
+                        <div className="font-display font-medium text-base text-champagne">
                           {item.winnerName}
                         </div>
-                        <div className="text-xs text-champagne/80">
+                        <div className="text-xs text-text-2">
                           {item.institution}
                         </div>
                       </div>

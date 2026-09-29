@@ -75,7 +75,7 @@ export default async function AboutOverviewPage() {
           <div className="grid gap-5 lg:grid-cols-2">
             <Bezel accent="gimun">
               <div className="flex h-full flex-col p-8 sm:p-10">
-                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-crimson-soft">Model United Nations</p>
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-gimun">Model United Nations</p>
                 <h3 className="mt-4 text-2xl font-display font-medium text-text">{site.eventNames.gimun}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-text-3">
                   Delegates represent countries across {committees.length} committees, negotiate in caucus and vote

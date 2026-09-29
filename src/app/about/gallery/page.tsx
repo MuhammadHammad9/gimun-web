@@ -29,11 +29,11 @@ export default async function GalleryPage() {
         description={'Photographs from committee sessions, courtroom rounds, ceremonies and campus life at GIKI, published after each edition.'}
         eyebrow={
           <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-white/10 text-text-2 border border-champagne/20">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-text/10 text-text-2 border border-line">
                         <Camera className="w-3.5 h-3.5 text-champagne" />
                         Visual Archives
                       </span>
-                      <span className="text-xs font-mono text-champagne/70 uppercase tracking-widest">
+                      <span className="text-xs font-mono text-text-3 uppercase tracking-widest">
                         Event Memories
                       </span>
                     </div>

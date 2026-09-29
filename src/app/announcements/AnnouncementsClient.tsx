@@ -43,20 +43,20 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
       {/* Header */}
       <header className="space-y-4 max-w-3xl">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-champagne/20 border border-champagne/30 text-champagne">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-champagne/20 border border-line-2 text-champagne">
           <span className="w-2 h-2 rounded-full bg-champagne animate-ping" />
           <span>Live Dispatch Feed</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-heading font-extrabold text-cream tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-display font-medium text-text tracking-tight">
           Announcements
         </h1>
-        <p className="text-sm sm:text-base text-champagne/80 leading-relaxed">
+        <p className="text-sm sm:text-base text-text-2 leading-relaxed">
           Real-time notices, schedule adjustments, dais releases, and logistical bulletins issued directly by the GIMUN Secretariat and GMC Court Administration.
         </p>
       </header>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-champagne/15">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-line">
         <FilterBar
           options={filterOptions}
           activeValue={selectedTrack}
@@ -84,7 +84,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
               <ScrollReveal key={item.id}>
                 <div
                   id={item.id}
-                  className="rounded-2xl border border-champagne/35 bg-overlay/95 shadow-xl scroll-mt-28 target:ring-2 target:ring-champagne transition-all"
+                  className="rounded-2xl border border-champagne/35 bg-overlay/95 shadow-xl scroll-mt-28 target:ring-2 target:ring-focus transition-all"
                 >
                   <div className="p-8 space-y-4 border-l-4 border-l-champagne bg-linear-to-r from-crest/40 to-transparent">
                     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -95,7 +95,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                         </span>
                         <TrackBadge track={item.track as Track} size="sm" />
                       </div>
-                      <div className="text-xs font-mono text-champagne/70 flex items-center gap-1.5">
+                      <div className="text-xs font-mono text-text-3 flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5" />
                         <span>
                           {formatPublishedDate(item.timestamp)}
@@ -103,10 +103,10 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                       </div>
                     </div>
 
-                    <h2 className="text-xl sm:text-2xl font-heading font-bold text-cream">
+                    <h2 className="text-xl sm:text-2xl font-display font-medium text-text">
                       {item.title}
                     </h2>
-                    <p className="text-sm text-champagne/85 leading-relaxed">
+                    <p className="text-sm text-text-2 leading-relaxed">
                       {item.body}
                     </p>
 
@@ -114,7 +114,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                       <div className="pt-2">
                         <Link
                           href={item.actionUrl}
-                          className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-champagne hover:text-cream underline underline-offset-4 transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-champagne hover:text-text underline underline-offset-4 transition-colors"
                         >
                           Associated Resource or Directive Link &rarr;
                         </Link>
@@ -130,7 +130,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
 
       {/* Regular Dispatches Feed */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between text-xs font-mono text-champagne/70 pb-2">
+        <div className="flex items-center justify-between text-xs font-mono text-text-3 pb-2">
           <span>Chronological Dispatches ({regularItems.length})</span>
           <span>Updated dynamically</span>
         </div>
@@ -140,7 +140,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
             <ScrollReveal key={item.id} delay={idx * 0.05}>
               <div
                 id={item.id}
-                className="rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full scroll-mt-28 target:ring-2 target:ring-champagne"
+                className="rounded-2xl border border-line bg-overlay/85 hover:border-line-3 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full scroll-mt-28 target:ring-2 target:ring-focus"
               >
                 <div className="p-7 flex flex-col justify-between h-full space-y-4">
                   <div className="space-y-3">
@@ -148,20 +148,20 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                       <div className="flex items-center gap-2">
                         <TrackBadge track={item.track as Track} size="sm" />
                         {item.badgeLabel && (
-                          <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-crest text-champagne border border-champagne/25">
+                          <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-elevated text-champagne border border-line">
                             {item.badgeLabel}
                           </span>
                         )}
                       </div>
-                      <span className="text-xs font-mono text-champagne/70">
+                      <span className="text-xs font-mono text-text-3">
                         {formatPublishedDate(item.timestamp)}
                       </span>
                     </div>
 
-                    <h3 className="text-lg sm:text-xl font-heading font-bold text-cream">
+                    <h3 className="text-lg sm:text-xl font-display font-medium text-text">
                       {item.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-text-2 leading-relaxed">
                       {item.body}
                     </p>
 
@@ -169,7 +169,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                       <div className="pt-1">
                         <Link
                           href={item.actionUrl}
-                          className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-champagne hover:text-cream underline underline-offset-4 transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-champagne hover:text-text underline underline-offset-4 transition-colors"
                         >
                           Associated Resource Link &rarr;
                         </Link>
@@ -177,7 +177,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                     )}
                   </div>
 
-                  <div className="pt-3 border-t border-champagne/15 flex items-center justify-between text-xs font-mono text-champagne/70">
+                  <div className="pt-3 border-t border-line flex items-center justify-between text-xs font-mono text-text-3">
                     <span className="capitalize">{item.track} Bulletin</span>
                     <span className="text-champagne font-semibold flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-champagne" />
@@ -213,10 +213,10 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
               <Radio className="w-4 h-4 text-champagne animate-pulse" />
               <span>Delegation updates</span>
             </div>
-            <h3 className="font-heading font-bold text-xl text-cream">
+            <h3 className="font-display font-medium text-xl text-text">
               Registered delegates and team heads
             </h3>
-            <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
+            <p className="text-xs sm:text-sm text-text-2 leading-relaxed">
               All committee-specific directives and emergency room adjustments are mirrored to official Head Delegate WhatsApp groups during the conference days.
             </p>
           </div>

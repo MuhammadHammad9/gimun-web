@@ -112,11 +112,11 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
       case 'moot-cup-specific':
         return 'bg-brand text-cream border border-champagne/30';
       case 'registration-fees':
-        return 'bg-crest text-champagne border border-champagne/30';
+        return 'bg-elevated text-champagne border border-line-2';
       case 'logistics':
         return 'bg-overlay text-champagne border border-champagne/30';
       default:
-        return 'bg-crest text-champagne border border-champagne/30';
+        return 'bg-elevated text-champagne border border-line-2';
     }
   };
 
@@ -137,14 +137,14 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
             <button
               type="button"
               onClick={handleExpandAll}
-              className="text-xs font-semibold text-champagne hover:text-cream px-3 py-1.5 rounded-lg bg-overlay hover:bg-crest border border-champagne/30 transition-colors shadow-xs"
+              className="text-xs font-semibold text-champagne hover:text-text px-3 py-1.5 rounded-lg bg-overlay hover:bg-elevated border border-line-2 transition-colors shadow-xs"
             >
               Expand All
             </button>
             <button
               type="button"
               onClick={handleCollapseAll}
-              className="text-xs font-semibold text-champagne hover:text-cream px-3 py-1.5 rounded-lg bg-overlay hover:bg-crest border border-champagne/30 transition-colors shadow-xs"
+              className="text-xs font-semibold text-champagne hover:text-text px-3 py-1.5 rounded-lg bg-overlay hover:bg-elevated border border-line-2 transition-colors shadow-xs"
             >
               Collapse All
             </button>
@@ -171,7 +171,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
       </div>
 
       {/* Accordion FAQ List - Clean minimalist border-b divider architecture */}
-      <div className="divide-y divide-champagne/15 border-y border-champagne/15">
+      <div className="divide-y divide-champagne/15 border-y border-line">
         <h2 className="sr-only">Questions, by topic</h2>
         {filteredFaqs.map((faq) => {
           const isOpen = openIds.has(faq.id);
@@ -186,7 +186,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                 onClick={() => toggleItem(faq.id)}
                 aria-expanded={isOpen}
                 aria-controls={`${faq.id}-answer`}
-                className="w-full text-left flex items-start justify-between gap-4 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-champagne/40 rounded-lg group"
+                className="w-full text-left flex items-start justify-between gap-4 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-lg group"
               >
                 <div className="space-y-1.5 pr-2">
                   <div className="flex items-center gap-2">
@@ -198,7 +198,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                       {CATEGORY_LABELS[faq.category] ?? faq.category.replaceAll('-', ' ')}
                     </span>
                   </div>
-                  <h3 className="text-base sm:text-lg font-heading font-semibold text-cream group-hover:text-champagne transition-colors leading-snug">
+                  <h3 className="text-base sm:text-lg font-heading font-semibold text-text group-hover:text-champagne transition-colors leading-snug">
                     {faq.question}
                   </h3>
                 </div>
@@ -206,8 +206,8 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                 <div
                   className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all mt-1 ${
                     isOpen
-                      ? 'bg-champagne text-crest'
-                      : 'bg-overlay text-champagne/80 border border-champagne/20 group-hover:border-champagne/50'
+                      ? 'bg-champagne text-on-accent'
+                      : 'bg-overlay text-text-2 border border-line group-hover:border-champagne/50'
                   }`}
                 >
                   <div
@@ -220,7 +220,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
               {/* Always in the HTML (search engines, find-in-page, no-JS);
                   collapsed answers are hidden rather than unmounted. */}
               <div id={`${faq.id}-answer`} hidden={!isOpen} className="overflow-hidden">
-                <div className="pt-3 pb-2 text-sm text-champagne/85 leading-relaxed">
+                <div className="pt-3 pb-2 text-sm text-text-2 leading-relaxed">
                   {faq.answer}
                 </div>
               </div>

@@ -7,7 +7,7 @@ export function AnalyticsChoiceButton() {
     <button
       type="button"
       onClick={resetAnalyticsChoice}
-      className="font-semibold text-champagne underline underline-offset-2 hover:text-cream"
+      className="font-semibold text-champagne underline underline-offset-2 hover:text-text"
     >
       Change your analytics choice
     </button>

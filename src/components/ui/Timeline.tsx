@@ -61,7 +61,7 @@ export function Timeline({
                     'rounded-full px-2 py-0.5 text-[10px] uppercase',
                     isActive
                       ? 'border border-line-2 bg-champagne/20 font-bold text-champagne'
-                      : 'border border-line bg-white/10 font-medium text-text-2'
+                      : 'border border-line bg-text/10 font-medium text-text-2'
                   )}
                 >
                   {phase.status === 'active'

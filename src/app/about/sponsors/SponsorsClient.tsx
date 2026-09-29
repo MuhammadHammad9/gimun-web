@@ -30,27 +30,27 @@ const TIER_LABELS: Record<Sponsor['tier'], { label: string; badge: string; color
   title: {
     label: 'Title Academic Patron',
     badge: 'Title Partner',
-    colorClass: 'bg-champagne/20 text-cream border-champagne/40',
+    colorClass: 'bg-champagne/20 text-text border-line-2',
   },
   gold: {
     label: 'Gold Strategic Partners',
     badge: 'Gold Partner',
-    colorClass: 'bg-brand text-cream border-champagne/30',
+    colorClass: 'bg-gimun-fill text-on-gimun border-line-2',
   },
   silver: {
     label: 'Silver Enterprise Partners',
     badge: 'Silver Partner',
-    colorClass: 'bg-crest text-champagne border-champagne/30',
+    colorClass: 'bg-elevated text-champagne border-line-2',
   },
   partner: {
     label: 'Judicial & Academic Fraternity Partners',
     badge: 'Institutional Partner',
-    colorClass: 'bg-overlay text-champagne border-champagne/30',
+    colorClass: 'bg-overlay text-champagne border-line-2',
   },
   'media-partner': {
     label: 'Official Press & Media Partners',
     badge: 'Media Partner',
-    colorClass: 'bg-crest text-champagne border-champagne/30',
+    colorClass: 'bg-elevated text-champagne border-line-2',
   },
 };
 
@@ -72,10 +72,10 @@ export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
             Partner Value Proposition
           </span>
-          <h2 className="text-2xl sm:text-3xl font-heading font-bold text-cream">
+          <h2 className="text-2xl sm:text-3xl font-display font-medium text-text">
             Why sponsor us?
           </h2>
-          <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-text-2 max-w-2xl leading-relaxed">
             Direct access to Pakistan&apos;s most articulate, legally minded, and ambitious student leaders,
             delivering unmatched brand equity, talent recruitment, and corporate social impact.
           </p>
@@ -93,10 +93,10 @@ export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps
             <Sparkles className="w-4 h-4 text-champagne" />
             <span>Sponsorship pack</span>
           </span>
-          <h3 className="text-xl sm:text-2xl font-heading font-bold text-cream">
+          <h3 className="text-xl sm:text-2xl font-display font-medium text-text">
             Download the {eventYear} Sponsorship Prospectus
           </h3>
-          <p className="text-xs sm:text-sm text-champagne/80 max-w-xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-text-2 max-w-xl leading-relaxed">
             Review detailed tier benefits, stage branding packages, delegate kit inserts, and CSR alignment
             opportunities in our comprehensive institutional prospectus.
           </p>
@@ -112,7 +112,7 @@ export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps
           </Link>
           <Link
             href="/contact?type=sponsorship"
-            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-crest border border-champagne/40 text-xs font-semibold text-champagne hover:bg-brand transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-elevated border border-line-2 text-xs font-semibold text-champagne hover:bg-brand transition-colors"
           >
             <span>Partner Inquiry Desk</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -127,10 +127,10 @@ export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
             Institutional Roster
           </span>
-          <h2 className="text-2xl font-heading font-bold text-cream">
+          <h2 className="text-2xl font-display font-medium text-text">
             This year&apos;s sponsors
           </h2>
-          <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
+          <p className="text-xs sm:text-sm text-text-2 max-w-2xl">
             {groupedSponsors.length > 0
               ? "Thank you to the organizations supporting this year's conference."
               : 'Partnerships for 2027 are being finalised. Partners will be listed here once agreements are signed.'}
@@ -140,16 +140,16 @@ export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps
         <div className="space-y-12">
           {groupedSponsors.map(({ tier, meta, sponsors }) => (
             <div key={tier} className="space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-champagne/15">
+              <div className="flex items-center justify-between pb-2 border-b border-line">
                 <div className="flex items-center gap-2.5">
                   <span
                     className={`text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${meta.colorClass}`}
                   >
                     {meta.badge}
                   </span>
-                  <h3 className="text-base font-heading font-bold text-cream">{meta.label}</h3>
+                  <h3 className="text-base font-display font-medium text-text">{meta.label}</h3>
                 </div>
-                <span className="text-xs font-mono text-champagne/70">
+                <span className="text-xs font-mono text-text-3">
                   {sponsors.length} {sponsors.length === 1 ? 'Organization' : 'Organizations'}
                 </span>
               </div>
@@ -165,11 +165,11 @@ export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps
               >
                 {sponsors.map((sp) => (
                   <ScrollReveal key={sp.id}>
-                    <div className="rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
+                    <div className="rounded-2xl border border-line bg-overlay/85 hover:border-line-3 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
                       <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
                         <div className="space-y-3">
                           {/* Logo Box with Grayscale-to-Color hover */}
-                          <div className="h-20 rounded-xl bg-crest/60 border border-champagne/20 flex items-center justify-center p-4 transition-all group-hover:border-champagne/40 group-hover:bg-crest/80">
+                          <div className="h-20 rounded-xl bg-elevated border border-line flex items-center justify-center p-4 transition-all group-hover:border-line-2 group-hover:bg-elevated">
                             {sp.logo ? (
                               <div className="relative w-full h-12">
                                 <Image
@@ -181,18 +181,18 @@ export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps
                                 />
                               </div>
                             ) : (
-                              <span className="font-heading font-extrabold text-lg sm:text-xl text-champagne/80 transition-colors group-hover:text-cream tracking-tight">
+                              <span className="font-display font-medium text-lg sm:text-xl text-text-2 transition-colors group-hover:text-text tracking-tight">
                                 {sp.name.split('(')[0].trim()}
                               </span>
                             )}
                           </div>
 
                           <div className="space-y-1">
-                            <h4 className="text-base font-heading font-bold text-cream group-hover:text-champagne transition-colors">
+                            <h4 className="text-base font-display font-medium text-text group-hover:text-champagne transition-colors">
                               {sp.name}
                             </h4>
                             {sp.description && (
-                              <p className="text-xs text-champagne/75 leading-relaxed">
+                              <p className="text-xs text-text-3 leading-relaxed">
                                 {sp.description}
                               </p>
                             )}
@@ -200,15 +200,15 @@ export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps
                         </div>
 
                         {sp.url && (
-                          <div className="pt-3 border-t border-champagne/15 flex items-center justify-between text-xs">
-                            <span className="text-[10px] font-mono uppercase text-champagne/60">
+                          <div className="pt-3 border-t border-line flex items-center justify-between text-xs">
+                            <span className="text-[10px] font-mono uppercase text-text-3">
                               Partner Web Portal
                             </span>
                             <a
                               href={sp.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 font-semibold text-champagne hover:text-cream transition-colors"
+                              className="inline-flex items-center gap-1.5 font-semibold text-champagne hover:text-text transition-colors"
                             >
                               <span>Official Site</span>
                               <ExternalLink className="w-3 h-3" />
@@ -226,10 +226,10 @@ export function SponsorsClient({ initialSponsors, deckUrl }: SponsorsClientProps
       </section>
 
       {/* Zero Online Payment Formalization Disclosure */}
-      <div className="p-4 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-md text-xs text-champagne/80 flex items-start gap-3">
+      <div className="p-4 rounded-2xl bg-overlay/90 border border-line shadow-md text-xs text-text-2 flex items-start gap-3">
         <ShieldCheck className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
         <div>
-          <strong className="text-cream font-semibold">Corporate Governance Notice:</strong>{' '}
+          <strong className="text-text font-semibold">Corporate Governance Notice:</strong>{' '}
           All corporate sponsorships, university patronage agreements, and award endowments are formalized exclusively
           via signed bilateral Memorandums of Understanding (MOUs) and processed through official GIKI university accounts.
           Zero commercial financial collection occurs through this website.

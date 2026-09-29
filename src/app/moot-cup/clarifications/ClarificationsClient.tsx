@@ -58,16 +58,16 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
   return (
     <div className="space-y-12">
       {/* Equal-Footing Binding Status Banner */}
-      <div className="p-4.5 rounded-2xl bg-crest/80 border border-champagne/30 flex items-start gap-3.5 shadow-xl">
+      <div className="p-4.5 rounded-2xl bg-elevated border border-line-2 flex items-start gap-3.5 shadow-xl">
         <AlertCircle className="w-5 h-5 text-champagne shrink-0 mt-0.5" />
-        <div className="space-y-1 text-xs sm:text-sm text-champagne/90">
-          <strong className="font-bold text-cream">Rule 2.4 — Equal Footing &amp; Binding Determination:</strong>{" "}
+        <div className="space-y-1 text-xs sm:text-sm text-text-2">
+          <strong className="font-bold text-text">Rule 2.4 — Equal Footing &amp; Binding Determination:</strong>{" "}
           All published clarifications constitute official and binding addenda to the Compromis. No private determinations are issued to individual teams. Clarifications may be relied upon and cited during written memorial drafting and oral pleadings.
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-champagne/30">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-line-2">
         <div className="w-full sm:w-80">
           <SearchInput
             value={searchQuery}
@@ -88,14 +88,14 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
               className={cn(
                 "px-3 py-1.5 rounded-xl text-xs font-mono transition-colors cursor-pointer",
                 selectedFilter === tab.id
-                  ? "bg-champagne text-brand shadow-xs font-bold"
-                  : "bg-overlay/80 border border-champagne/20 text-champagne/80 hover:bg-brand/60 hover:text-cream"
+                  ? "bg-champagne text-on-accent shadow-xs font-bold"
+                  : "bg-overlay/80 border border-line text-text-2 hover:bg-brand/60 hover:text-text"
               )}
             >
               {tab.label}
             </button>
           ))}
-          <span className="text-xs font-mono text-champagne/70 ml-2">
+          <span className="text-xs font-mono text-text-3 ml-2">
             Showing {filteredClarifications.length} of {initialClarifications.length}
           </span>
         </div>
@@ -109,25 +109,25 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
               <div className="double-bezel-inner p-6 sm:p-8 space-y-4 border-l-4 border-l-champagne">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-cream border border-champagne/30">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-text border border-line-2">
                       Clarification #{item.number}
                     </span>
-                    <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded bg-overlay/80 border border-champagne/20 text-champagne">
+                    <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded bg-overlay/80 border border-line text-champagne">
                       Binding Addendum
                     </span>
                   </div>
-                  <div className="text-xs font-mono text-champagne/70 flex items-center gap-1.5">
+                  <div className="text-xs font-mono text-text-3 flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-champagne" />
                     <span>Promulgated: {item.submittedAt}</span>
                   </div>
                 </div>
 
                 {/* Question */}
-                <div className="p-4 rounded-xl bg-overlay/80 border border-champagne/20 space-y-1.5">
+                <div className="p-4 rounded-xl bg-overlay/80 border border-line space-y-1.5">
                   <span className="text-[10px] font-mono uppercase font-bold text-champagne tracking-wider block">
                     Team Inquiry on Compromis:
                   </span>
-                  <p className="text-xs sm:text-sm font-medium text-cream leading-relaxed">
+                  <p className="text-xs sm:text-sm font-medium text-text leading-relaxed">
                     &ldquo;{item.question}&rdquo;
                   </p>
                 </div>

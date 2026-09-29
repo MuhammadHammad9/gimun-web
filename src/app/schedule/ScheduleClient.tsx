@@ -86,7 +86,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
   return (
     <div className="space-y-10">
       {/* 1. REAL-TIME HAPPENING SPOTLIGHT TICKER */}
-      <div className="p-4.5 rounded-2xl bg-overlay/90 text-champagne border border-champagne/25 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden shadow-xl">
+      <div className="p-4.5 rounded-2xl bg-overlay/90 text-champagne border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden shadow-xl">
         <div className="absolute inset-0 bg-radial-glow opacity-30 pointer-events-none" />
         <div className="relative z-10 flex items-center gap-3">
           <span className="flex h-3 w-3 relative">
@@ -98,11 +98,11 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
                 Official Itinerary Broadcast
               </span>
-              <span className="text-[10px] font-mono text-champagne/70">
+              <span className="text-[10px] font-mono text-text-3">
                 &bull; Pakistan Standard Time (PKT)
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-champagne/90">
+            <p className="text-xs sm:text-sm text-text-2">
               {liveSessionIds.size > 0
                 ? `Happening now: ${initialSchedule.filter((s) => liveSessionIds.has(s.id)).map((s) => s.title).join(' · ')}`
                 : 'All sessions take place on the GIKI campus. Keep your registration confirmation and QR ticket with you.'}
@@ -113,7 +113,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
         <div className="relative z-10 flex items-center gap-2 shrink-0">
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-mono bg-crest hover:bg-brand text-champagne hover:text-cream border border-champagne/30 cursor-pointer transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-mono bg-elevated hover:bg-brand text-champagne hover:text-text border border-line-2 cursor-pointer transition-colors"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Print Itinerary</span>
@@ -131,7 +131,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
       {/* 2. DAY SWITCHER WITH SPRING INDICATOR & FILTER CONTROLS */}
       <div className="space-y-6">
         {/* Day Switcher Tabs */}
-        <div className="p-1.5 rounded-2xl bg-overlay/90 border border-champagne/20 flex flex-wrap items-center gap-2 shadow-inner">
+        <div className="p-1.5 rounded-2xl bg-overlay/90 border border-line flex flex-wrap items-center gap-2 shadow-inner">
           {days.map((dayNum) => {
             const daySample = initialSchedule.find((s) => s.day === dayNum);
             const isSelected = selectedDay === dayNum;
@@ -142,8 +142,8 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                 key={dayNum}
                 onClick={() => setSelectedDay(dayNum)}
                 className={cn(
-                  "relative px-5 py-3 rounded-xl font-heading font-bold text-xs sm:text-sm transition-colors duration-200 cursor-pointer select-none text-left flex items-center gap-3",
-                  isSelected ? "text-crest" : "text-champagne/70 hover:text-cream"
+                  "relative px-5 py-3 rounded-xl font-display font-medium text-xs sm:text-sm transition-colors duration-200 cursor-pointer select-none text-left flex items-center gap-3",
+                  isSelected ? "text-crest" : "text-text-3 hover:text-text"
                 )}
               >
                 {isSelected && (
@@ -159,7 +159,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                 >
                   Day {dayNum}
                 </span>
-                <span className="relative z-10 font-heading font-bold text-sm">
+                <span className="relative z-10 font-display font-medium text-sm">
                   {dayDate || `Day ${dayNum}`}
                 </span>
               </button>
@@ -168,13 +168,13 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
         </div>
 
         {/* Track Filter Pills & Counter */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-champagne/15">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-line">
           <FilterBar
             options={filterOptions}
             activeValue={trackFilter}
             onChange={setTrackFilter}
           />
-          <div className="text-xs font-mono text-champagne/70">
+          <div className="text-xs font-mono text-text-3">
             Displaying {filteredSessions.length} sessions for {currentDayLabel.split("—")[0]}
           </div>
         </div>
@@ -206,7 +206,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                 >
                   {/* Left: Time Block */}
                   <div className="shrink-0 md:w-60 space-y-1.5">
-                    <div className="inline-flex items-center gap-2 text-base sm:text-lg font-mono font-extrabold text-cream">
+                    <div className="inline-flex items-center gap-2 text-base sm:text-lg font-mono font-semibold text-text">
                       <Clock
                         className={cn(
                           "w-4 h-4",
@@ -227,7 +227,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                         </span>
                       )}
                       {session.updatedFlag && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-crest text-champagne border border-champagne/40">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-elevated text-champagne border border-line-2">
                           Updated
                         </span>
                       )}
@@ -236,19 +236,19 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
 
                   {/* Center: Title & Substantive Notes */}
                   <div className="grow space-y-1.5">
-                    <h3 className="font-heading font-bold text-lg sm:text-xl text-cream leading-snug">
+                    <h3 className="font-display font-medium text-lg sm:text-xl text-text leading-snug">
                       {session.title}
                     </h3>
                     {session.notes && (
-                      <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-text-2 leading-relaxed">
                         {session.notes}
                       </p>
                     )}
                   </div>
 
                   {/* Right: Location & Venue */}
-                  <div className="shrink-0 flex md:flex-col items-start md:items-end justify-between gap-1.5 pt-3 md:pt-0 border-t md:border-t-0 border-champagne/15 text-xs font-mono text-champagne/75">
-                    <div className="flex items-center gap-1.5 font-bold text-cream">
+                  <div className="shrink-0 flex md:flex-col items-start md:items-end justify-between gap-1.5 pt-3 md:pt-0 border-t md:border-t-0 border-line text-xs font-mono text-text-3">
+                    <div className="flex items-center gap-1.5 font-bold text-text">
                       <MapPin
                         className={cn(
                           "w-3.5 h-3.5 text-champagne"
@@ -256,7 +256,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                       />
                       <span>{session.location}</span>
                     </div>
-                    <span className="text-[11px] text-champagne/60">GIKI Campus Complex</span>
+                    <span className="text-[11px] text-text-3">GIKI Campus Complex</span>
                   </div>
                 </div>
               </div>
@@ -279,10 +279,10 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
 
         <div className="space-y-1">
-          <h4 className="font-heading font-bold text-base text-cream">
+          <h4 className="font-display font-medium text-base text-text">
             Room Allocations &amp; Real-time Schedule Adjustments
           </h4>
-          <p className="text-xs sm:text-sm text-champagne/80">
+          <p className="text-xs sm:text-sm text-text-2">
             Any emergency time shifts or chamber transfers during conference days will automatically publish on our live Announcements broadcast.
           </p>
         </div>

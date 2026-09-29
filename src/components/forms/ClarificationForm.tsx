@@ -79,7 +79,7 @@ export function ClarificationForm() {
           <CheckCircle2 className="w-6 h-6" />
         </div>
         <h3 className="text-h3 font-display font-medium text-text">Question submitted</h3>
-        <p className="text-xs text-champagne/80 leading-relaxed max-w-sm mx-auto">
+        <p className="text-xs text-text-2 leading-relaxed max-w-sm mx-auto">
           Your question regarding Compromis section <strong>{paragraphRef}</strong> has been logged.
           Official clarifications are reviewed and published to the public Clarifications Log.
         </p>
@@ -118,7 +118,7 @@ export function ClarificationForm() {
       {status === 'error' && (
         <div
           role="alert"
-          className="flex items-center gap-2 rounded-xl border border-brand bg-brand-deep/80 p-3 text-xs text-crimson-soft"
+          className="flex items-center gap-2 rounded-xl border border-accent-gimun/40 bg-accent-gimun/8 p-3 text-xs text-accent-gimun"
         >
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{serverError || 'An error occurred. Please try again.'}</span>
@@ -134,7 +134,7 @@ export function ClarificationForm() {
             value={teamId}
             onChange={(e) => setTeamId(e.target.value)}
             placeholder={`e.g. MC-${eventYear}-014`}
-            className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+            className="w-full px-4 py-2.5 rounded-xl border border-line-2 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
           />
         </FormField>
 
@@ -145,7 +145,7 @@ export function ClarificationForm() {
             value={teamEmail}
             onChange={(e) => setTeamEmail(e.target.value)}
             placeholder="advocate@university.edu.pk"
-            className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+            className="w-full px-4 py-2.5 rounded-xl border border-line-2 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
           />
         </FormField>
       </div>
@@ -158,7 +158,7 @@ export function ClarificationForm() {
           value={paragraphRef}
           onChange={(e) => setParagraphRef(e.target.value)}
           placeholder="e.g. Paragraph 18, Line 4"
-          className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+          className="w-full px-4 py-2.5 rounded-xl border border-line-2 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
         />
       </FormField>
 
@@ -170,7 +170,7 @@ export function ClarificationForm() {
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
           placeholder="State the ambiguity clearly without introducing extraneous factual assumptions..."
-          className="w-full px-4 py-2.5 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+          className="w-full px-4 py-2.5 rounded-xl border border-line-2 bg-canvas/90 text-text placeholder-champagne/40 text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
         />
       </FormField>
 

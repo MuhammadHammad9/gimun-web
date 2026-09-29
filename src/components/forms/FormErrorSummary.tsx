@@ -35,7 +35,7 @@ export function FormErrorSummary({ errors }: { errors: Record<string, string> })
       id="form-error-summary"
       role="alert"
       tabIndex={-1}
-      className="rounded-xl border border-brand bg-brand-deep/80 p-4 text-crimson-soft focus:outline-none"
+      className="rounded-xl border border-accent-gimun/40 bg-accent-gimun/8 p-4 text-accent-gimun focus:outline-none"
     >
       <p className="flex items-center gap-2 text-xs font-bold">
         <AlertCircle aria-hidden="true" className="h-4 w-4 shrink-0 text-crimson-hi" />
@@ -53,7 +53,7 @@ export function FormErrorSummary({ errors }: { errors: Record<string, string> })
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 if (el.matches('input, select, textarea, button')) el.focus({ preventScroll: true });
               }}
-              className="underline underline-offset-2 hover:text-cream"
+              className="underline underline-offset-2 hover:text-text"
             >
               {message}
             </a>

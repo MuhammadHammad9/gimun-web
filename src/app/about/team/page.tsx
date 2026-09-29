@@ -29,11 +29,11 @@ export default async function TeamPage() {
         description={'GIMUN and GMC are run by GIKI students: the secretariat and committee chairs, the moot convening committee, and the organizers who look after logistics.'}
         eyebrow={
           <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-white/10 text-text-2 border border-champagne/20">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-text/10 text-text-2 border border-line">
                         <Users className="w-3.5 h-3.5 text-champagne" />
                         Executive Leadership
                       </span>
-                      <span className="text-xs font-mono text-champagne/70 uppercase tracking-widest">
+                      <span className="text-xs font-mono text-text-3 uppercase tracking-widest">
                         {getEventYear(await getSiteConfig())} Organizing Directorate
                       </span>
                     </div>

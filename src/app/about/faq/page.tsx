@@ -29,11 +29,11 @@ export default async function FaqPage() {
         description={'Find answers to common questions about GIMUN committee procedures, GMC courtroom advocacy, registration fees, on-campus accommodation at GIKI, and logistics.'}
         eyebrow={
           <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-champagne border border-champagne/40">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-champagne border border-line-2">
                         <HelpCircle className="w-3.5 h-3.5 text-champagne" />
                         Official Knowledge Base
                       </span>
-                      <span className="text-xs font-mono text-champagne/70 uppercase tracking-widest">
+                      <span className="text-xs font-mono text-text-3 uppercase tracking-widest">
                         Help &amp; Guidelines
                       </span>
                     </div>

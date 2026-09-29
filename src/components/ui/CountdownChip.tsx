@@ -78,7 +78,7 @@ export function CountdownChip({
 
   if (timeLeft.status === 'live') {
     return (
-      <div className={cn(SHELL, 'border-champagne/40 text-champagne', className)}>
+      <div className={cn(SHELL, 'border-line-2 text-champagne', className)}>
         <span aria-hidden="true" className="relative flex h-1.5 w-1.5">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-champagne opacity-70" />
           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-champagne" />

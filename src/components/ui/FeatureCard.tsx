@@ -50,7 +50,7 @@ export function FeatureCard({
               className={cn(
                 'inline-flex h-9 w-9 items-center justify-center rounded-xl border',
                 track === 'gimun'
-                  ? 'border-crimson/30 bg-crimson/10 text-crimson-soft'
+                  ? 'border-crimson/30 bg-crimson/10 text-accent-gimun'
                   : 'border-line-2 bg-champagne/10 text-champagne'
               )}
             >
