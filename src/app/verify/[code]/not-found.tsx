@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/Button';
+import '@/styles/pages/utility.css';
 
 export default function CertificateNotFound() {
   return (

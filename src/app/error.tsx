@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
+import '@/styles/pages/utility.css';
 
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (

@@ -1,3 +1,5 @@
+import '@/styles/pages/utility.css';
+
 export default function Loading() {
   return (
     <section aria-busy="true" aria-live="polite" className="utility-page wrap">

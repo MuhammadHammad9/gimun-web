@@ -1,3 +1,17 @@
+# Verification record: 29 September 2026 (storyline, art and interaction pass)
+
+Run against the final source of this pass, local fixtures only:
+
+- `tsc`, ESLint and `next build`: pass. Content schema 13/13. Unit tests 62/62.
+- Link audit (0 broken routes, documents or anchors), static accessibility audit, SEO audit (62/62), submission contract audit (15/15), HTTP form scenarios (7/7): pass.
+- Browser suite: all six viewport shards pass (331 tests), including new tests for the chapter rail (jump, focus, `aria-current`), the quick jump (Ctrl+K, filter, Enter, Escape with focus restored) and the copy-address confirmation. A rerun on 390 and 1440 px after the stylesheet split: 122 passed.
+- Admin end-to-end workflow: 1/1 (with the worktree `.env.local` moved aside for the run, as noted below).
+- Rendered axe: 0 violations on all 22 public routes at 390 and 1,440 px in light and dark (88 checks).
+- Bundle guard: no motion library in any first load; first-load JS within 6.5 KB of the baseline on every audited page; page-specific CSS now loads only on its own route (global CSS 27.2 KB gzip).
+- Lighthouse (mobile, simulated throttling, median of 5): `/` perf 87, `/register` 88, `/resources` 89; accessibility, SEO and best practices 100; TBT 60 ms; CLS 0; console errors, bf-cache, heading order and colour contrast pass. LCP remains 3.6 to 3.9 s against the 3 s assertion, as in every earlier record: the hero h1 paints at first contentful paint and the simulation adds the React and Next runtime requested before it. Home measured 90 before this pass; the chapter rail, pointer spotlight and quick jump cost about 3 KB of first-load script.
+
+---
+
 # Verification record: 29 September 2026 (motion redesign, worktree branch feat/motion-redesign-ui)
 
 Run against the final source of the redesign, local fixtures only:

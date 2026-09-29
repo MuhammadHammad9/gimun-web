@@ -11,6 +11,7 @@ import { Download } from "lucide-react";
 import type { Document } from "@/lib/types";
 import { getEventYear } from "@/lib/site-config";
 import { HelpCallout } from '@/components/ui/HelpCallout';
+import '@/styles/pages/resources.css';
 
 interface ResourcesClientProps {
   initialDocuments: Document[];

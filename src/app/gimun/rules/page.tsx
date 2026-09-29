@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { GlobeArt } from '@/components/art/LineArt';
 import { ChapterHead } from '@/components/sections/Chapter';
-import { ChapterIndex } from '@/components/story/ChapterIndex';
+import { ChapterRail } from '@/components/story/ChapterRail';
 import { Steps } from '@/components/sections/Steps';
 import { HelpCallout } from '@/components/ui/HelpCallout';
 import { PageHero } from '@/components/ui/PageHero';
@@ -52,7 +52,7 @@ export default async function GimunRulesPage() {
 
   return (
     <>
-      <ChapterIndex />
+      <ChapterRail />
       <PageHero
         variant="gimun"
         breadcrumbs={[{ label: 'GIMUN', href: '/gimun' }, { label: 'Rules of procedure' }]}

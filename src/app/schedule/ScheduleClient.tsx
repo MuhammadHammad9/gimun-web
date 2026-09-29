@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { FilterBar } from '@/components/ui/FilterBar';
 import type { ScheduleItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import '@/styles/pages/schedule.css';
 
 /** Absolute instant for a session clock time, in Pakistan time (UTC+5, no DST). */
 function sessionInstant(eventStart: string, day: number, time: string) {

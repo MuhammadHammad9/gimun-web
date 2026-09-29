@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { MapPin } from 'lucide-react';
+import '@/styles/pages/venue.css';
 
 /**
  * A Google Maps embed that loads only when asked. Until then nothing is

@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
 import { Closing } from '@/components/sections/Closing';
-import { ChapterIndex } from '@/components/story/ChapterIndex';
+import { ChapterRail } from '@/components/story/ChapterRail';
 import { COMMITTEE_TYPE, seatsOpen } from '@/components/sections/Placards';
 import { Steps } from '@/components/sections/Steps';
 import { Button } from '@/components/ui/Button';
@@ -56,7 +56,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
 
   return (
     <>
-      <ChapterIndex />
+      <ChapterRail />
       <PageHero
         variant="gimun"
         breadcrumbs={[

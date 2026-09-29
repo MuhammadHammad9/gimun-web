@@ -6,7 +6,7 @@ import { formatEventDate, getEventYear } from '@/lib/site-config';
 import { PageHero } from '@/components/ui/PageHero';
 import { FactList } from '@/components/ui/Editorial';
 import { ChapterHead } from '@/components/sections/Chapter';
-import { ChapterIndex } from '@/components/story/ChapterIndex';
+import { ChapterRail } from '@/components/story/ChapterRail';
 import { Steps } from '@/components/sections/Steps';
 import { BracketArt, ScalesArt } from '@/components/art/LineArt';
 import { TransitionLink } from '@/components/motion/TransitionLink';
@@ -26,7 +26,7 @@ export default async function MootRulesPage() {
 
   return (
     <>
-      <ChapterIndex />
+      <ChapterRail />
       <PageHero
         variant="moot"
         breadcrumbs={[{ label: 'GMC', href: '/moot-cup' }, { label: 'Rules & memorials' }]}

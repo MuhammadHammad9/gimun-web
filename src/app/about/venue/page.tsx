@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 import { RouteArt } from '@/components/art/LineArt';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
-import { ChapterIndex } from '@/components/story/ChapterIndex';
+import { ChapterRail } from '@/components/story/ChapterRail';
 import { Steps } from '@/components/sections/Steps';
 import { MapFacade } from '@/components/ui/MapFacade';
 import { PageHero } from '@/components/ui/PageHero';
@@ -78,7 +78,7 @@ export default async function VenuePage() {
 
   return (
     <>
-      <ChapterIndex />
+      <ChapterRail />
       <PageHero
         variant="utility"
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'Venue & travel' }]}

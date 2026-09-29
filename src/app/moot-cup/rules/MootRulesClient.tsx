@@ -4,6 +4,7 @@ import { useId, useState, type CSSProperties } from 'react';
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 import { ChapterHead } from '@/components/sections/Chapter';
 import { FilterBar } from '@/components/ui/FilterBar';
+import '@/styles/pages/moot-rules.css';
 
 const WORD_LIMIT = 8000;
 

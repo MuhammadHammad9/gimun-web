@@ -5,6 +5,7 @@ import { ClarificationForm } from '@/components/forms/ClarificationForm';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SearchInput } from '@/components/ui/SearchInput';
 import type { Clarification } from '@/lib/types';
+import '@/styles/pages/clarifications.css';
 
 interface ClarificationsClientProps {
   initialClarifications: Clarification[];

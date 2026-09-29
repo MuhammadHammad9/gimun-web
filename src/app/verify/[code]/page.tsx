@@ -4,6 +4,7 @@ import { Download } from 'lucide-react';
 import { Seal } from '@/components/art/Seal';
 import { Button } from '@/components/ui/Button';
 import { findCertificate } from '@/lib/server/certificates';
+import '@/styles/pages/utility.css';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {

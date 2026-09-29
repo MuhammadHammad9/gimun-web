@@ -12,9 +12,12 @@ import { formatEventDate } from '@/lib/site-config';
 import { BrandMark } from './BrandMark';
 import { MobileMenu } from './MobileMenu';
 import { isCurrentPath } from './nav-utils';
-import { GlobeArt, PorticoArt, ScalesArt } from '@/components/art/LineArt';
+import dynamic from 'next/dynamic';
 import { QuickJumpButton } from './QuickJumpButton';
 import { ThemeSwitch } from './ThemeSwitch';
+
+// The panel art (and the geometry behind it) loads when a panel first opens.
+const PanelArt = dynamic(() => import('./PanelArt'), { ssr: false });
 
 type PanelKind = 'gimun' | 'gmc' | 'about';
 
@@ -324,10 +327,4 @@ function MegaFoot({ kind, onNavigate }: { kind?: PanelKind; onNavigate: () => vo
       </Link>
     </div>
   );
-}
-
-function PanelArt({ kind }: { kind: PanelKind }) {
-  if (kind === 'gimun') return <GlobeArt className="mega__art" />;
-  if (kind === 'gmc') return <ScalesArt className="mega__art" />;
-  return <PorticoArt className="mega__art" />;
 }

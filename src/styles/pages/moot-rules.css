@@ -1,0 +1,99 @@
+/* --- Moot rules: figures in threes, the word check, score rows ----------- */
+@media (min-width: 900px) {
+  .figures--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.word-check {
+  align-self: start;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  border: 1px solid var(--color-line);
+  border-radius: 1.5rem;
+  background: var(--color-raised);
+  transition: border-color var(--dur-ui) var(--ease-brand);
+}
+
+.word-check[data-over] {
+  border-color: color-mix(in srgb, var(--color-accent-gimun) 55%, transparent);
+}
+
+.word-check__range {
+  width: 100%;
+  accent-color: var(--color-champagne);
+  cursor: pointer;
+}
+
+.word-check[data-over] .word-check__range {
+  accent-color: var(--color-accent-gimun);
+}
+
+.word-check__result {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-line);
+  color: var(--color-text);
+  font-size: 0.9375rem;
+}
+
+.word-check[data-over] .word-check__result {
+  color: var(--color-accent-gimun);
+}
+
+.score-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: baseline;
+  padding-block: 1.5rem;
+  animation: score-row-in var(--dur-surface) var(--ease-out-expo) both;
+}
+
+.score-row:nth-child(2) { animation-delay: 40ms; }
+.score-row:nth-child(3) { animation-delay: 80ms; }
+.score-row:nth-child(4) { animation-delay: 120ms; }
+
+@keyframes score-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+.score-row__points {
+  color: var(--color-champagne);
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-row__unit {
+  margin-left: 0.25rem;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: 0.08em;
+}
+
+/* A hairline under each row, as long as the criterion's share of 20 points. */
+.score-row__bar {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--color-champagne);
+  transform: scaleX(var(--share, 0));
+  transform-origin: left;
+  transition: transform var(--dur-surface) var(--ease-out-expo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .score-row {
+    animation: none;
+  }
+}

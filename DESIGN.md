@@ -136,6 +136,7 @@ Two tracks share the system and never share a colour. Crimson belongs to GIMUN, 
 - Mono labels for metadata only; headings are never set in mono.
 - One hero moment per page, one pinned or scrubbed sequence at most.
 - Nothing invented: every number, date and name comes from content.
+- Every story page is an arc of numbered chapters, with a rail in the margin and a bridge line at each key turn.
 
 ## Colors
 
@@ -183,6 +184,8 @@ A warm, near-monochrome maroon ground with two track accents that are never deco
 
 ## Layout
 
+**The story.** Each persuasive page (home, GIMUN, GMC, committee pages, about, venue, both rules pages) is an arc of numbered chapters that each answer the next question a visitor has: home runs choice, rooms, stakes, week, clock, preparation, seat. Every chapter heading carries a kicker ("02, The choice", drawn with a hairline between) that doubles as the marker for the chapter rail. Two or three bridge lines per page hand one chapter to the next with a sentence and a link. Utility pages (schedule, resources, announcements, FAQ, team, sponsors, gallery, contact, privacy) skip the theatre: a lead-in, clean ordered sections, and a "Where to next" ending with two or three related pages.
+
 A 88rem container with a fluid gutter (1.25rem to 3.5rem) and generous chapter padding (`section-y`, 5rem to 10rem). Chapter heads split into title and lead side by side from 1024px and stack below it. Process content uses a sticky head beside an ordered list (steps-split). Two-up "doors" join at a seam on wide screens. The committees and cases sit in a horizontal corridor that pins and pans on desktop and is a native scroll-snap track on touch.
 
 Utility pages (schedule, resources, announcements, results, about sub-pages) use a hero followed by one hand-off sheet with a tighter top padding (`chapter--flush-top`). Every layout collapses to one column below 640px with no horizontal page scroll at 390px.
@@ -202,14 +205,14 @@ Gently rounded throughout: placards (0.625rem), buttons that are not pills (0.75
 
 ### Buttons
 - **Shape:** full pill for primary and track buttons; gently rounded (0.75rem) for secondary.
-- **Primary:** champagne fill, maroon ink, 44px tall. The arrow sits in a disc that nudges right on hover.
+- **Primary:** champagne fill, maroon ink, 44px tall. The arrow sits in a disc; on hover it steps out and a new one steps in.
 - **GIMUN:** crimson fill (`gimun-fill`), white text. GIMUN actions only.
 - **GMC:** champagne outline that fills on hover. GMC actions only.
 - **Secondary:** hairline outline, text ink, a faint wash on hover.
 - **Hover / Focus:** 200ms colour transitions on the brand ease, a 2px focus ring in `focus` offset from the canvas, and a 0.98 press.
 
 ### Text links
-- **Style:** semibold ink with a hairline underline (`line-2`) at 0.3em offset; the underline takes the text colour on hover. The default for tertiary actions and hero action rows.
+- **Style:** semibold ink over a hairline underline (`line-2`); on hover a full-colour underline draws in from the left. The default for tertiary actions and hero action rows.
 
 ### Cards / Containers
 - **Corner Style:** 1.5rem (cards), 2rem (utility cards).
@@ -223,6 +226,15 @@ The committee and case cards of the corridor: tall (31rem), a mono type line, th
 ### Navigation
 A floating header with mega panels for GIMUN, Moot Court and About, a split Register button, and a full-screen mobile menu whose panels wipe down and whose links rise from masks. The current section carries a small dot under its label.
 
+### Line art
+One standard for every drawing (`src/components/art`): a 240-unit square with a 16-unit safe margin, a 1.5 stroke for form and a 1 stroke at reduced opacity for detail, round caps and joins, and closed shapes filled with the ground so what sits behind them is hidden. Geometry is computed, not eyeballed: the globe is an orthographic projection with its far side removed; the seal reuses the same globe and scales. The shield (`BrandMark`, `public/icon.svg` and every PNG icon) is one 48-unit drawing: globe half in crimson, scales half in champagne.
+
+### Chapter rail and quick jump
+From 1280px a rail in the left margin lists the page's chapters, marks the one in view (`aria-current="location"`) and fills a hairline with reading progress; it appears after the first scroll. Ctrl+K (or the header search button) opens a native modal dialog that filters every public page and goes through the curtain on Enter.
+
+### Micro-interactions
+Only on the visitor's own action, transform and opacity only, off under reduced motion: a highlight glides between header links; text-link underlines draw in from the left; button arrows step out as a new one steps in; doors, placards and cards carry a pointer spotlight along their edge (fine pointers only); copy buttons turn into a tick and announce it; the FAQ chevron turns and answers rise in.
+
 ### The Curtain
 Five maroon panels (three on phones, four on tablets) close from the bottom in a 60ms stagger, 480ms each, on internal link clicks, show the destination's name, then open upward (520ms). Back and Forward are instant; reduced motion skips it.
 
@@ -234,6 +246,7 @@ Five maroon panels (three on phones, four on tablets) close from the bottom in a
 - **Do** use index numerals (01, 02, 03) and hairlines to show order and structure.
 - **Do** keep numbers real: counters, seats and dates come from content, never placeholders.
 - **Do** check both themes and both 390px and 1440px for every new surface.
+- **Do** give a new story page numbered chapters (`ChapterHead` with `chapter` and `act`) and a `ChapterIndex`; give a new utility page a `NextSteps` ending.
 
 ### Don't:
 - **Don't** use a thick coloured side border on cards.
@@ -241,3 +254,5 @@ Five maroon panels (three on phones, four on tablets) close from the bottom in a
 - **Don't** set headings in mono, or body text in the display face.
 - **Don't** use crimson or champagne as decoration outside their track.
 - **Don't** add a second pinned or scrubbed sequence to a page that already has one.
+- **Don't** end a page twice (a closing chapter and a help row); one ending per page.
+- **Don't** draw art off the standard grid or leave overlapping shapes unfilled.

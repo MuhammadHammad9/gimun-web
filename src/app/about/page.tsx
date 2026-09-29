@@ -5,7 +5,7 @@ import { ScrubText } from '@/components/motion/ScrubText';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead, ChapterKicker } from '@/components/sections/Chapter';
 import { Bridge } from '@/components/story/Bridge';
-import { ChapterIndex } from '@/components/story/ChapterIndex';
+import { ChapterRail } from '@/components/story/ChapterRail';
 import { Closing } from '@/components/sections/Closing';
 import { Steps } from '@/components/sections/Steps';
 import { Ledger } from '@/components/ui/Editorial';
@@ -51,7 +51,7 @@ export default async function AboutOverviewPage() {
 
   return (
     <>
-      <ChapterIndex />
+      <ChapterRail />
       <div className="handoff">
         <div className="handoff__stage">
           <div className="handoff__scene">

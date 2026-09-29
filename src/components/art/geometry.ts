@@ -92,12 +92,12 @@ export function globe(
 ): GlobeGeometry {
   const meridianPaths = meridians.flatMap((lon) => {
     const samples: SpherePoint[] = [];
-    for (let lat = -90; lat <= 90; lat += 7.5) samples.push(project(lat, lon, elevation));
+    for (let lat = -90; lat <= 90; lat += 15) samples.push(project(lat, lon, elevation));
     return visibleRuns(samples, cx, cy, r);
   });
   const parallel = (lat: number) => {
     const samples: SpherePoint[] = [];
-    for (let lon = -180; lon <= 180; lon += 7.5) samples.push(project(lat, lon, elevation));
+    for (let lon = -180; lon <= 180; lon += 15) samples.push(project(lat, lon, elevation));
     // Start the loop on the far side so the visible arc is one run.
     const start = samples.findIndex((p) => p.z < 0);
     const ordered = start > 0 ? [...samples.slice(start), ...samples.slice(1, start + 1)] : samples;
@@ -120,7 +120,7 @@ export function orbit(cx: number, cy: number, rx: number, ry: number, tilt: numb
   };
   const arc = (from: number, to: number) => {
     const pts: Pt[] = [];
-    for (let i = 0; i <= 24; i++) pts.push(point(from + ((to - from) * i) / 24));
+    for (let i = 0; i <= 12; i++) pts.push(point(from + ((to - from) * i) / 12));
     return smoothPath(pts);
   };
   // The upper half of the ring (screen space) passes behind the sphere.

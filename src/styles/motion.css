@@ -93,3 +93,11 @@ html.lenis {
     display: none !important;
   }
 }
+
+/* A list row rising into place (schedule, documents, clarifications). */
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.375rem);
+  }
+}

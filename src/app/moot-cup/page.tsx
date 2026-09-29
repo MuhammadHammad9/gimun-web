@@ -4,7 +4,7 @@ import { HandoffStage } from '@/components/motion/HandoffStage';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
 import { Bridge } from '@/components/story/Bridge';
-import { ChapterIndex } from '@/components/story/ChapterIndex';
+import { ChapterRail } from '@/components/story/ChapterRail';
 import { Closing } from '@/components/sections/Closing';
 import { DateLedger } from '@/components/sections/DateLedger';
 import { CasePlacard } from '@/components/sections/Placards';
@@ -55,7 +55,7 @@ export default async function MootCupOverviewPage() {
 
   return (
     <>
-      <ChapterIndex />
+      <ChapterRail />
       <div className="handoff">
         <div className="handoff__stage">
           <div className="handoff__scene">

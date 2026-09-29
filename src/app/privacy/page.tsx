@@ -5,6 +5,7 @@ import { getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
 import { AnalyticsChoiceButton } from './AnalyticsChoiceButton';
+import '@/styles/pages/privacy.css';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({

@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { ArrowRight, Search } from 'lucide-react';
 import { defaultNavigation } from '@/lib/navigation';
+import '@/styles/pages/quick-jump.css';
 
 interface Destination {
   label: string;

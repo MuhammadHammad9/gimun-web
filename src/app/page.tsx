@@ -21,7 +21,7 @@ import { DaysToGo } from '@/components/ui/DaysToGo';
 import { PageHero } from '@/components/ui/PageHero';
 import { SponsorStrip } from '@/components/ui/SponsorStrip';
 import { Bridge } from '@/components/story/Bridge';
-import { ChapterIndex } from '@/components/story/ChapterIndex';
+import { ChapterRail } from '@/components/story/ChapterRail';
 
 import { getCommittees, getProblemCategories, getSchedule, getSiteConfig, getSponsors } from '@/lib/content';
 import { feeAmount } from '@/lib/fees';
@@ -114,7 +114,7 @@ export default async function Home() {
 
   return (
     <>
-      <ChapterIndex />
+      <ChapterRail />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
