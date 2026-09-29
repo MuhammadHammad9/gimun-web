@@ -22,6 +22,8 @@ export interface PageHeroProps {
   accentWords?: string[];
   /** Words set in the GIMUN crimson instead (the home headline names both rooms). */
   gimunWords?: string[];
+  /** One exact phrase of the title in the accent colour (repeated words stay plain). */
+  accentPhrase?: string;
   description?: string;
   actions?: HeroAction[];
   /** Raw JSX for the action row, when `actions` cannot express it. */
@@ -59,6 +61,7 @@ export function PageHero({
   title,
   accentWords,
   gimunWords,
+  accentPhrase,
   description,
   actions,
   actionsSlot,
@@ -90,7 +93,15 @@ export function PageHero({
         centered && 'mx-auto',
       )}
     >
-      {accentSet.size === 0 && gimunSet.size === 0
+      {accentPhrase && title.includes(accentPhrase)
+        ? (
+            <>
+              {title.slice(0, title.indexOf(accentPhrase))}
+              <span className={accentClass}>{accentPhrase}</span>
+              {title.slice(title.indexOf(accentPhrase) + accentPhrase.length)}
+            </>
+          )
+        : accentSet.size === 0 && gimunSet.size === 0
         ? title
         : title.split(' ').map((word, i) => (
             <React.Fragment key={`${word}-${i}`}>

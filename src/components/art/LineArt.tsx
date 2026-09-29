@@ -1,3 +1,5 @@
+import type React from 'react';
+
 /**
  * Line art for chapters and cards. Stroke-only, currentColor, decorative
  * (aria-hidden). Paths carry pathLength="1" and data-draw so anime.js can
@@ -84,6 +86,33 @@ export function RouteArt({ className }: ArtProps) {
         <circle cx="40" cy="196" r="7" pathLength={1} />
         <path d="M200 30c-12 0-20 9-20 20 0 15 20 34 20 34s20-19 20-34c0-11-8-20-20-20Z" pathLength={1} />
         <circle cx="200" cy="50" r="6" pathLength={1} />
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * GMC: the knockout from eight teams to one. Drawn left to right as it
+ * scrolls in (see .draw-on-scroll); complete at rest.
+ */
+export function BracketArt({ className }: ArtProps) {
+  const rounds = [
+    // eight teams into four ties
+    'M20 30h40v30M20 90h40V60M20 150h40v30M20 210h40v-30M20 270h40v30M20 330h40v-30M20 390h40v30M20 450h40v-30',
+    // quarter-finals into semi-finals
+    'M60 60h50v60M60 180h50v-60M60 300h50v60M60 420h50v-60',
+    // semi-finals into the final
+    'M110 120h50v120M110 360h50V240',
+    // the final
+    'M160 240h60',
+  ];
+  return (
+    <svg viewBox="0 0 240 480" fill="none" aria-hidden="true" focusable="false" className={className}>
+      <g {...stroke}>
+        {rounds.map((d, index) => (
+          <path key={index} d={d} pathLength={1} style={{ '--draw-i': index } as React.CSSProperties} />
+        ))}
+        <circle cx="226" cy="240" r="6" pathLength={1} style={{ '--draw-i': 4 } as React.CSSProperties} />
       </g>
     </svg>
   );

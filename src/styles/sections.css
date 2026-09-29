@@ -115,13 +115,20 @@
    like a sheet; as it goes it recedes slightly and dims. */
 .handoff {
   position: relative;
+  timeline-scope: --handoff;
 }
 
+/* In the flow until HandoffStage has measured it; then pinned by its
+   bottom edge (see HandoffStage). */
 .handoff__stage {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 0;
   overflow: clip;
+}
+
+.handoff__stage[data-stuck] {
+  position: sticky;
+  top: var(--stage-top, 0px);
 }
 
 .handoff__scene {
@@ -140,6 +147,7 @@
 .handoff__sheet {
   position: relative;
   z-index: 1;
+  view-timeline-name: --handoff;
   border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
   box-shadow: 0 -2.5rem 5rem -3rem rgba(11, 2, 1, 0.55);
 }
@@ -156,17 +164,18 @@
   }
 }
 
-@supports (animation-timeline: scroll()) {
+/* The hero recedes exactly while the sheet travels up over it. */
+@supports (animation-timeline: view()) and (timeline-scope: --handoff) {
   .handoff__scene {
     animation: handoff-recede linear both;
-    animation-timeline: scroll(root);
-    animation-range: 0 100svh;
+    animation-timeline: --handoff;
+    animation-range: entry 0% entry 100%;
   }
 
   .handoff__dim {
     animation: handoff-dim linear both;
-    animation-timeline: scroll(root);
-    animation-range: 0 100svh;
+    animation-timeline: --handoff;
+    animation-range: entry 0% entry 100%;
   }
 }
 
@@ -418,6 +427,11 @@
   }
 }
 
+/* Without a large mark the panel sizes to its content. */
+.door--compact {
+  min-height: 0;
+}
+
 .door__top {
   display: flex;
   flex-wrap: wrap;
@@ -515,6 +529,12 @@
   color: var(--door-accent);
   opacity: 0.14;
   transition: transform 900ms var(--ease-out-expo), opacity 600ms var(--ease-brand);
+}
+
+.door__art > svg {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .door:hover .door__art {
@@ -760,6 +780,29 @@
   color: var(--placard-accent);
   font-family: var(--font-mono);
   font-size: 0.8125rem;
+}
+
+/* Placards in a plain grid (pages without the corridor). */
+.placard-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 720px) {
+  .placard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .placard-grid--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.placard-grid .placard {
+  width: auto;
+  min-height: 27rem;
 }
 
 .placard--end {
@@ -1014,6 +1057,310 @@
   color: var(--color-champagne);
 }
 
+.dates--flush {
+  margin-top: 0;
+}
+
+/* --- Steps (a process in order) ------------------------------------------ */
+.steps-split {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@media (min-width: 1024px) {
+  .steps-split {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 5rem;
+  }
+
+  .steps-split__head {
+    position: sticky;
+    top: calc(var(--chrome-h) + 2rem);
+    align-self: start;
+  }
+
+  .steps-split__head .chapter-head {
+    margin-bottom: 0;
+  }
+}
+
+.steps {
+  display: grid;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 4.25rem minmax(0, 1fr);
+  gap: 1.25rem;
+  padding-block: 2rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.step:last-child {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.step__num {
+  color: var(--step-accent, var(--color-champagne));
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.step__title {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.step__body {
+  max-width: 34rem;
+  margin-top: 0.625rem;
+  color: var(--color-text-2);
+}
+
+/* --- Line art drawn on scroll ------------------------------------------
+   Paths with pathLength="1" draw in, round after round (--draw-i), as the
+   art crosses the viewport. Complete at rest, and without support. */
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .draw-on-scroll {
+    view-timeline-name: --draw;
+  }
+
+  .draw-on-scroll path,
+  .draw-on-scroll circle {
+    stroke-dasharray: 1;
+    animation: draw-line linear both;
+    animation-timeline: --draw;
+    animation-range: entry calc(20% + var(--draw-i, 0) * 12%) cover calc(38% + var(--draw-i, 0) * 9%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .draw-on-scroll path,
+  .draw-on-scroll circle {
+    animation: none;
+  }
+}
+
+.steps-art {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .steps-art {
+    display: block;
+    width: min(100%, 13rem);
+    margin-top: 3rem;
+    color: var(--color-accent-gmc);
+  }
+}
+
+/* --- At a glance --------------------------------------------------------- */
+.glance {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border: 1px solid var(--color-line);
+  border-radius: 1.75rem;
+  background: var(--color-raised);
+}
+
+.glance__art {
+  position: absolute;
+  top: -4.5rem;
+  right: -4.5rem;
+  z-index: -1;
+  width: 17rem;
+  color: var(--color-accent-gimun);
+  opacity: 0.12;
+}
+
+.glance--gmc .glance__art {
+  color: var(--color-accent-gmc);
+}
+
+.glance__title {
+  margin-bottom: 0.75rem;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+/* --- Country seats -------------------------------------------------------- */
+.seats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .seats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .seats {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.seat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 6.5rem;
+  padding: 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-placard);
+  background: var(--color-canvas);
+}
+
+.seat__name {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.seat__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.seat__marker {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+}
+
+.seat[data-status="available"] .seat__status {
+  color: var(--color-accent-gimun);
+}
+
+.seat[data-status="available"] .seat__marker {
+  background: currentColor;
+}
+
+.seat[data-status="reserved"] .seat__marker {
+  border-radius: 1px;
+}
+
+.seat[data-status="assigned"] .seat__name {
+  color: var(--color-text-3);
+}
+
+.seat[data-status="assigned"] .seat__marker {
+  position: relative;
+  border-color: transparent;
+}
+
+.seat[data-status="assigned"] .seat__marker::after {
+  content: "";
+  position: absolute;
+  inset: 45% -10%;
+  background: currentColor;
+}
+
+/* Decorative committee mark in the detail hero. */
+.committee-mark {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .committee-mark {
+    display: block;
+    color: transparent;
+    font-family: var(--font-display);
+    font-size: clamp(6rem, 13vw, 12rem);
+    font-weight: 600;
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+    text-align: right;
+    -webkit-text-stroke: 1px var(--color-accent-gimun);
+    opacity: 0.55;
+    user-select: none;
+  }
+}
+
+.committee-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: 1.25rem;
+  color: var(--color-text-2);
+  transition: border-color var(--dur-micro) var(--ease-brand), background-color var(--dur-micro) var(--ease-brand);
+}
+
+.committee-step:hover {
+  border-color: var(--color-line-3);
+  background: color-mix(in srgb, var(--color-text) 4%, transparent);
+}
+
+.committee-step--next {
+  justify-content: space-between;
+  text-align: right;
+}
+
+.committee-step__label {
+  display: block;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.committee-step__name {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+/* --- Help row ------------------------------------------------------------ */
+.help-callout {
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-line);
+}
+
+@media (min-width: 900px) {
+  .help-callout {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 3rem;
+  }
+}
+
+.help-callout__text {
+  max-width: 40rem;
+  color: var(--color-text-2);
+}
+
 /* --- Manifesto ---------------------------------------------------------- */
 .manifesto {
   max-width: 52rem;
@@ -1162,7 +1509,7 @@
 
 /* --- Reduced motion --------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  .handoff__stage {
+  .handoff__stage[data-stuck] {
     position: relative;
   }
 

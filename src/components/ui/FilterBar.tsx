@@ -83,7 +83,7 @@ export function FilterBar<T extends string>({
             onClick={() => onChange(option.value)}
             className={cn(
               'relative z-10 inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium',
-              'transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne',
+              'transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
               isActive ? 'text-canvas' : 'text-text-3 hover:text-text'
             )}
           >
@@ -92,7 +92,7 @@ export function FilterBar<T extends string>({
               <span
                 className={cn(
                   'rounded-full px-1.5 py-0.5 font-mono text-[10px]',
-                  isActive ? 'bg-canvas/15 font-semibold text-canvas' : 'bg-white/10 text-text-3'
+                  isActive ? 'bg-canvas/15 font-semibold text-canvas' : 'bg-text/8 text-text-3'
                 )}
               >
                 {option.count}
