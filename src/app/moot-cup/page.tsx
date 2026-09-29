@@ -3,6 +3,8 @@ import { BracketArt, ScalesArt } from '@/components/art/LineArt';
 import { HandoffStage } from '@/components/motion/HandoffStage';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
+import { Bridge } from '@/components/story/Bridge';
+import { ChapterIndex } from '@/components/story/ChapterIndex';
 import { Closing } from '@/components/sections/Closing';
 import { DateLedger } from '@/components/sections/DateLedger';
 import { CasePlacard } from '@/components/sections/Placards';
@@ -53,6 +55,7 @@ export default async function MootCupOverviewPage() {
 
   return (
     <>
+      <ChapterIndex />
       <div className="handoff">
         <div className="handoff__stage">
           <div className="handoff__scene">
@@ -93,6 +96,8 @@ export default async function MootCupOverviewPage() {
             <div className="steps-split__head">
               <ChapterHead
                 id="how-title"
+                chapter={1}
+                act="From problem to final"
                 split={false}
                 reveal
                 title="From problem to Grand Final."
@@ -106,14 +111,45 @@ export default async function MootCupOverviewPage() {
             </div>
             <Steps steps={HOW_IT_WORKS} accent="gmc" />
           </div>
+          <div className="wrap">
+            <Bridge to="categories-title">It all starts with one problem. These are the areas of law it can come from.</Bridge>
+          </div>
         </section>
       </div>
+
+      {/* The case categories */}
+      <section className="chapter" aria-labelledby="categories-title">
+        <div className="wrap">
+          <ChapterHead
+            id="categories-title"
+            chapter={2}
+            act="The cases"
+            title={`${categories.length} areas of law.`}
+            lead="Choose the category your team prefers when you register. Questions about the problem go through the clarifications log, answered for every team at once."
+          >
+            <div className="flex flex-wrap gap-x-6 gap-y-3 lg:col-span-2">
+              <Link href="/moot-cup/categories" className="text-link">
+                All categories
+              </Link>
+              <Link href="/moot-cup/clarifications" className="text-link">
+                Clarifications
+              </Link>
+            </div>
+          </ChapterHead>
+          <div className="placard-grid placard-grid--three">
+            {categories.map((category) => (
+              <CasePlacard key={category.id} category={category} />
+            ))}
+          </div>
+          <Bridge to="team-title">Picked your area? Now the people who will argue it.</Bridge>
+        </div>
+      </section>
 
       {/* Who can enter, and the fee */}
       <section className="chapter" aria-labelledby="team-title">
         <div className="wrap grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16">
           <div>
-            <ChapterHead id="team-title" split={false} title="A team of law students." />
+            <ChapterHead id="team-title" chapter={3} act="Your team" split={false} title="A team of law students." />
             <FactList
               items={[
                 { term: 'Eligibility', value: 'Students enrolled in an LL.B. or equivalent law programme, or a member of a university moot court society.' },
@@ -149,7 +185,7 @@ export default async function MootCupOverviewPage() {
       <section className="sheet tone-inverse" aria-labelledby="dates-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
-          <ChapterHead id="dates-title" title="GMC key dates." lead="Deadlines are 23:59 Pakistan time." />
+          <ChapterHead id="dates-title" chapter={4} act="The clock" title="GMC key dates." lead="Deadlines are 23:59 Pakistan time." />
           <DateLedger
             now={now}
             className="dates--flush"
@@ -163,33 +199,10 @@ export default async function MootCupOverviewPage() {
         </div>
       </section>
 
-      {/* The case categories */}
-      <section className="chapter" aria-labelledby="categories-title">
-        <div className="wrap">
-          <ChapterHead
-            id="categories-title"
-            title={`${categories.length} areas of law.`}
-            lead="Choose the category your team prefers when you register. Questions about the problem go through the clarifications log, answered for every team at once."
-          >
-            <div className="flex flex-wrap gap-x-6 gap-y-3 lg:col-span-2">
-              <Link href="/moot-cup/categories" className="text-link">
-                All categories
-              </Link>
-              <Link href="/moot-cup/clarifications" className="text-link">
-                Clarifications
-              </Link>
-            </div>
-          </ChapterHead>
-          <div className="placard-grid placard-grid--three">
-            {categories.map((category) => (
-              <CasePlacard key={category.id} category={category} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       <Closing
         id="closing-title"
+        chapter={5}
+        act="Your bench"
         title="Bring your best advocates."
         lead="Register the team now and add the final roster details before the deadline. Clarification questions are open to every registered team."
         actions={[

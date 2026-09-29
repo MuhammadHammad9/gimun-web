@@ -3,6 +3,8 @@ import { GlobeArt } from '@/components/art/LineArt';
 import { HandoffStage } from '@/components/motion/HandoffStage';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
+import { Bridge } from '@/components/story/Bridge';
+import { ChapterIndex } from '@/components/story/ChapterIndex';
 import { Closing } from '@/components/sections/Closing';
 import { DateLedger } from '@/components/sections/DateLedger';
 import { Door } from '@/components/sections/Door';
@@ -55,6 +57,7 @@ export default async function GimunOverviewPage() {
 
   return (
     <>
+      <ChapterIndex />
       <div className="handoff">
         <div className="handoff__stage">
           <div className="handoff__scene">
@@ -95,6 +98,8 @@ export default async function GimunOverviewPage() {
             <div className="steps-split__head">
               <ChapterHead
                 id="how-title"
+                chapter={1}
+                act="How a committee works"
                 split={false}
                 reveal
                 title="Four days, one resolution."
@@ -107,14 +112,54 @@ export default async function GimunOverviewPage() {
             </div>
             <Steps steps={HOW_IT_WORKS} accent="gimun" />
           </div>
+          <div className="wrap">
+            <Bridge to="committees-title">Every resolution starts in a chamber. These are this year&apos;s.</Bridge>
+          </div>
         </section>
       </div>
+
+      {/* The committees */}
+      <section className="chapter" aria-labelledby="committees-title">
+        <div className="wrap">
+          <ChapterHead
+            id="committees-title"
+            chapter={2}
+            act="The chambers"
+            title={`${committees.length} chambers for ${getEventYear(site)}.`}
+            lead={
+              <>
+                Each committee page has its agenda, background guide and the countries still open for allocation.
+                {guides.length > 0 && ` ${guides.length} background guides are in the resource library.`}
+              </>
+            }
+          >
+            <div className="flex flex-wrap gap-x-6 gap-y-3 lg:col-span-2">
+              <Link href="/gimun/committees" className="text-link">
+                All committees
+              </Link>
+              {guides.length > 0 && (
+                <Link href="/resources" className="text-link">
+                  Background guides
+                </Link>
+              )}
+            </div>
+          </ChapterHead>
+          <div className="placard-grid">
+            {committees.map((committee) => (
+              <CommitteePlacard key={committee.id} committee={committee} />
+            ))}
+          </div>
+          <Bridge to="entry-title">Found your chamber? Here is how to take a seat in it.</Bridge>
+        </div>
+      </section>
 
       {/* Two ways in, each priced where it is read */}
       <section className="chapter" aria-labelledby="entry-title">
         <div className="wrap">
           <ChapterHead
             id="entry-title"
+            chapter={3}
+            act="Two ways in"
             title="On your own, or with your institution."
             lead="Nothing is charged when you apply. If your application is accepted, the organizing team emails an invoice with bank transfer details."
           />
@@ -161,7 +206,7 @@ export default async function GimunOverviewPage() {
       <section className="sheet tone-inverse" aria-labelledby="dates-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
-          <ChapterHead id="dates-title" title="GIMUN key dates." lead="Deadlines are 23:59 Pakistan time." />
+          <ChapterHead id="dates-title" chapter={4} act="The clock" title="GIMUN key dates." lead="Deadlines are 23:59 Pakistan time." />
           <DateLedger
             now={now}
             className="dates--flush"
@@ -175,40 +220,10 @@ export default async function GimunOverviewPage() {
         </div>
       </section>
 
-      {/* The committees */}
-      <section className="chapter" aria-labelledby="committees-title">
-        <div className="wrap">
-          <ChapterHead
-            id="committees-title"
-            title={`${committees.length} chambers for ${getEventYear(site)}.`}
-            lead={
-              <>
-                Each committee page has its agenda, background guide and the countries still open for allocation.
-                {guides.length > 0 && ` ${guides.length} background guides are in the resource library.`}
-              </>
-            }
-          >
-            <div className="flex flex-wrap gap-x-6 gap-y-3 lg:col-span-2">
-              <Link href="/gimun/committees" className="text-link">
-                All committees
-              </Link>
-              {guides.length > 0 && (
-                <Link href="/resources" className="text-link">
-                  Background guides
-                </Link>
-              )}
-            </div>
-          </ChapterHead>
-          <div className="placard-grid">
-            {committees.map((committee) => (
-              <CommitteePlacard key={committee.id} committee={committee} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       <Closing
         id="closing-title"
+        chapter={5}
+        act="Take a seat"
         title="Ready to take a seat?"
         lead="Rank three committees when you apply. Countries are allocated after the secretariat reviews your application."
         actions={[

@@ -6,9 +6,11 @@ import { formatEventDate, getEventYear } from '@/lib/site-config';
 import { PageHero } from '@/components/ui/PageHero';
 import { FactList } from '@/components/ui/Editorial';
 import { ChapterHead } from '@/components/sections/Chapter';
+import { ChapterIndex } from '@/components/story/ChapterIndex';
 import { Steps } from '@/components/sections/Steps';
 import { BracketArt, ScalesArt } from '@/components/art/LineArt';
 import { TransitionLink } from '@/components/motion/TransitionLink';
+import { NextSteps } from '@/components/story/NextSteps';
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Rules & Memorial Guidelines | GMC ${getEventYear(await getSiteConfig())}`,
   path: '/moot-cup/rules',
@@ -24,6 +26,7 @@ export default async function MootRulesPage() {
 
   return (
     <>
+      <ChapterIndex />
       <PageHero
         variant="moot"
         breadcrumbs={[{ label: 'GMC', href: '/moot-cup' }, { label: 'Rules & memorials' }]}
@@ -49,7 +52,7 @@ export default async function MootRulesPage() {
       <section className="handoff__sheet tone-deep chapter" aria-labelledby="submission-heading">
         <div className="wrap grid gap-16 lg:grid-cols-2">
           <div>
-            <ChapterHead id="submission-heading" split={false} title="Submitting memorials." lead={<>Deadline: <strong className="text-text">{memorialDue}, 23:59 Pakistan time.</strong> Late memorials are not scored.</>} />
+            <ChapterHead id="submission-heading" chapter={1} act="The memorials" split={false} title="Submitting memorials." lead={<>Deadline: <strong className="text-text">{memorialDue}, 23:59 Pakistan time.</strong> Late memorials are not scored.</>} />
             <Steps
               accent="gmc"
               steps={[
@@ -61,7 +64,7 @@ export default async function MootRulesPage() {
             />
           </div>
           <div>
-            <ChapterHead id="rounds-heading" split={false} title="How the rounds work." />
+            <ChapterHead id="rounds-heading" chapter={2} act="The rounds" split={false} title="How the rounds work." />
             <FactList
               items={[
                 { term: 'Preliminary rounds', value: 'Every team argues twice, once for each side. These two rounds are guaranteed.' },
@@ -78,6 +81,13 @@ export default async function MootRulesPage() {
       <div className="wrap chapter">
         <MootRulesClient rulesDocumentUrl={rulesDocument?.fileUrl} />
       </div>
+      <NextSteps
+        steps={[
+          { href: '/moot-cup/categories', title: 'Case categories', body: 'The areas of law the problem can come from.' },
+          { href: '/moot-cup/clarifications', title: 'Clarifications', body: 'The bench’s answers on the problem, binding on every team.' },
+          { href: '/register?track=moot-cup', title: 'Register a team', body: 'Two oralists and up to two researchers.' },
+        ]}
+      />
     </>
   );
 }

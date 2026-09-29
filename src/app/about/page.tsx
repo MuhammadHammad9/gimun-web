@@ -3,9 +3,10 @@ import { GlobeArt, ScalesArt } from '@/components/art/LineArt';
 import { HandoffStage } from '@/components/motion/HandoffStage';
 import { ScrubText } from '@/components/motion/ScrubText';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { ChapterHead } from '@/components/sections/Chapter';
+import { ChapterHead, ChapterKicker } from '@/components/sections/Chapter';
+import { Bridge } from '@/components/story/Bridge';
+import { ChapterIndex } from '@/components/story/ChapterIndex';
 import { Closing } from '@/components/sections/Closing';
-import { Door } from '@/components/sections/Door';
 import { Steps } from '@/components/sections/Steps';
 import { Ledger } from '@/components/ui/Editorial';
 import { PageHero } from '@/components/ui/PageHero';
@@ -50,6 +51,7 @@ export default async function AboutOverviewPage() {
 
   return (
     <>
+      <ChapterIndex />
       <div className="handoff">
         <div className="handoff__stage">
           <div className="handoff__scene">
@@ -86,42 +88,31 @@ export default async function AboutOverviewPage() {
             ) : null}
             <ChapterHead
               id="tracks-title"
+              chapter={1}
+              act="Two rooms"
               reveal
               title="Pick the one you want to be tested in."
               lead="They share dates and a campus, but the preparation, the rules and the judging are entirely different."
             />
-            <div className="doors">
-              <Door
-                id="door-gimun"
-                accent="gimun"
-                label="Model United Nations"
-                status={gimunOpen ? 'Applications open' : 'Registration closed'}
-                open={gimunOpen}
-                title={site.eventNames.gimun}
-                copy={`Delegates represent countries across ${committees.length} committees, negotiate in caucus and vote resolutions through. Enter on your own or with your institution.`}
-                facts={[
-                  { term: 'Committees', value: committees.map((c) => c.slug.toUpperCase()).join(' · ') },
-                  { term: 'Awards', value: 'Best Delegate, Outstanding Delegate, Best Delegation' },
-                  { term: 'Applications close', value: formatEventDate(site.registrationDeadlines.gimun) },
-                ]}
-                action={{ label: 'The GIMUN track', href: '/gimun' }}
-              />
-              <Door
-                id="door-gmc"
-                accent="gmc"
-                label="Moot court"
-                status={mootOpen ? 'Applications open' : 'Registration closed'}
-                open={mootOpen}
-                title={site.eventNames.mootCup}
-                copy="Teams of law students write memorials for both sides of one problem, then argue oral rounds before benches of practitioners, through to a Grand Final."
-                facts={[
-                  { term: 'Categories', value: `${categories.length} areas of law` },
-                  { term: 'Awards', value: 'Champions, Best Memorial, Best Oralist' },
-                  { term: 'Applications close', value: formatEventDate(site.registrationDeadlines.mootCup) },
-                ]}
-                action={{ label: 'The GMC track', href: '/moot-cup' }}
-              />
-            </div>
+            <Ledger
+              rows={[
+                {
+                  key: 'gimun',
+                  href: '/gimun',
+                  title: site.eventNames.gimun,
+                  description: `Represent a country in one of ${committees.length} committees, on your own or with your institution.`,
+                  meta: [gimunOpen ? 'Applications open' : 'Registration closed', `Closes ${formatEventDate(site.registrationDeadlines.gimun, { month: 'short' })}`],
+                },
+                {
+                  key: 'gmc',
+                  href: '/moot-cup',
+                  title: site.eventNames.mootCup,
+                  description: `Argue one problem as a team of law students, across ${categories.length} areas of law, before a bench.`,
+                  meta: [mootOpen ? 'Applications open' : 'Registration closed', `Closes ${formatEventDate(site.registrationDeadlines.mootCup, { month: 'short' })}`],
+                },
+              ]}
+            />
+            <Bridge to="days-title">Both rooms share one week. This is how it runs.</Bridge>
           </div>
         </section>
       </div>
@@ -132,6 +123,8 @@ export default async function AboutOverviewPage() {
           <div className="steps-split__head">
             <ChapterHead
               id="days-title"
+              chapter={2}
+              act="The week"
               split={false}
               title="How the week fits together."
               lead="Committees and courtrooms run in parallel; ceremonies, meals and evenings are shared."
@@ -146,10 +139,14 @@ export default async function AboutOverviewPage() {
       </section>
 
       {/* Who runs it */}
-      <section className="sheet tone-crest" aria-label="Who runs the event">
+      <section className="sheet tone-crest" aria-labelledby="who-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
-          <ScrubText className="manifesto">
+          <ChapterKicker chapter={3} act="Who runs it" target="who-title" />
+          <h2 id="who-title" className="sr-only">
+            Who runs it
+          </h2>
+          <ScrubText className="manifesto mt-8">
             The secretariat, the moot convening committee and the logistics team are GIKI students. Applying is free;
             accepted participants pay by bank transfer, never on this site.
           </ScrubText>
@@ -162,6 +159,8 @@ export default async function AboutOverviewPage() {
           <div className="steps-split__head">
             <ChapterHead
               id="more-title"
+              chapter={4}
+              act="Everything else"
               split={false}
               title="Organized at GIKI."
               lead="The people, the place and the answers to the questions most participants ask."
@@ -181,6 +180,8 @@ export default async function AboutOverviewPage() {
 
       <Closing
         id="closing-title"
+        chapter={5}
+        act="Your application"
         title="Represent your institution at GIKI."
         lead="Choose a track to see its fees, format and deadlines. Applying is free; you pay only once accepted."
         actions={[

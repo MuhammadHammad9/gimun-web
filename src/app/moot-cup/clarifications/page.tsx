@@ -6,6 +6,7 @@ import { ClarificationsClient } from "./ClarificationsClient";
 import { TransitionLink } from "@/components/motion/TransitionLink";
 import { getEventYear } from "@/lib/site-config";
 import { PageHero } from '@/components/ui/PageHero';
+import { NextSteps } from '@/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Official Clarifications Log & Rulings | GMC ${getEventYear(await getSiteConfig())}`,
@@ -47,6 +48,13 @@ export default async function ClarificationsPage() {
           <ClarificationsClient initialClarifications={clarifications} />
         </div>
       </section>
+      <NextSteps
+        steps={[
+          { href: '/moot-cup/rules', title: 'Rules and memorials', body: 'Formatting, word limits and how the rounds are scored.' },
+          { href: '/moot-cup/categories', title: 'Case categories', body: 'The areas of law in this year’s problem.' },
+          { href: '/resources', title: 'Resources', body: 'The compromis and the competition rules as PDFs.' },
+        ]}
+      />
     </>
   );
 }

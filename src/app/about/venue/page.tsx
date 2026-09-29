@@ -3,13 +3,14 @@ import { Check } from 'lucide-react';
 import { RouteArt } from '@/components/art/LineArt';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
+import { ChapterIndex } from '@/components/story/ChapterIndex';
 import { Steps } from '@/components/sections/Steps';
-import { HelpCallout } from '@/components/ui/HelpCallout';
 import { MapFacade } from '@/components/ui/MapFacade';
 import { PageHero } from '@/components/ui/PageHero';
 import { getDocuments, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { formatDateRange } from '@/lib/utils';
+import { NextSteps } from '@/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
@@ -77,6 +78,7 @@ export default async function VenuePage() {
 
   return (
     <>
+      <ChapterIndex />
       <PageHero
         variant="utility"
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'Venue & travel' }]}
@@ -100,6 +102,8 @@ export default async function VenuePage() {
           <div className="steps-split__head">
             <ChapterHead
               id="travel-title"
+              chapter={1}
+              act="The road"
               split={false}
               title="Three ways in."
               lead="GIKI sits just off the M-1 between Islamabad and Peshawar. Most participants arrive by road."
@@ -112,7 +116,7 @@ export default async function VenuePage() {
       {/* The places the programme uses */}
       <section className="chapter" aria-labelledby="where-title">
         <div className="wrap">
-          <ChapterHead id="where-title" title="Where everything happens." lead={site.venue} />
+          <ChapterHead id="where-title" chapter={2} act="The places" title="Where everything happens." lead={site.venue} />
           <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
             <MapFacade query={MAPS_QUERY} title="Map of the GIKI campus in Topi" address={site.hostInstitution} />
             <div>
@@ -144,7 +148,7 @@ export default async function VenuePage() {
       <section className="sheet tone-inverse" aria-labelledby="practical-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
-          <ChapterHead id="practical-title" title="Before you travel." lead="Accommodation, getting through the gate, the weather, and a list to pack against." />
+          <ChapterHead id="practical-title" chapter={3} act="Before you travel" title="Before you travel." lead="Accommodation, getting through the gate, the weather, and a list to pack against." />
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             <dl className="space-y-8">
               <div>
@@ -189,6 +193,8 @@ export default async function VenuePage() {
         <div className="wrap">
           <ChapterHead
             id="help-title"
+            chapter={4}
+            act="On the day"
             title="Help during the conference."
             lead={`${site.checkinDesk || 'The registration desk is staffed throughout the conference.'} For anything urgent, contact the organizing team.`}
           >
@@ -203,9 +209,15 @@ export default async function VenuePage() {
               </a>
             </div>
           </ChapterHead>
-          <HelpCallout question="Travelling as a delegation?" actions={[{ label: 'Travel questions', href: '/about/faq' }]} />
         </div>
       </section>
+      <NextSteps
+        steps={[
+          { href: '/schedule', title: 'The schedule', body: 'Which room, at what time, on each day.' },
+          { href: '/about/faq', title: 'FAQ', body: 'Accommodation, dress code and refunds.' },
+          { href: '/register', title: 'Register', body: 'Apply for GIMUN or the GIKI Moot Court.' },
+        ]}
+      />
     </>
   );
 }

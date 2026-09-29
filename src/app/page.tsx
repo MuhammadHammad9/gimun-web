@@ -10,7 +10,7 @@ import { HorizontalPan } from '@/components/motion/HorizontalPan';
 import { ScrubText } from '@/components/motion/ScrubText';
 import { StickyStack } from '@/components/motion/StickyStack';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { ChapterHead } from '@/components/sections/Chapter';
+import { ChapterHead, ChapterKicker } from '@/components/sections/Chapter';
 import { Closing } from '@/components/sections/Closing';
 import { DateLedger } from '@/components/sections/DateLedger';
 import { Door } from '@/components/sections/Door';
@@ -20,12 +20,14 @@ import { Button } from '@/components/ui/Button';
 import { DaysToGo } from '@/components/ui/DaysToGo';
 import { PageHero } from '@/components/ui/PageHero';
 import { SponsorStrip } from '@/components/ui/SponsorStrip';
+import { Bridge } from '@/components/story/Bridge';
+import { ChapterIndex } from '@/components/story/ChapterIndex';
 
-import { getAnnouncements, getCommittees, getProblemCategories, getSchedule, getSiteConfig, getSponsors } from '@/lib/content';
+import { getCommittees, getProblemCategories, getSchedule, getSiteConfig, getSponsors } from '@/lib/content';
 import { feeAmount } from '@/lib/fees';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister as canTrackRegister, eventPhase, serverRenderTime } from '@/lib/phase';
-import { formatEventDate, formatPublishedDate, getEventYear, getSiteUrl } from '@/lib/site-config';
+import { formatEventDate, getEventYear, getSiteUrl } from '@/lib/site-config';
 import { addDays, dayDate, formatDateRange } from '@/lib/utils';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -38,11 +40,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [site, committees, categories, announcements, sponsors, schedule] = await Promise.all([
+  const [site, committees, categories, sponsors, schedule] = await Promise.all([
     getSiteConfig(),
     getCommittees(),
     getProblemCategories(),
-    getAnnouncements(),
     getSponsors(),
     getSchedule(),
   ]);
@@ -77,8 +78,6 @@ export default async function Home() {
       date: dayDate(site.eventDates.start, day),
       items: schedule.filter((item) => item.day === day && !/^lunch$/i.test(item.title.trim())),
     }));
-
-  const latest = announcements.find((a) => a.pinnedFlag) ?? announcements[0];
 
   const siteUrl = getSiteUrl();
   const structuredData = {
@@ -115,6 +114,7 @@ export default async function Home() {
 
   return (
     <>
+      <ChapterIndex />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
@@ -151,11 +151,13 @@ export default async function Home() {
           <HandoffStage />
         </div>
 
-        {/* 1. The two rooms */}
+        {/* 01 The choice */}
         <section className="handoff__sheet tone-deep chapter" aria-labelledby="rooms-title">
           <div className="wrap">
             <ChapterHead
               id="rooms-title"
+              chapter={1}
+              act="The choice"
               reveal
               title="Two rooms, the same four days."
               lead="GIMUN and the GIKI Moot Court run side by side on one campus. The preparation, the rules and the judging are different, so pick the room you want to be tested in."
@@ -200,17 +202,20 @@ export default async function Home() {
                 art={<ScalesArt />}
               />
             </div>
+            <Bridge to="chambers-title">Each room has its own chambers. Step inside, one at a time.</Bridge>
           </div>
         </section>
       </div>
 
-      {/* 2. The chambers: a corridor of placards */}
+      {/* 02 Inside the rooms: a corridor of placards */}
       <section className="chapter" aria-labelledby="chambers-title">
         <HorizontalPan
           label="Committees and case categories"
           header={
             <ChapterHead
               id="chambers-title"
+              chapter={2}
+              act="Inside the rooms"
               split={false}
               title={`${committees.length} committees, ${categories.length} cases.`}
               lead="Every chamber and every case category, with the seats still open. Countries are allocated after applications are reviewed."
@@ -240,12 +245,30 @@ export default async function Home() {
         </HorizontalPan>
       </section>
 
-      {/* 3. Four days in Topi: a paper sheet in the dark theme, ink in the light */}
+      {/* 03 What it asks of you */}
+      <section className="sheet tone-crest" aria-labelledby="asks-title">
+        <div className="sheet__ground" aria-hidden="true" />
+        <div className="wrap">
+          <ChapterKicker chapter={3} act="What it asks of you" target="asks-title" />
+          <h2 id="asks-title" className="sr-only">
+            What it asks of you
+          </h2>
+          <ScrubText className="manifesto mt-8">
+            Represent a country or argue a case, in front of chairs and judges who will question every point you make.
+            At the end of the four days, awards go to the best delegates and delegations, the best memorial, the best
+            oralist and the champions of the moot.
+          </ScrubText>
+        </div>
+      </section>
+
+      {/* 04 The week: a paper sheet in the dark theme, ink in the light */}
       <section className="sheet tone-inverse" aria-labelledby="days-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
           <ChapterHead
             id="days-title"
+            chapter={4}
+            act="The week"
             reveal
             title="Four days in Topi."
             lead={`Both tracks share the opening, the meals, the evenings and the awards. ${dateRange}.`}
@@ -276,13 +299,14 @@ export default async function Home() {
             </Link>
             <TrackKey />
           </div>
+          <Bridge to="dates-title">Before that week, a few dates decide whether you are in the room.</Bridge>
         </div>
       </section>
 
-      {/* 4. The dates that matter */}
+      {/* 05 The clock */}
       <section className="chapter" aria-labelledby="dates-title">
         <div className="wrap">
-          <ChapterHead id="dates-title" title="The dates that matter." lead="Every deadline in one list. Times are Pakistan time." />
+          <ChapterHead id="dates-title" chapter={5} act="The clock" title="The dates that matter." lead="Every deadline in one list. Times are Pakistan time." />
           <div className="figures">
             <div className="figure">
               <Counter value={committees.length} className="figure__value" />
@@ -312,25 +336,14 @@ export default async function Home() {
               ...(site.galaDate ? [{ iso: site.galaDate, what: 'Grand Final and awards gala', note: 'Awards for both tracks' }] : []),
             ]}
           />
+          <Bridge to="prepare-title">Once you are in, here is what to read and how to get to Topi.</Bridge>
         </div>
       </section>
 
-      {/* 5. What the four days ask of you */}
-      <section className="sheet tone-crest" aria-label="What to expect">
-        <div className="sheet__ground" aria-hidden="true" />
-        <div className="wrap">
-          <ScrubText className="manifesto">
-            Represent a country or argue a case, in front of chairs and judges who will question every point you make.
-            At the end of the four days, awards go to the best delegates and delegations, the best memorial, the best
-            oralist and the champions of the moot.
-          </ScrubText>
-        </div>
-      </section>
-
-      {/* 6. Before you arrive */}
+      {/* 06 Before you arrive */}
       <section className="chapter" aria-labelledby="prepare-title">
         <div className="wrap">
-          <ChapterHead id="prepare-title" title="Before you arrive." lead="What to read, when to be where, and how to get to Topi." />
+          <ChapterHead id="prepare-title" chapter={6} act="Before you arrive" title="Before you arrive." lead="What to read, when to be where, and how to get to Topi." />
           <StickyStack>
             <StackCard
               index={0}
@@ -363,36 +376,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 7. The latest notice */}
-      {latest && (
-        <section className="chapter chapter--flush-top" aria-labelledby="notice-title">
-          <div className="wrap">
-            <div className="grid gap-6 border-t border-line pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16">
-              <div>
-                <h2 id="notice-title" className="font-display text-h3 font-medium text-text">
-                  Latest notice
-                </h2>
-                <p className="mt-2 font-mono text-[0.8125rem] text-text-3">{formatPublishedDate(latest.timestamp)}</p>
-              </div>
-              <div>
-                <h3 className="font-display text-[1.75rem] font-medium leading-tight tracking-[-0.02em] text-text">{latest.title}</h3>
-                <p className="mt-3 max-w-2xl text-body text-text-2">{latest.body}</p>
-                <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
-                  <Link href={`/announcements#${latest.id}`} className="text-link">
-                    Read the notice
-                    <ArrowRight aria-hidden="true" strokeWidth={1.75} className="size-4" />
-                  </Link>
-                  <Link href="/announcements" className="text-link">
-                    All announcements
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 8. Partners, only once there are approved ones */}
+      {/* Partners, only once there are approved ones */}
       {sponsors.length > 0 && (
         <section className="chapter chapter--flush-top" aria-labelledby="partners-title">
           <div className="wrap">
@@ -406,9 +390,11 @@ export default async function Home() {
         </section>
       )}
 
-      {/* 9. Reserve your place */}
+      {/* 07 Your seat */}
       <Closing
         id="closing-title"
+        chapter={7}
+        act="Your seat"
         title="Reserve your place."
         lead="Applying reserves a delegate or team place for review. Accepted participants receive an invoice with bank transfer details."
         actions={[

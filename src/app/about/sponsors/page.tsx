@@ -5,6 +5,7 @@ import { getDocuments, getSiteConfig, getSponsors } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
 import { SponsorsClient } from './SponsorsClient';
+import { NextSteps } from '@/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
@@ -45,6 +46,13 @@ export default async function SponsorsPage() {
           <SponsorsClient initialSponsors={sponsors} />
         </div>
       </section>
+      <NextSteps
+        steps={[
+          { href: '/contact?type=sponsorship', title: 'Talk to us', body: 'Ask about the tiers, or a partnership that fits.' },
+          { href: '/about', title: 'The event', body: 'Who takes part and how the four days run.' },
+          { href: '/resources', title: 'Resources', body: 'Every published document, including the deck.' },
+        ]}
+      />
     </>
   );
 }

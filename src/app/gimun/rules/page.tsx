@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { GlobeArt } from '@/components/art/LineArt';
 import { ChapterHead } from '@/components/sections/Chapter';
+import { ChapterIndex } from '@/components/story/ChapterIndex';
 import { Steps } from '@/components/sections/Steps';
 import { HelpCallout } from '@/components/ui/HelpCallout';
 import { PageHero } from '@/components/ui/PageHero';
@@ -51,6 +52,7 @@ export default async function GimunRulesPage() {
 
   return (
     <>
+      <ChapterIndex />
       <PageHero
         variant="gimun"
         breadcrumbs={[{ label: 'GIMUN', href: '/gimun' }, { label: 'Rules of procedure' }]}
@@ -76,7 +78,7 @@ export default async function GimunRulesPage() {
       <section className="handoff__sheet tone-deep chapter" aria-labelledby="stages-title">
         <div className="wrap steps-split">
           <div className="steps-split__head">
-            <ChapterHead id="stages-title" split={false} title="How a debate runs." lead="Five stages, the same in every committee, from roll call to the final vote." />
+            <ChapterHead id="stages-title" chapter={1} act="The debate" split={false} title="How a debate runs." lead="Five stages, the same in every committee, from roll call to the final vote." />
           </div>
           <Steps steps={STAGES} accent="gimun" />
         </div>
@@ -84,7 +86,7 @@ export default async function GimunRulesPage() {
 
       <section id="motions" className="chapter scroll-mt-28" aria-labelledby="motions-title">
         <div className="wrap">
-          <ChapterHead id="motions-title" title="Motions and points, in order." lead="When several motions are raised at once, the chairs take them in this order of precedence." />
+          <ChapterHead id="motions-title" chapter={2} act="Motions" title="Motions and points, in order." lead="When several motions are raised at once, the chairs take them in this order of precedence." />
           <GimunRulesClient />
         </div>
       </section>
@@ -92,7 +94,7 @@ export default async function GimunRulesPage() {
       <section className="sheet tone-inverse" aria-labelledby="yield-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
-          <ChapterHead id="yield-title" title="Three ways to yield." lead="Finish a speech before your time runs out and you must give the floor back in one of these ways." />
+          <ChapterHead id="yield-title" chapter={3} act="Yields" title="Three ways to yield." lead="Finish a speech before your time runs out and you must give the floor back in one of these ways." />
           <ol className="grid gap-4 md:grid-cols-3">
             {YIELDS.map((y) => (
               <li key={y.title} className="glance">

@@ -5,6 +5,7 @@ import { constructMetadata } from '@/lib/metadata';
 import { getAnnouncements } from '@/lib/content';
 import { AnnouncementsClient } from './AnnouncementsClient';
 import { getEventYear } from '@/lib/site-config';
+import { NextSteps } from '@/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Live Announcements & News | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
@@ -29,6 +30,13 @@ export default async function AnnouncementsPage() {
           <AnnouncementsClient initialAnnouncements={announcements} />
         </div>
       </section>
+      <NextSteps
+        steps={[
+          { href: '/schedule', title: 'The schedule', body: 'Every session, hour by hour, for all four days.' },
+          { href: '/about/venue', title: 'Venue and travel', body: 'Getting to GIKI and what to bring.' },
+          { href: '/about/faq', title: 'FAQ', body: 'Fees, refunds, accommodation and more.' },
+        ]}
+      />
     </>
   );
 }

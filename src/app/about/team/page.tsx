@@ -5,6 +5,7 @@ import { getSiteConfig, getTeamMembers } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
 import { TeamClient } from './TeamClient';
+import { NextSteps } from '@/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
@@ -43,6 +44,13 @@ export default async function TeamPage() {
           <TeamClient initialMembers={members} />
         </div>
       </section>
+      <NextSteps
+        steps={[
+          { href: '/contact', title: 'Contact', body: 'Write to the desk that owns your question.' },
+          { href: '/about', title: 'The event', body: 'What GIMUN and GMC are, and how the week runs.' },
+          { href: '/about/venue', title: 'Venue and travel', body: 'Where the team will meet you in Topi.' },
+        ]}
+      />
     </>
   );
 }

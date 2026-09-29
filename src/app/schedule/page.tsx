@@ -8,6 +8,7 @@ import { DaysArt } from "@/components/art/LineArt";
 import { formatDateRange } from "@/lib/utils";
 import { getEventYear } from "@/lib/site-config";
 import { PageHero } from '@/components/ui/PageHero';
+import { NextSteps } from '@/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Unified Itinerary & Schedule | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
@@ -47,6 +48,13 @@ export default async function SchedulePage() {
           <ScheduleClient initialSchedule={schedule} />
         </div>
       </section>
+      <NextSteps
+        steps={[
+          { href: '/about/venue', title: 'Venue and travel', body: 'Where each room is on campus, and how to get to Topi.' },
+          { href: '/announcements', title: 'Announcements', body: 'Room changes and notices, newest first.' },
+          { href: '/resources', title: 'Resources', body: 'The guides and rules to read before Day 1.' },
+        ]}
+      />
     </>
   );
 }

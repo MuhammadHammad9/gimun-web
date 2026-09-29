@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Seal } from '@/components/art/Seal';
 import { Magnetic } from '@/components/motion/Magnetic';
 import { Button } from '@/components/ui/Button';
+import { ChapterKicker } from './Chapter';
 
 export interface ClosingAction {
   label: string;
@@ -20,6 +21,8 @@ export function Closing({
   actions,
   note = 'No online payment is collected at any stage.',
   art,
+  chapter,
+  act,
 }: {
   id: string;
   title: string;
@@ -27,11 +30,15 @@ export function Closing({
   actions: ClosingAction[];
   note?: string | null;
   art?: ReactNode;
+  /** The closing chapter's number and name in the page's story. */
+  chapter?: number;
+  act?: string;
 }) {
   return (
     <section className="chapter closing tone-crest" aria-labelledby={id}>
       <div className="wrap closing__grid">
         <div>
+          {chapter !== undefined && act && <ChapterKicker chapter={chapter} act={act} target={id} />}
           <h2 id={id} className="closing__title">
             {title}
           </h2>

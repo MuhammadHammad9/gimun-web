@@ -3,6 +3,8 @@ import { notFound, permanentRedirect } from 'next/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
+import { Closing } from '@/components/sections/Closing';
+import { ChapterIndex } from '@/components/story/ChapterIndex';
 import { COMMITTEE_TYPE, seatsOpen } from '@/components/sections/Placards';
 import { Steps } from '@/components/sections/Steps';
 import { Button } from '@/components/ui/Button';
@@ -54,6 +56,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
 
   return (
     <>
+      <ChapterIndex />
       <PageHero
         variant="gimun"
         breadcrumbs={[
@@ -88,6 +91,8 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           <div className="steps-split__head">
             <ChapterHead
               id="agenda-title"
+              chapter={1}
+              act="The agenda"
               split={false}
               title="The agenda."
               lead="The topics debated in this committee, in the order the chairs will open them."
@@ -103,20 +108,9 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
         </div>
       </section>
 
-      <section className="chapter" aria-labelledby="seats-title">
+      <section className="chapter" aria-labelledby="chairs-title">
         <div className="wrap">
-          <ChapterHead
-            id="seats-title"
-            title="Country allocation."
-            lead="Seats marked available can be requested in your registration preferences. The secretariat confirms every allocation after review."
-          />
-          <CountryMatrix countryList={committee.countryList} />
-        </div>
-      </section>
-
-      <section className="chapter chapter--flush-top" aria-labelledby="chairs-title">
-        <div className="wrap">
-          <ChapterHead id="chairs-title" title="The chairs." />
+          <ChapterHead id="chairs-title" chapter={2} act="The chairs" title="The chairs." />
           {committee.chairs.length === 0 ? (
             <p className="max-w-2xl text-lead text-text-2">The chairs for this committee will be announced with country allocations.</p>
           ) : (
@@ -132,6 +126,31 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           )}
         </div>
       </section>
+
+      <section className="chapter chapter--flush-top" aria-labelledby="seats-title">
+        <div className="wrap">
+          <ChapterHead
+            id="seats-title"
+            chapter={3}
+            act="The seats"
+            title="Country allocation."
+            lead="Seats marked available can be requested in your registration preferences. The secretariat confirms every allocation after review."
+          />
+          <CountryMatrix countryList={committee.countryList} />
+        </div>
+      </section>
+
+      <Closing
+        id="seat-title"
+        chapter={4}
+        act="Take a seat"
+        title={`Take a seat in ${committee.slug.toUpperCase()}.`}
+        lead="Rank this committee among your three preferences when you apply. The secretariat allocates countries after reviewing every application."
+        actions={[
+          { ...apply, variant: 'track-gimun' },
+          { label: 'All committees', href: '/gimun/committees', variant: 'secondary' },
+        ]}
+      />
 
       <nav aria-label="Other committees" className="chapter chapter--flush-top">
         <div className="wrap grid gap-4 border-t border-line pt-10 sm:grid-cols-2">

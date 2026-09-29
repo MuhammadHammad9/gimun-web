@@ -5,6 +5,7 @@ import { getGallery, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
 import { GalleryClient } from './GalleryClient';
+import { NextSteps } from '@/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
@@ -43,6 +44,13 @@ export default async function GalleryPage() {
           <GalleryClient initialItems={items} />
         </div>
       </section>
+      <NextSteps
+        steps={[
+          { href: '/results', title: 'Results', body: 'The awards, and how they are decided.' },
+          { href: '/about', title: 'The event', body: 'The two competitions behind the photographs.' },
+          { href: '/about/venue', title: 'Venue', body: 'The campus in Topi where it all happens.' },
+        ]}
+      />
     </>
   );
 }
