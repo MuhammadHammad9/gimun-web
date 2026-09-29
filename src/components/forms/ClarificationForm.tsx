@@ -8,6 +8,7 @@ import { HoneypotField } from './HoneypotField';
 import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
 import { validateEmail } from '@/lib/validation';
 import { getEventYear } from '@/lib/site-config';
+import { SubmitButton } from './SubmitButton';
 
 export function ClarificationForm() {
   const eventYear = getEventYear(useSiteConfig());
@@ -174,14 +175,13 @@ export function ClarificationForm() {
         />
       </FormField>
 
-      <button
-        type="submit"
-        disabled={status === 'submitting'}
-        className="btn-shimmer-gold w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 text-on-accent"
+      <SubmitButton
+        pending={status === 'submitting'}
+        className="btn-shimmer-gold w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-on-accent"
       >
         <Send className="w-4 h-4" />
-        <span>{status === 'submitting' ? 'Sending…' : 'Submit question'}</span>
-      </button>
+        <span>Submit question</span>
+      </SubmitButton>
     </form>
   );
 }

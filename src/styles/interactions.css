@@ -476,3 +476,168 @@ button.live-notice__chip:focus-visible {
     display: none;
   }
 }
+
+/* --- View transitions (React <ViewTransition>) -------------------------- */
+/* The page curtain handles section jumps; these cover the morph links and
+   in-page crossfades. The header holds still, clicks pass through to the
+   live page, and reduced motion swaps instantly. */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 260ms;
+  animation-timing-function: var(--ease-brand);
+}
+
+::view-transition-group(site-header) {
+  z-index: 100;
+  animation: none;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+::view-transition-group(.morph) {
+  animation-duration: 560ms;
+  animation-timing-function: var(--ease-out-expo);
+}
+
+::view-transition-image-pair(.morph) {
+  animation-name: morph-soften;
+}
+
+@keyframes morph-soften {
+  35% {
+    filter: blur(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* --- Submit button state morph ------------------------------------------ */
+.submit-morph {
+  display: grid;
+  overflow: hidden;
+}
+
+.submit-morph__face {
+  display: flex;
+  grid-area: 1 / 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition:
+    transform var(--dur-surface) var(--ease-out-expo),
+    opacity var(--dur-ui) var(--ease-brand);
+}
+
+.submit-morph__face--pending,
+.submit-morph[data-state="pending"] .submit-morph__face:not(.submit-morph__face--pending) {
+  opacity: 0;
+  transform: translateY(110%);
+}
+
+.submit-morph[data-state="pending"] .submit-morph__face:not(.submit-morph__face--pending) {
+  transform: translateY(-110%);
+}
+
+.submit-morph[data-state="pending"] .submit-morph__face--pending {
+  opacity: 1;
+  transform: none;
+}
+
+.submit-morph[data-state="pending"] {
+  cursor: wait;
+}
+
+.submit-morph__spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: submit-spin 700ms linear infinite;
+}
+
+@keyframes submit-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .submit-morph__face {
+    transition: none;
+  }
+
+  .submit-morph__spinner {
+    animation-duration: 2s;
+  }
+}
+
+/* --- Filter dock: long lists keep their filters in reach ----------------- */
+/* Sticks under the floating header on wide screens and glides up (transform
+   only) when the header slides away on scroll. Phones keep it in the flow. */
+@media (min-width: 1024px) {
+  .filter-dock {
+    position: sticky;
+    top: calc(var(--chrome-h) + 0.75rem);
+    z-index: 20;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--color-line);
+    border-radius: 1.25rem;
+    background: color-mix(in srgb, var(--color-canvas) 88%, transparent);
+    backdrop-filter: blur(14px);
+    transition: transform var(--dur-surface) var(--ease-brand);
+  }
+
+  body:has(.site-header[data-hidden]) .filter-dock {
+    transform: translateY(calc(var(--chrome-h) * -1));
+  }
+}
+
+/* --- Form fields: a tick draws in once a required field is valid -------- */
+/* :user-valid only matches after the visitor has edited the field, so a
+   pristine form shows no ticks. Text controls only: an empty select or
+   checkbox would read as "valid" to the browser. */
+.field-tick {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  fill: none;
+  stroke: var(--color-champagne);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  transition:
+    stroke-dashoffset 420ms var(--ease-out-expo),
+    opacity var(--dur-micro) var(--ease-brand);
+}
+
+.form-field:has(:is(input, textarea):user-valid:not(:placeholder-shown):not([aria-invalid="true"], [type="checkbox"], [type="radio"], [type="file"])) .field-tick {
+  stroke-dashoffset: 0;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field-tick {
+    transition: none;
+  }
+}

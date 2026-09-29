@@ -13,6 +13,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { getCanonicalEventDateRange, getCanonicalVenue, getEventYear } from '@/lib/site-config';
+import { ScrambleValue } from '@/components/motion/ScrambleValue';
 
 function escapeHtml(value: unknown) {
   return String(value ?? '').replace(/[&<>'"]/g, (character) => ({
@@ -788,7 +789,7 @@ export function RegistrationSuccess({
               <div className="mt-7">
                 <p className="text-xs text-text-4">Reference number</p>
                 <div className="mt-1.5 flex items-center gap-3">
-                  <span className="font-mono text-2xl font-semibold tracking-tight text-text sm:text-3xl">{referenceId}</span>
+                  <ScrambleValue value={referenceId} className="font-mono text-2xl font-semibold tracking-tight text-text sm:text-3xl" />
                   <button
                     type="button"
                     onClick={handleCopy}

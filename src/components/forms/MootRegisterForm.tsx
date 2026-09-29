@@ -18,6 +18,7 @@ import { NonPaymentNotice } from './NonPaymentNotice';
 import { FormErrorSummary, focusFirstError } from './FormErrorSummary';
 import { PrivacyStatement } from './PrivacyStatement';
 import { getEventYear } from '@/lib/site-config';
+import { SubmitButton } from './SubmitButton';
 
 interface MootRegisterFormProps {
   endpoint?: string;
@@ -582,24 +583,14 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
       {/* Submit Action Block */}
       <div className="space-y-4 pt-3 border-t border-line">
         <FormErrorSummary errors={errors} />
-        <button
-          type="submit"
-          disabled={status === 'submitting'}
-          className={`btn-shimmer-gold w-full py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-on-accent flex items-center justify-center gap-2 transition-all cursor-pointer ${
-            status === 'submitting'
-              ? 'opacity-70 cursor-wait animate-pulse'
-              : 'hover:brightness-110 active:scale-[0.99]'
-          }`}
+        <SubmitButton
+          pending={status === 'submitting'}
+          pendingLabel="Sending your team registration…"
+          className="btn-shimmer-gold w-full py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-on-accent transition-all hover:brightness-110 active:scale-[0.99]"
         >
-          {status === 'submitting' ? (
-            <span>Processing Team Registration…</span>
-          ) : (
-            <>
-              <span>Submit Law Team Registration ({formData.members.length} Members)</span>
-              <ArrowRight className="w-4 h-4" />
-            </>
-          )}
-        </button>
+          <span>Submit Law Team Registration ({formData.members.length} Members)</span>
+          <ArrowRight className="w-4 h-4" />
+        </SubmitButton>
 
         <PrivacyStatement />
       </div>

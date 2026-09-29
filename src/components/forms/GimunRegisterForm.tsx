@@ -19,6 +19,7 @@ import { NonPaymentNotice } from './NonPaymentNotice';
 import { FormErrorSummary, focusFirstError } from './FormErrorSummary';
 import { PrivacyStatement } from './PrivacyStatement';
 import { getEventYear } from '@/lib/site-config';
+import { SubmitButton } from './SubmitButton';
 
 interface GimunRegisterFormProps {
   endpoint?: string;
@@ -1023,28 +1024,18 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
       {/* Submit Action Block */}
       <div className="space-y-4 pt-3 border-t border-line">
         <FormErrorSummary errors={errors} />
-        <button
-          type="submit"
-          disabled={status === 'submitting'}
-          className={`btn-shimmer-gold w-full py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-on-accent flex items-center justify-center gap-2 transition-all cursor-pointer ${
-            status === 'submitting'
-              ? 'opacity-70 cursor-wait animate-pulse'
-              : 'hover:brightness-110 active:scale-[0.99]'
-          }`}
+        <SubmitButton
+          pending={status === 'submitting'}
+          pendingLabel="Sending your application…"
+          className="btn-shimmer-gold w-full py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-on-accent transition-all hover:brightness-110 active:scale-[0.99]"
         >
-          {status === 'submitting' ? (
-            <span>Processing Application &amp; Verifying Dossier…</span>
-          ) : (
-            <>
-              <span>
-                {applicantType === 'individual'
-                  ? 'Submit Individual Application'
-                  : `Submit Delegation Roster (${delegationData.delegates.length} Delegates)`}
-              </span>
-              <ArrowRight className="w-4 h-4" />
-            </>
-          )}
-        </button>
+          <span>
+            {applicantType === 'individual'
+              ? 'Submit Individual Application'
+              : `Submit Delegation Roster (${delegationData.delegates.length} Delegates)`}
+          </span>
+          <ArrowRight className="w-4 h-4" />
+        </SubmitButton>
 
         <PrivacyStatement />
       </div>

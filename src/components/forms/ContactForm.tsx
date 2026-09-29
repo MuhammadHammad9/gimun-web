@@ -8,6 +8,7 @@ import { validateContactForm, type ValidationErrors } from '@/lib/validation';
 import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
 import { focusFirstError } from './FormErrorSummary';
+import { SubmitButton } from './SubmitButton';
 
 const MESSAGE_MAX = 3000;
 
@@ -217,24 +218,13 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
 
       <HoneypotField value={honeypot} onChange={setHoneypot} />
 
-      <button
-        type="submit"
-        disabled={status === 'submitting'}
-        className={`w-full py-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
-          status === 'submitting'
-            ? 'btn-shimmer-gold opacity-80 cursor-wait animate-pulse'
-            : 'btn-shimmer-gold hover:brightness-110 active:scale-[0.99]'
-        }`}
+      <SubmitButton
+        pending={status === 'submitting'}
+        className="btn-shimmer-gold w-full py-3.5 rounded-xl font-bold text-xs transition-all hover:brightness-110 active:scale-[0.99]"
       >
-        {status === 'submitting' ? (
-          <span>Transmitting Message to Directorate…</span>
-        ) : (
-          <>
-            <Send className="w-3.5 h-3.5" />
-            <span>Send Direct Message</span>
-          </>
-        )}
-      </button>
+        <Send className="w-3.5 h-3.5" />
+        <span>Send Direct Message</span>
+      </SubmitButton>
     </form>
   );
 }

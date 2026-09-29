@@ -43,7 +43,7 @@ export function FormField({
 
   return (
     <div
-      className={`space-y-1.5 text-left ${className}`}
+      className={`form-field space-y-1.5 text-left ${className}`}
     >
       <div className="flex items-baseline justify-between gap-2">
         <label
@@ -57,6 +57,12 @@ export function FormField({
             </span>
           )}
         </label>
+        {/* Drawn in by CSS once a required text field is filled in validly. */}
+        {required && (
+          <svg className="field-tick" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path d="M3 8.5l3.2 3.1L13 4.6" pathLength={1} />
+          </svg>
+        )}
       </div>
 
       {description && (

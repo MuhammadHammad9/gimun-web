@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { startTransition, useState, ViewTransition } from 'react';
 import { TrackBadge } from '@/components/ui/TrackBadge';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { FilterBar } from '@/components/ui/FilterBar';
@@ -44,7 +44,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
         <FilterBar
           options={filterOptions}
           activeValue={selectedTrack}
-          onChange={setSelectedTrack}
+          onChange={(value) => startTransition(() => setSelectedTrack(value))}
         />
         <div className="w-full md:w-80">
           <SearchInput
@@ -105,6 +105,8 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
           {regularItems.length} {regularItems.length === 1 ? 'notice' : 'notices'}, newest first
         </p>
 
+        {/* A new track crossfades the feed in place (same page, new content). */}
+        <ViewTransition key={selectedTrack} name="announcement-feed" share="auto" enter="auto" default="none">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {regularItems.map((item, idx) => (
             <ScrollReveal key={item.id} delay={idx * 0.05}>
@@ -160,6 +162,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
             </ScrollReveal>
           ))}
         </div>
+        </ViewTransition>
 
         {filtered.length === 0 && (
           <EmptyState

@@ -7,6 +7,7 @@ import { Seal } from '@/components/art/Seal';
 import { Counter } from '@/components/motion/Counter';
 import { HandoffStage } from '@/components/motion/HandoffStage';
 import { HorizontalPan } from '@/components/motion/HorizontalPan';
+import { Marquee } from '@/components/motion/Marquee';
 import { ScrubText } from '@/components/motion/ScrubText';
 import { StickyStack } from '@/components/motion/StickyStack';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
@@ -26,6 +27,7 @@ import { ChapterRail } from '@/components/story/ChapterRail';
 import { getCommittees, getCopy, getProblemCategories, getSchedule, getSiteConfig, getSponsors } from '@/lib/content';
 import { accentWords, chapterNumbers, fill } from '@/lib/copy';
 import { feeAmount } from '@/lib/fees';
+import { centroidOf } from '@/lib/geo/centroids';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister as canTrackRegister, eventPhase, serverRenderTime } from '@/lib/phase';
 import { formatEventDate, getEventYear, getSiteUrl } from '@/lib/site-config';
@@ -77,6 +79,8 @@ export default async function Home() {
   const lines = (text?: string) => fill(text, vars).split('\n').map((line) => line.trim()).filter(Boolean);
   const stackArt = [<DocumentsArt key="docs" />, <DaysArt key="days" />, <RouteArt key="route" />];
   const stackIds = ['stack-library', 'stack-schedule', 'stack-venue'];
+  // Delegations in session: countries only (crisis roles are not nations).
+  const delegations = [...new Set(committees.flatMap((c) => (c.countryList ?? []).map((entry) => entry.country)))].filter((country) => centroidOf(country));
 
   const seats = committees.reduce((sum, committee) => sum + (committee.countryList?.length ?? 0), 0);
   const openSeats = committees.reduce((sum, committee) => sum + seatsOpen(committee), 0);
@@ -269,6 +273,8 @@ export default async function Home() {
         </HorizontalPan>
       </section>
       )}
+
+      {!inside.hidden && <Marquee items={delegations} label="Countries represented in committee" />}
 
       {/* 03 What it asks of you */}
       {!asks.hidden && (

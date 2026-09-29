@@ -1668,3 +1668,259 @@
     display: none;
   }
 }
+
+/* --- Corridor extras (pinned only) --------------------------------------- */
+.pan__viewport {
+  position: relative;
+}
+
+.pan[data-pan="pinned"] .pan__track {
+  /* Room for a tilted panel inside the clipped viewport. */
+  padding-block: 1.25rem;
+}
+
+.pan__progress {
+  display: none;
+}
+
+.pan[data-pan="pinned"] .pan__progress {
+  position: relative;
+  display: block;
+  height: 1px;
+  margin-top: 1.75rem;
+  overflow: hidden;
+  background: var(--color-line);
+}
+
+.pan[data-pan="pinned"] .pan__progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-champagne);
+  transform: scaleX(var(--pan-progress, 0));
+  transform-origin: left;
+}
+
+.pan__chip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: none;
+  padding: 0.375rem 0.75rem;
+  translate: -50% -140%;
+  border-radius: 999px;
+  background: var(--color-text);
+  color: var(--color-canvas);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity var(--dur-ui) var(--ease-brand),
+    scale var(--dur-ui) var(--ease-brand);
+}
+
+.pan[data-pan="pinned"] .pan__chip {
+  display: block;
+}
+
+.pan[data-pan-hover] .pan__chip {
+  opacity: 1;
+  scale: 1;
+}
+
+/* --- Marquee (delegations in session) ------------------------------------ */
+.marquee {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-block: clamp(1.5rem, 4vw, 2.75rem);
+  border-block: 1px solid var(--color-line);
+}
+
+.marquee__viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 60s) linear infinite;
+}
+
+.marquee[data-paused] .marquee__track {
+  animation-play-state: paused;
+}
+
+.marquee__list {
+  display: flex;
+  flex: none;
+  gap: 0;
+}
+
+.marquee__list li {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-2);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.4vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.marquee__list li::after {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-inline: clamp(1rem, 2.4vw, 2rem);
+  border-radius: 999px;
+  background: var(--color-accent-gimun);
+}
+
+.marquee__toggle {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-inline-end: var(--gutter);
+  border: 1px solid var(--color-line-2);
+  border-radius: 999px;
+  color: var(--color-text-2);
+  transition: border-color var(--dur-ui) var(--ease-brand), color var(--dur-ui) var(--ease-brand);
+}
+
+.marquee__toggle:hover {
+  border-color: var(--color-line-3);
+  color: var(--color-text);
+}
+
+.marquee__toggle:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track {
+    flex-wrap: wrap;
+    width: auto;
+    animation: none;
+  }
+
+  .marquee__list[aria-hidden="true"],
+  .marquee__toggle {
+    display: none;
+  }
+
+  .marquee__viewport {
+    mask-image: none;
+    padding-inline: var(--gutter);
+  }
+
+  .marquee__list {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+}
+
+/* --- Results podium (published results) ---------------------------------- */
+/* Three steps rising from one baseline, the first main award raised in the
+   centre. Each step rises in once, staggered; names are plain text. */
+.podium {
+  display: grid;
+  gap: 0.75rem;
+  align-items: end;
+  padding-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .podium {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.podium__step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-height: 13rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: 1.5rem 1.5rem 0.5rem 0.5rem;
+  background: var(--color-raised);
+  animation: podium-rise var(--dur-entrance) var(--ease-out-expo) both;
+}
+
+.podium__step:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.podium__step:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.podium__step[data-place="first"] {
+  min-height: 16rem;
+  border-color: var(--color-champagne);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-champagne) 10%, var(--color-raised)), var(--color-raised));
+}
+
+.podium__award {
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.podium__winner {
+  margin-top: auto;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 2.4vw, 1.875rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.podium__step[data-place="first"] .podium__winner {
+  color: var(--color-champagne);
+}
+
+.podium__institution {
+  color: var(--color-text-2);
+  font-size: 0.875rem;
+}
+
+.podium__track {
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+
+@keyframes podium-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .podium__step {
+    animation: none;
+  }
+}

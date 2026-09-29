@@ -67,16 +67,30 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
   const before = useRef<Map<string, string> | null>(null);
   // Public: 'waiting' shows the "New updates" chip, 'done' the brief confirmation.
   const [notice, setNotice] = useState<'none' | 'waiting' | 'done'>('none');
+  // The revision the server reported just before a public refresh, and the
+  // revision the page actually rendered from (the layout's `initial`). A
+  // refresh can race the regeneration of a static page and come back one
+  // version behind; then it is retried shortly instead of a whole poll later.
+  const target = useRef<string | null>(null);
+  const rendered = useRef(initial);
+  const retries = useRef(0);
+
+  const sync = async () => {
+    const live = await syncLiveContent(baseline.current).catch(() => null);
+    target.current = typeof live === 'string' && live !== 'unavailable' ? live : null;
+    retries.current = 0;
+  };
 
   const refresh = async () => {
     refreshing.current = true;
-    if (!admin) await syncLiveContent(baseline.current).catch(() => undefined);
+    if (!admin) await sync();
     before.current = admin ? null : snapshot();
     start(() => router.refresh());
   };
 
   useEffect(() => {
     baseline.current = initial;
+    rendered.current = initial;
     refreshing.current = false;
   }, [initial, path]);
 
@@ -120,7 +134,7 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
             else {
               refreshing.current = true;
               // Make sure the cached pages are fresh before asking for this one.
-              await syncLiveContent(baseline.current).catch(() => undefined);
+              await sync();
               if (cancelled) return;
               before.current = snapshot();
               start(() => router.refresh());
@@ -152,8 +166,16 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
   // After a public refresh lands: mark what changed, and confirm briefly.
   useEffect(() => {
     if (pending) return;
-    refreshing.current = false;
     const previous = before.current;
+    // Still behind what the server reported: try again shortly, keeping the
+    // snapshot so the eventual update is marked against the original page.
+    if (previous && target.current && rendered.current !== target.current && retries.current < 3) {
+      retries.current += 1;
+      const retry = setTimeout(() => start(() => router.refresh()), 1000 * retries.current);
+      return () => clearTimeout(retry);
+    }
+    refreshing.current = false;
+    target.current = null;
     if (!previous) return;
     before.current = null;
     const changed: HTMLElement[] = [];
@@ -173,7 +195,7 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
       clearTimeout(show);
       clearTimeout(clear);
     };
-  }, [pending]);
+  }, [pending, router]);
 
   if (admin)
     return (

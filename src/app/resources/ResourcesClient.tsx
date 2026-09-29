@@ -112,7 +112,7 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 border-b border-line pb-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="filter-dock flex flex-col gap-4 border-b border-line pb-6 lg:flex-row lg:items-center lg:justify-between">
           <FilterBar label="Filter by track" options={trackOptions} activeValue={trackFilter} onChange={setTrackFilter} />
           <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by document type">
             {typeOptions.map((opt) => (

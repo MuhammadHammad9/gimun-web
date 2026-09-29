@@ -144,6 +144,8 @@ export function SiteHeader() {
   return (
     <>
       <header
+        // Holds still while a page morphs underneath (view transitions).
+        style={{ viewTransitionName: 'site-header' }}
         ref={headerRef}
         className="site-header"
         data-panel={panel ? '' : undefined}

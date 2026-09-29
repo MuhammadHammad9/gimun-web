@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { SiteHeader } from '@/components/chrome/SiteHeader';
 import { PointerGlow } from '@/components/motion/PointerGlow';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
+import { SectionReveals } from '@/components/motion/SectionReveals';
 import { SmoothScroll } from '@/components/motion/SmoothScroll';
 import { TransitionProvider } from '@/components/motion/TransitionProvider';
 import { isKnownPublicPath } from '@/lib/motion/routes';
@@ -48,6 +49,7 @@ export function SiteChrome({
       </main>
       {footer}
       <SmoothScroll />
+      <SectionReveals />
       <PointerGlow />
     </TransitionProvider>
   );

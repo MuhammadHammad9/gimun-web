@@ -1,3 +1,4 @@
+import { ViewTransition } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ScalesArt } from '@/components/art/LineArt';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
@@ -46,9 +47,12 @@ export function CommitteePlacard({
           </span>
         )}
       </div>
-      <p className="placard__mark" aria-hidden="true">
-        {committee.slug.toUpperCase()}
-      </p>
+      {/* Morphs into the committee page's mark (see TransitionLink morph). */}
+      <ViewTransition name={`committee-mark-${committee.slug}`} share="morph" default="none">
+        <p className="placard__mark" aria-hidden="true">
+          {committee.slug.toUpperCase()}
+        </p>
+      </ViewTransition>
       <h3 id={headingId} className="placard__name">
         {committee.name}
       </h3>
@@ -65,7 +69,7 @@ export function CommitteePlacard({
               Apply
             </Link>
           )}
-          <Link href={`/gimun/committees/${committee.slug}`} className="text-link" aria-label={`${committee.name}: committee page`}>
+          <Link href={`/gimun/committees/${committee.slug}`} className="text-link" aria-label={`${committee.name}: committee page`} morph>
             Committee
             <ArrowRight aria-hidden="true" strokeWidth={1.75} className="size-4" />
           </Link>

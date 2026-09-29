@@ -74,6 +74,16 @@
   }
 }
 
+/* While the chambers corridor is pinned, its panels pass under the rail. */
+.chapter-index {
+  transition: opacity var(--dur-ui) var(--ease-brand), visibility var(--dur-ui);
+}
+
+[data-corridor] .chapter-index {
+  visibility: hidden;
+  opacity: 0;
+}
+
 @keyframes chapter-index-in {
   from {
     opacity: 0;

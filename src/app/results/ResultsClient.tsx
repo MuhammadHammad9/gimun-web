@@ -64,6 +64,14 @@ export function ResultsClient({
   const mainAwards = (awards.items ?? []).map((item) => ({ title: fill(item.title, vars), track: fill(item.meta, vars), body: fill(item.body, vars) }));
   const [gimunCriteria, mootCriteria] = criteria.items ?? [];
 
+  // Once published, the winners of the main awards stand on a podium: the
+  // first main award in the centre, raised, the next two beside it.
+  const headline = mainAwards
+    .map((award) => ({ award, result: initialResults.find((r) => r.awardName.toLowerCase().includes(award.title.toLowerCase())) }))
+    .filter((entry): entry is { award: (typeof mainAwards)[number]; result: ResultAward } => Boolean(entry.result))
+    .slice(0, 3);
+  const podium = headline.length >= 2 ? [headline[1], headline[0], headline[2]].filter(Boolean) : [];
+
   return (
     <div className="space-y-16">
       {!resultsPublished && (
@@ -157,6 +165,18 @@ export function ResultsClient({
       ) : (
         /* CONDITIONAL RENDERING: POST-EVENT / PUBLISHED STATE */
         <section className="space-y-8">
+          {podium.length > 0 && selectedTrack === 'all' && !searchQuery && (
+            <ol className="podium" aria-label="Main award winners">
+              {podium.map(({ award, result }) => (
+                <li key={result.id} className="podium__step" data-place={award === headline[0].award ? 'first' : undefined}>
+                  <span className="podium__award">{award.title}</span>
+                  <span className="podium__winner">{result.winnerName}</span>
+                  <span className="podium__institution">{result.institution}</span>
+                  <span className="podium__track">{award.track}</span>
+                </li>
+              ))}
+            </ol>
+          )}
           {/* Filter & Search Bar */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-line">
             <FilterBar

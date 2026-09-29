@@ -238,6 +238,20 @@ Only on the visitor's own action, transform and opacity only, off under reduced 
 ### The Curtain
 Five maroon panels (three on phones, four on tablets) close from the bottom in a 60ms stagger, 480ms each, on internal link clicks, show the destination's name, then open upward (520ms). Back and Forward are instant; reduced motion skips it.
 
+### Morphs (view transitions)
+A link marked `morph` (`TransitionLink`) skips the curtain and lets a named element carry across: a committee placard's abbreviation becomes the committee page's large mark (`<ViewTransition name="committee-mark-…" share="morph">`, 560ms expo with a light blur mid-flight). The header holds still, clicks pass through during the transition, and reduced motion swaps instantly. The announcements feed crossfades when its track filter changes. Keep morphs for "the same thing, one level deeper"; section jumps stay on the curtain.
+
+### Motion signatures
+- **Hero seal (home):** after the first intent it leans toward the pointer (±10°, fine pointers), and as chapter 01 slides over the hero the two rooms open: globe and scales part, the centre line withdraws, the inner rules unwind. Scrubbed, so it closes on the way back.
+- **Committees globe:** an orthographic canvas globe (no WebGL, no dependency) with every seat as a marker, open in champagne with a pulse, allocated in crimson; turns slowly, drags with momentum, draws only while visible, follows live allocation updates. The SVG globe is its fallback.
+- **Chambers corridor:** pinned, it drags with momentum (the drag moves the page scroll), leans up to 4° with scroll speed, shows a progress rail, tilts the panel under the pointer and shows a "Drag" chip; the chapter rail steps aside while it is pinned.
+- **Sheets:** paper and crest sheets unfold from an inset rounded card to full bleed as they arrive (full tier).
+- **Marquee:** the delegations in session drift on the home page, faster while scrolling; pausable, still under reduced motion.
+- **Forms:** submit buttons slide their label out for a turning ring ("Sending…") without changing size; a tick draws beside a required field once it is validly filled; the registration reference resolves character by character (the final value is read out at once).
+
+### Page copy
+Every public page's words live in the `copy` collection, one entry per section (`home-choice`, `gimun-how`…), seeded from `content/copy.json`. Pages ask for a section with `copy(id)` and fill `{tokens}` from live data; structure and order stay in code. `hidden` removes a section and renumbers the chapters after it (`chapterNumbers`); hand-off chapters and closings are marked "always shown".
+
 ## Do's and Don'ts
 
 ### Do:
@@ -247,6 +261,7 @@ Five maroon panels (three on phones, four on tablets) close from the bottom in a
 - **Do** keep numbers real: counters, seats and dates come from content, never placeholders.
 - **Do** check both themes and both 390px and 1440px for every new surface.
 - **Do** give a new story page numbered chapters (`ChapterHead` with `chapter` and `act`) and a `ChapterIndex`; give a new utility page a `NextSteps` ending.
+- **Do** put new visible words in `content/copy.json` and read them with `getCopy`, so organizers can edit them; `tests/unit/copy.test.ts` fails if a page asks for a section the seed lacks.
 
 ### Don't:
 - **Don't** use a thick coloured side border on cards.

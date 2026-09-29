@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ViewTransition } from 'react';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
@@ -87,9 +88,11 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           </div>
         }
         art={
-          <p className="committee-mark" aria-hidden="true">
-            {committee.slug.toUpperCase()}
-          </p>
+          <ViewTransition name={`committee-mark-${committee.slug}`} share="morph" default="none">
+            <p className="committee-mark" aria-hidden="true">
+              {committee.slug.toUpperCase()}
+            </p>
+          </ViewTransition>
         }
       />
 
