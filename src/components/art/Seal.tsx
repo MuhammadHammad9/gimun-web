@@ -1,7 +1,24 @@
 import { cn } from '@/lib/utils';
+import { globe } from './geometry';
+import { ScalesShape } from './LineArt';
 
+const C = 200;
 const RING_R = 164;
-const RING_TEXT = 'GIKI MODEL UNITED NATIONS · GIKI MOOT COURT · TOPI · MARCH 2027 · ';
+const RING_TEXT = 'GIKI MODEL UNITED NATIONS • GIKI MOOT COURT • TOPI • MARCH 2027 • ';
+
+// The ring path starts at the top and runs clockwise, so the lettering begins
+// at twelve o'clock and its seam falls on a separator.
+const RING_PATH = `M${C} ${C - RING_R}A${RING_R} ${RING_R} 0 0 1 ${C} ${C + RING_R}A${RING_R} ${RING_R} 0 0 1 ${C} ${C - RING_R}`;
+const CIRCUMFERENCE = 2 * Math.PI * RING_R;
+
+// The globe half: the same projection as GlobeArt, drawn upright and clipped
+// to the left of the centre line.
+const GLOBE_R = 104;
+const GLOBE_LINES = globe(C, C, GLOBE_R, { elevation: 14, meridians: [-60, -30], parallels: [-45, 45] });
+
+// The scales half: GlobeArt's 240-unit box scaled into the right half.
+const SCALES_SCALE = 0.54;
+const SCALES_TRANSFORM = `translate(${C + 66 - 120 * SCALES_SCALE} ${C - 126 * SCALES_SCALE}) scale(${SCALES_SCALE})`;
 
 /**
  * The event seal: a slowly turning ring of lettering around a split emblem,
@@ -13,8 +30,6 @@ const RING_TEXT = 'GIKI MODEL UNITED NATIONS · GIKI MOOT COURT · TOPI · MARCH
  * Decorative: hidden from assistive tech. `id` must be unique on the page.
  */
 export function Seal({ id, className, spin = true }: { id: string; className?: string; spin?: boolean }) {
-  const ringPath = `M200,200 m-${RING_R},0 a${RING_R},${RING_R} 0 1,1 ${RING_R * 2},0 a${RING_R},${RING_R} 0 1,1 -${RING_R * 2},0`;
-  const circumference = 2 * Math.PI * RING_R;
   const ticks = Array.from({ length: 72 }, (_, i) => i * 5);
 
   return (
@@ -22,41 +37,42 @@ export function Seal({ id, className, spin = true }: { id: string; className?: s
       <div className={cn('seal__ring', spin && 'seal__ring--spin')}>
         <svg viewBox="0 0 400 400" focusable="false">
           <defs>
-            <path id={`${id}-ring`} d={ringPath} />
+            <path id={`${id}-ring`} d={RING_PATH} />
           </defs>
           <text className="seal__lettering">
-            <textPath href={`#${id}-ring`} textLength={circumference - 8} lengthAdjust="spacing">
+            <textPath href={`#${id}-ring`} textLength={CIRCUMFERENCE - 10} lengthAdjust="spacing">
               {RING_TEXT}
             </textPath>
           </text>
           <g className="seal__ticks">
             {ticks.map((angle) => (
-              <line key={angle} x1="200" y1="10" x2="200" y2={angle % 30 === 0 ? 22 : 16} transform={`rotate(${angle} 200 200)`} />
+              <line key={angle} x1={C} y1="10" x2={C} y2={angle % 30 === 0 ? 22 : 16} transform={`rotate(${angle} ${C} ${C})`} />
             ))}
           </g>
         </svg>
       </div>
 
       <svg className="seal__core" viewBox="0 0 400 400" focusable="false">
-        <circle cx="200" cy="200" r="194" className="seal__rule" />
-        <circle cx="200" cy="200" r="140" className="seal__rule" />
-        <circle cx="200" cy="200" r="132" className="seal__rule seal__rule--faint" />
-        <line x1="200" y1="68" x2="200" y2="332" className="seal__rule" />
+        <defs>
+          <clipPath id={`${id}-left`}>
+            <rect x="0" y="0" width={C} height="400" />
+          </clipPath>
+        </defs>
+        <circle cx={C} cy={C} r="194" className="seal__rule" />
+        <circle cx={C} cy={C} r="140" className="seal__rule" />
+        <circle cx={C} cy={C} r="132" className="seal__rule seal__rule--faint" />
+        <line x1={C} y1={C - 132} x2={C} y2={C + 132} className="seal__rule" />
 
         {/* GIMUN: the globe, left half */}
-        <g className="seal__gimun" data-draw="">
-          <path d="M200 88a112 112 0 0 0 0 224" pathLength={1} />
-          <path d="M200 88c-36 20-54 64-54 112s18 92 54 112" pathLength={1} />
-          <path d="M200 88c-72 22-96 70-96 112s24 90 96 112" pathLength={1} />
-          <path d="M94 164h106M88 200h112M94 236h106" pathLength={1} />
+        <g className="seal__gimun" clipPath={`url(#${id}-left)`} data-draw="">
+          <circle cx={C} cy={C} r={GLOBE_R} pathLength={1} />
+          <path d={GLOBE_LINES.meridians + GLOBE_LINES.parallels} className="seal__detail" pathLength={1} />
+          <path d={GLOBE_LINES.equator} pathLength={1} />
         </g>
 
         {/* GMC: the scales, right half */}
-        <g className="seal__gmc" data-draw="">
-          <path d="M266 120v164M244 284h44M234 146h64" pathLength={1} />
-          <path d="M234 146l-16 44h32zM298 146l-16 44h32z" pathLength={1} />
-          <path d="M218 190a16 7 0 0 0 32 0M282 190a16 7 0 0 0 32 0" pathLength={1} />
-          <circle cx="266" cy="114" r="5" />
+        <g className="seal__gmc" transform={SCALES_TRANSFORM} data-draw="">
+          <ScalesShape />
         </g>
       </svg>
     </div>

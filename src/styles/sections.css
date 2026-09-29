@@ -344,9 +344,15 @@
   stroke: var(--color-accent-gmc);
 }
 
-.seal__gmc circle {
-  fill: var(--color-accent-gmc);
-  stroke: none;
+/* The scales are the shared 240-unit drawing, scaled down: keep their
+   strokes at the seal's own weight. */
+.seal__gmc * {
+  vector-effect: non-scaling-stroke;
+}
+
+.seal__detail {
+  stroke-width: 1.25;
+  stroke-opacity: 0.6;
 }
 
 /* --- Chapters ------------------------------------------------------------ */

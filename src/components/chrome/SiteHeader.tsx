@@ -12,7 +12,7 @@ import { formatEventDate } from '@/lib/site-config';
 import { BrandMark } from './BrandMark';
 import { MobileMenu } from './MobileMenu';
 import { isCurrentPath } from './nav-utils';
-import { SectionArt } from './SectionArt';
+import { GlobeArt, PorticoArt, ScalesArt } from '@/components/art/LineArt';
 import { ThemeSwitch } from './ThemeSwitch';
 
 type PanelKind = 'gimun' | 'gmc' | 'about';
@@ -174,7 +174,7 @@ export function SiteHeader() {
                           {item.id === 'about' ? 'About the event' : `${item.label} overview`}
                           <ArrowRight aria-hidden="true" strokeWidth={1.75} className="size-4" />
                         </Link>
-                        {lead && <SectionArt kind={lead.kind} className="mega__art" />}
+                        {lead && <PanelArt kind={lead.kind} />}
                       </div>
                       <div className="mega__links">
                         {item.dropdown.map((child, index) => (
@@ -303,4 +303,10 @@ function MegaFoot({ kind, onNavigate }: { kind?: PanelKind; onNavigate: () => vo
       </Link>
     </div>
   );
+}
+
+function PanelArt({ kind }: { kind: PanelKind }) {
+  if (kind === 'gimun') return <GlobeArt className="mega__art" />;
+  if (kind === 'gmc') return <ScalesArt className="mega__art" />;
+  return <PorticoArt className="mega__art" />;
 }
