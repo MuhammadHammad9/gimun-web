@@ -526,9 +526,6 @@ html[data-theme-switching]::view-transition-new(root) {
     display: block;
   }
 
-  .register--compact {
-    display: none;
-  }
 }
 
 .register__menu {
