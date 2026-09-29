@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { drainEmailOutbox, SubmissionServiceError } from '@/lib/server/submissions';
 
@@ -6,7 +7,7 @@ export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
+  if (!secret || !constantTimeEquals(request.headers.get('authorization') ?? '', `Bearer ${secret}`)) {
     return NextResponse.json({ success: false, message: 'Unauthorized.' }, { status: 401 });
   }
 
@@ -19,4 +20,10 @@ export async function GET(request: NextRequest) {
     }
     return NextResponse.json({ success: false, message: 'Email dispatch failed.' }, { status: 500 });
   }
+}
+
+function constantTimeEquals(a: string, b: string) {
+  const left = Buffer.from(a);
+  const right = Buffer.from(b);
+  return left.length === right.length && timingSafeEqual(left, right);
 }

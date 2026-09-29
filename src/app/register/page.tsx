@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { constructMetadata } from '@/lib/metadata';
 import { getCommittees, getProblemCategories, getSiteConfig } from '@/lib/content';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { RegisterPageClient } from './RegisterPageClient';
+import { PageHero } from '@/components/ui/PageHero';
 import { getEventYear } from '@/lib/site-config';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
@@ -17,33 +19,45 @@ export default async function RegisterPage() {
   const siteConfig = (await getSiteConfig());
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-crest via-overlay to-elevated py-12 md:py-16 text-champagne print:bg-white print:text-black print:py-0 print:px-0 print:m-0 print:max-w-none print:space-y-0">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10 print:px-0 print:m-0 print:max-w-none print:space-y-0">
-        {/* Header */}
-        <header className="space-y-3 text-center max-w-2xl mx-auto print:hidden hidden-print" data-print-hide="true">
-          <span className="inline-block px-3.5 py-1 rounded-full text-xs font-mono uppercase font-semibold tracking-wider bg-champagne/10 text-champagne border border-champagne/20">
-            Official Application Portal
-          </span>
-          <h1 className="text-3xl md:text-5xl font-heading font-extrabold text-cream tracking-tight">
-            Delegate &amp; Team Registration
-          </h1>
-          <p className="text-champagne/80 text-sm md:text-base leading-relaxed">
-            Apply for GIMUN (Model UN) or GMC (Moot Court). Zero upfront payment — the organizing team reviews all applications and confirms your seat.
-          </p>
-          <p className="text-xs text-champagne/60 pt-1">
-            Not sure which track to pick, or have eligibility questions?{' '}
-            <a href="/about/faq" className="text-champagne font-semibold hover:text-cream underline underline-offset-4">
-              Read the FAQ →
-            </a>
-          </p>
-        </header>
+    <div className="pb-24 print:pb-0">
+      <PageHero
+        className="print:hidden"
+        meta={[`Registration ${getEventYear(siteConfig)}`, 'Free to apply', 'About ten minutes']}
+        title="Apply for GIMUN or the GIKI Moot Court"
+        accentPhrase="GIKI Moot Court"
+        description="The organizing team reviews every application. You pay only if you are accepted, by bank transfer against an invoice."
+        aside={
+          <ol className="steps" style={{ '--step-accent': 'var(--color-champagne)' } as React.CSSProperties}>
+            {[
+              ['Apply', 'Submit the form. You get a reference number and QR ticket by email straight away.'],
+              ['Review', 'The organizing team reviews applications and allocates committees or categories.'],
+              ['Pay', 'If accepted, you receive an invoice with bank details. Nothing is charged here.'],
+            ].map(([title, body], i) => (
+              <li key={title} className="step !py-5">
+                <span className="step__num !text-[1.75rem]" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <h2 className="step__title !text-[1.125rem]">{title}</h2>
+                  <p className="step__body !mt-1 text-small">{body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        }
+      />
 
-        {/* Client Orchestrator */}
-        <RegisterPageClient
-          committees={committees}
-          categories={categories}
-          siteConfig={siteConfig}
-        />
+      <div className="mx-auto max-w-6xl px-4 pt-4 sm:px-6 print:m-0 print:max-w-none print:p-0">
+        <RegisterPageClient committees={committees} categories={categories} siteConfig={siteConfig} />
+        <p className="mt-12 text-center text-sm text-text-3 print:hidden">
+          Questions about eligibility or fees? Read the{' '}
+          <Link href="/about/faq" className="text-link">
+            FAQ
+          </Link>{' '}
+          or{' '}
+          <Link href="/contact" className="text-link">
+            contact the organizing team
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );

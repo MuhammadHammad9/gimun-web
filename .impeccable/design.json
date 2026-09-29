@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-29T09:00:00+05:00",
+  "title": "Design System: GIMUN & GMC",
+  "extensions": {
+    "colorMeta": {
+      "canvas": { "role": "neutral", "displayName": "Lacquer Maroon", "canonical": "#140302", "tonalRamp": ["#0d0201", "#140302", "#1c0504", "#260806", "#340802", "#450c04", "#5e1205", "#7b1d0e"] },
+      "wine": { "role": "neutral", "displayName": "Wine", "canonical": "#2b0806" },
+      "paper": { "role": "neutral", "displayName": "Programme Paper", "canonical": "#f3e8d5", "tonalRamp": ["#7a5a2b", "#a88a5e", "#cfb991", "#e9dcc4", "#f3e8d5", "#f8efe0", "#fcf6ed", "#fffdf9"] },
+      "champagne": { "role": "primary", "displayName": "Champagne Ink", "canonical": "#ecd8b7", "tonalRamp": ["#3b1f0d", "#6f3c16", "#8a5a1f", "#cca876", "#dcc095", "#ecd8b7", "#f6e9d3", "#fff5e6"] },
+      "crimson": { "role": "secondary", "displayName": "Assembly Crimson", "canonical": "#e11d48", "tonalRamp": ["#4c0519", "#86152b", "#9f1239", "#be123c", "#e11d48", "#f43f5e", "#fda4af", "#ffe4e6"] },
+      "text": { "role": "neutral", "displayName": "Warm White", "canonical": "#fffdf9" },
+      "light-canvas": { "role": "neutral", "displayName": "Cream Stock (light theme)", "canonical": "#fff7ea" },
+      "light-champagne": { "role": "primary", "displayName": "Burnt Sienna Ink (light theme)", "canonical": "#6f3c16" },
+      "light-crimson": { "role": "secondary", "displayName": "Assembly Crimson (light theme)", "canonical": "#bd123c" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The page title in the hero; the only h1." },
+      "headline": { "displayName": "Headline", "purpose": "Chapter titles, as sentences ending in a full stop." },
+      "manifesto": { "displayName": "Manifesto", "purpose": "One scrubbed statement per page; never below 28px." },
+      "title": { "displayName": "Title", "purpose": "Card, door, step and placard titles." },
+      "lead": { "displayName": "Lead", "purpose": "The paragraph under a hero or chapter title." },
+      "body": { "displayName": "Body", "purpose": "Reading text, about 42rem wide at most." },
+      "label": { "displayName": "Label", "purpose": "Uppercase mono metadata: eyebrows, dates, table heads." }
+    },
+    "shadows": [
+      { "name": "sheet-lift", "value": "0 -2.5rem 5rem -3rem rgba(11, 2, 1, 0.55)", "purpose": "The hand-off sheet laid over the hero; the only structural shadow." }
+    ],
+    "motion": [
+      { "name": "ease-brand", "value": "cubic-bezier(0.32, 0.72, 0, 1)", "purpose": "Default for state changes and hovers." },
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Entrances, reveals and layout moves." },
+      { "name": "ease-lift", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Text rising out of a mask." },
+      { "name": "ease-curtain", "value": "cubic-bezier(0.76, 0, 0.24, 1)", "purpose": "The page curtain." },
+      { "name": "dur-micro", "value": "160ms", "purpose": "Link underlines, small state changes." },
+      { "name": "dur-ui", "value": "320ms", "purpose": "Controls and panels." },
+      { "name": "dur-surface", "value": "520ms", "purpose": "Sheets, curtain reveal." },
+      { "name": "dur-entrance", "value": "900ms", "purpose": "Hero and chapter entrances." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single high-intent action in a view, with its arrow in a disc.",
+      "html": "<button class=\"ds-btn-primary\"><span>Open the library</span><span class=\"ds-btn-disc\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></span></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 6px 0 20px; border: 0; border-radius: 9999px; background: #ecd8b7; color: #140302; font: 600 14px/1 'General Sans', system-ui, sans-serif; cursor: pointer; transition: background-color 200ms cubic-bezier(0.32, 0.72, 0, 1), transform 200ms cubic-bezier(0.32, 0.72, 0, 1); } .ds-btn-primary:hover { background: #fff5e6; } .ds-btn-primary:hover .ds-btn-disc { transform: translateX(2px); } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #140302, 0 0 0 4px #ecd8b7; } .ds-btn-disc { display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 9999px; background: rgba(20, 3, 2, 0.12); transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1); }"
+    },
+    {
+      "name": "GIMUN Button",
+      "kind": "button",
+      "refersTo": "button-gimun",
+      "description": "GIMUN actions only: crimson fill, white text.",
+      "html": "<button class=\"ds-btn-gimun\">Register for GIMUN</button>",
+      "css": ".ds-btn-gimun { min-height: 44px; padding: 0 20px; border: 0; border-radius: 9999px; background: #9f1239; color: #fffdf9; font: 600 14px/1 'General Sans', system-ui, sans-serif; cursor: pointer; transition: background-color 200ms cubic-bezier(0.32, 0.72, 0, 1); } .ds-btn-gimun:hover { background: #be123c; } .ds-btn-gimun:focus-visible { outline: none; box-shadow: 0 0 0 2px #140302, 0 0 0 4px #ecd8b7; }"
+    },
+    {
+      "name": "GMC Button",
+      "kind": "button",
+      "refersTo": "button-gmc",
+      "description": "GIKI Moot Court actions only: champagne outline that fills on hover.",
+      "html": "<button class=\"ds-btn-gmc\">Register for GMC</button>",
+      "css": ".ds-btn-gmc { min-height: 44px; padding: 0 20px; border: 1px solid rgba(236, 216, 183, 0.6); border-radius: 9999px; background: transparent; color: #ecd8b7; font: 600 14px/1 'General Sans', system-ui, sans-serif; cursor: pointer; transition: background-color 200ms cubic-bezier(0.32, 0.72, 0, 1), color 200ms cubic-bezier(0.32, 0.72, 0, 1); } .ds-btn-gmc:hover { background: #ecd8b7; color: #140302; } .ds-btn-gmc:focus-visible { outline: none; box-shadow: 0 0 0 2px #140302, 0 0 0 4px #ecd8b7; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting actions: hairline outline.",
+      "html": "<button class=\"ds-btn-secondary\">Rules of procedure</button>",
+      "css": ".ds-btn-secondary { min-height: 44px; padding: 0 20px; border: 1px solid rgba(236, 216, 183, 0.38); border-radius: 12px; background: transparent; color: #fffdf9; font: 500 14px/1 'General Sans', system-ui, sans-serif; cursor: pointer; transition: border-color 200ms cubic-bezier(0.32, 0.72, 0, 1), background-color 200ms cubic-bezier(0.32, 0.72, 0, 1); } .ds-btn-secondary:hover { border-color: rgba(236, 216, 183, 0.6); background: rgba(255, 253, 249, 0.05); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px #140302, 0 0 0 4px #ecd8b7; }"
+    },
+    {
+      "name": "Text Link",
+      "kind": "custom",
+      "description": "Tertiary actions and hero action rows: ink with a hairline underline.",
+      "html": "<a class=\"ds-text-link\" href=\"#\">The full schedule</a>",
+      "css": ".ds-text-link { color: #fffdf9; font: 600 16px/1.4 'General Sans', system-ui, sans-serif; text-decoration: underline; text-decoration-color: rgba(236, 216, 183, 0.38); text-underline-offset: 0.3em; transition: text-decoration-color 160ms cubic-bezier(0.32, 0.72, 0, 1); } .ds-text-link:hover { text-decoration-color: currentColor; } .ds-text-link:focus-visible { outline: 2px solid #ecd8b7; outline-offset: 3px; border-radius: 2px; }"
+    },
+    {
+      "name": "Numbered Step",
+      "kind": "custom",
+      "description": "A process in order: large index numeral, title and one line, on a hairline.",
+      "html": "<ol class=\"ds-steps\"><li class=\"ds-step\"><span class=\"ds-step-num\">01</span><div><h3 class=\"ds-step-title\">Receive a country</h3><p class=\"ds-step-body\">The secretariat assigns you a country and a committee.</p></div></li></ol>",
+      "css": ".ds-steps { list-style: none; margin: 0; padding: 0; } .ds-step { display: grid; grid-template-columns: 4rem 1fr; gap: 1.5rem; padding: 1.75rem 0; border-top: 1px solid rgba(236, 216, 183, 0.18); } .ds-step-num { color: #ecd8b7; font: 500 2rem/1 Satoshi, system-ui, sans-serif; letter-spacing: -0.03em; } .ds-step-title { margin: 0; color: #fffdf9; font: 500 1.25rem/1.2 Satoshi, system-ui, sans-serif; } .ds-step-body { margin: 0.5rem 0 0; color: rgba(236, 216, 183, 0.88); font: 400 1rem/1.6 'General Sans', system-ui, sans-serif; }"
+    },
+    {
+      "name": "Utility Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Verify, survey and error pages: one raised card with a mono label and a display title.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-card-label\">Verified certificate</p><h2 class=\"ds-card-title\">Ayesha Tariq</h2><p class=\"ds-card-body\">This certificate was issued by the organizing team and matches our records.</p></div>",
+      "css": ".ds-card { max-width: 44rem; padding: 3rem; border: 1px solid rgba(236, 216, 183, 0.18); border-radius: 2rem; background: #1c0504; } .ds-card-label { margin: 0; color: #ecd8b7; font: 400 12px/1.4 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.14em; text-transform: uppercase; } .ds-card-title { margin: 1.5rem 0 0; color: #fffdf9; font: 500 3rem/1 Satoshi, system-ui, sans-serif; letter-spacing: -0.03em; } .ds-card-body { margin: 1.5rem 0 0; color: rgba(236, 216, 183, 0.88); font: 400 1rem/1.62 'General Sans', system-ui, sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Printed Programme",
+    "overview": "The site reads like the programme a delegate is handed at the door of a formal event: index numerals, hairline rules, mono labels in small capitals, large confident headings, and a lot of paper around them. It is set in maroon lacquer and champagne ink in the dark theme, and in cream stock with burnt-sienna ink in the light theme. Both themes are first-class; every token is declared for each.\n\nPages are told as chapters. A hero sits still while the first chapter slides over it like a sheet laid on a desk; later chapters change ground (deep, crest, inverse paper) instead of adding boxes. Motion is the page being handled, never decoration: lines rise out of masks, sheets settle, rules draw themselves, numbers count to real values, and the curtain closes between pages. Everything that moves has a static reading that is complete on its own.\n\nTwo tracks share the system and never share a colour. Crimson belongs to GIMUN, champagne to the GIKI Moot Court. A colour on screen always tells you which room you are in.",
+    "keyCharacteristics": [
+      "Chapters with grounds (deep, crest, inverse) rather than stacked cards.",
+      "Hairline rules and index numerals (01, 02) carry structure.",
+      "Mono labels for metadata only; headings are never set in mono.",
+      "One hero moment per page, one pinned or scrubbed sequence at most.",
+      "Nothing invented: every number, date and name comes from content."
+    ],
+    "rules": [
+      { "name": "The Two Rooms Rule", "body": "Crimson means GIMUN and champagne means GMC. Never use either as general decoration, and never put both on one control.", "section": "colors" },
+      { "name": "The Tone Contract Rule", "body": "A tone re-declares the ink tokens for its subtree. Inside .tone-deep, .tone-crest or .tone-inverse, use the ordinary text and line utilities; never hand-pick a colour for a tone. tests/unit/tone-contrast.test.ts holds every text token above 4.5:1 on every ground.", "section": "colors" },
+      { "name": "The Full Stop Rule", "body": "Display and chapter titles are sentences and end with a full stop (\"The resource library.\"). One accent phrase per title may take the track or champagne colour.", "section": "typography" },
+      { "name": "The No Em Dash Rule", "body": "Copy never uses the em dash. Use a colon, a comma or a new sentence.", "section": "typography" },
+      { "name": "The Flat Paper Rule", "body": "Surfaces are flat at rest. A new level is a new ground (tone) or a sheet, never a heavier drop shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do let the h1 render with the page: load entrances are CSS transform-only, and no JS animation runs before the visitor's first scroll, tap or key.",
+      "Do give every scroll effect a complete static reading for reduced motion and for print.",
+      "Do use index numerals (01, 02, 03) and hairlines to show order and structure.",
+      "Do keep numbers real: counters, seats and dates come from content, never placeholders.",
+      "Do check both themes and both 390px and 1440px for every new surface."
+    ],
+    "donts": [
+      "Don't use a thick coloured side border on cards.",
+      "Don't use bounce or overshoot easing; use the brand, expo, lift or curtain curves.",
+      "Don't set headings in mono, or body text in the display face.",
+      "Don't use crimson or champagne as decoration outside their track.",
+      "Don't add a second pinned or scrubbed sequence to a page that already has one."
+    ]
+  }
+}

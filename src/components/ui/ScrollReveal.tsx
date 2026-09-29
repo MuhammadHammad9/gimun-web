@@ -1,113 +1,70 @@
-'use client';
-
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export type RevealVariant = 'slide' | 'mask' | 'scale' | 'blur';
 
 export interface ScrollRevealProps {
   children: React.ReactNode;
+  /** Seconds to hold before this element starts. */
   delay?: number;
   direction?: 'up' | 'down' | 'left' | 'right';
   className?: string;
+  /** Retained for call-site compatibility; the CSS range is fixed. */
   threshold?: number;
   /**
    * How the element arrives.
    *
-   *  - `slide`  translate + fade. The original behaviour and the default, so
-   *             the 55 existing call sites are unchanged.
-   *  - `mask`   wipes up from behind a clipping edge. For headline blocks and
-   *             hero-adjacent content.
-   *  - `scale`  settles down from slightly larger. For cards and media.
-   *  - `blur`   focus-pull. For quiet, atmospheric sections.
+   *  - `slide`  translate + fade. The default, matching the original behaviour.
+   *  - `mask`   wipes up from behind a clipping edge.
+   *  - `scale`  settles down from slightly larger.
+   *  - `blur`   focus-pull.
    */
   variant?: RevealVariant;
-  /** Renders a `<li>` instead of a `<div>` when the parent is a list. */
   as?: 'div' | 'li' | 'section' | 'article';
 }
 
-const OFFSETS = {
-  up: { y: 24, x: 0 },
-  down: { y: -24, x: 0 },
-  left: { x: 24, y: 0 },
-  right: { x: -24, y: 0 },
+const DIRECTION_CLASS = {
+  up: 'reveal-up',
+  down: 'reveal-down',
+  left: 'reveal-left',
+  right: 'reveal-right',
 } as const;
 
 /**
  * The site's standard scroll entrance.
  *
- * Returns a plain element under `prefers-reduced-motion` — no motion wrapper,
- * no observer — so reduced-motion visitors get the finished layout with zero
- * animation cost.
+ * A **server component**: the whole effect is CSS scroll-driven animation, so
+ * there is no observer, no motion runtime and no client bundle. This component
+ * has ~55 call sites, and while it was built on framer-motion it pulled that
+ * library into nearly every route's JavaScript — which measured as the single
+ * largest remaining block of script evaluation ahead of LCP.
  *
- * All four variants animate transform/opacity/filter only and none of them
- * change the element's footprint, so none contribute to CLS.
+ * Browsers without `animation-timeline` render the finished state immediately,
+ * which is also what `prefers-reduced-motion` gets via the global reduce rule.
+ * Both are correct: the content is never hidden behind an animation that might
+ * not run.
  */
 export function ScrollReveal({
   children,
   delay = 0,
   direction = 'up',
   className,
-  threshold = 0.15,
   variant = 'slide',
   as = 'div',
 }: ScrollRevealProps) {
-  const shouldReduceMotion = useReducedMotion();
   const Tag = as as React.ElementType;
 
-  if (shouldReduceMotion) {
-    return <Tag className={className}>{children}</Tag>;
-  }
-
-  const MotionTag = motion[as as 'div'];
-  const offsets = OFFSETS[direction];
-
-  if (variant === 'mask') {
-    return (
-      <Tag className={cn('reveal-line block', className)}>
-        <motion.div
-          initial={{ y: '100%', opacity: 0 }}
-          whileInView={{ y: '0%', opacity: 1 }}
-          viewport={{ once: true, amount: threshold }}
-          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1], delay }}
-          className="will-change-transform"
-        >
-          {children}
-        </motion.div>
-      </Tag>
-    );
-  }
-
-  const initial =
-    variant === 'scale'
-      ? { opacity: 0, scale: 1.04, y: 12 }
-      : variant === 'blur'
-        ? { opacity: 0, filter: 'blur(10px)', y: 12 }
-        : { opacity: 0, ...offsets };
-
-  const animate =
-    variant === 'scale'
-      ? { opacity: 1, scale: 1, y: 0 }
-      : variant === 'blur'
-        ? { opacity: 1, filter: 'blur(0px)', y: 0 }
-        : { opacity: 1, x: 0, y: 0 };
-
-  const transition =
-    variant === 'blur'
-      ? { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const, delay }
-      : { type: 'spring' as const, stiffness: 100, damping: 20, delay };
-
   return (
-    <MotionTag
-      initial={initial}
-      whileInView={animate}
-      viewport={{ once: true, amount: threshold }}
-      transition={transition}
-      className={cn(className)}
+    <Tag
+      className={cn(
+        'reveal',
+        variant === 'slide' ? DIRECTION_CLASS[direction] : `reveal-${variant}`,
+        className
+      )}
+      style={delay ? ({ animationDelay: `${delay}s` } as React.CSSProperties) : undefined}
     >
       {children}
-    </MotionTag>
+    </Tag>
   );
 }
 

@@ -3,8 +3,7 @@
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import QRCode from 'qrcode';
 import {
   Copy,
@@ -12,11 +11,7 @@ import {
   Printer,
   Download,
   ArrowLeft,
-  ShieldCheck,
-  Calendar,
-  AlertCircle,
 } from 'lucide-react';
-import { scaleIn } from '@/lib/motion';
 import { getCanonicalEventDateRange, getCanonicalVenue, getEventYear } from '@/lib/site-config';
 
 function escapeHtml(value: unknown) {
@@ -66,9 +61,9 @@ export function RegistrationSuccess({
   const trackNameShort = isMoot ? 'GMC' : 'GIMUN';
   const typeLabel =
     applicantType === 'individual'
-      ? 'Individual Delegate'
+      ? 'Individual entry'
       : applicantType === 'delegation'
-      ? `Institutional Delegation (${details?.participantCount || 1} Delegates)`
+      ? `Entering as a delegation (${details?.participantCount || 1} Delegates)`
       : `Advocacy Team (${details?.participantCount || 3} Advocates)`;
 
   const feeDisplay =
@@ -647,11 +642,11 @@ export function RegistrationSuccess({
       <span>OFFICIAL GIMUN DIGITAL CREDENTIAL · VERIFIED DOSSIER</span>
     </div>
     <div class="top-bar-actions">
-      <button class="btn-copy" onclick="navigator.clipboard.writeText('${safeReferenceId}'); this.innerText='✓ Copied!'; setTimeout(()=>this.innerText='📋 Copy Reference', 2000);">
-        📋 Copy Reference
+      <button class="btn-copy" onclick="navigator.clipboard.writeText('${safeReferenceId}'); this.innerText='Copied'; setTimeout(()=>this.innerText='Copy reference', 2000);">
+        Copy reference
       </button>
       <button class="btn-print" onclick="window.print()">
-        🖨️ Print / Save as PDF (Single A4)
+        Print or save as PDF
       </button>
     </div>
   </div>
@@ -751,326 +746,148 @@ export function RegistrationSuccess({
     URL.revokeObjectURL(url);
   };
 
+  // On screen the confirmation uses the site's own design. The printable and
+  // downloadable voucher (generateVoucherDocumentHtml) stays a white document
+  // because that is what prints and archives well.
+  const summaryRows: { term: string; value: React.ReactNode }[] = [
+    { term: 'Track', value: trackLabel },
+    { term: isMoot ? 'Team' : 'Applicant', value: applicantName },
+    { term: 'Entry', value: typeLabel },
+    { term: 'Institution', value: details?.institution || 'Not specified' },
+    ...(details?.email ? [{ term: 'Contact', value: `${details.email}${details.phone ? ` · ${details.phone}` : ''}` }] : []),
+    ...(details?.summary ? [{ term: isMoot ? 'Category' : 'Preferences', value: details.summary }] : []),
+    { term: 'Fee', value: feeDisplay },
+    { term: 'Event', value: `${eventDates} · ${venueTitle}` },
+    { term: 'Submitted', value: formattedDate },
+  ];
+  const nextSteps = [
+    { title: 'Review', body: site.replyTime || 'The organizing team reviews your application and follows up by email.' },
+    { title: 'Invoice', body: `If you are accepted, an invoice with bank transfer details is emailed to ${details?.email || 'you'}.` },
+    { title: 'Confirmation', body: isMoot ? 'Once payment is verified, your team code and round schedule are confirmed.' : 'Once payment is verified, your committee and country allocation are confirmed.' },
+  ];
+
   return (
-    <motion.div
-      variants={scaleIn}
-      initial="hidden"
-      animate="visible"
-      className="max-w-3xl mx-auto space-y-6 print:m-0 print:p-0 print:max-w-none print:w-full"
-    >
-      {/* Action Toolbar (Screen Only) */}
-      <div className="card-glass-luxury flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border border-[#ecd8b7]/30 shadow-lg print:hidden">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-3 w-3 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-          </span>
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">
-            Dossier Successfully Logged
-          </span>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="btn-shimmer-gold inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[#140302] text-xs font-bold shadow-sm cursor-pointer"
-            title="Print or Save as PDF (Guaranteed 1-Page A4)"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Print / Save as PDF</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleDownloadHtml}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1c0504]/80 border border-[#ecd8b7]/30 text-xs font-semibold text-[#ecd8b7] hover:bg-[#1c0504] hover:text-[#fffdf9] transition-colors cursor-pointer"
-            title="Download offline receipt voucher"
-          >
-            <Download className="w-3.5 h-3.5 text-[#ecd8b7]" />
-            <span>Download Voucher</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Official Document Container */}
-      <div
-        id="gimun-registration-voucher"
-        className="voucher-container rounded-2xl bg-white border border-slate-300 shadow-lg overflow-hidden print:border-2 print:border-slate-900 print:shadow-none print:rounded-none print:w-full print:m-0"
-      >
-        {/* Dark Branded Header (Matching Reference Design) */}
-        <div
-          className="voucher-dark-header bg-slate-950 px-6 py-7 text-center text-white relative overflow-hidden border-b border-slate-800 print:bg-slate-950 print:py-4 print:px-6 print:border-b-2 print:border-amber-400"
-          style={{ backgroundColor: '#0b0f19', color: '#ffffff', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
-        >
-          <div className="relative z-10 space-y-2.5 print:space-y-1.5">
-            {/* Golden GIMUN Badge */}
-            <div
-              className="voucher-gold-badge inline-block bg-amber-400 text-slate-950 font-black text-sm tracking-[5px] px-5 py-1.5 rounded-sm uppercase shadow-sm print:text-xs print:px-3 print:py-1"
-              style={{ backgroundColor: '#fbbf24', color: '#000000', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
-            >
-              {trackNameShort}
-            </div>
-
+    <div className="mx-auto max-w-4xl space-y-8">
+      <div className="double-bezel">
+        <div className="double-bezel-inner overflow-hidden">
+          {/* Confirmation header */}
+          <div className="grid gap-8 border-b border-line p-8 sm:p-10 md:grid-cols-[1fr_auto] md:items-center">
             <div>
-              <span
-                className="voucher-pill inline-block bg-white/10 border border-white/20 text-indigo-200 text-[10px] font-mono font-bold tracking-widest px-3 py-1 rounded-full uppercase print:text-[9px] print:py-0.5"
-                style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#ffffff', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
-              >
-                / APPLICATION RECEIVED
-              </span>
-            </div>
-
-            <div className="space-y-0.5 pt-0.5">
-              <h1
-                className="text-lg md:text-xl font-heading font-extrabold tracking-tight text-white uppercase print:text-base"
-                style={{ color: '#ffffff' }}
-              >
-                {trackLabel} {eventYear}
-              </h1>
-              <p
-                className="text-xs text-slate-400 font-serif max-w-xl mx-auto print:text-[10px]"
-                style={{ color: '#94a3b8' }}
-              >
-                Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, KP, Pakistan
+              <p className="inline-flex items-center gap-2 rounded-full border border-line-2 bg-champagne/5 px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-champagne">
+                <Check aria-hidden="true" className="h-3.5 w-3.5" />
+                Application received
               </p>
-            </div>
-          </div>
-        </div>
+              <h2 className="mt-5 text-h2 font-display font-medium text-balance text-text">
+                Thank you, {applicantName.split(' (')[0]}.
+              </h2>
+              <p className="mt-3 max-w-lg text-sm leading-relaxed text-text-3">
+                Your {trackNameShort} {eventYear} application is with the organizing team. A copy of this receipt and your
+                QR ticket are on their way to {details?.email || 'your email'}. Nothing has been charged.
+              </p>
 
-        {/* Document Body */}
-        <div className="voucher-content p-6 md:p-8 space-y-5 print:p-4 print:space-y-3">
-          {/* Welcome Intro */}
-          <div className="space-y-1 text-left border-b border-slate-100 pb-4 print:pb-2 print:space-y-0.5">
-            <h2 className="text-lg md:text-xl font-heading font-extrabold text-slate-900 print:text-base">
-              Welcome, {applicantName}
-            </h2>
-            <p className="text-xs md:text-sm text-slate-600 leading-relaxed print:text-[11px] print:leading-snug">
-              Your registration for <strong className="text-slate-900">{trackNameShort}</strong> has been successfully
-              submitted. Our administration team is reviewing your application dossier and verifying your credentials.
-            </p>
-          </div>
-
-          {/* Reference ID & QR Ticket Card */}
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left print:p-3 print:my-1 print:gap-3 print:bg-white print:border-slate-300">
-            <div className="space-y-1.5 print:space-y-1 flex-1 min-w-0">
-              <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/60 px-2.5 py-0.5 rounded-full print:bg-indigo-50 print:text-indigo-900">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Your Check-In QR Ticket</span>
-              </div>
-              <div>
-                <div className="text-[11px] text-slate-500 font-medium">Official Reference Code</div>
-                <div className="text-xl md:text-2xl font-mono font-extrabold text-slate-900 tracking-tight flex items-center justify-center sm:justify-start gap-2 print:text-lg">
-                  <span>{referenceId}</span>
+              <div className="mt-7">
+                <p className="text-xs text-text-4">Reference number</p>
+                <div className="mt-1.5 flex items-center gap-3">
+                  <span className="font-mono text-2xl font-semibold tracking-tight text-text sm:text-3xl">{referenceId}</span>
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className="p-1 rounded hover:bg-slate-200 text-indigo-600 transition-colors print:hidden cursor-pointer"
-                    title="Copy reference"
+                    aria-label={copied ? 'Reference copied' : 'Copy reference number'}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line-2 text-text-3 transition-colors hover:border-line-3 hover:text-text"
                   >
-                    {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                    {copied ? <Check aria-hidden="true" className="h-4 w-4 text-champagne" /> : <Copy aria-hidden="true" className="h-4 w-4" />}
                   </button>
                 </div>
+                <p className="mt-2 text-xs text-text-4">Quote it in every message and as your payment reference.</p>
               </div>
-              <p className="text-[11px] text-slate-500 max-w-sm print:text-[10px]">
-                Present this QR code and reference ID at the registration desk on arrival at GIKI Campus.
-              </p>
             </div>
 
-            {/* QR Code Graphic */}
-            <div className="shrink-0 bg-white p-2.5 rounded-xl border border-slate-300 shadow-xs text-center flex flex-col items-center justify-center w-28 print:border-slate-800 print:shadow-none">
-              {qrSvg ? (
-                <div
-                  className="w-20 h-20 mx-auto flex items-center justify-center overflow-hidden [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:block print:w-16 print:h-16"
-                  dangerouslySetInnerHTML={{ __html: qrSvg }}
-                />
-              ) : (
-                <div className="w-20 h-20 flex items-center justify-center bg-slate-50 border border-dashed border-slate-200 text-[10px] font-mono text-slate-400 print:w-16 print:h-16">
-                  QR TICKET
-                </div>
-              )}
-              <span className="text-[9px] font-mono font-bold text-slate-700 block mt-1 tracking-wider uppercase">CHECK-IN PASS</span>
-            </div>
+            {/* The QR stays dark-on-white so any phone camera can read it. */}
+            <figure className="mx-auto w-40 text-center md:mx-0">
+              <div className="rounded-2xl bg-white p-3">
+                {qrSvg ? (
+                  <div
+                    className="mx-auto aspect-square w-full [&>svg]:h-full [&>svg]:w-full"
+                    dangerouslySetInnerHTML={{ __html: qrSvg }}
+                    role="img"
+                    aria-label={`Check-in QR code for ${referenceId}`}
+                  />
+                ) : (
+                  <div className="aspect-square w-full animate-pulse rounded-lg bg-slate-100" />
+                )}
+              </div>
+              <figcaption className="mt-2 text-xs text-text-4">Check-in ticket</figcaption>
+            </figure>
           </div>
 
-          {/* Official Application Dossier Summary */}
-          <div className="rounded-xl border border-slate-300 overflow-hidden text-left text-xs bg-white shadow-xs print:text-[10px] print:my-1 print:border-slate-300">
-            <div className="bg-slate-950 px-4 py-2.5 font-mono text-[11px] font-bold text-white uppercase tracking-wider flex items-center justify-between print:bg-slate-950 print:text-white">
-              <span>Official Application Dossier</span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 uppercase tracking-wide">
-                Under Review
-              </span>
-            </div>
-            <dl className="divide-y divide-slate-100 text-slate-900">
-              <div className="grid grid-cols-3 px-4 py-2 bg-white items-center">
-                <dt className="text-slate-500 font-semibold uppercase text-[10px] tracking-wider">Reference ID</dt>
-                <dd className="col-span-2 text-indigo-700 font-mono font-bold">{referenceId}</dd>
-              </div>
-              <div className="grid grid-cols-3 px-4 py-2 bg-slate-50/70 items-center">
-                <dt className="text-slate-500 font-semibold uppercase text-[10px] tracking-wider">Event Track</dt>
-                <dd className="col-span-2 text-slate-900 font-bold">{trackNameShort} ({trackLabel})</dd>
-              </div>
-              <div className="grid grid-cols-3 px-4 py-2 bg-white items-center">
-                <dt className="text-slate-500 font-semibold uppercase text-[10px] tracking-wider">{isMoot ? 'Team / Candidate' : 'Candidate / Delegation'}</dt>
-                <dd className="col-span-2 text-slate-900 font-semibold">{applicantName}</dd>
-              </div>
-              <div className="grid grid-cols-3 px-4 py-2 bg-slate-50/70 items-center">
-                <dt className="text-slate-500 font-semibold uppercase text-[10px] tracking-wider">Category / Size</dt>
-                <dd className="col-span-2 text-slate-900 font-semibold">{typeLabel}</dd>
-              </div>
-              <div className="grid grid-cols-3 px-4 py-2 bg-white items-center">
-                <dt className="text-slate-500 font-semibold uppercase text-[10px] tracking-wider">Institution</dt>
-                <dd className="col-span-2 text-slate-900">{details?.institution || 'Not specified'}</dd>
-              </div>
-              {details?.email && (
-                <div className="grid grid-cols-3 px-4 py-2 bg-slate-50/70 items-center">
-                  <dt className="text-slate-500 font-semibold uppercase text-[10px] tracking-wider">Contact Details</dt>
-                  <dd className="col-span-2 text-slate-900 font-mono text-[11px]">{details.email}{details?.phone ? ` · ${details.phone}` : ''}</dd>
+          {/* What was submitted */}
+          <div className="p-8 sm:p-10">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-text-4">Your application</p>
+            <dl className="mt-4 border-b border-line">
+              {summaryRows.map((row) => (
+                <div key={row.term} className="grid gap-1 border-t border-line py-3.5 sm:grid-cols-[9rem_1fr] sm:gap-6">
+                  <dt className="text-sm text-text-4">{row.term}</dt>
+                  <dd className="text-sm leading-relaxed text-text-2">{row.value}</dd>
                 </div>
-              )}
-              {details?.summary && (
-                <div className="grid grid-cols-3 px-4 py-2 bg-white items-center">
-                  <dt className="text-slate-500 font-semibold uppercase text-[10px] tracking-wider">Preferences / Roster</dt>
-                  <dd className="col-span-2 text-slate-900">{details.summary}</dd>
-                </div>
-              )}
-              <div className="grid grid-cols-3 px-4 py-2 bg-slate-50/70 items-center">
-                <dt className="text-slate-500 font-semibold uppercase text-[10px] tracking-wider">Registration Fee</dt>
-                <dd className="col-span-2 text-slate-900 font-bold">
-                  {feeDisplay} <span className="text-slate-500 font-normal text-[11px]">(Zero online billing; university bank invoice will follow)</span>
-                </dd>
-              </div>
-              <div className="grid grid-cols-3 px-4 py-2 bg-white items-center">
-                <dt className="text-slate-500 font-semibold uppercase text-[10px] tracking-wider">Logged Timestamp</dt>
-                <dd className="col-span-2 text-slate-600 font-mono text-[11px]">{formattedDate}</dd>
-              </div>
+              ))}
             </dl>
-          </div>
 
-          {/* Event Details Card */}
-          <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/90 text-left space-y-2 print:p-3 print:my-1 print:bg-white print:border-amber-400">
-            <div className="flex items-center gap-2 text-amber-950 font-heading font-bold text-xs uppercase tracking-wider print:text-[11px]">
-              <Calendar className="w-4 h-4 text-amber-600 print:w-3.5 print:h-3.5" />
-              <span>Event Information &amp; Schedule ({trackNameShort} {eventYear})</span>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-2 text-xs print:text-[10px] print:gap-1.5">
-              <div>
-                <span className="text-slate-500 font-medium">Dates: </span>
-                <span className="font-bold text-slate-900">{eventDates}</span>
-              </div>
-              <div>
-                <span className="text-slate-500 font-medium">Venue: </span>
-                <span className="font-semibold text-slate-900">{venueTitle}</span>
-              </div>
-              <div className="sm:col-span-2 pt-1 border-t border-amber-200/60 print:pt-0.5">
-                <span className="text-slate-500 font-medium">Arrival Desk: </span>
-                <span className="text-slate-700">{site.checkinDesk || 'Check-in details will be announced.'} {site.entryRequirement}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Screen Only: Payment Policy & Next Steps */}
-          <div className="space-y-4 print:hidden">
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex gap-3 text-left">
-              <AlertCircle className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
-              <div className="space-y-1 text-xs text-slate-700 leading-relaxed">
-                <span className="font-bold text-slate-900 block">Payment Notice: Zero Online Charge</span>
-                <span>
-                  You have not been billed online. The Organizing Committee will dispatch an official university bank
-                  invoice to <strong>{details?.email || 'your email'}</strong> after dossier review. Please retain your
-                  reference code <strong>{referenceId}</strong> for payment tracking.
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-3 text-left pt-1">
-              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-500">
-                What Happens Next
-              </h3>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-                  <div className="flex items-center gap-2 text-xs font-heading font-bold text-slate-900">
-                    <span className="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center text-[10px]">1</span>
-                    <span>Dossier Review</span>
-                  </div>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">
-                    Secretariat evaluates allocations and rosters within 2–3 business days.
-                  </p>
-                </div>
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-                  <div className="flex items-center gap-2 text-xs font-heading font-bold text-slate-900">
-                    <span className="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center text-[10px]">2</span>
-                    <span>Official Invoice</span>
-                  </div>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">
-                    Official university bank account details and fee invoice emailed for verification.
-                  </p>
-                </div>
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-                  <div className="flex items-center gap-2 text-xs font-heading font-bold text-slate-900">
-                    <span className="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center text-[10px]">3</span>
-                    <span>Seat Confirmation</span>
-                  </div>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">
-                    Payment slip verified by Finance; official Country Matrix allocation or Team Code confirmed.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Print Only: Registrar Verification and Signatures */}
-          <div className="hidden print:block pt-3 border-t-2 border-slate-300 text-xs text-slate-700 space-y-3">
-            <div className="p-2 bg-slate-50 border border-slate-200 rounded text-[10px] text-slate-600 leading-snug">
-              <strong>Notice to Delegate/Team:</strong> This electronic voucher is under active verification. Official university bank payment invoice will follow via email. Present this physical voucher with your original student ID and CNIC/B-Form at the GIKI Main Auditorium registration desk.
-            </div>
-
-            <div className="grid grid-cols-2 gap-8 pt-1 text-left">
-              <div>
-                <div className="h-10 border-b-2 border-dashed border-slate-400 mb-1" />
-                <span className="font-mono uppercase font-bold text-[9px] text-slate-800 block">
-                  Applicant / Head Delegate Signature
-                </span>
-                <span className="text-[9px] text-slate-500">Date: ___________________________</span>
-              </div>
-              <div className="text-right">
-                <div className="h-10 border-b-2 border-dashed border-slate-400 mb-1" />
-                <span className="font-mono uppercase font-bold text-[9px] text-slate-800 block">
-                  GIKI Organizing Committee Registrar Seal
-                </span>
-                <span className="text-[9px] text-slate-600 font-mono">Verification Code: {referenceId}</span>
-              </div>
-            </div>
-
-            <p className="text-[8px] text-center text-slate-400 font-mono pt-1">
-              Official Conference Admission Voucher · GIMUN — Ghulam Ishaq Khan Institute of Engineering Sciences and Technology
-            </p>
-          </div>
-        </div>
-
-        {/* Footer Actions (Screen Only) */}
-        <div className="bg-[#1c0504]/95 px-6 py-4 border-t border-[#ecd8b7]/20 flex flex-wrap items-center justify-between gap-4 print:hidden">
-          <div className="flex items-center gap-2">
-            {onReset && (
+            <div className="mt-8 flex flex-wrap items-center gap-3">
               <button
                 type="button"
-                onClick={onReset}
-                className="text-xs text-[#ecd8b7]/80 hover:text-[#fffdf9] font-medium px-3 py-2 underline cursor-pointer"
+                onClick={handlePrint}
+                className="inline-flex h-11 items-center gap-2 rounded-full bg-champagne px-5 text-sm font-semibold text-on-accent transition-colors hover:bg-champagne-hi"
               >
-                Submit another application
+                <Printer aria-hidden="true" className="h-4 w-4" />
+                Print or save as PDF
               </button>
-            )}
+              <button
+                type="button"
+                onClick={handleDownloadHtml}
+                className="inline-flex h-11 items-center gap-2 rounded-full border border-line-2 px-5 text-sm font-medium text-text transition-colors hover:border-line-3 hover:bg-champagne/5"
+              >
+                <Download aria-hidden="true" className="h-4 w-4" />
+                Download receipt
+              </button>
+            </div>
           </div>
-
-          <Link
-            href="/"
-            className="btn-shimmer-gold inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[#140302] text-xs font-bold shadow-md"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Return to Homepage</span>
-          </Link>
         </div>
       </div>
-    </motion.div>
+
+      {/* What happens next */}
+      <section aria-labelledby="next-heading" className="px-1">
+        <h3 id="next-heading" className="text-xl font-display font-medium text-text">
+          What happens next
+        </h3>
+        <ol className="mt-6 grid gap-8 md:grid-cols-3">
+          {nextSteps.map((step, i) => (
+            <li key={step.title} className="relative border-t border-line pt-5">
+              <span aria-hidden="true" className="absolute -top-px left-0 h-px w-10 bg-champagne" />
+              <span className="font-mono text-xs text-champagne tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+              <p className="mt-2 font-display font-medium text-text">{step.title}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-text-3">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line px-1 pt-6">
+        {onReset ? (
+          <button
+            type="button"
+            onClick={onReset}
+            className="text-sm text-text-3 underline underline-offset-4 transition-colors hover:text-text"
+          >
+            Submit another application
+          </button>
+        ) : (
+          <span />
+        )}
+        <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-champagne transition-colors hover:text-text">
+          <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+          Back to the homepage
+        </Link>
+      </div>
+    </div>
   );
 }

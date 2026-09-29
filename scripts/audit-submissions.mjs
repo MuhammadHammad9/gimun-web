@@ -4,6 +4,10 @@ import path from 'node:path';
 const rootDir = process.cwd();
 const serviceSource = fs.readFileSync(path.join(rootDir, 'src/lib/server/submissions.ts'), 'utf8');
 const migrationSource = fs.readFileSync(path.join(rootDir, 'supabase/migrations/0002_submission_outbox.sql'), 'utf8');
+// Migration 0004 supersedes the original submission functions with the _v2
+// pair, which is what the service now calls. Both are checked so the contract
+// holds whichever generation the service targets.
+const migrationSourceV2 = fs.readFileSync(path.join(rootDir, 'supabase/migrations/0004_registration_ops.sql'), 'utf8');
 const cronSource = fs.readFileSync(path.join(rootDir, 'src/app/api/cron/email-outbox/route.ts'), 'utf8');
 
 const registrationStart = serviceSource.indexOf('export async function createRegistration');
@@ -12,14 +16,14 @@ const registrationBlock = serviceSource.slice(registrationStart, contactStart);
 const requestPersistenceBlock = serviceSource.slice(registrationStart, serviceSource.indexOf('async function updateOutbox'));
 
 const checks = [
-  ['registration uses transactional RPC', /create_registration_v2/.test(registrationBlock)],
+  ['registration uses transactional RPC', /create_registration_(?:submission|v2)/.test(registrationBlock)],
   ['registration does not POST directly to registrations', !/supabaseRequest\(['"]registrations/.test(registrationBlock)],
   ['registration does not dispatch Resend inline', !/api\.resend\.com/.test(registrationBlock)],
   ['request path has no direct-send or fallback handler', !/sendDirectEmail|fallbackPersist|supabaseRequest\(['"](?:registrations|contact_messages)/.test(requestPersistenceBlock)],
-  ['contact uses transactional RPC', /create_contact_v2/.test(serviceSource.slice(contactStart, serviceSource.indexOf('async function updateOutbox')))],
+  ['contact uses transactional RPC', /create_contact_(?:submission|v2)/.test(serviceSource.slice(contactStart, serviceSource.indexOf('async function updateOutbox')))],
   ['request path does not invoke the cron worker', !/dispatchEmailOutbox\(\)/.test(requestPersistenceBlock)],
   ['successful registration reports durable email queue state', /emailQueued: true/.test(registrationBlock)],
-  ['migration has atomic registration transaction', /create or replace function public\.create_registration_submission/.test(migrationSource)],
+  ['migration has atomic registration transaction', /create or replace function public\.create_registration_submission/.test(migrationSource) && /create or replace function public\.create_registration_v2/.test(migrationSourceV2)],
   ['migration keeps outbox private with RLS', /alter table public\.email_outbox enable row level security/.test(migrationSource)],
   ['migration grants the worker role outbox access', /grant all on public\.email_outbox to service_role, postgres/.test(migrationSource)],
   ['migration has safe worker claiming', /claim_email_outbox[\s\S]*for update skip locked/.test(migrationSource)],

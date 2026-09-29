@@ -197,7 +197,8 @@ const validationRules = [
     file: 'team.json',
     validate: (data) => {
       const errs = [];
-      if (!Array.isArray(data) || data.length === 0) return ['Must be a non-empty array'];
+      // Empty until approved real people/photos are supplied; the page shows its empty state.
+      if (!Array.isArray(data)) return ['Must be an array'];
       data.forEach((item, index) => {
         if (!item.id || !item.name || !item.role) errs.push(`Team member [${index}] missing fields`);
       });
@@ -219,7 +220,8 @@ const validationRules = [
     file: 'gallery.json',
     validate: (data) => {
       const errs = [];
-      if (!Array.isArray(data) || data.length === 0) return ['Must be a non-empty array'];
+      // Empty until approved real people/photos are supplied; the page shows its empty state.
+      if (!Array.isArray(data)) return ['Must be an array'];
       const seenIds = new Set();
       data.forEach((item, index) => {
         if (!item.id || !item.title || !item.caption) errs.push(`Gallery item [${index}] missing core fields`);

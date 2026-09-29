@@ -1,392 +1,194 @@
-import { PublishedStats } from '@/components/ui/PublishedStats';
-import { getSiteConfig } from '@/lib/content';
-import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  Users,
-  Compass,
-  Scale,
-  ArrowRight,
-  ShieldCheck,
-  BookOpen,
-  Image as ImageIcon,
-  HelpCircle,
-  Briefcase,
-  MapPin,
-  CheckCircle2,
-  Sparkles,
-} from "lucide-react";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { Button } from "@/components/ui/Button";
-
-import { constructMetadata } from "@/lib/metadata";
-import { getEventYear } from "@/lib/site-config";
+import type { Metadata } from 'next';
+import { GlobeArt, ScalesArt } from '@/components/art/LineArt';
+import { HandoffStage } from '@/components/motion/HandoffStage';
+import { ScrubText } from '@/components/motion/ScrubText';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
+import { ChapterHead, ChapterKicker } from '@/components/sections/Chapter';
+import { Bridge } from '@/components/story/Bridge';
+import { ChapterRail } from '@/components/story/ChapterRail';
+import { Closing } from '@/components/sections/Closing';
+import { Steps } from '@/components/sections/Steps';
+import { Ledger } from '@/components/ui/Editorial';
 import { PageHero } from '@/components/ui/PageHero';
-import { CtaBanner } from '@/components/ui/CtaBanner';
+import { PublishedStats } from '@/components/ui/PublishedStats';
+import { getCommittees, getMootCategories, getSchedule, getSiteConfig } from '@/lib/content';
+import { constructMetadata } from '@/lib/metadata';
+import { canRegister } from '@/lib/phase';
+import { formatEventDate, getEventYear } from '@/lib/site-config';
+import { dayDate, formatDateRange } from '@/lib/utils';
 
-export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
-  title: `About the Symposium | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
-  path: '/about',
-  description:
-    "Discover the legacy, academic mission, and institutional heritage of Pakistan’s premier twin diplomatic and legal advocacy championship hosted at GIKI, Topi.",
-}); }
+export async function generateMetadata(): Promise<Metadata> {
+  return await constructMetadata({
+    title: `About GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
+    path: '/about',
+    description:
+      'What GIMUN and the GIKI Moot Court are, how the four days fit together, and who runs them at GIK Institute in Topi.',
+  });
+}
 
 export default async function AboutOverviewPage() {
-  const site=await getSiteConfig();
-  const eventYear = getEventYear(site);
+  const [site, committees, categories, schedule] = await Promise.all([
+    getSiteConfig(),
+    getCommittees(),
+    getMootCategories(),
+    getSchedule(),
+  ]);
+  const gimunOpen = canRegister(site, 'gimun');
+  const mootOpen = canRegister(site, 'mootCup');
+  const dateRange = formatDateRange(site.eventDates.start, site.eventDates.end);
+  const campus = site.hostInstitution.split(',')[0];
+
+  // One step per conference day, from the published schedule.
+  const days = [...new Set(schedule.map((s) => s.day))]
+    .sort((a, b) => a - b)
+    .map((day) => {
+      const highlights = schedule
+        .filter((s) => s.day === day && !/lunch|check-out|press/i.test(s.title))
+        .slice(0, 3)
+        .map((s) => s.title);
+      return { title: `Day ${day}, ${dayDate(site.eventDates.start, day)}`, body: highlights.join('. ') + '.' };
+    });
+
   return (
-    <div className="space-y-16">
-      {/* 1. Atmospheric Dark Hero Header */}
-      <PageHero
-        variant="utility"
-        title={'Pakistan\'s Premier Twin Diplomatic & Legal Symposium'}
-        accentWords={['Diplomatic', '&', 'Legal']}
-        description={'Hosted at the GIKI campus in Topi, the symposium brings students together for parliamentary debate, courtroom advocacy, and leadership.'}
-        eyebrow={
-          <div className="flex flex-wrap items-center gap-2.5">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-champagne border border-champagne/30">
-                        <Sparkles className="w-3.5 h-3.5 text-champagne" />
-                        Diplomacy & Advocacy
-                      </span>
-                      <span className="text-xs font-mono text-champagne/70 uppercase tracking-widest">
-                        GIKI Topi
-                      </span>
-                    </div>
-        }
-        actionsSlot={
-          <>
-            <div className="pt-2 flex flex-wrap items-center gap-4">
-                        <Button variant="track-gimun" href="/gimun">
-                          Explore GIMUN
-                        </Button>
-                        <Button variant="track-moot" href="/moot-cup">
-                          Explore GMC
-                        </Button>
-                        <Button variant="secondary" href="/about/team">
-                          Leadership Directory
-                        </Button>
-                      </div>
-          </>
-        }
-      />
-
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 pb-16">
-        {/* 2. 15-Year Legacy Bento Metrics */}
-        <section className="space-y-8">
-          <div className="space-y-1">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
-              Institutional Stature
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream">
-              The event at a glance
-            </h2>
-          </div>
-
-          <PublishedStats stats={site.stats}/>
-        </section>
-
-        {/* 3. The Twin Flagship Pillars */}
-        <section className="grid md:grid-cols-2 gap-8">
-          {/* GIMUN Pillar */}
-          <div className="p-8 sm:p-10 rounded-2xl bg-overlay/90 text-champagne space-y-6 border border-champagne/30 relative overflow-hidden shadow-xl">
-            <div className="absolute inset-0 bg-brand/20 pointer-events-none" />
-            <div className="relative z-10 flex items-center justify-between">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono uppercase bg-champagne/20 text-cream border border-champagne/40">
-                <Compass className="w-3.5 h-3.5" />
-                <span>Diplomatic Simulation</span>
-              </span>
-              <span className="text-xs font-mono text-champagne/70">Track 01</span>
-            </div>
-
-            <div className="relative z-10 space-y-3">
-              <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
-                GIKI Model United Nations (GIMUN)
-              </h3>
-              <p className="text-xs sm:text-sm text-champagne/85 leading-relaxed">
-                GIMUN immerses delegates in the intricacies of multilateral diplomacy, treaty negotiation, and high-stakes geopolitical crisis management. From the UN Security Council to specialized historic cabinets, delegates defend sovereign mandates under rigorous parliamentary protocols.
-              </p>
-            </div>
-
-            <ul className="relative z-10 space-y-2.5 text-xs text-champagne/90 font-mono">
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Standardized Harvard Parliamentary Rules of Procedure</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Real-time Crisis Directives &amp; Joint Cabinet Interventions</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Merit-based Best Delegate, Outstanding &amp; Gavel Accolades</span>
-              </li>
-            </ul>
-
-            <div className="relative z-10 pt-4 border-t border-champagne/15">
-              <Link
-                href="/gimun"
-                className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-champagne hover:text-cream transition-colors"
-              >
-                <span>Explore GIMUN Track Details</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* GMC Pillar */}
-          <div className="p-8 sm:p-10 rounded-2xl bg-overlay/90 text-champagne space-y-6 border border-champagne/30 relative overflow-hidden shadow-xl">
-            <div className="absolute inset-0 bg-champagne/10 pointer-events-none" />
-            <div className="relative z-10 flex items-center justify-between">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono uppercase bg-brand text-cream border border-champagne/30">
-                <Scale className="w-3.5 h-3.5" />
-                <span>Judicial Advocacy</span>
-              </span>
-              <span className="text-xs font-mono text-champagne/70">Track 02</span>
-            </div>
-
-            <div className="relative z-10 space-y-3">
-              <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
-                GIKI Moot Court (GMC)
-              </h3>
-              <p className="text-xs sm:text-sm text-champagne/85 leading-relaxed">
-                The GIKI Moot Court (GMC) is Pakistan&apos;s premier collegiate appellate advocacy championship. Law school delegations draft comprehensive written memorials for Applicant and Respondent, followed by contentious oral pleading rounds adjudicated by senior advocates and High Court jurists.
-              </p>
-            </div>
-
-            <ul className="relative z-10 space-y-2.5 text-xs text-champagne/90 font-mono">
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Comprehensive Written Memorial Scoring (OSCOLA 4th Ed)</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Preliminary, Quarter, Semi, and Grand Final Pleading Benches</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-champagne shrink-0" />
-                <span>Champion Bench Trophy, Best Memorial, and Best Oralist Honors</span>
-              </li>
-            </ul>
-
-            <div className="relative z-10 pt-4 border-t border-champagne/15">
-              <Link
-                href="/moot-cup"
-                className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-champagne hover:text-cream transition-colors"
-              >
-                <span>Explore GMC Track Details</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* 4. Sub-Pages Navigation Hub */}
-        <section className="space-y-6">
-          <div className="space-y-1">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-champagne">
-              Institutional Directory
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream">
-              Directory, Guides &amp; Historical Archives
-            </h2>
-            <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl">
-              Inspect organizing leadership, review campus travel protocols, search the FAQ knowledge base, and access historical media archives.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Card 1: Team */}
-            <ScrollReveal>
-              <Link href="/about/team" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <Users className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Organizing Leadership
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Meet the GIMUN Executive Secretariat, GMC Convening Committee, and Host Directorate operations heads.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>View Leadership Roster</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
+    <>
+      <ChapterRail />
+      <div className="handoff">
+        <div className="handoff__stage">
+          <div className="handoff__scene">
+            <PageHero
+              variant="utility"
+              meta={['About the event', dateRange, 'GIKI, Topi']}
+              title="Two competitions, one campus, four days."
+              accentPhrase="one campus,"
+              description={`GIMUN and the GIKI Moot Court run side by side at ${campus}. Delegates debate in committee; law students argue before a bench. Both share the ceremonies, meals and evenings.`}
+              actions={[
+                { label: 'Explore GIMUN', href: '/gimun', variant: 'track-gimun' },
+                { label: 'Explore GMC', href: '/moot-cup', variant: 'track-moot' },
+              ]}
+              art={
+                <div className="mx-auto hidden max-w-[24rem] grid-cols-2 items-center gap-10 text-champagne opacity-50 lg:grid">
+                  <GlobeArt className="w-full text-accent-gimun" />
+                  <ScalesArt className="w-full" />
                 </div>
-              </Link>
-            </ScrollReveal>
-
-            {/* Card 2: Venue */}
-            <ScrollReveal>
-              <Link href="/about/venue" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <MapPin className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Campus Venue &amp; Travel
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Directions to GIKI Topi, airport shuttle schedules, campus gate security clearance, and residential boarding.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>Explore Venue Guide</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-
-            {/* Card 3: FAQ */}
-            <ScrollReveal>
-              <Link href="/about/faq" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <HelpCircle className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Frequently Asked Questions
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Searchable answers covering delegate eligibility, memorial submission, dress code, security, and verification.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>Search Knowledge Base</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-
-            {/* Card 4: Sponsors */}
-            <ScrollReveal>
-              <Link href="/about/sponsors" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <Briefcase className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Sponsors &amp; Patrons
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Statutory patrons, legal chambers, government boards, and official {eventYear} Sponsorship Prospectus.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>View Partners &amp; Deck</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-
-            {/* Card 5: Gallery */}
-            <ScrollReveal>
-              <Link href="/about/gallery" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <ImageIcon className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Visual Archives &amp; Gallery
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Photographic archives covering crisis debates, appellate benches, campus life, and social galas.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>Browse Gallery</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
-
-            {/* Card 6: Resources */}
-            <ScrollReveal>
-              <Link href="/resources" className="block rounded-2xl border border-champagne/25 bg-overlay/85 hover:border-champagne/45 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group">
-                <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                  <div className="space-y-3">
-                    <div className="w-12 h-12 rounded-xl bg-crest text-champagne flex items-center justify-center group-hover:bg-brand group-hover:text-cream transition-colors border border-champagne/20">
-                      <BookOpen className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-heading font-bold text-cream group-hover:text-champagne transition-colors">
-                      Official Resources &amp; Rules
-                    </h3>
-                    <p className="text-xs text-champagne/75 leading-relaxed">
-                      Download committee study guides, moot court case problems, citation guides, and delegate kits.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-champagne group-hover:text-cream transition-colors pt-3 border-t border-champagne/15">
-                    <span>Access Downloads</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
+              }
+            />
           </div>
-        </section>
-
-        {/* 5. Institutional Governance & Zero-Payment Disclosure */}
-        <section className="p-6 sm:p-8 rounded-2xl bg-overlay/90 border border-champagne/25 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-crest text-champagne flex items-center justify-center shrink-0 mt-0.5 border border-champagne/20">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <h4 className="text-base font-heading font-bold text-cream">
-                Official Institutional Governance &amp; Manual Payment Notice
-              </h4>
-              <p className="text-xs sm:text-sm text-champagne/80 max-w-2xl leading-relaxed">
-                Organized under the auspices of GIKI Student Affairs. All delegate registration fees are processed exclusively through official GIKI institutional banking channels with manual verification. Zero online commercial transactions occur on this platform.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/about/faq"
-            className="shrink-0 px-4 py-2.5 rounded-xl bg-crest border border-champagne/30 text-champagne hover:bg-brand hover:text-cream text-xs font-mono font-bold transition-colors"
-          >
-            Payment FAQ &rarr;
-          </Link>
-        </section>
-
-        {/* 6. Closing Register CTA Banner */}
-        <CtaBanner variant="slab">
-        <div className="text-champagne relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-
-          <div className="absolute inset-0 bg-radial-glow-dual opacity-30 pointer-events-none" />
-          <div className="relative z-10 space-y-2 text-center md:text-left max-w-xl">
-            <span className="text-xs font-mono uppercase font-bold text-champagne tracking-wider">
-              Delegate Applications Open
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-heading font-extrabold text-cream">
-              Represent Your Institution at GIKI Topi
-            </h2>
-            <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
-              Secure your delegation’s place at Pakistan&apos;s premier diplomatic and legal championship.
-            </p>
-          </div>
-
-          <div className="relative z-10 flex flex-wrap items-center gap-3 shrink-0">
-            <Button variant="track-gimun" href="/register?track=gimun">
-              Apply for GIMUN
-            </Button>
-            <Button variant="track-moot" href="/register?track=moot-cup">
-              Register GMC Team
-            </Button>
-          </div>
+          <div className="handoff__dim" aria-hidden="true" />
+          <HandoffStage />
         </div>
-      </CtaBanner>
+
+        {/* The two tracks */}
+        <section className="handoff__sheet tone-deep chapter" aria-labelledby="tracks-title">
+          <div className="wrap">
+            {site.stats?.length ? (
+              <div className="mb-16">
+                <h2 className="sr-only">In numbers</h2>
+                <PublishedStats stats={site.stats} />
+              </div>
+            ) : null}
+            <ChapterHead
+              id="tracks-title"
+              chapter={1}
+              act="Two rooms"
+              reveal
+              title="Pick the one you want to be tested in."
+              lead="They share dates and a campus, but the preparation, the rules and the judging are entirely different."
+            />
+            <Ledger
+              rows={[
+                {
+                  key: 'gimun',
+                  href: '/gimun',
+                  title: site.eventNames.gimun,
+                  description: `Represent a country in one of ${committees.length} committees, on your own or with your institution.`,
+                  meta: [gimunOpen ? 'Applications open' : 'Registration closed', `Closes ${formatEventDate(site.registrationDeadlines.gimun, { month: 'short' })}`],
+                },
+                {
+                  key: 'gmc',
+                  href: '/moot-cup',
+                  title: site.eventNames.mootCup,
+                  description: `Argue one problem as a team of law students, across ${categories.length} areas of law, before a bench.`,
+                  meta: [mootOpen ? 'Applications open' : 'Registration closed', `Closes ${formatEventDate(site.registrationDeadlines.mootCup, { month: 'short' })}`],
+                },
+              ]}
+            />
+            <Bridge to="days-title">Both rooms share one week. This is how it runs.</Bridge>
+          </div>
+        </section>
       </div>
-    </div>
+
+      {/* How the week fits together */}
+      <section className="chapter" aria-labelledby="days-title">
+        <div className="wrap steps-split">
+          <div className="steps-split__head">
+            <ChapterHead
+              id="days-title"
+              chapter={2}
+              act="The week"
+              split={false}
+              title="How the week fits together."
+              lead="Committees and courtrooms run in parallel; ceremonies, meals and evenings are shared."
+            >
+              <Link href="/schedule" className="text-link w-fit">
+                The full schedule
+              </Link>
+            </ChapterHead>
+          </div>
+          <Steps steps={days} accent="gmc" />
+        </div>
+      </section>
+
+      {/* Who runs it */}
+      <section className="sheet tone-crest" aria-labelledby="who-title">
+        <div className="sheet__ground" aria-hidden="true" />
+        <div className="wrap">
+          <ChapterKicker chapter={3} act="Who runs it" target="who-title" />
+          <h2 id="who-title" className="sr-only">
+            Who runs it
+          </h2>
+          <ScrubText className="manifesto mt-8">
+            The secretariat, the moot convening committee and the logistics team are GIKI students. Applying is free;
+            accepted participants pay by bank transfer, never on this site.
+          </ScrubText>
+        </div>
+      </section>
+
+      {/* Everything else about the event */}
+      <section className="chapter" aria-labelledby="more-title">
+        <div className="wrap steps-split">
+          <div className="steps-split__head">
+            <ChapterHead
+              id="more-title"
+              chapter={4}
+              act="Everything else"
+              split={false}
+              title="Organized at GIKI."
+              lead="The people, the place and the answers to the questions most participants ask."
+            />
+          </div>
+          <Ledger
+            rows={[
+              { key: 'team', href: '/about/team', title: 'Organizing team', description: 'Who runs each track, and how to reach them.', meta: ['People'] },
+              { key: 'venue', href: '/about/venue', title: 'Venue and travel', description: 'Getting to Topi, where each session happens, and what to bring.', meta: ['Logistics'] },
+              { key: 'faq', href: '/about/faq', title: 'Frequently asked questions', description: 'Fees, refunds, accommodation, dress code and more.', meta: ['Help'] },
+              { key: 'sponsors', href: '/about/sponsors', title: 'Sponsors and partners', description: 'Supporting organizations and the sponsorship deck.', meta: ['Partners'] },
+              { key: 'contact', href: '/contact', title: 'Contact', description: site.replyTime || 'Questions to the organizing team.', meta: ['Support'] },
+            ]}
+          />
+        </div>
+      </section>
+
+      <Closing
+        id="closing-title"
+        chapter={5}
+        act="Your application"
+        title="Represent your institution at GIKI."
+        lead="Choose a track to see its fees, format and deadlines. Applying is free; you pay only once accepted."
+        actions={[
+          { label: gimunOpen ? 'Apply for GIMUN' : 'GIMUN registration status', href: '/register?track=gimun', variant: 'track-gimun' },
+          { label: mootOpen ? 'Register a GMC team' : 'GMC registration status', href: '/register?track=moot-cup', variant: 'track-moot' },
+        ]}
+      />
+    </>
   );
 }

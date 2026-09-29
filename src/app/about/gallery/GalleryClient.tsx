@@ -1,8 +1,8 @@
 'use client';
+import { ComingSoon } from '@/components/ui/ComingSoon';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   ChevronLeft,
@@ -109,6 +109,16 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
 
   const activeItem = activeLightboxIndex !== null ? filteredItems[activeLightboxIndex] : null;
 
+  if (initialItems.length === 0) {
+    return (
+      <ComingSoon
+        title="Photos will appear after the conference"
+        description="The gallery is published with approved photographs from GIMUN and GMC 2027. Follow the announcements for press coverage and highlights."
+        links={[{ label: 'Announcements', href: '/announcements' }]}
+      />
+    );
+  }
+
   return (
     <div className="space-y-10">
       {/* Category Filter Navigation */}
@@ -132,20 +142,14 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
       </div>
 
       {/* Asymmetric Bento Media Grid */}
-      <h2 className="sr-only">Visual Archive Albums and Curated Sessions</h2>
+      <h2 className="sr-only">Photo albums</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.map((item, index) => {
           const isWide = item.aspectRatio === 'wide';
 
           return (
-            <motion.div
-              key={item.id}
-              layout
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.3 }}
-              className={`group relative overflow-hidden rounded-2xl border border-champagne/25 bg-overlay/90 shadow-xl hover:border-champagne/45 transition-all duration-300 cursor-pointer ${
+            <div
+              key={item.id}className={`group relative overflow-hidden rounded-2xl border border-champagne/25 bg-raised hover:border-champagne/45 transition-all duration-300 cursor-pointer ${
                 isWide ? 'sm:col-span-2' : 'col-span-1'
               }`}
               role="button"
@@ -160,7 +164,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                 }
               }}
             >
-              <div className="relative w-full h-64 sm:h-72 overflow-hidden bg-elevated flex flex-col justify-between p-5 text-white">
+              <div className="relative w-full h-64 sm:h-72 overflow-hidden bg-elevated flex flex-col justify-between p-5 text-text">
                 <Image
                   src={item.image}
                   alt={item.title}
@@ -180,12 +184,12 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
 
                 {/* Top Badges */}
                 <div className="relative z-10 flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-black/60 text-champagne border border-champagne/30 backdrop-blur-sm">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-black/60 text-champagne border border-line-2 backdrop-blur-sm">
                     <Calendar className="w-3 h-3 text-champagne" />
                     <span>{item.edition}</span>
                   </span>
 
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase bg-black/50 text-champagne/90 border border-champagne/30 backdrop-blur-sm">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase bg-black/50 text-text-2 border border-line-2 backdrop-blur-sm">
                     <Layers className="w-3 h-3" />
                     <span>{item.category.replace('-', ' ')}</span>
                   </span>
@@ -193,14 +197,14 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
 
                 {/* Zoom Hint Icon in Center (Hover State) */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
-                  <div className="w-12 h-12 rounded-full bg-crest/80 border border-champagne/40 flex items-center justify-center text-champagne transform group-hover:scale-110 transition-transform shadow-lg">
+                  <div className="w-12 h-12 rounded-full bg-elevated border border-line-2 flex items-center justify-center text-champagne transform group-hover:scale-110 transition-transform shadow-lg">
                     <ZoomIn className="w-6 h-6" />
                   </div>
                 </div>
 
                 {/* Bottom Canvas Tag */}
                 <div className="relative z-10 space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs text-champagne/90 font-mono">
+                  <div className="flex items-center gap-1.5 text-xs text-text-2 font-mono">
                     <MapPin className="w-3.5 h-3.5 text-champagne shrink-0" />
                     <span className="truncate">{item.location}</span>
                   </div>
@@ -209,55 +213,48 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
 
               {/* Information Panel Below Media */}
               <div className="p-5 space-y-2 bg-overlay">
-                <h3 className="text-base font-heading font-bold text-cream group-hover:text-champagne transition-colors leading-snug">
+                <h3 className="text-base font-display font-medium text-text group-hover:text-champagne transition-colors leading-snug">
                   {item.title}
                 </h3>
-                <p className="text-xs text-champagne/80 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-text-2 line-clamp-2 leading-relaxed">
                   {item.caption}
                 </p>
-                <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-champagne/70 border-t border-champagne/15">
+                <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-text-3 border-t border-line">
                   <span className="capitalize">{item.aspectRatio} format</span>
-                  <span className="text-champagne font-semibold group-hover:text-cream transition-colors">
+                  <span className="text-champagne font-semibold group-hover:text-text transition-colors">
                     View in High Resolution &rarr;
                   </span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           );
         })}
       </div>
 
       {/* Lightbox Modal */}
-      <AnimatePresence>
+      <>
         {activeItem && activeLightboxIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/90 backdrop-blur-md"
             role="presentation"
             onClick={closeLightbox}
           >
             {/* Modal Container */}
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+            <div
               onClick={(e) => e.stopPropagation()}
               ref={dialogRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="gallery-lightbox-title"
-              className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl bg-overlay border border-champagne/30 shadow-2xl flex flex-col text-champagne"
+              className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl bg-overlay border border-line-2 shadow-2xl flex flex-col text-champagne"
             >
               {/* Modal Top Control Bar */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-champagne/15 bg-elevated/95 sticky top-0 z-20">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-line bg-elevated/95 sticky top-0 z-20">
                 <div className="flex items-center gap-3">
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-cream border border-champagne/40">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-text border border-line-2">
                     {activeItem.edition}
                   </span>
-                  <span className="text-xs font-mono text-champagne/70">
+                  <span className="text-xs font-mono text-text-3">
                     {activeLightboxIndex + 1} of {filteredItems.length}
                   </span>
                 </div>
@@ -269,7 +266,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                         prev !== null ? (prev - 1 + filteredItems.length) % filteredItems.length : null
                       )
                     }
-                    className="p-2 rounded-full hover:bg-crest text-champagne hover:text-cream transition-colors cursor-pointer"
+                    className="p-2 rounded-full hover:bg-elevated text-champagne hover:text-text transition-colors cursor-pointer"
                     aria-label="Previous image"
                   >
                     <ChevronLeft className="w-5 h-5" />
@@ -281,7 +278,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                         prev !== null ? (prev + 1) % filteredItems.length : null
                       )
                     }
-                    className="p-2 rounded-full hover:bg-crest text-champagne hover:text-cream transition-colors cursor-pointer"
+                    className="p-2 rounded-full hover:bg-elevated text-champagne hover:text-text transition-colors cursor-pointer"
                     aria-label="Next image"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -290,7 +287,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   <button
                     ref={closeButtonRef}
                     onClick={closeLightbox}
-                    className="p-2 ml-2 rounded-full hover:bg-brand text-champagne hover:text-cream transition-colors cursor-pointer"
+                    className="p-2 ml-2 rounded-full hover:bg-brand text-champagne hover:text-text transition-colors cursor-pointer"
                     aria-label="Close modal"
                   >
                     <X className="w-5 h-5" />
@@ -319,11 +316,11 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                 />
 
                 <div className="relative z-10 space-y-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/70 text-xs font-mono text-champagne border border-champagne/30 backdrop-blur-sm">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/70 text-xs font-mono text-champagne border border-line-2 backdrop-blur-sm">
                     <Camera className="w-3.5 h-3.5 text-champagne" />
                     <span>Official Symposium Photographic Archive</span>
                   </div>
-                  <h2 id="gallery-lightbox-title" className="text-xl sm:text-3xl font-heading font-extrabold text-cream tracking-tight">
+                  <h2 id="gallery-lightbox-title" className="text-xl sm:text-3xl font-display font-medium text-text tracking-tight">
                     {activeItem.title}
                   </h2>
                 </div>
@@ -331,14 +328,14 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
 
               {/* Detailed Captions & Metadata Drawer */}
               <div className="p-6 sm:p-8 bg-elevated space-y-4">
-                <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-champagne/70">
+                <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-text-3">
                   <div className="flex items-center gap-1.5">
                     <MapPin className="w-4 h-4 text-champagne" />
-                    <span className="text-cream font-medium">{activeItem.location}</span>
+                    <span className="text-text font-medium">{activeItem.location}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4 text-champagne" />
-                    <span className="text-cream font-medium">{activeItem.edition}</span>
+                    <span className="text-text font-medium">{activeItem.edition}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Layers className="w-4 h-4 text-champagne" />
@@ -346,26 +343,26 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-champagne/15">
-                  <p className="text-sm sm:text-base text-champagne/90 leading-relaxed">
+                <div className="pt-2 border-t border-line">
+                  <p className="text-sm sm:text-base text-text-2 leading-relaxed">
                     {activeItem.caption}
                   </p>
                 </div>
 
-                <div className="pt-4 flex items-center justify-between text-xs font-mono text-champagne/60">
+                <div className="pt-4 flex items-center justify-between text-xs font-mono text-text-3">
                   <span>Use &larr; / &rarr; keys to cycle through records &bull; ESC to exit</span>
                   <button
                     onClick={closeLightbox}
-                    className="text-champagne hover:text-cream hover:underline font-semibold cursor-pointer"
+                    className="text-champagne hover:text-text hover:underline font-semibold cursor-pointer"
                   >
                     Close Preview
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

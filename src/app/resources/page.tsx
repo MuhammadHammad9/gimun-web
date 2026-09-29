@@ -3,9 +3,7 @@ import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
 import { getDocuments } from "@/lib/content";
 import { ResourcesClient } from "./ResourcesClient";
-import { TrackBadge } from "@/components/ui/TrackBadge";
-import { Button } from "@/components/ui/Button";
-import { Download } from "lucide-react";
+import { DocumentsArt } from "@/components/art/LineArt";
 import { getEventYear } from "@/lib/site-config";
 import { PageHero } from '@/components/ui/PageHero';
 
@@ -26,57 +24,34 @@ export default async function ResourcesPage() {
   );
 
   return (
-    <div className="space-y-12">
-      {/* Modern Atmospheric Hero */}
+    <>
       <PageHero
         variant="utility"
-        title={'Documents & Resource Hub'}
-        accentWords={['Resource', 'Hub']}
-        eyebrow={
-          <div className="flex items-center gap-2">
-                      <TrackBadge track="shared" />
-                      <span className="text-xs font-mono text-champagne uppercase tracking-widest">
-                        Official Document Archive
-                      </span>
-                    </div>
-        }
+        meta={[`${documents.length} documents`, 'Each with its revision date']}
+        title="The resource library."
+        accentPhrase="resource library."
+        description="Background guides, the case problem, both rulebooks, citation guides and travel information for both tracks."
         actionsSlot={
-          <>
-            <p className="text-sm sm:text-base text-text-2 max-w-3xl leading-relaxed">
-                        Official downloads for both events: committee study guides, the {getEventYear(await getSiteConfig())} GMC case problem, competition rules, citation style guides, and campus travel info.
-                      </p>
-
-                      <div className="pt-2 flex flex-wrap items-center gap-4">
-                        {gimunRulesDocument && (
-                          <Button
-                            variant="track-gimun"
-                            href={gimunRulesDocument.fileUrl}
-                            icon={<Download className="w-4 h-4" />}
-                          >
-                            GIMUN RoP Handbook
-                          </Button>
-                        )}
-                        {mootRulesDocument && (
-                          <Button
-                            variant="track-moot"
-                            href={mootRulesDocument.fileUrl}
-                            icon={<Download className="w-4 h-4" />}
-                          >
-                            GMC Rules &amp; Guide
-                          </Button>
-                        )}
-                        <Button variant="secondary" href="/about/faq">
-                          Explore FAQs
-                        </Button>
-                      </div>
-          </>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            {gimunRulesDocument && (
+              <a href={gimunRulesDocument.fileUrl} className="text-link" data-no-transition="">
+                GIMUN rules of procedure (PDF)
+              </a>
+            )}
+            {mootRulesDocument && (
+              <a href={mootRulesDocument.fileUrl} className="text-link" data-no-transition="">
+                GMC rules and memorial guide (PDF)
+              </a>
+            )}
+          </div>
         }
+        art={<DocumentsArt className="mx-auto hidden w-full max-w-[18rem] text-champagne opacity-50 lg:block" />}
       />
-
-      {/* Main Interactive Body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <ResourcesClient initialDocuments={documents} />
-      </div>
-    </div>
+      <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Documents">
+        <div className="wrap">
+          <ResourcesClient initialDocuments={documents} />
+        </div>
+      </section>
+    </>
   );
 }

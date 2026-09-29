@@ -1,64 +1,56 @@
-import { getSiteConfig } from '@/lib/content';
-import type { Metadata } from "next";
-import { constructMetadata } from "@/lib/metadata";
-import { getTeamMembers } from "@/lib/content";
-import { TeamClient } from "./TeamClient";
-import { Users } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { getEventYear } from "@/lib/site-config";
+import type { Metadata } from 'next';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { PageHero } from '@/components/ui/PageHero';
+import { getSiteConfig, getTeamMembers } from '@/lib/content';
+import { constructMetadata } from '@/lib/metadata';
+import { getEventYear } from '@/lib/site-config';
+import { TeamClient } from './TeamClient';
+import { NextSteps } from '@/components/story/NextSteps';
 
-export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
-  title: `Organizing Team, Secretariat & GMC Convenors | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
-  path: '/about/team',
-  description:
-    "Meet the GIMUN Secretariat, GMC Convening Committee, and Host Directorate student leadership organizing Pakistan’s premier academic symposium at GIKI Topi.",
-}); }
+export async function generateMetadata(): Promise<Metadata> {
+  return await constructMetadata({
+    title: `Organizing Team | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
+    path: '/about/team',
+    description:
+      'The GIKI students who run GIMUN and the GIKI Moot Court: the secretariat and committee chairs, the moot convening committee and the logistics team.',
+  });
+}
 
 export default async function TeamPage() {
-  const members = (await getTeamMembers());
+  const [members, site] = await Promise.all([getTeamMembers(), getSiteConfig()]);
 
   return (
-    <div className="space-y-12">
-      {/* Modern Atmospheric Leadership Hero */}
+    <>
       <PageHero
         variant="utility"
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'Team' }]}
-        title={'Executive Secretariat & Directorate'}
-        accentWords={['Directorate']}
-        description={'Led by seasoned parliamentary debaters, appellate moot champions, and campus operations directors. Our student leadership is committed to delivering unmatched competitive rigor, impartial adjudication, and warm GIKI hospitality.'}
-        eyebrow={
-          <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-white/10 text-text-2 border border-champagne/20">
-                        <Users className="w-3.5 h-3.5 text-champagne" />
-                        Executive Leadership
-                      </span>
-                      <span className="text-xs font-mono text-champagne/70 uppercase tracking-widest">
-                        {getEventYear(await getSiteConfig())} Organizing Directorate
-                      </span>
-                    </div>
-        }
+        meta={[`${getEventYear(site)} edition`, 'Run by GIKI students']}
+        title="The organizing team."
+        accentPhrase="organizing team."
+        description="GIMUN and GMC are run by GIKI students: the secretariat and committee chairs, the moot convening committee, and the organizers who look after logistics."
         actionsSlot={
-          <>
-            <div className="pt-2 flex flex-wrap items-center gap-4">
-                        <Button variant="track-gimun" href="/gimun">
-                          GIMUN Secretariat
-                        </Button>
-                        <Button variant="track-moot" href="/moot-cup">
-                          GMC Convening Bench
-                        </Button>
-                        <Button variant="secondary" href="/contact">
-                          Contact Secretariat
-                        </Button>
-                      </div>
-          </>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link href="/contact" className="text-link">
+              Contact the team
+            </Link>
+            <Link href="/gimun/committees" className="text-link">
+              Committee chairs
+            </Link>
+          </div>
         }
       />
-
-      {/* Main Interactive Body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <TeamClient initialMembers={members} />
-      </div>
-    </div>
+      <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Team members">
+        <div className="wrap">
+          <TeamClient initialMembers={members} />
+        </div>
+      </section>
+      <NextSteps
+        steps={[
+          { href: '/contact', title: 'Contact', body: 'Write to the desk that owns your question.' },
+          { href: '/about', title: 'The event', body: 'What GIMUN and GMC are, and how the week runs.' },
+          { href: '/about/venue', title: 'Venue and travel', body: 'Where the team will meet you in Topi.' },
+        ]}
+      />
+    </>
   );
 }

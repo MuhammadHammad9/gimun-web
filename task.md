@@ -12,6 +12,14 @@
 - [x] Playwright route/browser coverage, rendered axe checks, multi-viewport projects, and Lighthouse release configuration.
 - [x] Robots, sitemap, favicon, Apple icon, privacy route, and deployment configuration.
 
+## September 2026 improvement pass (done)
+
+- [x] Public bug fixes: clarification routing, registration state per track, live schedule, titles, FAQ, forms and accessibility (commits c11e713, b30835d).
+- [x] Admin and API: numeric fees, invoices, record corrections, resend ticket, DB-enforced permissions, audited exports, MFA, hardened submissions (e1df80e, migration 0011).
+- [x] Content made consistent; fabricated sponsors, people and photos removed pending real ones (b9d237f). Defaults to confirm: `CONTENT_SIGNOFF.md`.
+- [x] Design and performance: track ledger home, honest venue guide, key dates, consent-gated analytics, brand icons, manifest, dead code and unused dependencies removed.
+- [x] Provisioning steps written up in `GO_LIVE.md`; CI has least-privilege permissions, concurrency, a dependency audit and Dependabot.
+
 ## Current release blockers
 
 - [ ] Replace all seed/generated portraits, sponsor logos, gallery images, and nine PDFs with approved production assets (pending media handover).

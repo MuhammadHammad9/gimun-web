@@ -1,0 +1,1 @@
+export default function Loading(){return <section className="admin-card" role="status"><h1>Loading workspace</h1><p>Fetching the latest records…</p></section>;}

@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { constructMetadata } from '@/lib/metadata';
 import { getResults, getSiteConfig } from '@/lib/content';
 import { ResultsClient } from './ResultsClient';
-import { getEventYear } from '@/lib/site-config';
+import { formatEventDate, getEventYear } from '@/lib/site-config';
+import { PageHero } from '@/components/ui/PageHero';
+import { GavelArt } from '@/components/art/LineArt';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Official Results & Awardees | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
@@ -14,11 +16,29 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 export default async function ResultsPage() {
   const results = (await getResults());
   const siteConfig = (await getSiteConfig());
+  const published = (siteConfig.resultsPublished ?? false) && results.length > 0;
   return (
+    <>
+      <PageHero
+        variant="utility"
+        meta={[published ? 'Published' : `Announced at the awards gala${siteConfig.galaDate ? `, ${formatEventDate(siteConfig.galaDate, { month: 'short' })}` : ''}`]}
+        title={published ? 'Results and awards.' : 'Awards, and how they are decided.'}
+        description={
+          published
+            ? 'The award winners of GIMUN and the GIKI Moot Court, as announced at the awards gala.'
+            : 'The awards for each track and the criteria behind them. Winners are published here after the awards gala, not before.'
+        }
+        art={<GavelArt className="mx-auto hidden w-full max-w-[18rem] text-champagne opacity-50 lg:block" />}
+      />
+      <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Awards">
+        <div className="wrap">
     <ResultsClient
       initialResults={results}
       resultsPublished={siteConfig.resultsPublished ?? false}
       eventEndDate={siteConfig.eventDates.end}
     />
+        </div>
+      </section>
+    </>
   );
 }

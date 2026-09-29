@@ -1,25 +1,11 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Download,
-  Search,
-  Sparkles,
-  FileText,
-  Volume2,
-  Users2,
-  Clock,
-  Vote,
-} from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
+import { useRef, useState } from 'react';
+import { Search } from 'lucide-react';
+import { useFlip } from '@/components/motion/useFlip';
+import { FilterBar } from '@/components/ui/FilterBar';
 
-interface GimunRulesClientProps {
-  rulesDocumentUrl?: string;
-}
-
-interface MotionItem {
+export interface MotionItem {
   name: string;
   category: "point" | "debate" | "resolution" | "closure";
   purpose: string;
@@ -109,423 +95,99 @@ const MOTIONS_DATA: MotionItem[] = [
     second: "Yes",
     vote: "2/3 Majority Required",
     precedence: 8,
-    proTip: "Once passed, committee doors lock, all note passing ceases, and no one may enter or exit the chamber.",
+    proTip: "Once passed, committee doors lock, all note passing ceases, and no one may enter or leave the chamber.",
   },
 ];
 
-const DEBATE_STAGES = [
-  {
-    id: "stage-1",
-    step: "01",
-    title: "Roll Call & Quorum",
-    summary: "Establishment of voting rights and quorum threshold.",
-    details:
-      "The Dais reads the alphabetical country roster. Delegates state either 'Present' (preserves right to abstain on substantive resolutions) or 'Present and Voting' (relinquishes abstention right; must cast an affirmative 'Yes' or negative 'No' vote). Quorum requires 1/3 of assigned nations present.",
-    icon: Users2,
-    badge: "Opening Protocol",
-  },
-  {
-    id: "stage-2",
-    step: "02",
-    title: "General Speakers List",
-    summary: "The continuous parliamentary spine of committee debate.",
-    details:
-      "Default speaking time is 90 seconds. The GSL remains open across sessions. If a delegate concludes before time expires, they MUST yield remaining time: (1) to the Dais, (2) to another delegate, or (3) to Points of Information (questions from the floor).",
-    icon: Clock,
-    badge: "Continuous Debate",
-  },
-  {
-    id: "stage-3",
-    step: "03",
-    title: "Caucusing Dynamics",
-    summary: "Moderated sub-debates and unmoderated alliance building.",
-    details:
-      "When the floor is open between GSL speeches, delegates motion for Moderated Caucuses to drill down on specific clauses, or Unmoderated Caucuses to walk freely, negotiate alliances, draft operative clauses, and merge bloc ideas.",
-    icon: Volume2,
-    badge: "Substantive Strategy",
-  },
-  {
-    id: "stage-4",
-    step: "04",
-    title: "Resolution Drafting",
-    summary: "Transformation of ideas into formal UN draft resolutions.",
-    details:
-      "Blocs compile preambulatory and operative clauses. Once vetted by the Dais for formatting and mandate legality, the document is assigned a Draft Resolution code (e.g., DR 1.1) and formally introduced to the entire chamber.",
-    icon: FileText,
-    badge: "Diplomatic Output",
-  },
-  {
-    id: "stage-5",
-    step: "05",
-    title: "Strict Voting Procedure",
-    summary: "Amendments, roll-call voting, and adoption of resolutions.",
-    details:
-      "Requires a 2/3 majority motion to close debate. Room security locks all doors. Delegates first vote on friendly and unfriendly amendments, then on draft resolutions in order of tabling. Friendly amendments with all sponsors' consent pass automatically.",
-    icon: Vote,
-    badge: "Final Adoption",
-  },
-];
 
-export function GimunRulesClient({ rulesDocumentUrl }: GimunRulesClientProps) {
-  const [activeStage, setActiveStage] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+const CATEGORIES = [
+  { value: 'all', label: 'All' },
+  { value: 'point', label: 'Points' },
+  { value: 'debate', label: 'Debate and caucus' },
+  { value: 'resolution', label: 'Resolutions' },
+  { value: 'closure', label: 'Closure' },
+] as const;
 
-  const filteredMotions = MOTIONS_DATA.filter((m) => {
-    const matchesCat = categoryFilter === "all" || m.category === categoryFilter;
-    const matchesSearch =
-      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.proTip.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCat && matchesSearch;
-  });
+/**
+ * The floor motions in order of precedence, searchable and filterable.
+ * Rows glide into place when the filter changes.
+ */
+export function GimunRulesClient() {
+  const [category, setCategory] = useState<string>('all');
+  const [query, setQuery] = useState('');
+  const list = useRef<HTMLOListElement>(null);
+  const { prime, capture } = useFlip(list, '.motion-row');
+
+  const q = query.trim().toLowerCase();
+  const shown = MOTIONS_DATA.filter(
+    (m) =>
+      (category === 'all' || m.category === category) &&
+      (m.name.toLowerCase().includes(q) || m.purpose.toLowerCase().includes(q) || m.proTip.toLowerCase().includes(q)),
+  );
 
   return (
-    <div className="space-y-16">
-      {/* 1. INTERACTIVE PARLIAMENTARY LIFECYCLE FLOW */}
-      <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-champagne/20">
-          <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
-              Procedural Blueprint
+    <div>
+      <div className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between" onPointerEnter={prime} onFocusCapture={prime}>
+        <FilterBar
+          label="Filter motions by kind"
+          options={CATEGORIES.map((c) => ({
+            ...c,
+            count: c.value === 'all' ? MOTIONS_DATA.length : MOTIONS_DATA.filter((m) => m.category === c.value).length,
+          }))}
+          activeValue={category}
+          onChange={(value) => {
+            capture();
+            setCategory(value);
+          }}
+        />
+        <label className="relative block w-full lg:w-80">
+          <span className="sr-only">Search motions</span>
+          <Search aria-hidden="true" strokeWidth={1.75} className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-text-3" />
+          <input
+            type="search"
+            value={query}
+            placeholder="Search: caucus, order, yield"
+            onChange={(event) => {
+              capture();
+              setQuery(event.target.value);
+            }}
+            className="w-full rounded-full border border-line-2 bg-raised py-2.5 pl-10 pr-4 text-small text-text placeholder:text-text-4 focus:border-line-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          />
+        </label>
+      </div>
+      <p className="sr-only" aria-live="polite">
+        {shown.length} motions shown
+      </p>
+
+      <ol ref={list} className="motions">
+        {shown.map((m) => (
+          <li key={m.name} className="motion-row">
+            <span className="motion-row__rank" aria-label={`Precedence ${m.precedence}`}>
+              {String(m.precedence).padStart(2, '0')}
             </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream mt-0.5">
-              The 5 Stages of Parliamentary Debate
-            </h2>
-          </div>
-          <span className="text-xs font-mono text-champagne/70">
-            Click any phase to inspect rules &amp; delegate strategy
-          </span>
-        </div>
-
-        {/* Step Selector Horizontal Pills */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          {DEBATE_STAGES.map((stg, idx) => {
-            const Icon = stg.icon;
-            const isSelected = activeStage === idx;
-
-            return (
-              <button
-                key={stg.id}
-                onClick={() => setActiveStage(idx)}
-                className={cn(
-                  "p-3.5 sm:p-4 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 group relative",
-                  isSelected
-                    ? "bg-brand border-champagne text-cream shadow-lg ring-1 ring-champagne/60"
-                    : "bg-overlay/85 border-champagne/25 hover:border-champagne/60 text-champagne hover:bg-crest"
-                )}
-              >
-                <div className="flex items-center justify-between w-full">
-                  <span
-                    className={cn(
-                      "text-xs font-mono font-bold",
-                      isSelected ? "text-cream" : "text-champagne/70"
-                    )}
-                  >
-                    {stg.step}
-                  </span>
-                  <div
-                    className={cn(
-                      "w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
-                      isSelected
-                        ? "bg-champagne/20 text-cream"
-                        : "bg-crest text-champagne/80 group-hover:text-cream"
-                    )}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-
-                <div>
-                  <h3
-                    className={cn(
-                      "text-xs sm:text-sm font-heading font-bold leading-tight",
-                      isSelected ? "text-cream" : "text-champagne"
-                    )}
-                  >
-                    {stg.title}
-                  </h3>
-                  <span
-                    className={cn(
-                      "text-[10px] font-mono block mt-1",
-                      isSelected ? "text-champagne/80" : "text-champagne/60"
-                    )}
-                  >
-                    {stg.badge}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Active Stage Deep-Dive Showcase Box */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeStage}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="double-bezel"
-          >
-            <div className="double-bezel-inner p-6 sm:p-8 space-y-5">
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-champagne/20">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-brand text-cream font-mono font-extrabold flex items-center justify-center text-sm border border-champagne/40 shadow-xs">
-                    {DEBATE_STAGES[activeStage].step}
-                  </div>
-                  <div>
-                    <h3 className="text-xl sm:text-2xl font-heading font-extrabold text-cream">
-                      {DEBATE_STAGES[activeStage].title}
-                    </h3>
-                    <p className="text-xs font-mono text-champagne font-bold uppercase">
-                      {DEBATE_STAGES[activeStage].badge}
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-mono px-3 py-1 rounded-full bg-overlay/80 border border-champagne/20 text-champagne">
-                  Official GIMUN Harvard Protocol
-                </span>
-              </div>
-
-              <div className="grid md:grid-cols-12 gap-6 items-start">
-                <div className="md:col-span-8 space-y-3">
-                  <span className="text-xs font-mono uppercase font-bold text-champagne block">
-                    Procedural Standard:
-                  </span>
-                  <p className="text-sm text-champagne/90 leading-relaxed">
-                    {DEBATE_STAGES[activeStage].details}
-                  </p>
-                </div>
-
-                <div className="md:col-span-4 p-4 rounded-xl bg-overlay/90 border border-champagne/25 shadow-xl space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-champagne uppercase font-mono">
-                    <Sparkles className="w-4 h-4 text-champagne" />
-                    <span>Secretariat Pro-Tip</span>
-                  </div>
-                  <p className="text-xs text-champagne/80 leading-relaxed">
-                    {activeStage === 0 &&
-                      "If you plan to abstain during substantive resolutions to safeguard neutrality, declare yourself 'Present'. If you say 'Present and Voting', abstention is forfeited."}
-                    {activeStage === 1 &&
-                      "Always yield unspent GSL seconds to Points of Information to demonstrate command of your country's position and earn Dais evaluation marks."}
-                    {activeStage === 2 &&
-                      "Keep moderated caucus topic scopes tight (e.g. 'Border Verification Measures' rather than 'General Security') so speeches remain actionable."}
-                    {activeStage === 3 &&
-                      "Avoid sponsor bloat. Too many sponsors makes amending clauses difficult later. A strong resolution has 2–3 active primary authors."}
-                    {activeStage === 4 &&
-                      "During roll-call voting, you can pass on the first round if uncertain, but upon the second call you must vote Yes or No with no further passing."}
-                  </p>
-                </div>
-              </div>
+            <div className="min-w-0">
+              <h3 className="motion-row__name">{m.name}</h3>
+              <p className="motion-row__purpose">{m.purpose}</p>
+              <p className="motion-row__tip">{m.proTip}</p>
             </div>
-          </motion.div>
-        </AnimatePresence>
-      </section>
-
-      {/* 2. SEARCHABLE PARLIAMENTARY MOTIONS CHEAT SHEET */}
-      <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-champagne/20">
-          <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
-              Floor Motions Reference
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-cream mt-0.5">
-              Motions &amp; Points Precedence Matrix
-            </h2>
-          </div>
-          <div className="text-xs font-mono text-champagne/70">
-            {filteredMotions.length} Motions Available
-          </div>
-        </div>
-
-        {/* Filter and Search Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-champagne/60" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search motions (e.g., caucus, order, yield)..."
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-champagne/30 text-base sm:text-xs bg-overlay/90 text-cream placeholder:text-champagne/40 focus:outline-hidden focus:ring-2 focus:ring-champagne/30 focus:border-champagne"
-            />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
-            {[
-              { id: "all", label: "All Motions" },
-              { id: "point", label: "Points" },
-              { id: "debate", label: "Debate & Caucus" },
-              { id: "resolution", label: "Resolutions" },
-              { id: "closure", label: "Closures" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setCategoryFilter(tab.id)}
-                className={cn(
-                  "px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-colors cursor-pointer",
-                  categoryFilter === tab.id
-                    ? "bg-champagne text-brand shadow-xs font-bold"
-                    : "bg-overlay/80 border border-champagne/20 text-champagne/80 hover:bg-brand/60 hover:text-cream"
-                )}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Motions Card Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredMotions.map((item) => (
-            <div
-              key={item.name}
-              className="p-5 sm:p-6 rounded-2xl bg-overlay/85 border border-champagne/25 shadow-xl hover:border-champagne/60 transition-all space-y-4"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-md bg-champagne/20 text-cream border border-champagne/30">
-                    Precedence Rank #{item.precedence}
-                  </span>
-                  <h3 className="font-heading font-extrabold text-base sm:text-lg text-cream mt-1.5 leading-snug">
-                    {item.name}
-                  </h3>
-                </div>
-                <span
-                  className={cn(
-                    "text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded",
-                    item.interrupt.startsWith("Yes")
-                      ? "bg-brand-deep/70 text-crimson-soft border border-crimson/40"
-                      : "bg-crest/70 text-champagne border border-champagne/20"
-                  )}
-                >
-                  {item.interrupt.startsWith("Yes") ? "Interrupts" : "No Interrupt"}
-                </span>
+            <dl className="motion-row__facts">
+              <div>
+                <dt>Interrupts</dt>
+                <dd>{m.interrupt}</dd>
               </div>
-
-              <p className="text-xs text-champagne/80 leading-relaxed">{item.purpose}</p>
-
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-champagne/15 text-[11px] font-mono">
-                <div className="p-2 rounded-lg bg-crest/60 border border-champagne/15">
-                  <span className="text-champagne/70 block text-[9px] uppercase">Second Required</span>
-                  <strong className="text-cream font-bold">{item.second}</strong>
-                </div>
-                <div className="p-2 rounded-lg bg-crest/60 border border-champagne/15">
-                  <span className="text-champagne/70 block text-[9px] uppercase">Vote Required</span>
-                  <strong className="text-champagne font-bold">{item.vote}</strong>
-                </div>
+              <div>
+                <dt>Second</dt>
+                <dd>{m.second}</dd>
               </div>
-
-              <div className="p-2.5 rounded-lg bg-crest/50 border border-champagne/20 text-xs text-champagne/90 flex items-start gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-champagne shrink-0 mt-0.5" />
-                <span className="text-[11px] leading-snug">{item.proTip}</span>
+              <div>
+                <dt>Vote</dt>
+                <dd>{m.vote}</dd>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 3. YIELD PROTOCOL BLUEPRINT */}
-      <section className="space-y-6">
-        <div className="border-b border-champagne/20 pb-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-champagne/80 font-bold">
-            Floor Management
-          </span>
-          <h2 className="text-2xl font-heading font-bold text-cream mt-0.5">
-            The Three Yield Protocols (GSL Speeches)
-          </h2>
-          <p className="text-xs text-champagne/80 mt-1">
-            When concluding your substantive speech on the General Speakers List before time expires, you must formally yield the floor in one of three ways:
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="double-bezel">
-            <div className="double-bezel-inner p-6 space-y-3">
-              <div className="w-8 h-8 rounded-xl bg-brand text-champagne border border-champagne/30 flex items-center justify-center font-bold text-xs font-mono">
-                01
-              </div>
-              <h3 className="font-heading font-bold text-base text-cream">
-                Yield to the Chair
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                Relinquishes any remaining seconds back to the Dais. The floor reopens immediately for new motions or the next country on the GSL. No questions or rebuttals may be directed to you.
-              </p>
-              <div className="pt-2 text-[11px] font-mono text-champagne font-semibold">
-                &ldquo;Delegate of France yields remaining time to the Chair.&rdquo;
-              </div>
-            </div>
-          </div>
-
-          <div className="double-bezel">
-            <div className="double-bezel-inner p-6 space-y-3">
-              <div className="w-8 h-8 rounded-xl bg-brand text-champagne border border-champagne/30 flex items-center justify-center font-bold text-xs font-mono">
-                02
-              </div>
-              <h3 className="font-heading font-bold text-base text-cream">
-                Yield to Another Delegate
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                Transfers remaining seconds directly to an allied nation. The recipient must accept or decline. If accepted, they may speak for the remainder of your time but CANNOT yield again.
-              </p>
-              <div className="pt-2 text-[11px] font-mono text-champagne font-semibold">
-                &ldquo;Yields remaining time to the distinguished delegate of Japan.&rdquo;
-              </div>
-            </div>
-          </div>
-
-          <div className="double-bezel">
-            <div className="double-bezel-inner p-6 space-y-3">
-              <div className="w-8 h-8 rounded-xl bg-brand text-champagne border border-champagne/30 flex items-center justify-center font-bold text-xs font-mono">
-                03
-              </div>
-              <h3 className="font-heading font-bold text-base text-cream">
-                Yield to Points of Information
-              </h3>
-              <p className="text-xs text-champagne/80 leading-relaxed">
-                Invites questions from the committee floor. The Dais recognizes delegates who pose non-argumentative questions. Answers are deducted from your remaining time pool until depleted.
-              </p>
-              <div className="pt-2 text-[11px] font-mono text-champagne font-semibold">
-                &ldquo;Yields remaining time to Points of Information.&rdquo;
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. BOTTOM ACTION CALLOUT */}
-      <section className="p-8 sm:p-10 rounded-2xl bg-overlay/90 text-champagne border border-champagne/25 shadow-2xl relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <span className="text-xs font-mono uppercase text-champagne font-bold tracking-wider">
-              Official Literature
-            </span>
-            <h3 className="text-xl sm:text-3xl font-heading font-extrabold text-cream">
-              Download the Full GIMUN RoP Handbook
-            </h3>
-            <p className="text-xs sm:text-sm text-champagne/80 max-w-xl">
-              Contains complete codified clauses on working paper formatting, committee caucusing etiquette, and resolution amendment precedence.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            {rulesDocumentUrl && (
-              <Button
-                variant="track-gimun"
-                size="md"
-                href={rulesDocumentUrl}
-                icon={<Download className="w-4 h-4" />}
-              >
-                Download PDF Handbook
-              </Button>
-            )}
-            <Button variant="secondary" size="md" href="/gimun/committees">
-              Explore Committees
-            </Button>
-          </div>
-        </div>
-      </section>
+            </dl>
+          </li>
+        ))}
+      </ol>
+      {shown.length === 0 && <p className="rounded-2xl border border-dashed border-line-2 p-8 text-center text-small text-text-3">No motion matches that search.</p>}
     </div>
   );
 }

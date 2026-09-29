@@ -1,0 +1,325 @@
+/* ==============================================================================
+   STORY
+
+   The pieces that make a page read as one story: the numbered kicker above a
+   chapter title, the chapter rail in the margin, the bridge line that hands
+   one chapter to the next, and the "where to next" ending of utility pages.
+   Motion here is transform and opacity only, and none of it runs at load.
+   ============================================================================== */
+
+/* --- Chapter kicker: the number, a hairline, the act -------------------------------------- */
+.chapter-head__main {
+  display: grid;
+  gap: 1.25rem;
+  align-content: end;
+}
+
+.chapter-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--text-meta--letter-spacing);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.chapter-kicker__num {
+  color: var(--color-champagne);
+  font-variant-numeric: tabular-nums;
+}
+
+.closing .chapter-kicker {
+  margin-bottom: 1.5rem;
+}
+
+.chapter-kicker__rule {
+  width: 2rem;
+  height: 1px;
+  background: var(--color-line-2);
+  transform-origin: left;
+}
+
+/* The rule draws in as the chapter arrives (scroll-driven; static without support). */
+@supports (animation-timeline: view()) {
+  .chapter-kicker__rule {
+    animation: kicker-rule linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 30%;
+  }
+}
+
+@keyframes kicker-rule {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* --- Chapter rail ------------------------------------------------------------ */
+.chapter-index {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .chapter-index {
+    position: fixed;
+    top: 50%;
+    left: 1.25rem;
+    z-index: 30;
+    display: block;
+    transform: translateY(-50%);
+    animation: chapter-index-in var(--dur-surface) var(--ease-out-expo) both;
+  }
+}
+
+@keyframes chapter-index-in {
+  from {
+    opacity: 0;
+    transform: translate(-0.5rem, -50%);
+  }
+}
+
+.chapter-index ol {
+  position: relative;
+  display: grid;
+  gap: 0.375rem;
+}
+
+.chapter-index__thread {
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 0.9375rem;
+  width: 1px;
+  background: var(--color-line);
+}
+
+.chapter-index__thread::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-champagne);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+@supports (animation-timeline: scroll()) {
+  .chapter-index__thread::after {
+    animation: chapter-thread linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+@keyframes chapter-thread {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.chapter-index a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2rem;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.chapter-index__num {
+  display: grid;
+  width: 1.875rem;
+  height: 1.875rem;
+  place-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: 9999px;
+  background: var(--color-canvas);
+  font-variant-numeric: tabular-nums;
+  transition:
+    border-color var(--dur-ui) var(--ease-brand),
+    color var(--dur-ui) var(--ease-brand),
+    transform var(--dur-ui) var(--ease-out-expo);
+}
+
+/* Labels stay tucked away until the reader asks: hover, focus or the chapter in view. */
+.chapter-index__label {
+  padding: 0.3rem 0.625rem;
+  border: 1px solid var(--color-line);
+  border-radius: 9999px;
+  background: var(--color-raised);
+  color: var(--color-text-2);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-0.375rem);
+  transition:
+    opacity var(--dur-ui) var(--ease-brand),
+    transform var(--dur-ui) var(--ease-out-expo);
+}
+
+.chapter-index a:hover .chapter-index__label,
+.chapter-index a:focus-visible .chapter-index__label {
+  opacity: 1;
+  transform: none;
+}
+
+.chapter-index a:hover .chapter-index__num,
+.chapter-index a:focus-visible .chapter-index__num {
+  border-color: var(--color-line-3);
+  color: var(--color-text);
+}
+
+.chapter-index a[aria-current="location"] .chapter-index__num {
+  border-color: var(--color-champagne);
+  color: var(--color-champagne);
+  transform: scale(1.12);
+}
+
+.chapter-index a:focus-visible {
+  outline: none;
+}
+
+.chapter-index a:focus-visible .chapter-index__num {
+  box-shadow: 0 0 0 2px var(--color-canvas), 0 0 0 4px var(--color-focus);
+}
+
+/* --- Bridge ------------------------------------------------------------------ */
+.bridge {
+  margin-top: clamp(3.5rem, 7vw, 6rem);
+  text-align: center;
+}
+
+.bridge__link {
+  display: inline-flex;
+  max-width: 34rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  color: var(--color-text-2);
+  font-size: var(--text-lead);
+  line-height: var(--text-lead--line-height);
+  text-wrap: balance;
+  transition: color var(--dur-ui) var(--ease-brand);
+}
+
+.bridge__arrow {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0.5rem;
+  border: 1px solid var(--color-line-2);
+  border-radius: 9999px;
+  color: var(--color-champagne);
+  transition:
+    transform var(--dur-ui) var(--ease-out-expo),
+    border-color var(--dur-ui) var(--ease-brand);
+}
+
+.bridge__link:hover {
+  color: var(--color-text);
+}
+
+.bridge__link:hover .bridge__arrow {
+  border-color: var(--color-champagne);
+  transform: translateY(0.25rem);
+}
+
+/* --- Where to next ------------------------------------------------------------ */
+.next-steps {
+  padding-block: clamp(4rem, 8vw, 7rem);
+  border-top: 1px solid var(--color-line);
+}
+
+.next-steps__title {
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--text-meta--letter-spacing);
+  text-transform: uppercase;
+}
+
+.next-steps__list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .next-steps__list {
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+}
+
+.next-step {
+  display: grid;
+  height: 100%;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: 1.25rem;
+  background: var(--color-raised);
+  transition:
+    border-color var(--dur-ui) var(--ease-brand),
+    transform var(--dur-ui) var(--ease-out-expo);
+}
+
+.next-step__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.next-step__arrow {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  color: var(--color-champagne);
+  transition: transform var(--dur-ui) var(--ease-out-expo);
+}
+
+.next-step__body {
+  color: var(--color-text-2);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.next-step:hover {
+  border-color: var(--color-line-3);
+  transform: translateY(-2px);
+}
+
+.next-step:hover .next-step__arrow {
+  transform: translateX(0.25rem);
+}
+
+.next-step:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-index,
+  .chapter-kicker__rule,
+  .chapter-index__thread::after {
+    animation: none;
+  }
+
+  .chapter-index__thread::after {
+    display: none;
+  }
+
+  .bridge__link:hover .bridge__arrow,
+  .next-step:hover,
+  .next-step:hover .next-step__arrow {
+    transform: none;
+  }
+}

@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-function runOnDesktopOnly(testInfo: { project: { name: string } }) {
-  test.skip(testInfo.project.name !== 'desktop-1440', 'Form interaction coverage runs once on the desktop release profile; API and route behavior run across the full matrix.');
+function runOnRepresentativeViewports(testInfo: { project: { name: string } }) {
+  test.skip(!['desktop-1440','mobile-375'].includes(testInfo.project.name), 'Forms run on desktop and phone profiles; route rendering runs across the full matrix.');
 }
 
 test.describe('public form interaction coverage', () => {
   test('switches between both registration tracks', async ({ page }, testInfo) => {
-    runOnDesktopOnly(testInfo);
+    runOnRepresentativeViewports(testInfo);
 
     await page.goto('/register');
     await page.getByRole('button', { name: 'Apply for GIMUN' }).click();
@@ -17,40 +17,46 @@ test.describe('public form interaction coverage', () => {
   });
 
   test('shows client validation for every registration mode', async ({ page }, testInfo) => {
-    runOnDesktopOnly(testInfo);
+    runOnRepresentativeViewports(testInfo);
 
     await page.goto('/register?track=gimun');
     await page.getByRole('button', { name: 'Submit Individual Application' }).click();
-    await expect(page.getByText('Full Name is required')).toBeVisible();
+    // Each message appears under its field and again in the error summary.
+    await expect(page.locator('#field-fullName-error')).toHaveText('Full Name is required');
+    await expect(page.getByRole('link', { name: 'Full Name is required' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Delegation (Group)' }).click();
     await page.getByRole('button', { name: /Submit Delegation Roster/ }).click();
-    await expect(page.getByText('Head of Delegation Name is required')).toBeVisible();
+    await expect(page.locator('#field-delegationHeadName-error')).toHaveText('Head of Delegation Name is required');
 
     await page.goto('/register?track=moot-cup');
     await page.getByRole('button', { name: /Submit Law Team Registration/ }).click();
-    await expect(page.getByText('Team Name is required')).toBeVisible();
+    await expect(page.locator('#field-teamName-error')).toHaveText('Team Name is required');
   });
 
   test('shows contact and clarification validation feedback', async ({ page }, testInfo) => {
-    runOnDesktopOnly(testInfo);
+    runOnRepresentativeViewports(testInfo);
 
     await page.goto('/contact');
     await page.getByRole('button', { name: 'Send Direct Message' }).click();
-    await expect(page.getByText('Your Name is required')).toBeVisible();
+    await expect(page.locator('#field-name-error')).toHaveText('Your Name is required');
 
     await page.goto('/moot-cup/clarifications');
-    await page.getByRole('button', { name: 'Submit Inquiry to Bench' }).click();
+    // The page now renders the shared ClarificationForm rather than its own
+    // inline copy, so the control and message come from that component.
+    await page.getByRole('button', { name: 'Submit question' }).click();
     await expect(
-      page.getByRole('alert').filter({ hasText: 'Team code, contact email, and clarification question are required.' }),
+      page
+        .getByRole('alert')
+        .filter({ hasText: 'Team ID, email, case-problem section and your question are all required.' }),
     ).toBeVisible();
   });
 
   test('renders with reduced motion enabled', async ({ page }, testInfo) => {
-    runOnDesktopOnly(testInfo);
+    runOnRepresentativeViewports(testInfo);
 
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/register');
-    await expect(page.getByRole('heading', { name: 'Delegate & Team Registration' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /Apply for GIMUN/ })).toBeVisible();
   });
 });

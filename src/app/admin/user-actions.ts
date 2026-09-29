@@ -18,7 +18,7 @@ export async function manageUser(input:unknown){
     if(p.password){const {error}=await db.auth.admin.updateUserById(userId,{password:p.password});if(error)return {error:'Password reset failed.'};}
   }
   const values={user_id:userId,email:p.email,display_name:p.display_name,role:p.role,sections:p.sections,active:p.active,...(!p.id||p.password?{must_change_password:true}:{})};
-  const {error}=await db.from('admin_users').upsert(values);if(error)return {error:'Auth account exists, but the admin profile could not be saved. Retry with its user ID.'};
+  const {error}=await db.from('admin_users').upsert(values);if(error){if(!p.id){const rollback=await db.auth.admin.deleteUser(userId);if(!rollback.error)return {error:'Account setup could not finish. No account was retained; try again.'};}return {error:`Account changes partially completed. Recovery account: ${userId}. Contact the owner before retrying.`};}
   const {error:auditError}=await db.from('audit_log').insert({actor:owner.user_id,action:'manage-user',section:'users',entity_id:userId});
   if(auditError)return {error:'Profile saved; actor attribution could not be recorded. Review the database audit trigger.'};
   revalidatePath('/admin/users');return {result:`Account ${userId} saved. Give the temporary password to the user through your approved channel.`};

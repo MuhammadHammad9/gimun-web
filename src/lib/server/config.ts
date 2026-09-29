@@ -78,6 +78,8 @@ export function getMissingProductionConfig(options: { emailDelivery?: boolean } 
   }
 
   const missing = required.filter(([, value]) => !value?.trim()).map(([name]) => name);
+  if(config.backend!=='supabase')missing.push('SUBMISSIONS_BACKEND=supabase');
+  if(process.env.CMS_BACKEND==='bundled')missing.push('CMS_BACKEND=supabase');
   if (config.siteUrl?.trim()) {
     try {
       const parsed = new URL(config.siteUrl);

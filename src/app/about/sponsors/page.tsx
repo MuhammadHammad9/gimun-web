@@ -1,68 +1,58 @@
-import { getSiteConfig } from '@/lib/content';
-import type { Metadata } from "next";
-import { constructMetadata } from "@/lib/metadata";
-import { getSponsors } from "@/lib/content";
-import { SponsorsClient } from "./SponsorsClient";
-import { Briefcase, Download } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { getEventYear } from "@/lib/site-config";
+import type { Metadata } from 'next';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { PageHero } from '@/components/ui/PageHero';
+import { getDocuments, getSiteConfig, getSponsors } from '@/lib/content';
+import { constructMetadata } from '@/lib/metadata';
+import { getEventYear } from '@/lib/site-config';
+import { SponsorsClient } from './SponsorsClient';
+import { NextSteps } from '@/components/story/NextSteps';
 
-export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
-  title: `Institutional Sponsors & Strategic Patrons | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
-  path: '/about/sponsors',
-  description:
-    "Our esteemed statutory patrons, government boards, corporate partners, and legal chambers supporting Pakistan’s premier youth diplomatic and legal advocacy championship.",
-}); }
+export async function generateMetadata(): Promise<Metadata> {
+  return await constructMetadata({
+    title: `Sponsors & Partners | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
+    path: '/about/sponsors',
+    description:
+      'The organizations supporting GIMUN and the GIKI Moot Court, and how to partner with the event. The sponsorship deck sets out the tiers.',
+  });
+}
 
 export default async function SponsorsPage() {
-  const sponsors = (await getSponsors());
+  const [sponsors, documents] = await Promise.all([getSponsors(), getDocuments()]);
+  const deck = documents.find((doc) => doc.type === 'sponsorship-deck');
+  const deckUrl = deck?.fileUrl ?? '/resources';
 
   return (
-    <div className="space-y-12">
-      {/* Modern Atmospheric Sponsors Hero */}
+    <>
       <PageHero
         variant="utility"
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'Sponsors' }]}
-        title={'Sponsors & Strategic Partners'}
-        accentWords={['Partners']}
-        eyebrow={
-          <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-white/10 text-text-2 border border-white/15">
-                        <Briefcase className="w-3.5 h-3.5 text-champagne" />
-                        Strategic Alliances
-                      </span>
-                      <span className="text-xs font-mono text-text-3 uppercase tracking-widest">
-                        Partnerships &amp; Patrons
-                      </span>
-                    </div>
-        }
+        meta={['Sponsorship', deck ? `Deck revised ${deck.versionDate}` : 'Deck on request']}
+        title="Sponsors and partners."
+        accentPhrase="partners."
+        description="Partner with a student conference that brings delegates and law students from across Pakistan to GIKI. The sponsorship deck sets out the tiers and what each includes."
         actionsSlot={
-          <>
-            <p className="text-sm sm:text-base text-text-2 max-w-3xl leading-relaxed">
-                        Proudly supported by visionary academic councils, public sector technology boards, leading law firms, and media publications. Explore sponsorship tier benefits, recruitment touchpoints, and our active institutional partners.
-                      </p>
-
-                      <div className="pt-2 flex flex-wrap items-center gap-4">
-                        <Button
-                          variant="track-gimun"
-                          href="/resources"
-                          icon={<Download className="w-4 h-4" />}
-                        >
-                          Download Sponsorship Deck (PDF)
-                        </Button>
-                        <Button variant="secondary" href="/contact?type=sponsorship">
-                          Inquire Corporate Partnership
-                        </Button>
-                      </div>
-          </>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <a href={deckUrl} className="text-link" data-no-transition="">
+              Sponsorship deck{deck ? ` (${deck.fileFormat})` : ''}
+            </a>
+            <Link href="/contact?type=sponsorship" className="text-link">
+              Ask about partnering
+            </Link>
+          </div>
         }
       />
-
-      {/* Main Interactive Body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <SponsorsClient initialSponsors={sponsors} />
-      </div>
-    </div>
+      <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Sponsors">
+        <div className="wrap">
+          <SponsorsClient initialSponsors={sponsors} />
+        </div>
+      </section>
+      <NextSteps
+        steps={[
+          { href: '/contact?type=sponsorship', title: 'Talk to us', body: 'Ask about the tiers, or a partnership that fits.' },
+          { href: '/about', title: 'The event', body: 'Who takes part and how the four days run.' },
+          { href: '/resources', title: 'Resources', body: 'Every published document, including the deck.' },
+        ]}
+      />
+    </>
   );
 }

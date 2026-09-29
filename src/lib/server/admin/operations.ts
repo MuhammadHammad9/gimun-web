@@ -4,14 +4,16 @@ import { requirePermission } from './auth';
 export async function operate(section: string, operation: string, input: Record<string, unknown>) {
   const user = await requirePermission(section, true);
   const { data,error } = await database().rpc('admin_operation',{ p_operation:operation,p_input:input,p_actor:user.user_id });
-  if(error) throw new Error(error.message);
+  if(error){console.error('[Admin operation]',operation,error);throw new Error(error.code==='P0001'?error.message:error.code==='23505'?'This assignment or identifier is already in use. Refresh and choose another.':'The operation could not be completed. Try again or contact an administrator.');}
   return data;
 }
 export const escapeHtml = (s: string) => s.replace(/[&<>"']/g,c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 export function emailHtml(body: string) { return `<div style="font-family:Arial,sans-serif;line-height:1.6">${escapeHtml(body).replace(/\n/g,'<br />')}</div>`; }
 export function renderTemplate(template: string, variables: Record<string,string>) {
   return template.replace(/\{\{([a-z_]+)\}\}/g,(_,key:string) => {
-    if (!['name','reference','status','payment_status','event_name','survey_url','certificate_url'].includes(key) || !(key in variables)) throw new Error(`Unknown template variable: ${key}`);
+    // Only variables every sender supplies, so a template fails at queue time
+    // instead of halfway through a broadcast.
+    if (!['name','reference','status','payment_status','event_name','amount_due','fee'].includes(key) || !(key in variables)) throw new Error(`Unknown template variable: ${key}. Use name, reference, status, payment_status, event_name, amount_due or fee.`);
     return variables[key];
   });
 }

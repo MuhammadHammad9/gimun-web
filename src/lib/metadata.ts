@@ -22,10 +22,15 @@ export async function constructMetadata({
   const url = `${siteUrl}${path}`;
 
   return {
-    title: {
-      default: resolvedTitle,
-      template: `%s | ${siteConfig?.eventNames?.combined || 'GIMUN & GMC'}`,
-    },
+    // Page titles already carry the event name and year, so they are used as
+    // written. Re-applying the layout template doubled the suffix
+    // ("... | GIMUN & GMC 2027 | GIMUN & GMC 2027").
+    title: title
+      ? { absolute: title }
+      : {
+          default: resolvedTitle,
+          template: `%s | ${siteConfig?.eventNames?.combined || 'GIMUN & GMC'}`,
+        },
     description,
     metadataBase: new URL(siteUrl),
     alternates: {
@@ -55,6 +60,7 @@ export async function constructMetadata({
     },
     icons: {
       icon: [
+        { url: '/icon.svg', type: 'image/svg+xml' },
         { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
         { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
         { url: '/favicon.ico' },

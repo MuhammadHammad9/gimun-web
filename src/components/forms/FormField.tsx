@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface FormFieldProps {
   label: string;
@@ -14,14 +13,6 @@ interface FormFieldProps {
   className?: string;
 }
 
-const shakeVariants = {
-  idle: { x: 0 },
-  shake: {
-    x: [0, -6, 6, -4, 4, -2, 2, 0],
-    transition: { duration: 0.4, ease: 'easeInOut' as const },
-  },
-};
-
 export function FormField({
   label,
   error,
@@ -31,20 +22,37 @@ export function FormField({
   id,
   className = '',
 }: FormFieldProps) {
+  const descriptionId = id && description ? `${id}-description` : undefined;
+  const errorId = id && error ? `${id}-error` : undefined;
+  const describedBy = [descriptionId, errorId].filter(Boolean).join(' ') || undefined;
+
+  // Wire the control to its label text, hint and error so screen readers
+  // announce them together. Only a single element child is wired; composite
+  // children (radio groups, custom widgets) manage their own attributes.
+  const control =
+    React.isValidElement<Record<string, unknown>>(children) && id
+      ? React.cloneElement(children, {
+          'aria-invalid': error ? true : undefined,
+          'aria-describedby':
+            [children.props['aria-describedby'] as string | undefined, describedBy]
+              .filter(Boolean)
+              .join(' ') || undefined,
+          'aria-required': required ? true : undefined,
+        })
+      : children;
+
   return (
-    <motion.div
-      variants={shakeVariants}
-      animate={error ? 'shake' : 'idle'}
+    <div
       className={`space-y-1.5 text-left ${className}`}
     >
       <div className="flex items-baseline justify-between gap-2">
         <label
           htmlFor={id}
-          className="block text-xs font-semibold uppercase tracking-wider text-champagne"
+          className="block text-sm font-medium text-text"
         >
           {label}{' '}
           {required && (
-            <span className="text-champagne font-bold">
+            <span aria-hidden="true" className="text-accent-gimun">
               *
             </span>
           )}
@@ -52,25 +60,23 @@ export function FormField({
       </div>
 
       {description && (
-        <p className="text-[11px] text-champagne/70 leading-snug">{description}</p>
+        <p id={descriptionId} className="text-xs leading-snug text-text-3">{description}</p>
       )}
 
-      {children}
+      {control}
 
-      <AnimatePresence mode="wait">
+      <>
         {error && (
-          <motion.p
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="text-xs text-crimson-soft font-medium flex items-center gap-1.5 pt-0.5"
+          <p
+            key={error}
+            id={errorId}
+            className="field-error flex items-center gap-1.5 pt-0.5 text-xs font-medium text-accent-gimun"
           >
-            <span className="inline-block w-1 h-1 rounded-full bg-crimson-hi" />
+            <span aria-hidden="true" className="inline-block h-1 w-1 rounded-full bg-crimson-hi" />
             {error}
-          </motion.p>
+          </p>
         )}
-      </AnimatePresence>
-    </motion.div>
+      </>
+    </div>
   );
 }

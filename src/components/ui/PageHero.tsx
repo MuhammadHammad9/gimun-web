@@ -1,10 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from './Button';
-import { TextReveal } from '@/components/motion/TextReveal';
-import { Parallax } from '@/components/motion/Parallax';
 import { Breadcrumbs, type Crumb } from './Breadcrumbs';
-import { ArrowRight } from 'lucide-react';
 
 type HeroVariant = 'home' | 'gimun' | 'moot' | 'utility';
 
@@ -15,162 +12,196 @@ export interface HeroAction {
 }
 
 export interface PageHeroProps {
-  /** Small mono label above the headline, or a node for badge rows. */
+  /** Legacy small label above the headline. Prefer `meta`. */
   eyebrow?: React.ReactNode;
-  /** The headline, as plain text so it can be revealed word by word. */
+  /** Facts set in mono above the headline (dates, venue, counts). */
+  meta?: React.ReactNode[];
+  /** The headline, as plain text. */
   title: string;
-  /** Words inside `title` to paint with the track accent. */
+  /** Words inside `title` set in the page's accent colour (weight, never a gradient). */
   accentWords?: string[];
+  /** Words set in the GIMUN crimson instead (the home headline names both rooms). */
+  gimunWords?: string[];
+  /** One exact phrase of the title in the accent colour (repeated words stay plain). */
+  accentPhrase?: string;
   description?: string;
   actions?: HeroAction[];
-  /**
-   * Raw JSX for the action row, used instead of `actions` when a page needs
-   * conditional buttons, icons or extra meta rows that the declarative
-   * `actions` shape cannot express.
-   */
+  /** Raw JSX for the action row, when `actions` cannot express it. */
   actionsSlot?: React.ReactNode;
-  /** Right-hand column: spotlight cards, stats, media. */
+  /** Right-hand column: facts, a card. */
   aside?: React.ReactNode;
+  /** Right-hand decorative art (used when there is no aside). */
+  art?: React.ReactNode;
+  /** Short affirmative points under the description. */
+  bullets?: string[];
+  /** Accepted for compatibility; the placard mosaic is retired. */
+  mosaic?: unknown;
   breadcrumbs?: Crumb[];
   variant?: HeroVariant;
-  /** `display` for the homepage, `h1` everywhere else. */
   size?: 'display' | 'h1';
+  align?: 'start' | 'center';
+  /** Extra content under the actions (a note, a countdown). */
+  footnote?: React.ReactNode;
   className?: string;
 }
 
-const GLOW: Record<HeroVariant, string> = {
-  home: 'bg-radial-glow-dual',
-  gimun: 'bg-glow-crimson',
-  moot: 'bg-glow-champagne',
-  utility: 'bg-radial-glow',
-};
-
-const ACCENT: Record<HeroVariant, string> = {
-  home: 'text-gradient-champagne',
-  gimun: 'text-gradient-crimson',
-  moot: 'text-gradient-champagne',
-  utility: 'text-gradient-champagne',
-};
+const strip = (word: string) => word.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
 
 /**
- * The one hero.
+ * The one hero, for every public route.
  *
- * Replaces thirteen hand-copied hero slabs that had drifted apart in gradient,
- * padding, type scale and badge treatment. Every public route's masthead comes
- * through here, which is what makes the page-to-page rhythm consistent.
- *
- * A server component: the headline text is in the initial HTML, so it is a
- * valid LCP candidate and is never gated behind hydration. `TextReveal` and
- * `Parallax` are the only client islands inside it.
+ * A server component: the headline is in the initial HTML at full opacity,
+ * which keeps it a valid LCP candidate. Its entrance is a CSS rise of a few
+ * pixels (transform only) that never waits for JavaScript; under the page
+ * curtain the entrance waits and plays as the new page is revealed.
  */
 export function PageHero({
   eyebrow,
+  meta,
   title,
   accentWords,
+  gimunWords,
+  accentPhrase,
   description,
   actions,
   actionsSlot,
   aside,
+  art,
+  bullets,
   breadcrumbs,
   variant = 'utility',
   size = 'h1',
+  align = 'start',
+  footnote,
   className,
 }: PageHeroProps) {
-  const hasAside = Boolean(aside);
+  const home = variant === 'home';
+  const centered = align === 'center' && !home;
+  const side = aside ?? art;
+  const accentSet = new Set((accentWords ?? []).map(strip));
+  const gimunSet = new Set((gimunWords ?? []).map(strip));
+  const accentClass = variant === 'gimun' ? 'text-accent-gimun' : 'text-champagne';
+  const wordClass = (word: string) =>
+    gimunSet.has(strip(word)) ? 'text-accent-gimun' : accentSet.has(strip(word)) ? accentClass : undefined;
 
-  return (
-    <section
+  const heading = (
+    <h1
+      data-entrance=""
       className={cn(
-        'relative isolate overflow-hidden border-b border-line',
-        hasAside
-          ? 'pt-12 pb-16 md:pt-20 md:pb-24'
-          : 'pt-12 pb-14 md:pt-20 md:pb-20',
-        'px-4 sm:px-6 lg:px-8',
-        GLOW[variant],
-        className
+        home ? 'home-hero__title' : 'page-hero__title',
+        size === 'display' || home ? 'text-display' : 'text-h1',
+        centered && 'mx-auto',
       )}
     >
-      {/* Atmosphere. Decorative only, never intercepts pointer events. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-tech-grid opacity-60"
-      />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <Parallax distance={90} className="absolute -top-24 left-1/4 -translate-x-1/2">
-          <div
-            className={cn(
-              'h-[28rem] w-[28rem] rounded-full blur-3xl animate-float-slow',
-              variant === 'moot' ? 'bg-champagne/15' : 'bg-crimson/20'
-            )}
-          />
-        </Parallax>
-        <Parallax distance={-70} className="absolute -top-10 right-1/4 translate-x-1/2">
-          <div
-            className={cn(
-              'h-[26rem] w-[26rem] rounded-full blur-3xl animate-float-slower',
-              variant === 'gimun' ? 'bg-crimson/15' : 'bg-champagne/15'
-            )}
-          />
-        </Parallax>
-      </div>
+      {accentPhrase && title.includes(accentPhrase)
+        ? (
+            <>
+              {title.slice(0, title.indexOf(accentPhrase))}
+              <span className={accentClass}>{accentPhrase}</span>
+              {title.slice(title.indexOf(accentPhrase) + accentPhrase.length)}
+            </>
+          )
+        : accentSet.size === 0 && gimunSet.size === 0
+        ? title
+        : title.split(' ').map((word, i) => (
+            <React.Fragment key={`${word}-${i}`}>
+              {i > 0 ? ' ' : ''}
+              <span className={wordClass(word)}>{word}</span>
+            </React.Fragment>
+          ))}
+    </h1>
+  );
 
-      <div className="relative z-10 mx-auto max-w-7xl">
-        {breadcrumbs && breadcrumbs.length > 0 && (
-          <Breadcrumbs items={breadcrumbs} className="mb-6" />
-        )}
+  const metaItems = [...(meta ?? [])];
+  const hasMeta = metaItems.length > 0 || Boolean(eyebrow);
 
-        <div
-          className={cn(
-            'grid grid-cols-1 items-center gap-12 lg:gap-10',
-            hasAside && 'lg:grid-cols-12'
+  const body = (
+    <div className={cn('flex flex-col', centered ? 'items-center text-center' : 'items-start')}>
+      {hasMeta && (
+        <div className={cn('page-hero__meta', centered && 'justify-center')} data-entrance="">
+          {eyebrow && <span>{eyebrow}</span>}
+          {metaItems.map((item, index) => (
+            <span key={index}>{item}</span>
+          ))}
+        </div>
+      )}
+
+      {heading}
+
+      {description && (
+        <p className={cn('page-hero__lead', centered && 'mx-auto')} data-entrance="2">
+          {description}
+        </p>
+      )}
+
+      {bullets && bullets.length > 0 && (
+        <ul className="page-hero__bullets" data-entrance="3">
+          {bullets.map((bullet) => (
+            <li key={bullet}>
+              <svg aria-hidden="true" viewBox="0 0 16 16">
+                <path d="M2 8.5l4 4 8-9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>{bullet}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {actionsSlot && (
+        <div className="mt-10 w-full" data-entrance="3">
+          {actionsSlot}
+        </div>
+      )}
+
+      {!actionsSlot && actions && actions.length > 0 && (
+        <div className={cn('page-hero__actions', centered && 'justify-center')} data-entrance="3">
+          {actions.map((action, i) => (
+            <Button
+              key={action.href + action.label}
+              href={action.href}
+              size="lg"
+              variant={action.variant ?? (i === 0 ? 'primary' : 'secondary')}
+              withArrow={i === 0}
+            >
+              {action.label}
+            </Button>
+          ))}
+        </div>
+      )}
+
+      {footnote && (
+        <div className={home ? 'home-hero__note' : 'mt-5 text-small text-text-3'} data-entrance="4">
+          {footnote}
+        </div>
+      )}
+    </div>
+  );
+
+  if (home) {
+    return (
+      <section className={cn('home-hero wrap', className)}>
+        <div className="home-hero__grid">
+          {body}
+          {side && (
+            <div className="home-hero__art" data-entrance="4">
+              {side}
+            </div>
           )}
-        >
-          <div
-            className={cn(
-              'flex flex-col items-start text-left',
-              hasAside ? 'lg:col-span-7 xl:col-span-7' : 'max-w-4xl'
-            )}
-          >
-            {eyebrow && <div className="mb-6">{eyebrow}</div>}
+        </div>
+      </section>
+    );
+  }
 
-            <TextReveal
-              as="h1"
-              text={title}
-              accentWords={accentWords}
-              accentClassName={ACCENT[variant]}
-              immediate
-              className={cn(
-                'font-display font-extrabold text-text',
-                size === 'display' ? 'text-display' : 'text-h1'
-              )}
-            />
-
-            {description && (
-              <p className="mt-6 max-w-2xl text-lead text-text-2">{description}</p>
-            )}
-
-            {actionsSlot && <div className="mt-9 w-full space-y-6">{actionsSlot}</div>}
-
-            {!actionsSlot && actions && actions.length > 0 && (
-              <div className="mt-9 flex w-full flex-wrap items-center gap-4 sm:w-auto">
-                {actions.map((action, i) => (
-                  <Button
-                    key={action.href + action.label}
-                    href={action.href}
-                    size="lg"
-                    variant={action.variant ?? (i === 0 ? 'primary' : 'secondary')}
-                    magnetic={i === 0}
-                    icon={i === 0 ? <ArrowRight className="h-4 w-4" /> : undefined}
-                  >
-                    {action.label}
-                  </Button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {hasAside && (
-            <div className="w-full lg:col-span-5 xl:col-span-5">{aside}</div>
+  return (
+    <section className={cn('page-hero', className)}>
+      <div className="wrap">
+        {breadcrumbs && breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} className="mb-10" />}
+        <div className="page-hero__grid" data-aside={side ? '' : undefined}>
+          {body}
+          {side && (
+            <div className="w-full" data-entrance="4">
+              {side}
+            </div>
           )}
         </div>
       </div>

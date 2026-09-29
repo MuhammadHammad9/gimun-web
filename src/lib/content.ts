@@ -71,7 +71,6 @@ export async function getDocuments(): Promise<Document[] > {
   return await readCollection<Document>('resources', resourcesData as Document[]);
 }
 
-export const getResources = getDocuments;
 
 export async function getSchedule(): Promise<ScheduleItem[] > {
   const site = await getSiteConfig();
@@ -115,6 +114,3 @@ export async function getGallery(): Promise<GalleryItem[] > {
   return await readCollection<GalleryItem>('gallery', galleryData as GalleryItem[]);
 }
 
-export async function getGalleryByCategory(category: GalleryItem['category']): Promise<GalleryItem[] > {
-  return (await readCollection<GalleryItem>('gallery', galleryData as GalleryItem[])).filter((item) => item.category === category);
-}

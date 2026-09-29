@@ -1,31 +1,35 @@
 'use client';
 
-import React, { useState, useRef, useEffect, Suspense } from 'react';
+import React, { Suspense, useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Send, CheckCircle2, AlertCircle, MessageSquare } from 'lucide-react';
+import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import type { ContactFormData, SubmissionResponse } from '@/lib/types';
 import { validateContactForm, type ValidationErrors } from '@/lib/validation';
 import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
-import { scaleIn } from '@/lib/motion';
+import { focusFirstError } from './FormErrorSummary';
 
-function ContactFormInner() {
-  const searchParams = useSearchParams();
-  const typeParam = searchParams.get('type') || '';
+const MESSAGE_MAX = 3000;
 
-  const mapParamToQueryType = (param: string): ContactFormData['queryType'] => {
-    if (param.includes('gimun')) return 'gimun';
-    if (param.includes('moot')) return 'moot-cup';
-    if (param.includes('sponsor')) return 'sponsorship';
-    if (param.includes('media')) return 'media';
-    return 'other';
-  };
+function mapParamToQueryType(param: string): ContactFormData['queryType'] {
+  if (param.includes('gimun')) return 'gimun';
+  if (param.includes('moot')) return 'moot-cup';
+  if (param.includes('sponsor')) return 'sponsorship';
+  if (param.includes('media')) return 'media';
+  return 'other';
+}
+
+/**
+ * `initialType` comes from the page's `?type=` search param, read on the
+ * server so the form is part of the HTML instead of a loading placeholder.
+ */
+export function ContactForm({ initialType = '' }: { initialType?: string }) {
+  const defaultQueryType = initialType ? mapParamToQueryType(initialType) : 'other';
 
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
-    queryType: typeParam ? mapParamToQueryType(typeParam) : 'gimun',
+    queryType: defaultQueryType,
     message: '',
   });
 
@@ -34,6 +38,8 @@ function ContactFormInner() {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [honeypot, setHoneypot] = useState('');
   const formLoadedAt = useRef(0);
+  // One key per message, kept across retries of the same submission.
+  const submissionKey = useRef<string | null>(null);
 
   useEffect(() => {
     formLoadedAt.current = Date.now();
@@ -57,11 +63,7 @@ function ContactFormInner() {
     const validationResult = validateContactForm(formData);
     if (Object.keys(validationResult).length > 0) {
       setErrors(validationResult);
-      const firstErrorKey = Object.keys(validationResult)[0];
-      const el = document.getElementById(`field-${firstErrorKey}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      focusFirstError(validationResult);
       return;
     }
 
@@ -74,22 +76,33 @@ function ContactFormInner() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
           _hp: honeypot,
           _ts: formLoadedAt.current,
+          _elapsed: Date.now() - formLoadedAt.current,
         }),
       });
 
-      const data: SubmissionResponse = await res.json();
+      // A proxy or platform error page is not JSON. That is a server problem,
+      // not the visitor's connection, so say so.
+      const data = (await res.json().catch(() => null)) as SubmissionResponse | null;
 
-      if (!res.ok || !data.success) {
+      if (!data || !res.ok || !data.success) {
         setStatus('error');
-        setServerMessage(data.message || 'Failed to dispatch inquiry. Please try again.');
-        if (data.errors) setErrors(data.errors);
+        setServerMessage(
+          data?.message ||
+            `The message service is unavailable right now (error ${res.status}). Please try again shortly or email us directly.`
+        );
+        if (data?.errors) {
+          setErrors(data.errors);
+          focusFirstError(data.errors);
+        }
         return;
       }
 
       setStatus('success');
       setServerMessage(data.message);
+      submissionKey.current = null;
     } catch {
       console.error('Contact request failed.');
       setStatus('error');
@@ -99,18 +112,15 @@ function ContactFormInner() {
 
   if (status === 'success') {
     return (
-      <motion.div
-        variants={scaleIn}
-        initial="hidden"
-        animate="visible"
-        className="p-8 rounded-2xl bg-raised/95 border border-champagne/30 text-center space-y-4 shadow-xl"
+      <div
+        className="p-8 rounded-2xl bg-raised border border-line-2 text-center space-y-4"
       >
-        <div className="w-12 h-12 rounded-full bg-elevated text-champagne flex items-center justify-center mx-auto border border-champagne/30">
+        <div className="w-12 h-12 rounded-full bg-elevated text-champagne flex items-center justify-center mx-auto border border-line-2">
           <CheckCircle2 className="w-7 h-7" />
         </div>
         <div className="space-y-1.5">
-          <h3 className="text-xl font-heading font-bold text-text">Message Dispatched</h3>
-          <p className="text-xs text-champagne/85 max-w-sm mx-auto leading-relaxed">
+          <h3 className="text-xl font-display font-medium text-text">Message Dispatched</h3>
+          <p className="text-xs text-text-2 max-w-sm mx-auto leading-relaxed">
             {serverMessage || 'Thank you for reaching out. The Secretariat has received your dispatch and will respond via email.'}
           </p>
         </div>
@@ -118,7 +128,7 @@ function ContactFormInner() {
           type="button"
           onClick={() => {
             setStatus('idle');
-            setFormData({ name: '', email: '', queryType: 'gimun', message: '' });
+            setFormData({ name: '', email: '', queryType: defaultQueryType, message: '' });
             setErrors({});
             setHoneypot('');
             formLoadedAt.current = Date.now();
@@ -127,7 +137,7 @@ function ContactFormInner() {
         >
           Send another message
         </button>
-      </motion.div>
+      </div>
     );
   }
 
@@ -135,17 +145,12 @@ function ContactFormInner() {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="space-y-5 p-6 md:p-8 rounded-2xl bg-raised/90 border border-champagne/25 shadow-xl"
+      className="space-y-5 rounded-3xl border border-line bg-raised p-6 md:p-8"
     >
-      <div className="flex items-center gap-2 pb-2 border-b border-champagne/15">
-        <MessageSquare className="w-4 h-4 text-champagne" />
-        <h2 className="text-sm font-mono uppercase font-bold text-text tracking-wide">
-          Direct Inquiry Dispatch
-        </h2>
-      </div>
+      <h2 className="font-display text-2xl font-medium text-text">Send a message</h2>
 
       {serverMessage && status === 'error' && (
-        <div className="p-3.5 rounded-xl bg-brand-deep/80 border border-crimson/50 text-crimson-soft flex items-start gap-2.5 text-xs">
+        <div role="alert" className="p-3.5 rounded-xl bg-accent-gimun/8 border border-accent-gimun/40 text-accent-gimun flex items-start gap-2.5 text-xs">
           <AlertCircle className="w-4 h-4 text-crimson-hi shrink-0 mt-0.5" />
           <span>{serverMessage}</span>
         </div>
@@ -160,7 +165,7 @@ function ContactFormInner() {
             value={formData.name}
             onChange={(e) => handleChange('name', e.target.value)}
             placeholder="e.g. Ayesha Tariq"
-            className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder:text-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+            className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas/90 text-text placeholder:text-text-4 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
           />
         </FormField>
 
@@ -172,7 +177,7 @@ function ContactFormInner() {
             value={formData.email}
             onChange={(e) => handleChange('email', e.target.value)}
             placeholder="ayesha@institution.edu.pk"
-            className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder:text-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+            className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas/90 text-text placeholder:text-text-4 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
           />
         </FormField>
       </div>
@@ -182,30 +187,31 @@ function ContactFormInner() {
           id="field-queryType"
           value={formData.queryType}
           onChange={(e) => handleChange('queryType', e.target.value)}
-          className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+          className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas/90 text-text text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
         >
+          <option value="other" className="bg-canvas text-text">General questions, logistics &amp; travel</option>
           <option value="gimun" className="bg-canvas text-text">GIMUN Secretariat (Committees, Country Matrix, Delegations)</option>
           <option value="moot-cup" className="bg-canvas text-text">Moot Court Bench (Compromis, Rules, Memorials)</option>
           <option value="sponsorship" className="bg-canvas text-text">Corporate Sponsorship &amp; Brand Partnerships</option>
           <option value="media" className="bg-canvas text-text">Media, Press &amp; Campus Ambassador Inquiries</option>
-          <option value="other" className="bg-canvas text-text">General Logistics, Travel &amp; Campus Security</option>
         </select>
       </FormField>
 
       <FormField
         label="Message / Query Details"
         required
-        description="Provide relevant details or citation paragraphs"
+        description={`At least 10 characters. ${formData.message.length}/${MESSAGE_MAX}`}
         error={errors.message}
         id="field-message"
       >
         <textarea
           id="field-message"
           rows={4}
+          maxLength={MESSAGE_MAX}
           value={formData.message}
           onChange={(e) => handleChange('message', e.target.value)}
-          placeholder="State your question regarding committee allocation, compromise clarification, or travel coordination..."
-          className="w-full px-4 py-3 rounded-xl border border-champagne/30 bg-canvas/90 text-text placeholder:text-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+          placeholder="Your question about registration, committees, the moot problem or travel…"
+          className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas/90 text-text placeholder:text-text-4 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
         />
       </FormField>
 
@@ -214,7 +220,7 @@ function ContactFormInner() {
       <button
         type="submit"
         disabled={status === 'submitting'}
-        className={`w-full py-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
+        className={`w-full py-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
           status === 'submitting'
             ? 'btn-shimmer-gold opacity-80 cursor-wait animate-pulse'
             : 'btn-shimmer-gold hover:brightness-110 active:scale-[0.99]'
@@ -233,16 +239,19 @@ function ContactFormInner() {
   );
 }
 
-export function ContactForm() {
+function ContactFormWithParams() {
+  const type = useSearchParams().get('type') || '';
+  return <ContactForm key={type} initialType={type} />;
+}
+
+/**
+ * Keeps /contact statically cached: the server HTML contains the default
+ * form, and ?type= preselects the category once the page hydrates.
+ */
+export function ContactFormFromUrl() {
   return (
-    <Suspense
-      fallback={
-        <div className="p-8 rounded-2xl bg-raised/90 border border-champagne/20 text-center text-xs font-mono text-champagne/70 animate-pulse">
-          Loading contact form…
-        </div>
-      }
-    >
-      <ContactFormInner />
+    <Suspense fallback={<ContactForm />}>
+      <ContactFormWithParams />
     </Suspense>
   );
 }

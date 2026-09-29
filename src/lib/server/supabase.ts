@@ -10,8 +10,12 @@ export function hasDatabase() {
 export function database() {
   const c = getServerConfig();
   if (!c.supabaseUrl || !c.supabaseSecretKey) throw new Error('Configure SUPABASE_URL and SUPABASE_SECRET_KEY before using the admin.');
+  const configuredTimeout = Number(process.env.SUPABASE_FETCH_TIMEOUT_MS);
+  const timeout = Number.isFinite(configuredTimeout) && configuredTimeout >= 1_000
+    ? configuredTimeout
+    : 5_000;
   return createClient(c.supabaseUrl, c.supabaseSecretKey, {
     auth: { persistSession: false, autoRefreshToken: false },
-    global: { fetch: (url, init) => fetch(url, { ...init, cache: 'no-store', signal: AbortSignal.timeout(10000) }) },
+    global: { fetch: (url, init) => fetch(url, { ...init, cache: 'no-store', signal: AbortSignal.timeout(timeout) }) },
   });
 }

@@ -57,9 +57,20 @@ data/submissions/*.json
 # test results
 test-results/
 playwright-report/
+.claude/launch.json
+artifacts/
+.tmp-dbg/
+.lhserver.log
+
+.next-admin-test/
 
 .lighthouseci/
-artifacts/
+
 scratch/
-.next-admin-test/
+
 *.docx
+
+# Design-skill local state and binaries (reinstalled by `npx impeccable install`)
+.impeccable/config.local.json
+.hallmark/
+.claude/skills/impeccable/scripts/bin/

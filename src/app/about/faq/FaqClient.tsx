@@ -1,25 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 import {
   ChevronDown,
-  HelpCircle,
-  MessageSquare,
-  ArrowRight,
-} from 'lucide-react';
+  } from 'lucide-react';
 import type { FAQItem } from '@/lib/types';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { CtaBanner } from '@/components/ui/CtaBanner';
 import { FilterBar } from '@/components/ui/FilterBar';
+import { HelpCallout } from '@/components/ui/HelpCallout';
 
 interface FaqClientProps {
   initialFaqs: FAQItem[];
 }
 
 type FaqCategory = 'all' | 'general' | 'registration-fees' | 'gimun-specific' | 'moot-cup-specific' | 'logistics';
+
+/** Deep-link hashes that select a category, e.g. /about/faq#fees. */
+const HASH_CATEGORIES: Record<string, FaqCategory> = {
+  fees: 'registration-fees',
+  'registration-fees': 'registration-fees',
+  general: 'general',
+  gimun: 'gimun-specific',
+  'moot-cup': 'moot-cup-specific',
+  logistics: 'logistics',
+};
 
 const CATEGORY_LABELS: Record<FaqCategory, string> = {
   all: 'All Categories',
@@ -38,6 +43,19 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
     const firstTwo = initialFaqs.slice(0, 2).map((f) => f.id);
     return new Set(firstTwo);
   });
+
+  // Honour category deep links on load and on in-page hash changes.
+  useEffect(() => {
+    const applyHash = () => {
+      const category = HASH_CATEGORIES[window.location.hash.slice(1)];
+      if (!category) return;
+      setActiveCategory(category);
+      document.getElementById('faq-categories')?.scrollIntoView({ block: 'start' });
+    };
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, []);
 
   const toggleItem = (id: string) => {
     setOpenIds((prev) => {
@@ -90,15 +108,15 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
   const getCategoryBadgeClass = (cat: FAQItem['category']) => {
     switch (cat) {
       case 'gimun-specific':
-        return 'bg-champagne/20 text-cream border border-champagne/40';
+        return 'bg-champagne/15 text-text border border-line-2';
       case 'moot-cup-specific':
-        return 'bg-brand text-cream border border-champagne/30';
+        return 'bg-raised text-text border border-line-2';
       case 'registration-fees':
-        return 'bg-crest text-champagne border border-champagne/30';
+        return 'bg-elevated text-champagne border border-line-2';
       case 'logistics':
         return 'bg-overlay text-champagne border border-champagne/30';
       default:
-        return 'bg-crest text-champagne border border-champagne/30';
+        return 'bg-elevated text-champagne border border-line-2';
     }
   };
 
@@ -119,14 +137,14 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
             <button
               type="button"
               onClick={handleExpandAll}
-              className="text-xs font-semibold text-champagne hover:text-cream px-3 py-1.5 rounded-lg bg-overlay hover:bg-crest border border-champagne/30 transition-colors shadow-xs"
+              className="text-xs font-semibold text-champagne hover:text-text px-3 py-1.5 rounded-lg bg-overlay hover:bg-elevated border border-line-2 transition-colors shadow-xs"
             >
               Expand All
             </button>
             <button
               type="button"
               onClick={handleCollapseAll}
-              className="text-xs font-semibold text-champagne hover:text-cream px-3 py-1.5 rounded-lg bg-overlay hover:bg-crest border border-champagne/30 transition-colors shadow-xs"
+              className="text-xs font-semibold text-champagne hover:text-text px-3 py-1.5 rounded-lg bg-overlay hover:bg-elevated border border-line-2 transition-colors shadow-xs"
             >
               Collapse All
             </button>
@@ -134,15 +152,17 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
         </div>
 
         {/* Category Pills with Count Chips */}
-        <div className="pt-1 border-b border-line pb-3">
+        <div id="faq-categories" className="scroll-mt-28 pt-1 border-b border-line pb-3">
+          {/* Real anchor targets for /about/faq#fees and friends. */}
+          {Object.keys(HASH_CATEGORIES).map((hash) => (
+            <span key={hash} id={hash} aria-hidden="true" className="block h-0 scroll-mt-28" />
+          ))}
           <FilterBar
             label="Filter questions by category"
             activeValue={activeCategory}
             onChange={setActiveCategory}
             options={(Object.keys(CATEGORY_LABELS) as FaqCategory[]).map((cat) => ({
               value: cat,
-              id: cat,
-              anchorId: cat === 'registration-fees' ? 'fees' : undefined,
               label: CATEGORY_LABELS[cat],
               count: counts[cat],
             }))}
@@ -151,8 +171,8 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
       </div>
 
       {/* Accordion FAQ List - Clean minimalist border-b divider architecture */}
-      <div className="divide-y divide-champagne/15 border-y border-champagne/15">
-        <h2 className="sr-only">Frequently Asked Questions Directory</h2>
+      <div className="divide-y divide-champagne/15 border-y border-line">
+        <h2 className="sr-only">Questions, by topic</h2>
         {filteredFaqs.map((faq) => {
           const isOpen = openIds.has(faq.id);
           return (
@@ -165,7 +185,8 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                 type="button"
                 onClick={() => toggleItem(faq.id)}
                 aria-expanded={isOpen}
-                className="w-full text-left flex items-start justify-between gap-4 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-champagne/40 rounded-lg group"
+                aria-controls={`${faq.id}-answer`}
+                className="w-full text-left flex items-start justify-between gap-4 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-lg group"
               >
                 <div className="space-y-1.5 pr-2">
                   <div className="flex items-center gap-2">
@@ -174,10 +195,10 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                         faq.category
                       )}`}
                     >
-                      {faq.category.replace('-', ' ')}
+                      {CATEGORY_LABELS[faq.category] ?? faq.category.replaceAll('-', ' ')}
                     </span>
                   </div>
-                  <h3 className="text-base sm:text-lg font-heading font-semibold text-cream group-hover:text-champagne transition-colors leading-snug">
+                  <h3 className="text-base sm:text-lg font-heading font-semibold text-text group-hover:text-champagne transition-colors leading-snug">
                     {faq.question}
                   </h3>
                 </div>
@@ -185,35 +206,21 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                 <div
                   className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all mt-1 ${
                     isOpen
-                      ? 'bg-champagne text-crest'
-                      : 'bg-overlay text-champagne/80 border border-champagne/20 group-hover:border-champagne/50'
+                      ? 'bg-champagne text-on-accent'
+                      : 'bg-overlay text-text-2 border border-line group-hover:border-champagne/50'
                   }`}
                 >
-                  <motion.div
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                  >
-                    <ChevronDown className="w-4 h-4" />
-                  </motion.div>
+                  <ChevronDown aria-hidden="true" className="faq-chevron h-4 w-4" data-open={isOpen ? '' : undefined} />
                 </div>
               </button>
 
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    key="content"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pt-3 pb-2 text-sm text-champagne/85 leading-relaxed">
-                      {faq.answer}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* Always in the HTML (search engines, find-in-page, no-JS);
+                  collapsed answers are hidden rather than unmounted. */}
+              <div id={`${faq.id}-answer`} hidden={!isOpen} className="faq-answer overflow-hidden">
+                <div className="pt-3 pb-2 text-sm text-text-2 leading-relaxed">
+                  {faq.answer}
+                </div>
+              </div>
             </div>
           );
         })}
@@ -232,41 +239,10 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
       </div>
 
       {/* Still Have Questions CTA Banner */}
-      <CtaBanner variant="slab">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-
-        <div className="space-y-1.5 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-champagne">
-            <HelpCircle className="w-4 h-4 text-champagne" />
-            <span>Unanswered Inquiries?</span>
-          </div>
-          <h3 className="text-lg font-heading font-bold text-cream">
-            Can&apos;t find what you&apos;re looking for?
-          </h3>
-          <p className="text-xs text-champagne/80 max-w-xl">
-            Our Secretariat and Moot Court Bench are available to clarify delegation accommodations,
-            observer passes, or specialized committee rules.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3 shrink-0">
-          <Link
-            href="/contact?type=other"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest text-xs font-bold hover:brightness-110 transition-all shadow-md"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>Contact Secretariat</span>
-          </Link>
-          <Link
-            href="/register"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-crest border border-champagne/40 text-xs font-semibold text-champagne hover:bg-brand transition-colors"
-          >
-            <span>Register Now</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-        </div>
-      </CtaBanner>
+      <HelpCallout
+        question="Still haven't found your answer?"
+        actions={[{ label: 'Venue and travel', href: '/about/venue' }]}
+      />
     </div>
   );
 }

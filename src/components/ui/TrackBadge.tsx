@@ -12,23 +12,23 @@ export function TrackBadge({ track, size = 'sm', className }: TrackBadgeProps) {
   const configs = {
     gimun: {
       label: 'GIMUN',
-      styles: 'bg-brand text-champagne-hi border border-crest font-bold shadow-xs',
+      styles: 'bg-gimun-fill text-on-gimun border border-crest font-bold shadow-xs',
       dot: 'bg-champagne',
     },
     'moot-cup': {
       label: 'GMC',
-      styles: 'bg-champagne text-brand border border-brand-soft/40 font-bold shadow-xs',
-      dot: 'bg-brand',
+      styles: 'bg-champagne text-on-accent border border-brand-soft/40 font-bold shadow-xs',
+      dot: 'bg-gimun-fill',
     },
     shared: {
       label: 'SHARED',
-      styles: 'bg-champagne-hi text-ink-warm border border-champagne-hi font-medium',
+      styles: 'bg-text/8 text-text-2 border border-line-2 font-medium',
       dot: 'bg-brand-hi',
     },
     all: {
       label: 'ALL TRACKS',
-      styles: 'bg-champagne text-brand border border-champagne font-semibold',
-      dot: 'bg-brand',
+      styles: 'bg-champagne text-on-accent border border-champagne font-semibold',
+      dot: 'bg-gimun-fill',
     },
   }[track === 'general' ? 'shared' : track];
 

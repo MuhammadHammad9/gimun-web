@@ -7,16 +7,16 @@ interface NonPaymentNoticeProps {
 
 export function NonPaymentNotice({ track }: NonPaymentNoticeProps) {
   return (
-    <div data-track={track} className="p-4.5 rounded-xl border border-champagne/25 bg-crest/70 backdrop-blur-sm text-champagne">
+    <div data-track={track} className="p-4.5 rounded-xl border border-line bg-elevated backdrop-blur-sm text-champagne">
       <div className="flex gap-3.5 items-start">
-        <div className="p-2 rounded-xl shrink-0 mt-0.5 bg-champagne/15 text-champagne border border-champagne/20">
+        <div className="p-2 rounded-xl shrink-0 mt-0.5 bg-champagne/15 text-champagne border border-line">
           <ShieldCheck className="w-5 h-5" />
         </div>
         <div className="space-y-1">
-          <h4 className="text-xs font-heading font-bold uppercase tracking-wider text-cream">
+          <h4 className="text-xs font-display font-medium uppercase tracking-wider text-text">
             Zero Online Payment Collection Policy
           </h4>
-          <p className="text-xs text-champagne/80 leading-relaxed">
+          <p className="text-xs text-text-2 leading-relaxed">
             Submitting this application does not charge you anything. GIMUN & GMC does not
             collect payments online. Our Secretariat / Bench will review your credentials and contact
             you with allocation status and official bank transfer instructions for seat confirmation.

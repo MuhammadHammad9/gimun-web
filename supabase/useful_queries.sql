@@ -7,14 +7,9 @@
 
 -- ------------------------------------------------------------------------------
 -- 1. VERIFICATION & HEALTH CHECK
--- Run right after applying the migration to verify sequence generation.
+-- Do not call next_submission_reference() to "test" it: every call consumes
+-- a real reference number, leaving gaps in the sequence applicants see.
 -- ------------------------------------------------------------------------------
--- Test GIMUN reference generation:
-select public.next_submission_reference('gimun');
-
--- Test Moot Cup reference generation:
-select public.next_submission_reference('moot-cup');
-
 -- Inspect the current counter state:
 select * from public.reference_counters;
 

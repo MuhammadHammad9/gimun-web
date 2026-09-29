@@ -27,14 +27,14 @@ export function EmptyState({
         className
       )}
     >
-      <div className="w-12 h-12 rounded-2xl bg-crest border border-champagne/30 shadow-md flex items-center justify-center text-champagne">
+      <div className="w-12 h-12 rounded-2xl bg-elevated border border-line-2 shadow-md flex items-center justify-center text-champagne">
         {icon || <SearchX className="w-6 h-6 text-champagne" />}
       </div>
       <div className="space-y-1 max-w-md mx-auto">
-        <h3 className="font-heading font-bold text-base sm:text-lg text-cream">
+        <h3 className="font-display font-medium text-base sm:text-lg text-text">
           {title}
         </h3>
-        <p className="text-xs sm:text-sm text-champagne/80 leading-relaxed">
+        <p className="text-xs sm:text-sm text-text-2 leading-relaxed">
           {description}
         </p>
       </div>
