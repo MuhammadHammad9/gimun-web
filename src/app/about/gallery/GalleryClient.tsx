@@ -149,7 +149,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
 
           return (
             <div
-              key={item.id}className={`group relative overflow-hidden rounded-2xl border border-champagne/25 bg-overlay/90 shadow-xl hover:border-champagne/45 transition-all duration-300 cursor-pointer ${
+              key={item.id}className={`group relative overflow-hidden rounded-2xl border border-champagne/25 bg-raised hover:border-champagne/45 transition-all duration-300 cursor-pointer ${
                 isWide ? 'sm:col-span-2' : 'col-span-1'
               }`}
               role="button"

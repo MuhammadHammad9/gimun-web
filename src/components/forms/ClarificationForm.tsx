@@ -74,7 +74,7 @@ export function ClarificationForm() {
 
   if (status === 'success') {
     return (
-      <div className="p-6 rounded-2xl bg-raised/95 border border-champagne-lo/40 text-center space-y-3 text-text shadow-xl">
+      <div className="p-6 rounded-2xl bg-raised border border-champagne-lo/40 text-center space-y-3 text-text">
         <div className="w-10 h-10 rounded-full bg-elevated/80 text-champagne border border-champagne-lo/60 flex items-center justify-center mx-auto">
           <CheckCircle2 className="w-6 h-6" />
         </div>
@@ -111,7 +111,7 @@ export function ClarificationForm() {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="space-y-4 rounded-2xl border border-line-2 bg-raised/90 p-6 text-text"
+      className="space-y-4 text-text"
     >
       <HoneypotField value={honeypot} onChange={setHoneypot} />
 
@@ -177,7 +177,7 @@ export function ClarificationForm() {
       <button
         type="submit"
         disabled={status === 'submitting'}
-        className="btn-shimmer-gold w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer disabled:opacity-50 text-canvas"
+        className="btn-shimmer-gold w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 text-on-accent"
       >
         <Send className="w-4 h-4" />
         <span>{status === 'submitting' ? 'Sending…' : 'Submit question'}</span>

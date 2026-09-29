@@ -2,7 +2,7 @@
 
 import React, { Suspense, useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Send, CheckCircle2, AlertCircle, MessageSquare } from 'lucide-react';
+import { Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import type { ContactFormData, SubmissionResponse } from '@/lib/types';
 import { validateContactForm, type ValidationErrors } from '@/lib/validation';
 import { FormField } from './FormField';
@@ -113,7 +113,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
   if (status === 'success') {
     return (
       <div
-        className="p-8 rounded-2xl bg-raised/95 border border-line-2 text-center space-y-4 shadow-xl"
+        className="p-8 rounded-2xl bg-raised border border-line-2 text-center space-y-4"
       >
         <div className="w-12 h-12 rounded-full bg-elevated text-champagne flex items-center justify-center mx-auto border border-line-2">
           <CheckCircle2 className="w-7 h-7" />
@@ -145,14 +145,9 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="space-y-5 p-6 md:p-8 rounded-2xl bg-raised/90 border border-line shadow-xl"
+      className="space-y-5 rounded-3xl border border-line bg-raised p-6 md:p-8"
     >
-      <div className="flex items-center gap-2 pb-2 border-b border-line">
-        <MessageSquare className="w-4 h-4 text-champagne" />
-        <h2 className="text-sm font-mono uppercase font-bold text-text tracking-wide">
-          Send a message
-        </h2>
-      </div>
+      <h2 className="font-display text-2xl font-medium text-text">Send a message</h2>
 
       {serverMessage && status === 'error' && (
         <div role="alert" className="p-3.5 rounded-xl bg-accent-gimun/8 border border-accent-gimun/40 text-accent-gimun flex items-start gap-2.5 text-xs">
@@ -225,7 +220,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
       <button
         type="submit"
         disabled={status === 'submitting'}
-        className={`w-full py-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
+        className={`w-full py-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
           status === 'submitting'
             ? 'btn-shimmer-gold opacity-80 cursor-wait animate-pulse'
             : 'btn-shimmer-gold hover:brightness-110 active:scale-[0.99]'

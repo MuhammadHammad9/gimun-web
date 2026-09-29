@@ -325,7 +325,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                 setErrors({});
               }}
               className={`relative z-10 px-4 py-2 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 ${
-                applicantType === 'individual' ? 'text-canvas' : 'text-text-3 hover:text-champagne'
+                applicantType === 'individual' ? 'text-on-accent' : 'text-text-3 hover:text-champagne'
               }`}
             >
               <User className="w-3.5 h-3.5" />
@@ -338,7 +338,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                 setErrors({});
               }}
               className={`relative z-10 px-4 py-2 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 ${
-                applicantType === 'delegation' ? 'text-canvas' : 'text-text-3 hover:text-champagne'
+                applicantType === 'delegation' ? 'text-on-accent' : 'text-text-3 hover:text-champagne'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
@@ -606,7 +606,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                       onClick={() => handleIndividualChange('hasExperience', true)}
                       className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
                         individualData.hasExperience
-                          ? 'bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-canvas shadow-xs'
+                          ? 'bg-champagne text-on-accent'
                           : 'text-text-3 hover:text-champagne'
                       }`}
                     >
@@ -620,7 +620,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                       }}
                       className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
                         !individualData.hasExperience
-                          ? 'bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-canvas shadow-xs'
+                          ? 'bg-champagne text-on-accent'
                           : 'text-text-3 hover:text-champagne'
                       }`}
                     >
@@ -828,7 +828,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
                 {delegationData.delegates.map((del, idx) => (
                   <div
                     key={idx}
-                    className="p-5 rounded-xl bg-raised/90 border border-line hover:border-line-2 transition-colors space-y-4 relative shadow-md"
+                    className="p-5 rounded-xl bg-raised border border-line hover:border-line-2 transition-colors space-y-4 relative"
                   >
                     <div className="flex items-center justify-between gap-2 border-b border-line pb-2">
                       <span className="text-xs font-mono font-bold uppercase text-text">
@@ -1025,7 +1025,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
         <button
           type="submit"
           disabled={status === 'submitting'}
-          className={`btn-shimmer-gold w-full py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-canvas flex items-center justify-center gap-2 transition-all shadow-xl cursor-pointer ${
+          className={`btn-shimmer-gold w-full py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-on-accent flex items-center justify-center gap-2 transition-all cursor-pointer ${
             status === 'submitting'
               ? 'opacity-70 cursor-wait animate-pulse'
               : 'hover:brightness-110 active:scale-[0.99]'

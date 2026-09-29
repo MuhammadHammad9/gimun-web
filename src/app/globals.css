@@ -607,26 +607,22 @@ h1, h2, h3, h4, h5, h6 {
 
 /* The double bezel survives as the one piece of signature chrome, but the
    frame is now a hairline rather than a lit rim. */
+/* Legacy panel names, now one flat hairline panel: the nested "bezel" look
+   is retired. Kept as classes because the forms and a few lists use them. */
 .double-bezel {
-  background: color-mix(in srgb, var(--color-champagne) 5%, transparent);
-  padding: 0.375rem;
-  border-radius: var(--radius-section);
-  border: 1px solid var(--color-line);
-  transition:
-    border-color 0.35s var(--ease-brand),
-    background-color 0.35s var(--ease-brand);
-}
-
-.double-bezel:hover {
-  border-color: var(--color-line-2);
-  background: color-mix(in srgb, var(--color-champagne) 8%, transparent);
+  border-radius: 1.5rem;
 }
 
 .double-bezel-inner {
   background: var(--color-raised);
-  border-radius: calc(var(--radius-section) - 0.375rem);
+  border-radius: 1.5rem;
   border: 1px solid var(--color-line);
   color: var(--color-text);
+  transition: border-color var(--dur-ui) var(--ease-brand);
+}
+
+.double-bezel:hover .double-bezel-inner {
+  border-color: var(--color-line-2);
 }
 
 /* ==============================================================================
@@ -637,7 +633,7 @@ h1, h2, h3, h4, h5, h6 {
    gradient-plus-glow treatment is a textbook generated-UI tell. */
 .btn-shimmer-gold {
   background: var(--color-champagne);
-  color: var(--color-canvas);
+  color: var(--color-on-accent);
   font-weight: 600;
   border: 1px solid transparent;
   transition:
@@ -650,7 +646,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-shimmer-gold:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 
 /* Segmented control. One shared pill slides between options via the
@@ -663,13 +659,12 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0.3125rem;
   border-radius: var(--radius-pill);
   border: 1px solid var(--color-line);
-  background: color-mix(in srgb, var(--color-void) 75%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--color-raised);
 }
 
-.segmented::before {
-  content: "";
+/* The highlight is a real element (not a pseudo-element) so contrast tools
+   can see the colour behind the active label. */
+.segmented__pill {
   position: absolute;
   top: 0.3125rem;
   bottom: 0.3125rem;

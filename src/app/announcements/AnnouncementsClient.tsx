@@ -6,12 +6,10 @@ import { SearchInput } from '@/components/ui/SearchInput';
 import { FilterBar } from '@/components/ui/FilterBar';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { Radio, Pin, Calendar } from 'lucide-react';
+import { Pin, Calendar } from 'lucide-react';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { Button } from '@/components/ui/Button';
 import type { Announcement, Track } from '@/lib/types';
 import { formatPublishedDate } from '@/lib/site-config';
-import { CtaBanner } from '@/components/ui/CtaBanner';
 
 interface AnnouncementsClientProps {
   initialAnnouncements: Announcement[];
@@ -111,7 +109,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
             <ScrollReveal key={item.id} delay={idx * 0.05}>
               <div
                 id={item.id}
-                className="rounded-2xl border border-line bg-overlay/85 hover:border-line-3 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full scroll-mt-28 target:ring-2 target:ring-focus"
+                className="rounded-2xl border border-line bg-raised hover:border-line-3 hover:bg-raised transition-all duration-300 h-full scroll-mt-28 target:ring-2 target:ring-focus"
               >
                 <div className="p-7 flex flex-col justify-between h-full space-y-4">
                   <div className="space-y-3">
@@ -174,34 +172,6 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
         )}
       </section>
 
-      {/* Broadcast Channels Card */}
-      <section className="pt-8">
-        <CtaBanner variant="slab">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase text-champagne">
-              <Radio className="w-4 h-4 text-champagne animate-pulse" />
-              <span>Delegation updates</span>
-            </div>
-            <h3 className="font-display font-medium text-xl text-text">
-              Registered delegates and team heads
-            </h3>
-            <p className="text-xs sm:text-sm text-text-2 leading-relaxed">
-              Room changes and committee directives are posted here and on the schedule as soon as they are made. Check both each morning of the conference.
-            </p>
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <Button variant="secondary" href="/schedule">
-              Conference Schedule
-            </Button>
-            <Button variant="primary" href="/contact">
-              Contact Secretariat
-            </Button>
-          </div>
-        </div>
-      </CtaBanner>
-      </section>
     </div>
   );
 }

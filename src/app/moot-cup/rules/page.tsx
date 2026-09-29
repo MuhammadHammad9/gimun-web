@@ -14,7 +14,7 @@ import { NextSteps } from '@/components/story/NextSteps';
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Rules & Memorial Guidelines | GMC ${getEventYear(await getSiteConfig())}`,
   path: '/moot-cup/rules',
-  description: `Comprehensive competition rules, memorial drafting specifications, oral pleading rounds structure, and scoring criteria for the ${getEventYear(await getSiteConfig())} GMC.`,
+  description: `Memorial format, submission, courtroom timing and scoring for the ${getEventYear(await getSiteConfig())} GIKI Moot Court (GMC).`,
 }); }
 
 export default async function MootRulesPage() {
@@ -78,9 +78,7 @@ export default async function MootRulesPage() {
         </div>
       </section>
 
-      <div className="wrap chapter">
-        <MootRulesClient rulesDocumentUrl={rulesDocument?.fileUrl} />
-      </div>
+      <MootRulesClient />
       <NextSteps
         steps={[
           { href: '/moot-cup/categories', title: 'Case categories', body: 'The areas of law the problem can come from.' },

@@ -6,11 +6,9 @@ import React, { useState } from "react";
 import { TrackBadge } from "@/components/ui/TrackBadge";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { FilterBar } from "@/components/ui/FilterBar";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Download } from "lucide-react";
 import type { Document } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { getEventYear } from "@/lib/site-config";
 import { HelpCallout } from '@/components/ui/HelpCallout';
 
@@ -47,19 +45,19 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
   const [typeFilter, setTypeFilter] = useState<string>("all");
 
   const trackOptions = [
-    { label: "All Tracks", value: "all" },
-    { label: "GIMUN Track", value: "gimun" },
-    { label: "GMC Track", value: "moot-cup" },
-    { label: "Shared & Campus", value: "shared" },
+    { label: "All tracks", value: "all" },
+    { label: "GIMUN", value: "gimun" },
+    { label: "GMC", value: "moot-cup" },
+    { label: "Shared", value: "shared" },
   ];
 
   const typeOptions = [
-    { label: "All Documents", value: "all" },
+    { label: "All types", value: "all" },
     { label: "Handbooks", value: "handbook" },
-    { label: "Background Guides", value: "background-guide" },
-    { label: "Case Problems (Compromis)", value: "proposition" },
-    { label: "Rules & Guidelines", value: "rules" },
-    { label: "Campus Logistics", value: "map" },
+    { label: "Background guides", value: "background-guide" },
+    { label: "Case problem", value: "proposition" },
+    { label: "Rules", value: "rules" },
+    { label: "Campus", value: "map" },
   ];
 
   const filteredDocuments = initialDocuments.filter((doc) => {
@@ -103,118 +101,72 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
         </ol>
       </section>
 
-      {/* 2. REPOSITORY SEARCH & FILTER SUITE */}
-      <div className="space-y-6 pb-2 border-b border-line">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <section className="space-y-6" aria-labelledby="library-title">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <h2 id="library-title" className="font-display text-2xl font-medium text-text sm:text-3xl">
+            Every document
+          </h2>
           <div className="w-full sm:w-96">
-            <SearchInput
-              value={searchQuery}
-              onChange={setSearchQuery}
-              placeholder="Search by document title, type, or topic..."
-            />
-          </div>
-          <div className="text-xs font-mono text-text-3">
-            Displaying {filteredDocuments.length} of {initialDocuments.length} Official Documents
+            <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by title or type" />
           </div>
         </div>
 
-        {/* Track Filter */}
-        <div className="space-y-2">
-          <span className="text-[11px] font-mono uppercase font-bold text-text-2 block">
-            Filter by Track:
-          </span>
-          <FilterBar
-            options={trackOptions}
-            activeValue={trackFilter}
-            onChange={setTrackFilter}
-          />
+        <div className="flex flex-col gap-4 border-b border-line pb-6 lg:flex-row lg:items-center lg:justify-between">
+          <FilterBar label="Filter by track" options={trackOptions} activeValue={trackFilter} onChange={setTrackFilter} />
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by document type">
+            {typeOptions.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setTypeFilter(opt.value)}
+                aria-pressed={typeFilter === opt.value}
+                className="chip"
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Document Type Filter Chips */}
-        <div className="flex flex-wrap items-center gap-2 pt-1">
-          <span className="text-[11px] font-mono uppercase font-bold text-text-2 mr-2">
-            Document Type:
-          </span>
-          {typeOptions.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => setTypeFilter(opt.value)}
-              className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-mono transition-colors cursor-pointer",
-                typeFilter === opt.value
-                  ? "bg-champagne text-on-accent shadow-xs font-bold"
-                  : "bg-overlay/80 border border-line text-text-2 hover:bg-brand/60 hover:text-text"
-              )}
-            >
-              {opt.label}
-            </button>
+        <p className="font-mono text-xs text-text-3" aria-live="polite">
+          {filteredDocuments.length} of {initialDocuments.length} documents
+        </p>
+
+        <ul className="doc-list" key={`${trackFilter}-${typeFilter}`}>
+          {filteredDocuments.map((doc) => (
+            <li key={doc.id}>
+              <a href={doc.fileUrl} className="doc-row" data-no-transition="" target="_blank" rel="noopener noreferrer">
+                <span className="doc-row__type">{doc.type.replace('-', ' ')}</span>
+                <span className="doc-row__title">
+                  {doc.title}
+                  <span className="sr-only"> ({doc.fileFormat}, {doc.fileSize}, opens in a new tab)</span>
+                </span>
+                <span className="doc-row__meta" aria-hidden="true">
+                  <TrackBadge track={doc.track} size="sm" />
+                  <span>
+                    {doc.fileFormat} · {doc.fileSize}
+                  </span>
+                  <span>Revised {doc.versionDate}</span>
+                </span>
+                <Download aria-hidden="true" strokeWidth={1.75} className="doc-row__icon" />
+              </a>
+            </li>
           ))}
-        </div>
-      </div>
-
-      {/* 3. DOCUMENTS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredDocuments.map((doc, idx) => (
-          <ScrollReveal key={doc.id} delay={idx * 0.04}>
-            <div className="double-bezel h-full group hover:translate-y-[-2px] transition-transform duration-300">
-              <div className="double-bezel-inner p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
-                <div className="space-y-3">
-                  {/* Top Metadata */}
-                  <div className="flex items-center justify-between gap-2">
-                    <TrackBadge track={doc.track} size="sm" />
-                    <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded bg-overlay/80 border border-line text-champagne">
-                      {doc.type.replace("-", " ")}
-                    </span>
-                  </div>
-
-                  {/* Document Title */}
-                  <h3 className="font-display font-medium text-base sm:text-lg text-text leading-snug group-hover:text-champagne transition-colors">
-                    {doc.title}
-                  </h3>
-
-                  {/* File Metadata in Monospace */}
-                  <div className="text-xs font-mono text-text-2 flex items-center justify-between pt-1">
-                    <span className="font-bold text-champagne">
-                      {doc.fileFormat} &bull; {doc.fileSize}
-                    </span>
-                    <span className="text-[11px] text-text-3">
-                      Rev: {doc.versionDate}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Direct Download Action */}
-                <div className="pt-3 border-t border-line">
-                  <a
-                    href={doc.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest font-bold hover:brightness-105 transition-all shadow-md cursor-pointer border border-line-2"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Download File ({doc.fileFormat})</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-        ))}
+        </ul>
 
         {filteredDocuments.length === 0 && (
-          <div className="col-span-full">
-            <EmptyState
-              title="No Documents Found"
-              description={`No official documents match "${searchQuery || "your filter combination"}". Try clearing filters or searching for different keywords.`}
-              actionLabel="Reset All Filters"
-              onAction={() => {
-                setSearchQuery("");
-                setTrackFilter("all");
-                setTypeFilter("all");
-              }}
-            />
-          </div>
+          <EmptyState
+            title="No documents match"
+            description={`Nothing matches "${searchQuery || 'these filters'}". Clear the search or pick another filter.`}
+            actionLabel="Clear filters"
+            onAction={() => {
+              setSearchQuery('');
+              setTrackFilter('all');
+              setTypeFilter('all');
+            }}
+          />
         )}
-      </div>
+      </section>
 
       <HelpCallout
         question="Looking for a document that isn't here?"

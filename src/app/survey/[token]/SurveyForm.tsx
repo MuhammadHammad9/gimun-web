@@ -38,7 +38,7 @@ export function SurveyForm({ token, questions }: { token: string; questions: { i
               {[1, 2, 3, 4, 5].map((v) => (
                 <label key={v} className="cursor-pointer">
                   <input type="radio" name={q.id} value={v} required className="peer sr-only" />
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-line-2 text-sm text-text-2 transition-colors peer-checked:border-champagne peer-checked:bg-champagne peer-checked:text-canvas peer-focus-visible:ring-2 peer-focus-visible:ring-focus">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-line-2 text-sm text-text-2 transition-colors peer-checked:border-champagne peer-checked:bg-champagne peer-checked:text-on-accent peer-focus-visible:ring-2 peer-focus-visible:ring-focus">
                     {v}
                   </span>
                 </label>

@@ -194,7 +194,7 @@ export function ResultsClient({
               {filtered.map((item, idx) => (
                 <ScrollReveal key={item.id} delay={idx * 0.05}>
                   <div className="double-bezel h-full">
-                    <div className="double-bezel-inner p-6 sm:p-7 flex flex-col justify-between h-full space-y-4 border-t-4 border-t-champagne">
+                    <div className="double-bezel-inner p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">
                           <TrackBadge track={item.track as Track} size="sm" />

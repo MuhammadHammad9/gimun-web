@@ -114,7 +114,7 @@ export function TrackChooser({ onSelectTrack, gimunDeadline, mootCupDeadline, gi
                     className={`group flex h-12 w-full items-center justify-between rounded-full pl-6 pr-1.5 text-sm font-semibold transition-all duration-300 ease-[var(--ease-brand)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-45 ${
                       gimun
                         ? 'border border-accent-gimun/40 bg-gimun-fill text-on-gimun hover:bg-gimun-fill-hi'
-                        : 'bg-champagne text-canvas hover:bg-champagne-hi'
+                        : 'bg-champagne text-on-accent hover:bg-champagne-hi'
                     }`}
                   >
                     <span>{option.open ? `Apply for ${gimun ? 'GIMUN' : 'GMC'}` : 'Registration is not open'}</span>

@@ -3,14 +3,12 @@ import { ComingSoon } from '@/components/ui/ComingSoon';
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { Mail, Award } from "lucide-react";
+import { Mail } from "lucide-react";
 import type { TeamMember } from "@/lib/types";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { cn } from "@/lib/utils";
-import { CtaBanner } from '@/components/ui/CtaBanner';
 
 interface TeamClientProps {
   initialMembers: TeamMember[];
@@ -83,14 +81,14 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
         </div>
 
         {/* Category Filter Tabs */}
-        <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-overlay/90 border border-line shadow-inner">
+        <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-raised border border-line shadow-inner">
           <button
             type="button"
             onClick={() => setActiveGroup("all")}
             className={cn(
               "px-4 py-2 text-xs font-mono font-bold rounded-xl transition-all cursor-pointer",
               activeGroup === "all"
-                ? "bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest shadow-md font-bold"
+                ? "bg-champagne text-on-accent font-bold"
                 : "text-text-3 hover:text-text"
             )}
           >
@@ -102,7 +100,7 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
             className={cn(
               "px-4 py-2 text-xs font-mono font-bold rounded-xl transition-all cursor-pointer",
               activeGroup === "secretariat"
-                ? "bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest shadow-md font-bold"
+                ? "bg-champagne text-on-accent font-bold"
                 : "text-text-3 hover:text-text"
             )}
           >
@@ -114,7 +112,7 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
             className={cn(
               "px-4 py-2 text-xs font-mono font-bold rounded-xl transition-all cursor-pointer",
               activeGroup === "convening-committee"
-                ? "bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest shadow-md font-bold"
+                ? "bg-champagne text-on-accent font-bold"
                 : "text-text-3 hover:text-text"
             )}
           >
@@ -126,7 +124,7 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
             className={cn(
               "px-4 py-2 text-xs font-mono font-bold rounded-xl transition-all cursor-pointer",
               activeGroup === "organizing-committee"
-                ? "bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest shadow-md font-bold"
+                ? "bg-champagne text-on-accent font-bold"
                 : "text-text-3 hover:text-text"
             )}
           >
@@ -149,7 +147,7 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
 
           return (
             <ScrollReveal key={member.id} delay={idx * 0.04}>
-              <div className="rounded-2xl border border-line bg-overlay/85 hover:border-line-3 hover:bg-overlay/95 shadow-xl transition-all duration-300 h-full group hover:translate-y-[-2px]">
+              <div className="rounded-2xl border border-line bg-raised hover:border-line-3 hover:bg-raised transition-all duration-300 h-full group hover:translate-y-[-2px]">
                 <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-5">
                   <div className="space-y-4">
                     {/* Header with Monogram Avatar & Branch Tag */}
@@ -255,32 +253,6 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
         )}
       </div>
 
-      {/* Institutional Responsibility Pledge Banner */}
-      <CtaBanner variant="slab">
-        <div className="text-champagne relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
-
-        <div className="absolute inset-0 bg-radial-glow-dual opacity-25 pointer-events-none" />
-        <div className="relative z-10 space-y-1 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-champagne">
-            <Award className="w-4 h-4 text-champagne" />
-            <span>Academic rigour and student leadership</span>
-          </div>
-          <h3 className="text-lg font-display font-medium text-text">
-            Run by the GIKI debating and law societies
-          </h3>
-          <p className="text-xs text-text-2 max-w-xl">
-            Our student directors, committee chairs, and bench evaluators are bound by institutional codes of strict neutrality, substantive integrity, and academic rigor.
-          </p>
-        </div>
-
-        <Link
-          href="/about"
-          className="relative z-10 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gimun-fill border border-line-2 text-xs font-mono font-bold text-on-gimun hover:bg-elevated hover:text-on-gimun transition-colors shrink-0 shadow-md"
-        >
-          <span>About GIKI Heritage</span>
-        </Link>
-        </div>
-      </CtaBanner>
     </div>
   );
 }
