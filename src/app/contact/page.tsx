@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ContactFormFromUrl } from '@/components/forms/ContactForm';
+import { CopyButton } from '@/components/ui/CopyButton';
 import { PageHero } from '@/components/ui/PageHero';
 import { getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
@@ -61,10 +62,11 @@ export default async function ContactPage() {
                 {inboxes.map((inbox) => (
                   <div key={inbox.label} className="border-t border-line py-4">
                     <dt className="text-meta font-mono uppercase text-text-3">{inbox.label}</dt>
-                    <dd className="mt-1">
+                    <dd className="mt-1 flex items-center justify-between gap-3">
                       <a href={`mailto:${inbox.email}`} className="text-link font-mono text-sm">
                         {inbox.email}
                       </a>
+                      <CopyButton value={inbox.email} label={`Copy the ${inbox.label.toLowerCase()} address`} />
                     </dd>
                   </div>
                 ))}

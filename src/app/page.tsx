@@ -424,7 +424,7 @@ function StackCard({
   art: ReactNode;
 }) {
   return (
-    <article className="stack__card" style={{ '--i': index } as CSSProperties} aria-labelledby={id}>
+    <article className="stack__card" style={{ '--i': index } as CSSProperties} aria-labelledby={id} data-glow="">
       <div className="stack__body">
         <h3 id={id} className="stack__title">
           {title}

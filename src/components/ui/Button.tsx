@@ -77,7 +77,14 @@ export function Button({
   const effectiveIcon = loading ? (
     <Loader2 aria-hidden="true" className={cn(iconSize, 'animate-spin')} />
   ) : (
-    icon || (withArrow ? <ArrowRight aria-hidden="true" strokeWidth={1.75} className={iconSize} /> : null)
+    icon ||
+    (withArrow ? (
+      // Two arrows in one slot: on hover the first steps out and the second steps in.
+      <span className="btn-arrow">
+        <ArrowRight aria-hidden="true" strokeWidth={1.75} className={iconSize} />
+        <ArrowRight aria-hidden="true" strokeWidth={1.75} className={iconSize} />
+      </span>
+    ) : null)
   );
 
   // The disc only on pill-shaped high-intent buttons; elsewhere the icon sits inline.
@@ -94,7 +101,7 @@ export function Button({
           className={cn(
             'inline-flex shrink-0 items-center justify-center transition-transform duration-300 ease-[var(--ease-out-expo)]',
             disc && (size === 'lg' ? 'size-10 rounded-full bg-current/12' : 'size-8 rounded-full bg-current/12'),
-            !loading && 'group-hover:translate-x-0.5',
+            !loading && !(withArrow && !icon) && 'group-hover:translate-x-0.5',
           )}
         >
           {effectiveIcon}

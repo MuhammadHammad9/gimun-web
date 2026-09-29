@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { SiteHeader } from '@/components/chrome/SiteHeader';
+import { PointerGlow } from '@/components/motion/PointerGlow';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
 import { SmoothScroll } from '@/components/motion/SmoothScroll';
 import { TransitionProvider } from '@/components/motion/TransitionProvider';
@@ -47,6 +48,7 @@ export function SiteChrome({
       </main>
       {footer}
       <SmoothScroll />
+      <PointerGlow />
     </TransitionProvider>
   );
 }

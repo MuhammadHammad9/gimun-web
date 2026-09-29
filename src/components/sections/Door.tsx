@@ -45,7 +45,7 @@ export function Door({
   art?: ReactNode;
 }) {
   return (
-    <article className={cn('door', accent === 'gimun' ? 'door--gimun' : 'door--gmc', !mark && 'door--compact')} aria-labelledby={id}>
+    <article className={cn('door', accent === 'gimun' ? 'door--gimun' : 'door--gmc', !mark && 'door--compact')} aria-labelledby={id} data-glow="">
       <div className="door__top">
         <span>{label}</span>
         {status && (

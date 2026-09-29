@@ -112,6 +112,19 @@ export function SiteHeader() {
     toggle?.focus();
   };
 
+  // One highlight glides between the links under the pointer (fine pointers only).
+  const glideTo = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType !== 'mouse') return;
+    const link = (event.target as Element).closest<HTMLElement>('.nav-link');
+    if (!link) return;
+    const nav = event.currentTarget;
+    const from = nav.getBoundingClientRect();
+    const to = link.getBoundingClientRect();
+    nav.style.setProperty('--glide-x', `${to.left - from.left}px`);
+    nav.style.setProperty('--glide-w', `${to.width}px`);
+    nav.setAttribute('data-glide', '');
+  };
+
   const onBlurWithin = (id: string) => (event: React.FocusEvent<HTMLElement>) => {
     if (panel === id && !event.currentTarget.contains(event.relatedTarget as Node | null)) setPanel(null);
   };
@@ -131,7 +144,13 @@ export function SiteHeader() {
             <span className="brand__year">2027</span>
           </Link>
 
-          <nav aria-label="Primary navigation" className="primary-nav">
+          <nav
+            aria-label="Primary navigation"
+            className="primary-nav"
+            onPointerOver={glideTo}
+            onPointerLeave={(event) => event.currentTarget.removeAttribute('data-glide')}
+          >
+            <span className="nav-glide" aria-hidden="true" />
             {items.map((item) => {
               const current = isCurrentPath(item.href, pathname);
               const lead = PANEL_LEAD[item.id];

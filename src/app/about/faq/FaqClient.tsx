@@ -210,16 +210,13 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
                       : 'bg-overlay text-text-2 border border-line group-hover:border-champagne/50'
                   }`}
                 >
-                  <div
-                  >
-                    <ChevronDown className="w-4 h-4" />
-                  </div>
+                  <ChevronDown aria-hidden="true" className="faq-chevron h-4 w-4" data-open={isOpen ? '' : undefined} />
                 </div>
               </button>
 
               {/* Always in the HTML (search engines, find-in-page, no-JS);
                   collapsed answers are hidden rather than unmounted. */}
-              <div id={`${faq.id}-answer`} hidden={!isOpen} className="overflow-hidden">
+              <div id={`${faq.id}-answer`} hidden={!isOpen} className="faq-answer overflow-hidden">
                 <div className="pt-3 pb-2 text-sm text-text-2 leading-relaxed">
                   {faq.answer}
                 </div>
