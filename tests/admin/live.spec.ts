@@ -51,12 +51,12 @@ test('scheduled publication and expiry update an open public page without anothe
 });
 
 // Publishes an announcement straight through the fixture database (no save action).
-async function publishAnnouncement(request: import('@playwright/test').APIRequestContext, id: string, title: string) {
+async function publishAnnouncement(request: import('@playwright/test').APIRequestContext, id: string, title: string, status: 'published' | 'draft' = 'published') {
   const base='http://127.0.0.1:54329/rest/v1';const headers={apikey:'fixture-service'};
   const users=await (await request.get(`${base}/admin_users`,{headers})).json();
   const entries=await (await request.get(`${base}/content_entries?collection=eq.announcements&id=eq.ann-01`,{headers})).json();
   const entry=entries[0];
-  const result=await request.post(`${base}/rpc/save_content`,{headers,data:{p_actor:users[0].user_id,p_entry:{...entry,id,version:0,status:'published',publish_at:null,expire_at:null,data:{...entry.data,id,pinnedFlag:false,title}}}});
+  const result=await request.post(`${base}/rpc/save_content`,{headers,data:{p_actor:users[0].user_id,p_entry:{...entry,id,version:0,status,publish_at:null,expire_at:null,data:{...entry.data,id,pinnedFlag:false,title}}}});
   expect(result.ok()).toBeTruthy();
 }
 
@@ -81,4 +81,42 @@ test('a live refresh marks the content that changed', async ({ page, request }) 
   await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible({ timeout: 10000 });
   await expect(page.locator(`[data-live-key="announcement-${id}"]`)).toHaveAttribute('data-live-changed', '');
   await expect(page.getByText('Updated just now')).toBeVisible();
+});
+
+test('an editor previews a draft on the real page; visitors never see it', async ({ browser, request }) => {
+  const [editorContext, visitorContext] = await Promise.all([browser.newContext(), browser.newContext()]);
+  const [editor, visitor] = await Promise.all([editorContext.newPage(), visitorContext.newPage()]);
+  try {
+    const id = `preview-${Date.now()}`;
+    const title = `Unpublished preview notice ${Date.now()}`;
+    await publishAnnouncement(request, id, title, 'draft');
+    await editor.goto('/admin/login');
+    await editor.getByLabel('Email', { exact: true }).fill('owner@example.test');
+    await editor.getByLabel('Password', { exact: true }).fill('fixture-password-123');
+    await editor.getByRole('button', { name: 'Sign in', exact: true }).click();
+    await expect(editor.getByRole('heading', { name: 'Event dashboard' })).toBeVisible();
+    await editor.goto(`/admin/content/announcements/${id}`);
+    const [previewTab] = await Promise.all([editorContext.waitForEvent('page'), editor.getByRole('link', { name: 'Preview on site' }).click()]);
+    await expect(previewTab).toHaveURL(/\/announcements$/);
+    await expect(previewTab.getByRole('heading', { name: title, exact: true })).toBeVisible();
+    await expect(previewTab.getByRole('complementary', { name: 'Draft preview' })).toBeVisible();
+    await visitor.goto('/announcements');
+    await expect(visitor.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
+    await expect(visitor.getByRole('complementary', { name: 'Draft preview' })).toHaveCount(0);
+    await previewTab.getByRole('button', { name: 'Exit preview' }).click();
+    await expect(previewTab.getByRole('complementary', { name: 'Draft preview' })).toHaveCount(0);
+    await expect(previewTab.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
+    expect(new URL(previewTab.url()).pathname).toBe('/announcements');
+  } finally { await Promise.all([editorContext.close(), visitorContext.close()]); }
+});
+
+test('preview cannot be switched on without signing in', async ({ page, request }) => {
+  const id = `orphan-${Date.now()}`;
+  const title = `Orphaned draft ${Date.now()}`;
+  await publishAnnouncement(request, id, title, 'draft');
+  const denied = await request.get(`/admin/preview?collection=announcements&id=${id}`, { maxRedirects: 0 });
+  expect(denied.status()).toBeGreaterThanOrEqual(300);
+  expect(denied.headers()['set-cookie'] ?? '').not.toContain('__prerender_bypass');
+  await page.goto('/announcements');
+  await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
 });

@@ -13,6 +13,8 @@ import { serverRenderTime } from '@/lib/phase';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
 import { appliedRevision } from '@/lib/server/live';
 import { LiveUpdates } from '@/components/LiveUpdates';
+import { PreviewBar } from '@/components/chrome/PreviewBar';
+import { isPreviewing } from '@/lib/content/preview';
 
 const satoshi = localFont({
   src: '../assets/fonts/Satoshi-Variable.woff2',
@@ -58,6 +60,8 @@ export default async function RootLayout({
   const siteConfig = (await getSiteConfig());
   const announcements = (await getAnnouncements());
   const sponsors = (await getSponsors());
+  // False while prerendering, so cached pages are unaffected.
+  const previewing = await isPreviewing();
 
   // Frozen per render so every client component agrees with this HTML.
   const renderedAt = serverRenderTime();
@@ -75,6 +79,7 @@ export default async function RootLayout({
       <body className="min-h-screen flex flex-col bg-canvas text-text antialiased">
         <GoogleAnalytics measurementId={getAnalyticsMeasurementId()} />
         <SiteConfigProvider value={siteConfig} renderedAt={renderedAt}>
+          {previewing && <PreviewBar />}
           <LiveUpdates initial={revision} eventStart={siteConfig.eventDates.start} eventEnd={siteConfig.eventDates.end} />
           <SiteChrome
             banner={<NoticeBar announcement={activeAnnouncement} />}

@@ -2,6 +2,7 @@ import 'server-only';
 import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import { database, hasDatabase } from '@/lib/server/supabase';
+import { previewSession } from './preview';
 import { registry, siteSchema, type Collection } from './registry';
 
 /**
@@ -87,6 +88,21 @@ const assignmentRows = unstable_cache(
   { tags: ['content', 'content:allocations'], revalidate: SAFETY_REVALIDATE },
 );
 
+// An editor previewing drafts sees the working copy of every entry that is not
+// archived or expired, including scheduled ones. Draft mode already bypasses
+// the caches above, so this read is always fresh.
+async function draftRows(collection: Collection): Promise<Row[]> {
+  const rows: Row[] = [];
+  const now = new Date().toISOString();
+  for (let offset = 0; ; offset += 500) {
+    const { data, error } = await database().from('content_entries').select('id,data,version').eq('collection', collection).neq('status', 'archived').or(`expire_at.is.null,expire_at.gt.${now}`).order('sort_order').order('id').range(offset, offset + 499);
+    if (error) throw error;
+    rows.push(...(data as Row[]));
+    if (data.length < 500) break;
+  }
+  return rows;
+}
+
 // Last successful values are only an outage fallback, never the normal read path.
 const lastGood = new Map<string, unknown>();
 
@@ -94,13 +110,15 @@ export const readCollection = cache(async <T,>(collection: Collection, seed: T[]
   const health = await contentHealth();
   if (health.fallback) return health.transient ? (lastGood.get(collection) as T[] | undefined) ?? seed : seed;
   try {
+    const preview = await previewSession();
+    const drafts = Boolean(preview?.canSee(collection));
     const entries: T[] = [];
-    for (const row of await collectionRows(collection)) {
+    for (const row of drafts ? await draftRows(collection) : await collectionRows(collection)) {
       const parsed = registry[collection].safeParse(row.data);
       if (parsed.success) entries.push({ ...parsed.data, ...(collection === 'announcements' ? { publicationVersion: row.version } : {}) } as T);
       else console.warn(`[CMS] Invalid ${collection} entry ${row.id}`);
     }
-    lastGood.set(collection, entries);
+    if (!drafts) lastGood.set(collection, entries);
     return entries;
   } catch {
     console.warn(`[CMS] ${collection} unavailable; serving last known content.`);
