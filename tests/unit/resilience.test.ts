@@ -85,12 +85,16 @@ describe('content reads', () => {
     errors.mockRestore();
   });
 
-  it('falls back to seed content only when the database fails on a cold cache', async () => {
-    const warnings = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  it('preserves the last successful content during a database outage', async () => {
     state.settings = { data: null, error: { message: 'timeout' } };
-    await expect(readCollection('faq', seed)).resolves.toEqual(seed);
-    expect(warnings).toHaveBeenCalledTimes(1);
-    warnings.mockRestore();
+    await expect(readCollection('faq', seed)).resolves.toEqual([
+      { id: 'good', category: 'general', question: 'Live?', answer: 'Yes.' },
+    ]);
+  });
+
+  it('uses seed content during an outage when that collection has never loaded', async () => {
+    state.settings = { data: null, error: { message: 'timeout' } };
+    await expect(readCollection('navigation', [])).resolves.toEqual([]);
   });
 
   it('serves the seed deliberately when no database is configured', async () => {

@@ -145,7 +145,7 @@ export function navigationTree(
   items: NavigationItem[] = defaultNavigation,
   area: Exclude<NavigationArea, 'all'>
 ): NavigationNode[] {
-  const source = items?.length ? items : defaultNavigation;
+  const source = items ?? defaultNavigation;
   const visible = source.filter((i) => i.area === 'all' || i.area === area);
 
   return visible
@@ -214,3 +214,10 @@ export const footerColumns: FooterColumn[] = [
     ],
   },
 ];
+
+/** Footer honors the same published navigation entries as the other surfaces. */
+export function publishedFooterColumns(items: NavigationItem[]): FooterColumn[] {
+ const visible=items.filter(i=>i.area==='all'||i.area==='footer');
+ const roots=visible.filter(i=>!i.parentId);
+ return roots.map(root=>({title:root.label,links:[{label:root.label,href:root.href},...visible.filter(i=>i.parentId===root.id&&i.href!==root.href).map(i=>({label:i.label,href:i.href}))]}));
+}

@@ -15,9 +15,9 @@ import { validateEntry } from '@/lib/content/registry';
 const id = z.uuid(); const text = z.string().max(20000);
 const schemas = {
   // expected_updated_at makes a stale form fail instead of overwriting a colleague's edit.
-  registration:z.object({ reference:z.string().min(1),status:z.enum(['received','under-review','accepted','waitlisted','rejected','withdrawn']),payment_status:z.enum(['unpaid','pending_verification','paid','waived','refunded']),payment_reference:text,amount_paid:z.number().min(0).max(1e9),notes:text,notify:z.boolean(),expected_updated_at:z.string().optional() }),
-  'registration-contact':z.object({reference:z.string().min(1),applicant_name:text.min(2),contact_email:z.email(),institution:text,expected_updated_at:z.string().optional()}),
-  'participant-edit':z.object({participant_id:id,name:text.min(2),email:z.email()}),
+  registration:z.object({ reference:z.string().min(1),status:z.enum(['received','under-review','accepted','waitlisted','rejected','withdrawn']),payment_status:z.enum(['unpaid','pending_verification','paid','waived','refunded']),payment_reference:text,amount_paid:z.number().min(0).max(1e9),notes:text,notify:z.boolean(),expected_updated_at:z.string().min(1) }),
+  'registration-contact':z.object({reference:z.string().min(1),applicant_name:text.min(2),contact_email:z.email(),institution:text,expected_updated_at:z.string().min(1)}),
+  'participant-edit':z.object({participant_id:id,name:text.min(2),email:z.email(),reference:text.min(1),expected_updated_at:z.string().min(1)}),
   'resend-ticket':z.object({reference:z.string().min(1)}),
   checkin:z.object({participant_id:id,checked:z.boolean(),override:z.boolean(),reason:text}),
   allocation:z.object({participant_id:id,committee_slug:text.min(1),country:text.min(1)}),
@@ -27,37 +27,41 @@ const schemas = {
   outbox:z.object({id,action:z.enum(['retry','cancel'])}),
   template:z.object({id:z.string().regex(/^[a-z0-9-]+$/),subject:text.min(1),body:text.min(1)}),
   'survey-question':z.object({id,label:text.min(1),kind:z.enum(['rating','comment']),active:z.boolean(),sort_order:z.number().int()}),
+  unassign:z.object({participant_id:id}),
+  'amount-due':z.object({reference:text.min(1),amount_due:z.number().min(0).max(1e9),reason:text.min(5),expected_updated_at:z.string().min(1)}),
   archive:z.object({name:text.min(1)}),
 };
-const sections: Record<keyof typeof schemas,string> = {registration:'registrations','registration-contact':'registrations','participant-edit':'registrations','resend-ticket':'registrations',checkin:'event-day',allocation:'allocations',reserve:'allocations',certificate:'certificates',inbox:'inbox',outbox:'email',template:'email','survey-question':'feedback',archive:'close-out'};
-export async function runOperation(operation: string, input: unknown): Promise<{ error?: string; result?: unknown }> {
-  if (!(operation in schemas)) return {error:'Unknown operation.'};
+const sections: Record<keyof typeof schemas,string> = {'amount-due':'registrations',unassign:'allocations',registration:'registrations','registration-contact':'registrations','participant-edit':'registrations','resend-ticket':'registrations',checkin:'event-day',allocation:'allocations',reserve:'allocations',certificate:'certificates',inbox:'inbox',outbox:'email',template:'email','survey-question':'feedback',archive:'close-out'};
+export async function runOperation(operation: string, input: unknown): Promise<{ error?: string; result?: unknown; record?:Record<string,unknown> }> {
+  if (!Object.hasOwn(schemas,operation)) return {error:'Unknown operation.'};
   const key = operation as keyof typeof schemas;
   try {
     const parsed=schemas[key].parse(input) as Record<string,unknown>;
     if ((key==='checkin' || key==='certificate') && parsed.override) await requirePermission('registrations',true);
     if (key==='resend-ticket') { await requirePermission('email',true); parsed.from=getServerConfig().emailFrom; }
     if(key==='registration' && parsed.notify) {
+      await requirePermission('email',true);
       const from=getServerConfig().emailFrom; if(!from) throw new Error('EMAIL_FROM must be configured.');
       parsed.from=from; parsed.subject=`Registration update: ${parsed.reference}`;
       parsed.html=emailHtml(`Reference: ${parsed.reference}\nApplication status: ${parsed.status}\nPayment status: ${parsed.payment_status}`);
     }
     const result=await operate(sections[key],key,parsed);
-    if(['allocation','reserve'].includes(key)) updateTag('content:committees');
+    if(['allocation','reserve','unassign'].includes(key)) updateTag('content:committees');
     if(key==='archive') updateTag('content:site');
     revalidatePath('/admin','layout');
     if(key==='outbox' || key==='resend-ticket' || parsed.notify) after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Dispatch deferred');}});
+    if(parsed.reference){const {data}=await database().from('registrations').select('updated_at').eq('reference_id',parsed.reference).single();return {result,record:{expected_updated_at:data?.updated_at}};}
     return {result};
-  } catch(error) { unstable_rethrow(error); return {error:error instanceof Error ? error.message : 'Operation failed.'}; }
+  } catch(error) { unstable_rethrow(error); if(error instanceof z.ZodError)return {error:error.issues.map(i=>`${i.path.join('.')}: ${i.message}`).join('; ')};const message=error instanceof Error?error.message:'';return {error:/changed|requires|require |Choose |reserved|allocated|capacity|permission|attendance|valid email|applicant name|participant name|Cannot invoice|No original receipt|current state|Override|Entry|Country/i.test(message)?message:'Operation could not be completed. Check the record and try again.'}; }
 }
 export async function emergencyChange(session: unknown,announcement: unknown) {
   try {
     await requirePermission('announcements',true);
     const s=validateEntry(session),a=validateEntry(announcement);
     if(s.collection!=='schedule'||a.collection!=='announcements') throw new Error('Invalid emergency content');
-    s.data.updatedFlag=true; a.data.pinnedFlag=true;
+    s.data.updatedFlag=true;s.status='published';s.publish_at=null;s.expire_at=null; a.data.pinnedFlag=true;
     await operate('schedule','emergency',{session:s,announcement:a});
-    updateTag('content:schedule');updateTag('content:announcements');return {result:'Saved'};
+    updateTag('content:schedule');updateTag('content:announcements');revalidatePath('/admin','layout');return {result:'Saved'};
   }catch(error){unstable_rethrow(error);return {error:error instanceof Error?error.message:'Unable to publish emergency change'};}
 }
 export async function promoteClarification(contactId:string,entry:unknown) {
@@ -97,7 +101,7 @@ export async function lookupAttendees(value:string) {
   return error || !data ? {error:'No matching registration.'} : {result:data};
 }
 export async function replyInquiry(id:string,body:string) {
-  await requirePermission('inbox',true);
+  await requirePermission('inbox',true);await requirePermission('email',true);
   const parsed=z.string().min(1).max(20000).parse(body);
   const from=getServerConfig().emailFrom;if(!from)throw new Error('Email is not configured');
   await operate('inbox','reply',{id,body:parsed,html:emailHtml(parsed),from});
@@ -137,4 +141,13 @@ export async function sendInvoice(reference:string){
     after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Invoice delivery deferred');}});
     revalidatePath(`/admin/registrations/${reference}`);return {result:`Invoice ${number} queued to ${r.contact_email}.`};
   }catch(error){unstable_rethrow(error);return {error:error instanceof Error?error.message:'Unable to send the invoice.'};}
+}
+
+export async function previewEmail(input:unknown){
+ const user=await requirePermission('email',true);
+ const p=z.object({subject:text.min(1),body:text.min(1),audience:z.enum(['test','gimun','moot-cup','accepted','all'])}).parse(input);
+ let count=1;
+ if(p.audience!=='test'){let q=database().from('registrations').select('*',{count:'exact',head:true}).not('status','in','(rejected,withdrawn)').neq('contact_email','anonymized@invalid.example');if(p.audience==='accepted')q=q.eq('status','accepted');else if(p.audience!=='all')q=q.eq('track',p.audience);const result=await q;if(result.error)throw new Error('Audience unavailable');count=result.count||0;}
+ const site=await getSiteConfig();const values={name:user.display_name,reference:'REG-GIMUN-2027-0001',status:'accepted',payment_status:'paid',event_name:site.eventNames.combined,amount_due:site.fees.gimunIndividual,fee:site.fees.gimunIndividual};
+ return {subject:renderTemplate(p.subject,values),body:renderTemplate(p.body,values),count};
 }

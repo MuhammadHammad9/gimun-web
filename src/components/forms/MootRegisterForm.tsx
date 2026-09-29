@@ -20,6 +20,7 @@ import { PrivacyStatement } from './PrivacyStatement';
 import { getEventYear } from '@/lib/site-config';
 
 interface MootRegisterFormProps {
+  endpoint?: string;
   categories: ProblemCategory[];
   onSuccess: (
     refId: string,
@@ -53,7 +54,7 @@ const initialMootData: MootCupTeamData = {
   referralSource: '',
 };
 
-export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProps) {
+export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/register' }: MootRegisterFormProps) {
   const searchParams = useSearchParams();
   const categoryQuery = searchParams.get('category');
   const validCategory = categories.find(c => c.id === categoryQuery)?.id || '';
@@ -158,7 +159,7 @@ export function MootRegisterForm({ categories, onSuccess }: MootRegisterFormProp
         submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
       };
 
-      const res = await fetch('/api/register', {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

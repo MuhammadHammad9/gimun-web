@@ -7,6 +7,7 @@ import { eventPhase } from '@/lib/phase';
 import { navigationTree } from '@/lib/navigation';
 import { useRenderedAt, useSiteConfig } from '@/components/SiteConfigProvider';
 import { Button } from '@/components/ui/Button';
+import { ThemeToggle } from './ThemeToggle';
 
 export interface MobileMenuProps {
   isOpen: boolean;
@@ -72,31 +73,34 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
   return (
     <div
       ref={menuRef}
-      className="pop-in fixed inset-0 z-50 flex flex-col bg-canvas/98 text-white backdrop-blur-xl md:hidden"
+      className="pop-in fixed inset-0 z-50 flex flex-col bg-canvas/98 text-text backdrop-blur-xl md:hidden"
       role="dialog"
       aria-modal="true"
       aria-label="Mobile menu"
     >
           {/* Header Bar inside Mobile Menu */}
-          <div className="px-6 py-4 flex items-center justify-between border-b border-white/10">
+          <div className="px-6 py-4 flex items-center justify-between border-b border-line">
             <Link
               href="/"
               onClick={onClose}
-              className="font-heading text-lg font-bold text-white tracking-tight flex items-center gap-2"
+              className="font-heading text-lg font-bold text-text tracking-tight flex items-center gap-2"
             >
               <span className="w-2.5 h-2.5 rounded-full bg-crimson" />
               <span>GIMUN & GMC</span>
             </Link>
 
-            <button
-              ref={closeButtonRef}
-              type="button"
-              onClick={onClose}
-              aria-label="Close mobile menu"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={onClose}
+                aria-label="Close mobile menu"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line-2 bg-raised/80 text-text hover:bg-elevated transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Nav Links with Staggered Fade */}
@@ -104,19 +108,19 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
             <Link
               href="/"
               onClick={onClose}
-              className="block font-heading text-2xl font-bold text-white/90 hover:text-champagne transition-colors"
+              className="block font-heading text-2xl font-bold text-text hover:text-champagne transition-colors"
             >
               Home
             </Link>
 
             {navigation.map((item) =>
               item.dropdown.length ? (
-                <details key={item.id} className="group border-b border-white/5 py-2">
-                  <summary className="flex cursor-pointer list-none items-center justify-between text-2xl font-bold text-white/90 transition-colors hover:text-champagne">
+                <details key={item.id} className="group border-b border-line py-2">
+                  <summary className="flex cursor-pointer list-none items-center justify-between text-2xl font-bold text-text transition-colors hover:text-champagne">
                     {item.label}
                     <ChevronDown
                       aria-hidden="true"
-                      className="h-5 w-5 text-white/40 transition-transform duration-200 group-open:rotate-180"
+                      className="h-5 w-5 text-text-4 transition-transform duration-200 group-open:rotate-180"
                     />
                   </summary>
                   <div className="space-y-3 py-4 pl-1">
@@ -135,7 +139,7 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
                         key={child.id}
                         href={child.href}
                         onClick={onClose}
-                        className="block text-lg text-white/80 transition-colors hover:text-white"
+                        className="block text-lg text-text-2 transition-colors hover:text-text"
                       >
                         {child.label}
                       </Link>
@@ -147,7 +151,7 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
                   key={item.id}
                   href={item.href}
                   onClick={onClose}
-                  className="block border-b border-white/5 py-3 text-2xl font-bold text-white/90 transition-colors hover:text-champagne"
+                  className="block border-b border-line py-3 text-2xl font-bold text-text transition-colors hover:text-champagne"
                 >
                   {item.label}
                 </Link>
@@ -156,7 +160,7 @@ export function MobileMenu({ isOpen, onClose: requestClose, triggerRef }: Mobile
           </nav>
 
           {/* Persistent Bottom Action */}
-          <div className="p-6 border-t border-white/10 bg-raised/90">
+          <div className="p-6 border-t border-line bg-raised/90">
             <Button
               variant="primary"
               size="lg"

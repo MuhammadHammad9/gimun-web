@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { connection } from 'next/server';
+import { publicRevision } from '@/lib/server/live';
+import { LiveUpdates } from '@/components/LiveUpdates';
 import localFont from 'next/font/local';
 import './globals.css';
 import { SiteChrome } from '@/components/layout/SiteChrome';
@@ -47,6 +50,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  await connection();
+  const live = await publicRevision();
   const siteConfig = (await getSiteConfig());
   const announcements = (await getAnnouncements());
   const sponsors = (await getSponsors());
@@ -58,10 +63,29 @@ export default async function RootLayout({
     announcements.find((a) => a.pinnedFlag) || announcements[0];
 
   return (
-    <html lang="en" className={`${satoshi.variable} ${generalSans.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${satoshi.variable} ${generalSans.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen flex flex-col bg-canvas text-text antialiased selection:bg-champagne selection:text-canvas">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+try {
+  const choice = localStorage.getItem('gimun-theme') || 'system';
+  const valid = choice === 'light' || choice === 'dark' || choice === 'system' ? choice : 'system';
+  const resolved = valid === 'system'
+    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : valid;
+  document.documentElement.dataset.theme = resolved;
+  document.documentElement.dataset.themeChoice = valid;
+} catch {
+  document.documentElement.dataset.theme = 'dark';
+  document.documentElement.dataset.themeChoice = 'system';
+}
+})();`,
+          }}
+        />
         <GoogleAnalytics measurementId={getAnalyticsMeasurementId()} />
         <SiteConfigProvider value={siteConfig} renderedAt={renderedAt}>
+          <LiveUpdates initial={live.revision} />
           <SiteChrome site={siteConfig} announcement={activeAnnouncement} sponsors={sponsors}>
             {children}
           </SiteChrome>

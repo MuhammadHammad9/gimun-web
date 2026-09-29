@@ -1,6 +1,7 @@
 'use client';
 
 import Script from 'next/script';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const KEY = 'gimun_analytics_consent';
@@ -30,6 +31,7 @@ export function resetAnalyticsChoice() {
  * answering, means no Google script and no analytics cookies at all.
  */
 export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
+  const pathname = usePathname();
   const [choice, setChoice] = useState<Choice | 'unknown'>('unknown');
 
   useEffect(() => {
@@ -39,7 +41,7 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
     return () => window.removeEventListener('analytics-consent-reset', sync);
   }, []);
 
-  if (!measurementId || choice === 'unknown') return null;
+  if (/^\/(admin|survey|verify)(\/|$)/.test(pathname) || !measurementId || choice === 'unknown') return null;
 
   const decide = (value: 'granted' | 'denied') => {
     try {

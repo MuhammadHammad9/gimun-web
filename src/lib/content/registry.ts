@@ -9,7 +9,7 @@ const link = z.string().max(2048).refine(v => v === '' || /^\/(?!\/)/.test(v) ||
 // the Supabase media bucket (next.config.ts). An arbitrary external URL would
 // throw at render time and break the page, so image fields accept only those.
 const image = link.refine(
-  v => v === '' || v.startsWith('/') || /^https:\/\/[^/]+\/storage\/v1\/object\/public\/media\//.test(v),
+  v => v === '' || v.startsWith('/') || (/^https:\/\/[^/]+\/storage\/v1\/object\/public\/media\//.test(v) && Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) && new URL(v).hostname === new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname),
   'Upload the image in Admin → Media and use its link'
 );
 const requiredImage = image.refine(v => v !== '', 'An image is required');
@@ -52,7 +52,7 @@ export const registry = {
 };
 export type Collection = keyof typeof registry;
 export const collections = Object.keys(registry) as Collection[];
-export function isCollection(value: string): value is Collection { return value in registry; }
+export function isCollection(value: string): value is Collection { return Object.hasOwn(registry, value); }
 export type ContentEntry = { collection: Collection; id: string; status: 'draft' | 'published' | 'archived'; sort_order: number; publish_at: string | null; expire_at: string | null; data: Record<string, unknown>; version: number; updated_at?: string };
 export const entrySchema = z.object({ collection: z.enum(collections), id, status: z.enum(['draft', 'published', 'archived']), sort_order: z.number().int(), publish_at: z.iso.datetime({ offset: true }).nullable(), expire_at: z.iso.datetime({ offset: true }).nullable(), data: z.record(z.string(), z.unknown()), version: z.number().int().nonnegative() });
 export function validateEntry(input: unknown): ContentEntry {

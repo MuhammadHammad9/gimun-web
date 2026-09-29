@@ -12,16 +12,12 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const configOk = getMissingProductionConfig({ emailDelivery: true }).length === 0;
   const cms = await contentHealth();
-  // admin_can arrives with migration 0011; its absence means the database
+  // public_revision arrives with migration 0012; its absence means the database
   // is behind the code and admin operations will fail.
   let schema: 'ok' | 'outdated' | 'unknown' = 'unknown';
   if (hasDatabase()) {
     try {
-      const { error } = await database().rpc('admin_can', {
-        p_actor: '00000000-0000-0000-0000-000000000000',
-        p_section: 'registrations',
-        p_write: false,
-      });
+      const { error } = await database().rpc('public_revision');
       schema = error ? 'outdated' : 'ok';
     } catch {
       schema = 'unknown';

@@ -21,6 +21,7 @@ import { PrivacyStatement } from './PrivacyStatement';
 import { getEventYear } from '@/lib/site-config';
 
 interface GimunRegisterFormProps {
+  endpoint?: string;
   committees: Committee[];
   onSuccess: (
     refId: string,
@@ -72,7 +73,7 @@ const initialDelegation: GimunDelegationData = {
   referralSource: '',
 };
 
-export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormProps) {
+export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/register' }: GimunRegisterFormProps) {
   const searchParams = useSearchParams();
   const committeeQuery = searchParams.get('committee');
   const validCommittee = committees.find(c => c.id === committeeQuery || c.slug === committeeQuery)?.id || '';
@@ -239,7 +240,7 @@ export function GimunRegisterForm({ committees, onSuccess }: GimunRegisterFormPr
         submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
       };
 
-      const res = await fetch('/api/register', {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

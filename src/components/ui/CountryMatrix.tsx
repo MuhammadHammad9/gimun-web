@@ -80,7 +80,7 @@ export function CountryMatrix({ countryList }: CountryMatrixProps) {
               className={cn(
                 'self-start px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider',
                 item.status === 'available' && 'bg-champagne/20 text-champagne border border-champagne/40',
-                item.status === 'assigned' && 'bg-white/10 text-champagne/60 border border-white/15',
+                item.status === 'assigned' && 'bg-champagne/10 text-champagne/60 border border-line',
                 item.status === 'reserved' && 'bg-brand-lit/40 text-champagne-hi border border-brand-lit'
               )}
             >

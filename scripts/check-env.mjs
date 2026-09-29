@@ -28,6 +28,8 @@ const require = (name, why) => {
   if (!has(name)) errors.push(`${name} is not set${why ? ` (${why})` : ''}.`);
 };
 
+if (env.CMS_BACKEND === 'bundled') errors.push('CMS_BACKEND=bundled bypasses admin edits; use supabase for connected deployments.');
+
 // Site and submission backend
 const siteUrlName = has('SITE_URL') ? 'SITE_URL' : 'NEXT_PUBLIC_SITE_URL';
 require(siteUrlName, 'canonical links, email links and certificate verification');

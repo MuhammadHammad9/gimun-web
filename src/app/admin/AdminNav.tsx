@@ -1,5 +1,8 @@
-import Link from 'next/link';
-import { can, sections, type AdminUser } from '@/lib/server/admin/permissions';
-import { collections } from '@/lib/content/registry';
-import { logout } from './auth-actions';
-export function AdminNav({ user }: { user: AdminUser }) { return <><header className="flex flex-wrap items-center justify-between gap-4 mb-5"><Link href="/admin">Event operations</Link><span>{user.display_name} · {user.role} · <Link href="/admin/mfa">Two-factor</Link> · <Link href="/admin/password">Password</Link></span><form action={logout}><button>Sign out</button></form></header><nav aria-label="Admin sections">{sections.filter(s => can(user,s)).map(s => <Link key={s} href={collections.includes(s as typeof collections[number]) ? `/admin/content/${s}` : `/admin/${s}`}>{s.replace(/-/g,' ')}</Link>)}</nav></>; }
+import { can,sections,type AdminUser } from '@/lib/server/admin/permissions';
+import { adminRevision } from '@/lib/server/live';
+import { AdminNavigation } from './AdminNavigation';
+import { LiveUpdates } from '@/components/LiveUpdates';
+export async function AdminNav({user}:{user:AdminUser}){
+ const live=await adminRevision(user).catch(()=>({revision:'unavailable'}));
+ return <><AdminNavigation name={user.display_name} role={user.role} allowed={sections.filter(s=>can(user,s))}/><LiveUpdates admin initial={live.revision}/></>;
+}

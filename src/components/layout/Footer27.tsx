@@ -9,7 +9,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { FaFacebookF as Facebook, FaXTwitter as Twitter, FaInstagram as Instagram, FaLinkedinIn as Linkedin } from "react-icons/fa6";
-import { footerColumns } from '@/lib/navigation';
+import { publishedFooterColumns } from '@/lib/navigation';
 import LogoIcon from "@/assets/logo-icon";
 import type { SiteConfig, Sponsor } from "@/lib/types";
 import { formatDateRange } from "@/lib/utils";
@@ -40,7 +40,7 @@ export function Footer27({
 }: Footer27Props) {
   const liveSite = useSiteConfig();
   const siteConfig = siteConfigProp || liveSite;
-  const columns = footerColumns;
+  const columns = publishedFooterColumns(siteConfig.navigation ?? []);
   // These pages already feature the partners prominently.
   const pathname = usePathname();
   const showPartners = sponsors.length > 0 && pathname !== '/' && !pathname.startsWith('/about/sponsors');
@@ -57,7 +57,7 @@ export function Footer27({
 
   return (
     <footer
-      className="relative w-full overflow-hidden bg-void font-body antialiased selection:bg-champagne selection:text-void border-t border-champagne/20 pt-12 pb-6"
+      className="relative w-full overflow-hidden bg-void font-body antialiased selection:bg-champagne selection:text-void border-t border-line pt-12 pb-6"
       aria-label="Site footer"
     >
       {/* ── Main Footer Content ─────────────────────────────────────────── */}
@@ -72,7 +72,7 @@ export function Footer27({
           >
             <div className="flex items-center gap-3">
               <LogoIcon className="size-9 flex-shrink-0 text-champagne" />
-              <span className="font-bold text-lg tracking-[0.04em] text-white uppercase select-none font-heading">
+              <span className="font-bold text-lg tracking-[0.04em] text-text uppercase select-none font-heading">
                 {resolvedBrandName}
               </span>
             </div>
@@ -103,7 +103,7 @@ export function Footer27({
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${label} (opens in a new tab)`}
-                  className="flex size-9 items-center justify-center rounded-full bg-raised text-text-3 shadow-[0_0_0_1px_rgba(236,216,183,0.12)] transition-all duration-150 hover:bg-brand/40 hover:text-champagne hover:shadow-[0_0_0_1px_rgba(236,216,183,0.3)] hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-champagne focus-visible:outline-none"
+                  className="flex size-9 items-center justify-center rounded-full bg-raised text-text-3 shadow-[var(--shadow-hairline)] transition-all duration-150 hover:bg-brand/15 hover:text-champagne hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-champagne focus-visible:outline-none"
                 >
                   <Icon aria-hidden="true" className="size-4" />
                 </a>

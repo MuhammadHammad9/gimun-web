@@ -1,4 +1,6 @@
 import 'server-only';
+import { cache } from 'react';
+import { adminRevision } from '../live';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -22,14 +24,14 @@ export async function authClient() {
 export async function mfaState() {
   const client = await authClient();
   const { data, error } = await client.auth.mfa.getAuthenticatorAssuranceLevel();
-  if (error || !data) return { needsCode: false, needsEnrolment: process.env.ADMIN_REQUIRE_MFA === '1' };
+  if (error || !data) throw new Error('Unable to verify sign-in security. Please try again.');
   const enrolled = data.nextLevel === 'aal2';
   return {
     needsCode: enrolled && data.currentLevel !== 'aal2',
     needsEnrolment: !enrolled && process.env.ADMIN_REQUIRE_MFA === '1',
   };
 }
-export async function requireAdmin(allowPasswordChange = false, allowMfaSetup = false): Promise<AdminUser> {
+export const requireAdmin=cache(async(allowPasswordChange = false, allowMfaSetup = false): Promise<AdminUser> => {
   const client = await authClient();
   const { data, error } = await client.auth.getUser();
   if (error || !data.user) redirect('/admin/login');
@@ -40,8 +42,9 @@ export async function requireAdmin(allowPasswordChange = false, allowMfaSetup = 
   const { data: user, error: profileError } = await database().from('admin_users').select('*').eq('user_id', data.user.id).eq('active', true).maybeSingle();
   if (profileError || !user) throw new Error('This account has no active admin access.');
   if (user.must_change_password && !allowPasswordChange) redirect('/admin/password');
+  await adminRevision(user as AdminUser).catch(()=>undefined);
   return user as AdminUser;
-}
+});
 export async function requirePermission(section: string, write = false) {
   const user = await requireAdmin();
   if (!can(user, section, write)) throw new Error('You do not have permission for this operation.');

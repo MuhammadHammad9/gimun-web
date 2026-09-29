@@ -78,7 +78,7 @@ export function Button({
     secondary:
       'bg-transparent text-text border border-line-2 hover:border-line-3 hover:bg-champagne/5 font-medium',
     'track-gimun':
-      'bg-brand text-champagne-hi font-semibold border border-crimson/30 hover:bg-brand-lit hover:border-crimson/60',
+      'bg-brand text-[var(--color-on-brand)] font-semibold border border-crimson/30 hover:bg-brand-lit hover:border-crimson/60',
     'track-moot':
       'bg-transparent text-champagne font-semibold border border-champagne/55 hover:bg-champagne hover:text-canvas',
     ghost: 'text-text-3 hover:text-text hover:bg-champagne/8 font-medium',

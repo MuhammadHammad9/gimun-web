@@ -4,7 +4,7 @@ import { requirePermission } from './auth';
 export async function operate(section: string, operation: string, input: Record<string, unknown>) {
   const user = await requirePermission(section, true);
   const { data,error } = await database().rpc('admin_operation',{ p_operation:operation,p_input:input,p_actor:user.user_id });
-  if(error) throw new Error(error.message);
+  if(error){console.error('[Admin operation]',operation,error);throw new Error(error.code==='P0001'?error.message:error.code==='23505'?'This assignment or identifier is already in use. Refresh and choose another.':'The operation could not be completed. Try again or contact an administrator.');}
   return data;
 }
 export const escapeHtml = (s: string) => s.replace(/[&<>"']/g,c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));

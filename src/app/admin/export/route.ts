@@ -23,10 +23,12 @@ function flatten(row:Record<string,unknown>){
   return out;
 }
 export async function GET(request:Request){
-  const type=new URL(request.url).searchParams.get('type')||'registrations';
-  const config=tables[type];if(!config)return new Response('Invalid export',{status:400});
+  const params=new URL(request.url).searchParams;const type=params.get('type')||'registrations';
+  const config=Object.hasOwn(tables,type)?tables[type]:null;if(!config)return new Response('Invalid export',{status:400});
   const user=await requirePermission(config.section,true);
-  const rows:Record<string,unknown>[]=[];for(let offset=0;;offset+=500){const {data,error}=await database().from(config.table).select(config.select).order(config.order).range(offset,offset+499);if(error)return new Response('Export failed',{status:503});rows.push(...(data as unknown as Record<string,unknown>[]).map(flatten));if(data.length<500)break;}
+  const rows:Record<string,unknown>[]=[];for(let offset=0;;offset+=500){let query=database().from(config.table).select(config.select).order(config.order).order(type==='allocations'||type==='feedback'?'participant_id':type==='registrations'?'reference_id':'id').range(offset,offset+499);
+    if(type==='registrations'){const q=(params.get('q')||'').replace(/[^\p{L}\p{N}@. -]/gu,'').trim();if(q)query=query.or(`applicant_name.ilike.%${q}%,contact_email.ilike.%${q}%,institution.ilike.%${q}%,reference_id.ilike.%${q}%`);const track=params.get('track'),status=params.get('status'),payment=params.get('payment');if(track&&['gimun','moot-cup'].includes(track))query=query.eq('track',track);if(status==='review')query=query.in('status',['received','under-review']);else if(status)query=query.eq('status',status);if(payment==='outstanding')query=query.in('payment_status',['unpaid','pending_verification']).in('status',['received','under-review','accepted','waitlisted']);else if(payment)query=query.eq('payment_status',payment);}
+    const {data,error}=await query;if(error)return new Response('Export failed',{status:503});rows.push(...(data as unknown as Record<string,unknown>[]).map(flatten));if(data.length<500)break;}
   const logged=await database().rpc('log_admin_export',{p_actor:user.user_id,p_export:type,p_rows:rows.length});
   if(logged.error)return new Response('Export could not be recorded in the audit log, so it was not released.',{status:503});
   return new Response(csv(rows),{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':`attachment; filename="${type}.csv"`,'Cache-Control':'private, no-store'}});

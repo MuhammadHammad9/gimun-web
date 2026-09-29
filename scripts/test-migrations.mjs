@@ -39,7 +39,7 @@ try {
   assert.equal((await db.query('select * from certificates')).rows.length,1);
   const committee={collection:'committees',id:'committee-test',status:'published',sort_order:0,publish_at:null,expire_at:null,version:0,data:{id:'committee-test',slug:'test',capacity:1,countryList:[{country:'France',status:'available'},{country:'Japan',status:'available'}]}};
   await db.query('select save_content($1,$2)',[JSON.stringify(committee),actor]);
-  const op=(operation,input)=>db.query('select admin_operation($1,$2,$3)',[operation,JSON.stringify(input),actor]);
+  const op=async(operation,input)=>{if(['registration','registration-contact','participant-edit','amount-due'].includes(operation)){const reference=input.reference||(await db.query('select registration_ref from participants where id=$1',[input.participant_id])).rows[0].registration_ref;input={...input,expected_updated_at:(await db.query('select updated_at from registrations where reference_id=$1',[reference])).rows[0].updated_at};}return db.query('select admin_operation($1,$2,$3)',[operation,JSON.stringify(input),actor]);};
   await op('reserve',{committee_slug:'test',country:'France',reserved:true,note:'Test'});
   await assert.rejects(()=>op('allocation',{participant_id:participant,committee_slug:'test',country:'France'}),/reserved/);
   await op('reserve',{committee_slug:'test',country:'France',reserved:false,note:''});
@@ -72,6 +72,41 @@ try {
   assert.equal((await db.query("select count(*)::int as n from contact_messages where id='INQ-TEST-1'")).rows[0].n,1);
   assert.equal((await db.query("select count(*)::int as n from email_outbox where contact_id='INQ-TEST-1'")).rows[0].n,1);
   await db.query("delete from email_outbox where contact_id='INQ-TEST-1'");await db.query("delete from contact_messages where id='INQ-TEST-1'");
+  // Draft isolation, scheduled replacements, safe expiry, pins and SQL authorization.
+  await assert.rejects(()=>db.query('select save_content($1,$2)',[JSON.stringify({...entry,version:2}),viewer]),/permission/);
+  await assert.rejects(()=>op('reserve',{committee_slug:'missing',country:'invented',reserved:true,note:''}),/Choose a published/);
+  const save=async e=>db.query('select save_content($1,$2)',[JSON.stringify(e),actor]);
+  const current=async id=>(await db.query("select data from effective_content where collection='announcements' and id=$1",[id])).rows[0]?.data;
+  await save({...entry,version:2,status:'draft',data:{...entry.data,title:'Private draft'}});
+  assert.equal((await current('test')).title,'Updated');
+  const scheduled={...entry,version:3,publish_at:new Date(Date.now()+1000).toISOString(),expire_at:new Date(Date.now()+2500).toISOString(),data:{...entry.data,title:'Scheduled replacement'}};
+  await save(scheduled);assert.equal((await current('test')).title,'Updated');
+  await save({...entry,version:4,status:'draft',data:{...entry.data,title:'Later private changes'}});
+  await new Promise(r=>setTimeout(r,1100));assert.equal((await current('test')).title,'Scheduled replacement');
+  await new Promise(r=>setTimeout(r,1500));assert.equal(await current('test'),undefined);
+  const pin={...entry,id:'pin-one',version:0,data:{id:'pin-one',title:'Pin one',pinnedFlag:true}};
+  await save(pin);await save({...pin,id:'pin-two',data:{...pin.data,id:'pin-two',title:'Pin two'}});
+  assert.equal((await db.query("select count(*)::int n from effective_content where collection='announcements' and data->>'pinnedFlag'='true'")).rows[0].n,1);
+  await save({...committee,version:1,status:'draft',data:{...committee.data,name:'Working title'}});
+  await op('unassign',{participant_id:participant});
+  await op('allocation',{participant_id:participant,committee_slug:'test',country:'France'});
+  await assert.rejects(()=>save({...committee,version:2,data:{...committee.data,slug:'changed'}}),/Release allocations/);
+  await db.exec('set role service_role');
+  await assert.rejects(()=>db.query('select save_content_core($1,$2)',[JSON.stringify(pin),actor]),/permission denied/);
+  await db.exec('reset role');
+  await save({...pin,id:'new-scheduled',version:0,publish_at:new Date(Date.now()+3600000).toISOString(),data:{...pin.data,id:'new-scheduled'}});
+  assert.equal((await db.query("select count(*)::int n from content_publications where entry_id='new-scheduled' and cancelled_at is null and effective_at>now()")).rows[0].n,1);
+  const beforeRevision=(await db.query('select public_revision() revision')).rows[0].revision;
+  await save({...pin,version:1,status:'draft',data:{...pin.data,title:'Invisible'}});
+  assert.equal((await db.query('select public_revision() revision')).rows[0].revision,beforeRevision);
+  await assert.rejects(()=>db.query("insert into country_reservations(committee_slug,country,note) values('test','Imaginary','invalid')"),/published committee/);
+  for(const [role,custom,active,allowed] of [['admin',[],true,true],['editor',[],true,true],['registrar',[],true,false],['checkin',[],true,false],['viewer',[],true,false],['editor',['faq'],true,false],['editor',[],false,false]]){
+    const account=randomUUID();await db.query('insert into auth.users values($1)',[account]);
+    await db.query('insert into admin_users(user_id,email,display_name,role,sections,active,must_change_password) values($1,$2,$3,$4,$5,$6,false)',[account,`${account}@example.test`,role,role,custom,active]);
+    const attempt=()=>db.query('select save_content($1,$2)',[JSON.stringify({...entry,id:account,version:0,status:'draft',data:{...entry.data,id:account}}),account]);
+    if(allowed)await attempt();else await assert.rejects(attempt,/permission/);
+  }
+  console.log('PASS: working draft isolation, scheduled replacement/expiry, pin replacement, invalid reservations, guarded CMS helpers, draft-safe allocation');
   const before=new Date(Date.now()-86400000).toISOString();
   const cleanup=(execute,expected)=>db.query('select retention_cleanup($1,$2,$3,$4,$5,$6,$7) as result',[actor,before,'Approved test retention policy','Approved test legal basis','privacy@example.test',execute,expected]);
   await assert.rejects(()=>cleanup(false,0),/Archive/);
@@ -80,9 +115,21 @@ try {
   await db.query("update registrations set submitted_at=now()-interval '2 days'");
   const preview=(await cleanup(false,0)).rows[0].result;assert.equal(preview.registrations,2);
   await assert.rejects(()=>cleanup(true,1),/Counts changed/);
-  await cleanup(true,2);
+  const reviewArgs=[actor,before,'Approved test retention policy','Approved test legal basis','privacy@example.test',false,2,null];
+  const reviewSql='select retention_review($1,$2,$3,$4,$5,$6,$7,$8) as result';
+  const review=(await db.query(reviewSql,reviewArgs)).rows[0].result;
+  assert.equal(review.impact.participants,2);assert.ok(review.token);
+  await assert.rejects(()=>db.query(reviewSql,reviewArgs.map((v,i)=>i===5?true:i===7?'stale':v)),/Affected records changed/);
+  await db.query(reviewSql,reviewArgs.map((v,i)=>i===5?true:i===7?review.token:v));
   assert.equal((await db.query("select count(*)::int as n from registrations where contact_email='anonymized@invalid.example'")).rows[0].n,2);
   assert.equal((await db.query('select count(*)::int as n from certificates')).rows[0].n,0);
   assert.equal((await db.query('select count(*)::int as n from email_outbox')).rows[0].n,0);
+  const argNames=(await db.query("select proargnames from pg_proc where oid='public.create_registration_v2'::regproc")).rows[0].proargnames;
+  const walkinArgs=args.map((v,i)=>i===15||i===17?randomUUID():[8,18].includes(i)?JSON.parse(v):v);
+  const walkinPayload=Object.fromEntries(argNames.map((name,i)=>[name,walkinArgs[i]]));
+  const walkin=(await db.query('select create_walkin_registration($1,$2) as receipt',[JSON.stringify(walkinPayload),actor])).rows[0].receipt;
+  assert.ok(walkin.referenceId);
+  assert.equal((await db.query("select count(*)::int n from audit_log where action='walk-in-registration' and entity_id=$1",[walkin.referenceId])).rows[0].n,1);
+  console.log('PASS: transactional walk-in registration and bound retention review');
   console.log('PASS: migrations, private grants, idempotency, references, roster, revisions, attendance, certificates, allocation conflicts/capacity, guarded reset, retention dry-run/anonymization, database permissions and correction operations');
 } finally { await db.close(); }

@@ -92,7 +92,7 @@ export function FilterBar<T extends string>({
               <span
                 className={cn(
                   'rounded-full px-1.5 py-0.5 font-mono text-[10px]',
-                  isActive ? 'bg-canvas/15 font-semibold text-canvas' : 'bg-white/10 text-text-3'
+                  isActive ? 'bg-canvas/15 font-semibold text-canvas' : 'bg-champagne/10 text-text-3'
                 )}
               >
                 {option.count}

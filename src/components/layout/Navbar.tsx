@@ -8,6 +8,7 @@ import { canRegister, eventPhase } from '@/lib/phase';
 import { navigationTree } from '@/lib/navigation';
 import { useRenderedAt, useSiteConfig } from '@/components/SiteConfigProvider';
 import { MobileMenu } from './MobileMenu';
+import { ThemeToggle } from './ThemeToggle';
 
 export function Navbar() {
   const site = useSiteConfig();
@@ -67,11 +68,11 @@ export function Navbar() {
   return (
     <>
       <header onKeyDown={event => { if (event.key === 'Escape') { setActiveDropdown(null); setRegisterOpen(false); } }} className="relative z-40 px-3 sm:px-6 pt-3 pb-1 pointer-events-none">
-        <div className="max-w-6xl mx-auto flex items-center justify-between pointer-events-auto bg-canvas/92 backdrop-blur-xl border border-champagne/20 rounded-2xl shadow-[0_8px_32px_rgba(94,18,5,0.25)] px-4 sm:px-6 h-16 transition-all">
+        <div className="max-w-6xl mx-auto flex items-center justify-between pointer-events-auto bg-canvas/92 backdrop-blur-xl border border-line-2 rounded-2xl shadow-[var(--theme-nav-shadow)] px-4 sm:px-6 h-16 transition-all">
           {/* Logo / Brand Name */}
           <Link
             href="/"
-            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg pr-2 text-base font-bold tracking-tight text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg pr-2 text-base font-bold tracking-tight text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
           >
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded-full bg-crimson" title="GIMUN Track" />
@@ -111,13 +112,13 @@ export function Navbar() {
                       className={`relative px-3 py-1.5 rounded-xl text-xs font-medium tracking-wide transition-colors flex items-center gap-1 ${
                         isActive
                           ? 'text-champagne font-semibold'
-                          : 'text-white/80 hover:text-champagne hover:bg-white/10'
+                          : 'text-text-2 hover:text-champagne hover:bg-champagne/8'
                       } ${hasDropdown ? 'pr-1' : ''}`}
                     >
                       {isActive && (
                         <span
                           aria-hidden="true"
-                          className="absolute inset-0 -z-10 rounded-xl bg-white/15"
+                          className="absolute inset-0 -z-10 rounded-xl bg-champagne/10"
                         />
                       )}
                       <span>{item.label}</span>
@@ -133,7 +134,7 @@ export function Navbar() {
                         onClick={() =>
                           setActiveDropdown(activeDropdown === item.label ? null : item.label)
                         }
-                        className="inline-flex h-8 w-6 items-center justify-center rounded-lg text-white/70 transition-colors hover:text-champagne"
+                        className="inline-flex h-8 w-6 items-center justify-center rounded-lg text-text-3 transition-colors hover:text-champagne"
                       >
                         <ChevronDown
                           aria-hidden="true"
@@ -149,25 +150,25 @@ export function Navbar() {
                   {hasDropdown && (
                     <>
                       {activeDropdown === item.label && (
-                        <div className="pop-in absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-line-2 bg-raised/95 p-2 backdrop-blur-xl">
+                        <div className="pop-in absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-line-2 bg-raised/95 p-2 shadow-[var(--theme-shadow-md)] backdrop-blur-xl">
                           <div className="space-y-1">
                             {item.dropdown?.map((sub) => (
                               <Link
                                 key={sub.href}
                                 href={sub.href}
                                 onClick={() => setActiveDropdown(null)}
-                                className="group block px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                                className="group block px-3 py-2 rounded-lg hover:bg-champagne/8 transition-colors"
                               >
                                 {/* No per-item track badge: the dropdown is
                                     already scoped to one track, so repeating
                                     it on every row said nothing. The old
                                     implementation never rendered anyway —
                                     the value was hard-coded to undefined. */}
-                                <div className="text-xs font-semibold text-white transition-colors group-hover:text-champagne">
+                                <div className="text-xs font-semibold text-text transition-colors group-hover:text-champagne">
                                   {sub.label}
                                 </div>
                                 {sub.description && (
-                                  <p className="text-[11px] text-white/60 leading-tight mt-0.5">
+                                  <p className="text-[11px] text-text-3 leading-tight mt-0.5">
                                     {sub.description}
                                   </p>
                                 )}
@@ -185,6 +186,9 @@ export function Navbar() {
 
           {/* Right Action: Register Split-Dropdown + Mobile Toggle */}
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
             {/* Desktop: split-dropdown register button */}
             <div
               className="relative hidden md:block"
@@ -206,30 +210,30 @@ export function Navbar() {
 
               <>
                 {registerOpen && (
-                  <div className="pop-in absolute right-0 z-50 mt-2 w-52 rounded-xl border border-line-2 bg-raised/95 p-2 backdrop-blur-xl">
+                  <div className="pop-in absolute right-0 z-50 mt-2 w-52 rounded-xl border border-line-2 bg-raised/95 p-2 shadow-[var(--theme-shadow-md)] backdrop-blur-xl">
                     <p className="text-[10px] font-mono text-champagne/60 uppercase tracking-wider px-3 pt-1 pb-2">
                       Choose your track
                     </p>
                     <Link
                       href="/register?track=gimun"
                       onClick={() => setRegisterOpen(false)}
-                      className="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors"
+                      className="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-champagne/8 transition-colors"
                     >
                       <span className="w-2.5 h-2.5 rounded-full bg-crimson shrink-0" />
                       <div>
-                        <div className="text-xs font-bold text-white group-hover:text-crimson-soft transition-colors">GIMUN (Model UN)</div>
-                        <div className="text-[10px] text-white/50">{gimunOpen ? 'Diplomacy & debate' : 'Registration closed'}</div>
+                        <div className="text-xs font-bold text-text group-hover:text-crimson-soft transition-colors">GIMUN (Model UN)</div>
+                        <div className="text-[10px] text-text-4">{gimunOpen ? 'Diplomacy & debate' : 'Registration closed'}</div>
                       </div>
                     </Link>
                     <Link
                       href="/register?track=moot-cup"
                       onClick={() => setRegisterOpen(false)}
-                      className="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors"
+                      className="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-champagne/8 transition-colors"
                     >
                       <span className="w-2.5 h-2.5 rounded-full bg-champagne shrink-0" />
                       <div>
-                        <div className="text-xs font-bold text-white group-hover:text-champagne transition-colors">GMC (Moot Court)</div>
-                        <div className="text-[10px] text-white/50">{mootOpen ? 'Legal advocacy' : 'Registration closed'}</div>
+                        <div className="text-xs font-bold text-text group-hover:text-champagne transition-colors">GMC (Moot Court)</div>
+                        <div className="text-[10px] text-text-4">{mootOpen ? 'Legal advocacy' : 'Registration closed'}</div>
                       </div>
                     </Link>
                   </div>
@@ -252,23 +256,23 @@ export function Navbar() {
               ref={mobileToggleRef}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
-              className="md:hidden inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
+              className="md:hidden inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text hover:bg-champagne/8 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
               aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileMenuOpen}
             >
               <div className="w-5 h-5 flex flex-col justify-center items-center gap-1">
                 <span
-                  className={`block w-5 h-0.5 bg-white rounded-full transition-transform duration-200 ${
+                  className={`block w-5 h-0.5 bg-current rounded-full transition-transform duration-200 ${
                     mobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''
                   }`}
                 />
                 <span
-                  className={`block w-5 h-0.5 bg-white rounded-full transition-opacity duration-200 ${
+                  className={`block w-5 h-0.5 bg-current rounded-full transition-opacity duration-200 ${
                     mobileMenuOpen ? 'opacity-0' : 'opacity-100'
                   }`}
                 />
                 <span
-                  className={`block w-5 h-0.5 bg-white rounded-full transition-transform duration-200 ${
+                  className={`block w-5 h-0.5 bg-current rounded-full transition-transform duration-200 ${
                     mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''
                   }`}
                 />

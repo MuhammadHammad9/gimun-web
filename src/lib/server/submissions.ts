@@ -25,6 +25,7 @@ type Track = RegistrationSubmission['track'];
 type RegistrationData = GimunIndividualData | GimunDelegationData | MootCupTeamData;
 
 export type RegistrationRecord = {
+  actor?:string;
   submissionKey: string;
   amountDue: number;
   track: Track;
@@ -546,7 +547,7 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
 </body>
 </html>`;
 
-  const persisted = await supabaseRpc<{ referenceId: string; checkinToken: string }>('create_registration_v2', {
+  const rpcInput = {
     p_year: Number(getEventYear(site)), p_submission_key: record.submissionKey, p_submission_hash: hash, p_checkin_token: checkinToken,
     p_attachments: [{ filename: 'ticket.png', content: png.toString('base64'), content_id: 'ticket' }],
     p_fee_display: record.feeAmount, p_amount_due: record.amountDue, p_from_address: getServerConfig().emailFrom,
@@ -564,7 +565,9 @@ export async function createRegistration(record: RegistrationRecord): Promise<De
     p_notification_recipients: recipients,
     p_notification_subject: `New ${trackName} registration received`,
     p_notification_html: notificationHtml,
-  });
+  };
+
+  const persisted=await supabaseRpc<{referenceId:string;checkinToken:string}>(record.actor?'create_walkin_registration':'create_registration_v2',record.actor?{p_payload:rpcInput,p_actor:record.actor}:rpcInput);
 
   const { referenceId, checkinToken: persistedToken } = persisted;
   if (!referenceId || typeof referenceId !== 'string') {
