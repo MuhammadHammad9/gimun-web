@@ -1,3 +1,21 @@
+# Verification record: 29 September 2026 (motion redesign, worktree branch feat/motion-redesign-ui)
+
+Run against the final source of the redesign, local fixtures only:
+
+- `tsc`, ESLint and `next build`: pass. Content schema: 13/13 files valid. Unit tests: 62/62 (adds motion tokens, tone contrast in both themes, transition routes and the curtain state machine).
+- Migrations 0001 to 0011 in PGlite: pass.
+- Link audit (1,009 route links, 9 documents, 88 hash anchors), static accessibility audit, SEO audit (62/62), submission contract audit (15/15): pass. The link audit now resolves a bare `#id` in a source file against that file's own route instead of `/`.
+- HTTP form scenarios: 7/7. Admin end-to-end workflow: 1/1. In the redesign worktree, `.env.local` sets `CMS_BACKEND=bundled`; it must be moved aside for `test:admin`, or public pages read bundled content instead of the fixture database and the publish step fails falsely.
+- Browser suite: all six viewport shards pass (375, 390, 768, 1,024, 1,440 and 1,440 dark), including the new transition tests (curtain on link clicks, instant Back and Forward, same-page anchors, document links, reduced motion).
+- Rendered axe: 0 violations on every public route at 390 px and 1,440 px in both the light and dark themes.
+- Bundle guard: no GSAP, anime.js or Lenis code in any first load; JS within 3.2 KB of the pre-redesign baseline on every audited page. First-load CSS 26.2 KB gzip (was 27.8 KB); fonts 67.8 KB (was 78.8 KB) after subsetting.
+- Lighthouse (mobile, simulated throttling, median of 3): `/` perf 90, `/register` 88, `/resources` 91; accessibility, SEO and best practices 100 on all three; TBT 60 to 90 ms; CLS 0; console errors, bf-cache, heading order and colour contrast pass.
+- Production dependency audit: 0 vulnerabilities.
+
+Not met: the LCP assertion (3 s). Simulated LCP is 3.5 to 3.8 s on the three pages, the same range as before the redesign. Observed LCP equals first contentful paint (about 1.4 s simulated FCP); the simulation adds the React and Next runtime that is requested before it. Dropping the display-font preload was tried and made things worse (CLS 0.15), so it was reverted. `lhci autorun` itself fails on Windows when chrome-launcher cannot delete its temp profile; the numbers above come from the Lighthouse Node API with the same settings as `lighthouserc.json`.
+
+---
+
 # Verification record — 28 September 2026 (improvement pass)
 
 Run against the final source of this pass, local fixtures only:
