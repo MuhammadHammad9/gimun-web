@@ -1601,3 +1601,70 @@
     animation: none;
   }
 }
+
+/* --- Live globe (committees hero) --------------------------------------- */
+/* The SVG fallback holds the space; the canvas fades in over it once the
+   globe is running (data-live), so nothing shifts and reduced motion keeps
+   the drawing. */
+.live-globe {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.live-globe__fallback,
+.live-globe__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 700ms var(--ease-brand);
+}
+
+.live-globe__fallback > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.live-globe__canvas {
+  opacity: 0;
+  touch-action: pan-y;
+}
+
+.live-globe[data-live] .live-globe__canvas {
+  opacity: 1;
+}
+
+.live-globe[data-live] .live-globe__fallback {
+  opacity: 0;
+}
+
+.live-globe__legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.live-globe__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.live-globe__legend span::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--legend-dot);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-globe__canvas {
+    display: none;
+  }
+}

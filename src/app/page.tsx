@@ -163,7 +163,7 @@ export default async function Home() {
                   ? `Applications close ${shortDate(site.registrationDeadlines.gimun)} (GIMUN) and ${shortDate(site.registrationDeadlines.mootCup)} (GMC).`
                   : undefined
               }
-              art={<Seal id="hero-seal" />}
+              art={<Seal id="hero-seal" motion />}
             />
           </div>
           <div className="handoff__dim" aria-hidden="true" />
