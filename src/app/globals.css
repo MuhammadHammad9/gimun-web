@@ -135,7 +135,6 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-lift: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --dur-micro: 160ms;
   --dur-ui: 320ms;
   --dur-surface: 520ms;

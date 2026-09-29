@@ -59,55 +59,41 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
 
       {/* Pinned Urgent Announcements */}
       {pinnedItems.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-champagne font-bold">
-            <Pin className="w-3.5 h-3.5" />
-            <span>Priority Directives &amp; Urgent Notices</span>
-          </div>
+        <section className="space-y-4" aria-label="Pinned notices">
+          <p className="flex items-center gap-2 text-meta font-mono uppercase text-text-2">
+            <Pin aria-hidden="true" className="h-3.5 w-3.5 text-champagne" />
+            Pinned
+          </p>
 
           <div className="grid grid-cols-1 gap-6">
             {pinnedItems.map((item) => (
               <ScrollReveal key={item.id}>
-                <div
+                <article
                   id={item.id}
-                  className="rounded-2xl border border-champagne/35 bg-overlay/95 shadow-xl scroll-mt-28 target:ring-2 target:ring-focus transition-all"
+                  className="scroll-mt-28 space-y-4 rounded-2xl border border-line-2 bg-raised p-8 transition-shadow target:ring-2 target:ring-focus sm:p-10"
                 >
-                  <div className="p-8 space-y-4 border-l-4 border-l-champagne bg-linear-to-r from-crest/40 to-transparent">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-crest shadow-md">
-                          <Pin className="w-3 h-3" />
-                          {item.badgeLabel || 'Pinned Directive'}
-                        </span>
-                        <TrackBadge track={item.track as Track} size="sm" />
-                      </div>
-                      <div className="text-xs font-mono text-text-3 flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5" />
-                        <span>
-                          {formatPublishedDate(item.timestamp)}
-                        </span>
-                      </div>
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="rounded-full border border-line-2 px-3 py-1 font-mono text-xs uppercase text-champagne">
+                        {item.badgeLabel || 'Pinned'}
+                      </span>
+                      <TrackBadge track={item.track as Track} size="sm" />
                     </div>
-
-                    <h2 className="text-xl sm:text-2xl font-display font-medium text-text">
-                      {item.title}
-                    </h2>
-                    <p className="text-sm text-text-2 leading-relaxed">
-                      {item.body}
+                    <p className="flex items-center gap-1.5 font-mono text-xs text-text-3">
+                      <Calendar aria-hidden="true" className="h-3.5 w-3.5" />
+                      {formatPublishedDate(item.timestamp)}
                     </p>
-
-                    {item.actionUrl && (
-                      <div className="pt-2">
-                        <Link
-                          href={item.actionUrl}
-                          className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-champagne hover:text-text underline underline-offset-4 transition-colors"
-                        >
-                          Associated Resource or Directive Link &rarr;
-                        </Link>
-                      </div>
-                    )}
                   </div>
-                </div>
+
+                  <h2 className="font-display text-2xl font-medium text-text sm:text-3xl">{item.title}</h2>
+                  <p className="max-w-3xl text-base leading-relaxed text-text-2">{item.body}</p>
+
+                  {item.actionUrl && (
+                    <Link href={item.actionUrl} className="text-link w-fit text-sm">
+                      Read more
+                    </Link>
+                  )}
+                </article>
               </ScrollReveal>
             ))}
           </div>
@@ -116,10 +102,9 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
 
       {/* Regular Dispatches Feed */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between text-xs font-mono text-text-3 pb-2">
-          <span>Chronological Dispatches ({regularItems.length})</span>
-          <span>Updated dynamically</span>
-        </div>
+        <p className="pb-2 font-mono text-xs text-text-3">
+          {regularItems.length} {regularItems.length === 1 ? 'notice' : 'notices'}, newest first
+        </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {regularItems.map((item, idx) => (

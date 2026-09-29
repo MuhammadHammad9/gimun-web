@@ -106,7 +106,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
         {filteredClarifications.map((item) => (
           <ScrollReveal key={item.id}>
             <div className="double-bezel">
-              <div className="double-bezel-inner p-6 sm:p-8 space-y-4 border-l-4 border-l-champagne">
+              <div className="double-bezel-inner p-6 sm:p-8 space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-text border border-line-2">

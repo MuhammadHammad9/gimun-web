@@ -14,8 +14,6 @@ export const EASE = {
   lift: [0.22, 1, 0.36, 1],
   /** The page curtain: symmetric, heavy in the middle. */
   curtain: [0.76, 0, 0.24, 1],
-  /** Small overshoot for pointer feedback only, never for state. */
-  spring: [0.34, 1.56, 0.64, 1],
 } as const satisfies Record<string, readonly [number, number, number, number]>;
 
 export type EaseName = keyof typeof EASE;
@@ -26,7 +24,6 @@ export const EASE_CSS_VAR: Record<EaseName, string> = {
   expo: '--ease-out-expo',
   lift: '--ease-lift',
   curtain: '--ease-curtain',
-  spring: '--ease-spring',
 };
 
 /** Milliseconds. Mirrored as --dur-* in globals.css. */
