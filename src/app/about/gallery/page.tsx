@@ -1,64 +1,56 @@
-import { getSiteConfig } from '@/lib/content';
-import type { Metadata } from "next";
-import { constructMetadata } from "@/lib/metadata";
-import { getGallery } from "@/lib/content";
-import { GalleryClient } from "./GalleryClient";
-import { Camera } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { getEventYear } from "@/lib/site-config";
+import type { Metadata } from 'next';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { PageHero } from '@/components/ui/PageHero';
+import { getGallery, getSiteConfig } from '@/lib/content';
+import { constructMetadata } from '@/lib/metadata';
+import { getEventYear } from '@/lib/site-config';
+import { GalleryClient } from './GalleryClient';
+import { NextSteps } from '@/components/story/NextSteps';
 
-export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
-  title: `Media Archive & Gallery | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
-  path: '/about/gallery',
-  description:
-    "Visual archives capturing intense committee debates, judicial advocacy, diplomacy, campus life, and award ceremonies from GIMUN and GMC.",
-}); }
+export async function generateMetadata(): Promise<Metadata> {
+  return await constructMetadata({
+    title: `Gallery | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
+    path: '/about/gallery',
+    description:
+      'Photographs from GIMUN committee sessions, GMC courtroom rounds, the ceremonies and campus life at GIKI, published after each edition.',
+  });
+}
 
 export default async function GalleryPage() {
-  const items = (await getGallery());
+  const items = await getGallery();
 
   return (
-    <div className="space-y-12">
-      {/* Modern Atmospheric Gallery Hero */}
+    <>
       <PageHero
         variant="utility"
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'Gallery' }]}
-        title={'Photographic Gallery & Archives'}
-        accentWords={['Gallery', '&', 'Archives']}
-        description={'Photographs from committee sessions, courtroom rounds, ceremonies and campus life at GIKI, published after each edition.'}
-        eyebrow={
-          <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-white/10 text-text-2 border border-champagne/20">
-                        <Camera className="w-3.5 h-3.5 text-champagne" />
-                        Visual Archives
-                      </span>
-                      <span className="text-xs font-mono text-champagne/70 uppercase tracking-widest">
-                        Event Memories
-                      </span>
-                    </div>
-        }
+        meta={[items.length ? `${items.length} photographs` : 'Published after each edition']}
+        title="The gallery."
+        accentPhrase="gallery."
+        description="Photographs from committee sessions, courtroom rounds, ceremonies and campus life at GIKI, published after each edition."
         actionsSlot={
-          <>
-            <div className="pt-2 flex flex-wrap items-center gap-4">
-                        <Button variant="track-gimun" href="/gimun">
-                          About GIMUN
-                        </Button>
-                        <Button variant="track-moot" href="/moot-cup">
-                          About GMC
-                        </Button>
-                        <Button variant="secondary" href="/results">
-                          Results
-                        </Button>
-                      </div>
-          </>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link href="/results" className="text-link">
+              Results and awards
+            </Link>
+            <Link href="/about/venue" className="text-link">
+              The campus
+            </Link>
+          </div>
         }
       />
-
-      {/* Main Interactive Body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <GalleryClient initialItems={items} />
-      </div>
-    </div>
+      <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Photographs">
+        <div className="wrap">
+          <GalleryClient initialItems={items} />
+        </div>
+      </section>
+      <NextSteps
+        steps={[
+          { href: '/results', title: 'Results', body: 'The awards, and how they are decided.' },
+          { href: '/about', title: 'The event', body: 'The two competitions behind the photographs.' },
+          { href: '/about/venue', title: 'Venue', body: 'The campus in Topi where it all happens.' },
+        ]}
+      />
+    </>
   );
 }

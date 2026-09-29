@@ -104,6 +104,8 @@ export function isTransitionable(href: string, current: URL): boolean {
   const path = normalizePath(target.pathname);
   if (path === '/admin' || path.startsWith('/admin/')) return false;
   if (isDocumentHref(path)) return false;
-  // Same page with a different hash or query: let the browser or Next handle it.
-  return path !== normalizePath(current.pathname);
+  // Same page with a different hash or query, including a redirect back to
+  // this page: let the browser or Next handle it. The curtain would wait for
+  // a page change that never comes.
+  return (REDIRECTS[path] ?? path) !== normalizePath(current.pathname);
 }

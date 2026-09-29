@@ -52,7 +52,7 @@ export function FormField({
         >
           {label}{' '}
           {required && (
-            <span aria-hidden="true" className="text-crimson-soft">
+            <span aria-hidden="true" className="text-accent-gimun">
               *
             </span>
           )}
@@ -70,7 +70,7 @@ export function FormField({
           <p
             key={error}
             id={errorId}
-            className="field-error flex items-center gap-1.5 pt-0.5 text-xs font-medium text-crimson-soft"
+            className="field-error flex items-center gap-1.5 pt-0.5 text-xs font-medium text-accent-gimun"
           >
             <span aria-hidden="true" className="inline-block h-1 w-1 rounded-full bg-crimson-hi" />
             {error}

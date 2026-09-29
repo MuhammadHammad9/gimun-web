@@ -1,0 +1,297 @@
+/* ==============================================================================
+   MICRO-INTERACTIONS
+
+   Small, quick responses to the visitor's own hand: a highlight that glides
+   along the header, links whose underline draws in, arrows that step
+   forward, a spotlight that follows the pointer along a card's edge. All of
+   them are transform, opacity or a one-off transition on interaction; none
+   runs at load, and the pointer effects are for fine pointers only.
+   ============================================================================== */
+
+/* --- Header: one highlight glides between the links ---------------------- */
+.primary-nav {
+  position: relative;
+}
+
+.nav-glide {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: var(--glide-w, 0px);
+  height: 2.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(var(--glide-x, 0px), -50%);
+  transition:
+    transform 380ms var(--ease-out-expo),
+    width 380ms var(--ease-out-expo),
+    opacity var(--dur-micro) var(--ease-brand);
+}
+
+.primary-nav[data-glide] .nav-glide {
+  opacity: 1;
+}
+
+/* The glide replaces the per-link hover wash; an open panel keeps its own. */
+.primary-nav .nav-link:hover {
+  background: transparent;
+}
+
+.primary-nav .nav-item[data-open] .nav-link,
+.primary-nav .nav-link:focus-visible {
+  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+}
+
+.mega__link {
+  transition: transform var(--dur-ui) var(--ease-out-expo);
+}
+
+.mega__link:hover {
+  transform: translateX(3px);
+}
+
+/* --- Text links: the underline draws in from the left --------------------- */
+.text-link {
+  padding-bottom: 0.125rem;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor), linear-gradient(var(--color-line-2), var(--color-line-2));
+  background-position: 0 100%, 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px, 100% 1px;
+  transition: background-size 420ms var(--ease-out-expo);
+}
+
+.text-link:hover {
+  background-size: 100% 1px, 100% 1px;
+}
+
+.text-link svg {
+  transition: transform var(--dur-ui) var(--ease-out-expo);
+}
+
+.text-link:hover svg {
+  transform: translateX(2px);
+}
+
+/* --- Buttons: the arrow steps out and a new one steps in ------------------ */
+.btn-arrow {
+  display: inline-grid;
+  overflow: hidden;
+}
+
+.btn-arrow > * {
+  grid-area: 1 / 1;
+  transition: transform 420ms var(--ease-out-expo);
+}
+
+.btn-arrow > :last-child {
+  transform: translateX(-160%);
+}
+
+.group:hover .btn-arrow > :first-child {
+  transform: translateX(160%);
+}
+
+.group:hover .btn-arrow > :last-child {
+  transform: translateX(0);
+}
+
+/* --- Cards: a spotlight follows the pointer along the edge ---------------- */
+[data-glow]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  padding: 1px;
+  border-radius: inherit;
+  background: radial-gradient(16rem circle at var(--gx, 50%) var(--gy, 50%), var(--color-champagne), transparent 65%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-ui) var(--ease-brand);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-glow]:hover::after {
+    opacity: 1;
+  }
+}
+
+.next-step {
+  position: relative;
+}
+
+/* --- Back to top: the arrow rises on hover --------------------------------- */
+.back-to-top svg {
+  transition: transform var(--dur-ui) var(--ease-out-expo);
+}
+
+.back-to-top:hover svg {
+  transform: translateY(-2px);
+}
+
+/* --- Copy buttons (contact) ------------------------------------------------ */
+.copy-button {
+  display: inline-grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  color: var(--color-text-3);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-ui) var(--ease-brand),
+    color var(--dur-ui) var(--ease-brand),
+    transform var(--dur-micro) var(--ease-brand);
+}
+
+.copy-button:hover {
+  border-color: var(--color-line-3);
+  color: var(--color-text);
+}
+
+.copy-button:active {
+  transform: scale(0.94);
+}
+
+.copy-button[data-copied] {
+  border-color: var(--color-champagne);
+  color: var(--color-champagne);
+}
+
+.copy-button svg {
+  grid-area: 1 / 1;
+  transition:
+    transform 320ms var(--ease-out-expo),
+    opacity 200ms var(--ease-brand);
+}
+
+.copy-button .copy-button__done {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.copy-button[data-copied] .copy-button__idle {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.copy-button[data-copied] .copy-button__done {
+  opacity: 1;
+  transform: none;
+}
+
+.copy-button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* --- Form fields: the focus ring grows in --------------------------------- */
+input:not([type="checkbox"], [type="radio"], [type="range"]),
+select,
+textarea {
+  transition:
+    border-color var(--dur-ui) var(--ease-brand),
+    box-shadow var(--dur-ui) var(--ease-out-expo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-glide,
+  .text-link,
+  .btn-arrow > *,
+  .mega__link,
+  .copy-button svg {
+    transition: none;
+  }
+
+  .group:hover .btn-arrow > :first-child,
+  .mega__link:hover,
+  .text-link:hover svg,
+  .back-to-top:hover svg {
+    transform: none;
+  }
+
+  .group:hover .btn-arrow > :last-child {
+    transform: translateX(-160%);
+  }
+}
+
+/* --- FAQ: the chevron turns and the answer rises in ------------------------ */
+.faq-chevron {
+  transition: transform 320ms var(--ease-out-expo);
+}
+
+.faq-chevron[data-open] {
+  transform: rotate(180deg);
+}
+
+.faq-answer:not([hidden]) > * {
+  animation: faq-answer-in 360ms var(--ease-out-expo) both;
+}
+
+@keyframes faq-answer-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-chevron {
+    transition: none;
+  }
+
+  .faq-answer:not([hidden]) > * {
+    animation: none;
+  }
+}
+
+/* --- Quick jump ------------------------------------------------------------ */
+.quick-jump-button {
+  display: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  color: var(--color-text-2);
+  cursor: pointer;
+  transition:
+    color var(--dur-micro) var(--ease-brand),
+    background-color var(--dur-micro) var(--ease-brand);
+}
+
+.quick-jump-button:hover {
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+}
+
+.quick-jump-button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+  .quick-jump-button {
+    display: inline-grid;
+  }
+}
+
+/* Between 1024 and 1279 px the full nav needs the room; the shortcut still works. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .quick-jump-button {
+    display: none;
+  }
+}
+
+.nav-link {
+  white-space: nowrap;
+}

@@ -68,3 +68,15 @@ export function formatDateRange(startStr?: string, endStr?: string): string {
 
 export { formatPublishedDate } from './site-config';
 
+/** The ISO date `days` after (or before, if negative) `iso`, in Pakistan time. */
+export function addDays(iso: string, days: number): string {
+  const date = new Date(`${iso}T12:00:00+05:00`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+/** "Thursday 18 March" for day `day` (1-based) of an event starting on `start`. */
+export function dayDate(start: string, day: number): string {
+  const date = new Date(`${addDays(start, day - 1)}T12:00:00+05:00`);
+  return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Karachi' }).format(date);
+}

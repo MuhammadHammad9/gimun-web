@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
-import { publicRevision } from '@/lib/server/live';
-import { LiveUpdates } from '@/components/LiveUpdates';
 import localFont from 'next/font/local';
 import './globals.css';
 import { SiteChrome } from '@/components/layout/SiteChrome';
+import { NoticeBar, noticeBootScript } from '@/components/chrome/NoticeBar';
+import { SiteFooter } from '@/components/chrome/SiteFooter';
 import { SiteConfigProvider } from '@/components/SiteConfigProvider';
 import { getSiteConfig, getAnnouncements, getSponsors } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { getAnalyticsMeasurementId } from '@/lib/site-config';
 import { serverRenderTime } from '@/lib/phase';
+import { THEME_BOOT_SCRIPT } from '@/lib/theme';
+import { publicRevision } from '@/lib/server/live';
+import { LiveUpdates } from '@/components/LiveUpdates';
 
 const satoshi = localFont({
   src: '../assets/fonts/Satoshi-Variable.woff2',
@@ -63,30 +66,20 @@ export default async function RootLayout({
     announcements.find((a) => a.pinnedFlag) || announcements[0];
 
   return (
+    // The boot script sets data-theme before first paint, so <html> differs
+    // from the server markup by design.
     <html lang="en" suppressHydrationWarning className={`${satoshi.variable} ${generalSans.variable} ${jetbrainsMono.variable}`}>
-      <body className="min-h-screen flex flex-col bg-canvas text-text antialiased selection:bg-champagne selection:text-canvas">
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(() => {
-try {
-  const choice = localStorage.getItem('gimun-theme') || 'system';
-  const valid = choice === 'light' || choice === 'dark' || choice === 'system' ? choice : 'system';
-  const resolved = valid === 'system'
-    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-    : valid;
-  document.documentElement.dataset.theme = resolved;
-  document.documentElement.dataset.themeChoice = valid;
-} catch {
-  document.documentElement.dataset.theme = 'dark';
-  document.documentElement.dataset.themeChoice = 'system';
-}
-})();`,
-          }}
-        />
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT + noticeBootScript(activeAnnouncement) }} />
+      </head>
+      <body className="min-h-screen flex flex-col bg-canvas text-text antialiased">
         <GoogleAnalytics measurementId={getAnalyticsMeasurementId()} />
         <SiteConfigProvider value={siteConfig} renderedAt={renderedAt}>
           <LiveUpdates initial={live.revision} />
-          <SiteChrome site={siteConfig} announcement={activeAnnouncement} sponsors={sponsors}>
+          <SiteChrome
+            banner={<NoticeBar announcement={activeAnnouncement} />}
+            footer={<SiteFooter site={siteConfig} sponsors={sponsors} />}
+          >
             {children}
           </SiteChrome>
         </SiteConfigProvider>

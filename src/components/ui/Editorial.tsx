@@ -13,8 +13,8 @@ export function Eyebrow({ children, tone = 'champagne' }: { children: React.Reac
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-[10.5px] font-medium uppercase tracking-[0.18em]',
-        tone === 'crimson' ? 'border-crimson/35 bg-crimson/10 text-crimson-soft' : 'border-line-2 bg-champagne/5 text-champagne'
+        'inline-flex items-center gap-2 font-mono text-[0.75rem] font-medium uppercase tracking-[0.14em]',
+        tone === 'crimson' ? 'text-accent-gimun' : 'text-text-3'
       )}
     >
       {children}
@@ -46,10 +46,10 @@ export function SectionHeading({
     <div className={cn('flex flex-col gap-6', !stacked && 'md:flex-row md:items-end md:justify-between', className)}>
       <div className="max-w-2xl space-y-4">
         {eyebrow && <Eyebrow tone={tone}>{eyebrow}</Eyebrow>}
-        <h2 id={id} className="text-h2 font-display font-medium text-balance text-text">
+        <h2 id={id} className="chapter-title">
           {title}
         </h2>
-        {lead && <p className="text-lead text-pretty text-text-3">{lead}</p>}
+        {lead && <p className="chapter-lead">{lead}</p>}
       </div>
       {action && <TextLink href={action.href}>{action.label}</TextLink>}
     </div>
@@ -60,10 +60,7 @@ export function TextLink({ href, children, className }: { href: string; children
   return (
     <Link
       href={href}
-      className={cn(
-        'group inline-flex shrink-0 items-center gap-2 text-sm font-medium text-champagne transition-colors duration-300 ease-[var(--ease-brand)] hover:text-text',
-        className
-      )}
+      className={cn('text-link group shrink-0 text-sm', className)}
     >
       {children}
       <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform duration-300 ease-[var(--ease-brand)] group-hover:translate-x-1" />
@@ -90,13 +87,13 @@ export function Bezel({
     <div
       className={cn(
         'rounded-[1.75rem] border p-1.5',
-        accent === 'gimun' ? 'border-crimson/25 bg-crimson/[0.04]' : 'border-line bg-champagne/[0.025]',
+        accent === 'gimun' ? 'border-accent-gimun/25 bg-accent-gimun/[0.04]' : 'border-line bg-text/[0.025]',
         className
       )}
     >
       <div
         className={cn(
-          'h-full rounded-[calc(1.75rem-0.375rem)] bg-raised shadow-[inset_0_1px_0_rgba(255,236,210,0.07)]',
+          'h-full rounded-[calc(1.75rem-0.375rem)] bg-raised',
           innerClassName
         )}
       >
@@ -114,9 +111,9 @@ export function Steps({ steps, tone = 'champagne' }: { steps: { title: string; b
         <li key={step.title} style={{ '--i': i } as React.CSSProperties} className="relative border-t border-line pt-6">
           <span
             aria-hidden="true"
-            className={cn('absolute -top-px left-0 h-px w-10', tone === 'crimson' ? 'bg-crimson-soft' : 'bg-champagne')}
+            className={cn('absolute -top-px left-0 h-px w-10', tone === 'crimson' ? 'bg-accent-gimun' : 'bg-champagne')}
           />
-          <span className={cn('font-mono text-xs tabular-nums', tone === 'crimson' ? 'text-crimson-soft' : 'text-champagne')}>
+          <span className={cn('font-mono text-xs tabular-nums', tone === 'crimson' ? 'text-accent-gimun' : 'text-champagne')}>
             {String(i + 1).padStart(2, '0')}
           </span>
           <h3 className="mt-3 text-lg font-display font-medium text-text">{step.title}</h3>
@@ -131,14 +128,14 @@ export type LedgerRow = { key: string; href: string; title: string; description:
 
 /** Full-width numbered rows: any count reads cleanly, unlike a card grid. */
 export function Ledger({ rows, tone = 'champagne' }: { rows: LedgerRow[]; tone?: 'champagne' | 'crimson' }) {
-  const accent = tone === 'crimson' ? 'text-crimson-soft' : 'text-champagne';
+  const accent = tone === 'crimson' ? 'text-accent-gimun' : 'text-champagne';
   return (
     <ol className="rise-stagger border-b border-line">
       {rows.map((row, i) => (
         <li key={row.key} style={{ '--i': i } as React.CSSProperties}>
           <Link
             href={row.href}
-            className="group -mx-3 grid grid-cols-[2.25rem_1fr_auto] items-start gap-x-3 rounded-xl border-t border-line px-3 py-6 transition-colors duration-300 ease-[var(--ease-brand)] hover:bg-raised/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne"
+            className="group -mx-3 grid grid-cols-[2.25rem_1fr_auto] items-start gap-x-3 rounded-xl border-t border-line px-3 py-6 transition-colors duration-300 ease-[var(--ease-brand)] hover:bg-raised/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             <span className={cn('pt-1 font-mono text-xs tabular-nums', accent)}>{String(i + 1).padStart(2, '0')}</span>
             <span className="min-w-0 space-y-2">
@@ -190,7 +187,7 @@ export function PageSection({
   id?: string;
 }) {
   return (
-    <section id={id} aria-labelledby={labelledBy} className={cn('mx-auto max-w-7xl scroll-mt-32 px-4 sm:px-6 lg:px-8', className)}>
+    <section id={id} aria-labelledby={labelledBy} className={cn('wrap scroll-mt-32', className)}>
       {children}
     </section>
   );

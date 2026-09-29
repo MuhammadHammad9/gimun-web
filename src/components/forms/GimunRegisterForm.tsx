@@ -318,7 +318,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
           </div>
 
           {/* Segmented Control */}
-          <div className="relative flex p-1 rounded-xl bg-canvas border border-champagne/20">
+          <div className="relative flex p-1 rounded-xl bg-canvas border border-line">
             <button
               type="button"
               onClick={() => {
@@ -326,7 +326,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                 setErrors({});
               }}
               className={`relative z-10 px-4 py-2 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 ${
-                applicantType === 'individual' ? 'text-canvas' : 'text-champagne/70 hover:text-champagne'
+                applicantType === 'individual' ? 'text-on-accent' : 'text-text-3 hover:text-champagne'
               }`}
             >
               <User className="w-3.5 h-3.5" />
@@ -339,7 +339,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                 setErrors({});
               }}
               className={`relative z-10 px-4 py-2 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 ${
-                applicantType === 'delegation' ? 'text-canvas' : 'text-champagne/70 hover:text-champagne'
+                applicantType === 'delegation' ? 'text-on-accent' : 'text-text-3 hover:text-champagne'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
@@ -355,7 +355,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
           </div>
         </div>
 
-        <p className="text-xs text-champagne/80 leading-relaxed">
+        <p className="text-xs text-text-2 leading-relaxed">
           {applicantType === 'individual'
             ? 'Apply as an independent delegate. You will select committee preferences and receive country allocations from the Secretariat.'
             : 'Register a delegation representing a school, college, or university. The Delegation Head manages all delegate allocations.'}
@@ -363,7 +363,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
       </div>
 
       {serverError && (
-        <div role="alert" className="p-4 rounded-xl bg-brand-deep/80 border border-brand text-crimson-soft flex items-start gap-3">
+        <div role="alert" className="p-4 rounded-xl bg-accent-gimun/8 border border-accent-gimun/40 text-accent-gimun flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-crimson-hi shrink-0 mt-0.5" />
           <div className="text-xs space-y-1">
             <span className="font-bold block">Submission Error</span>
@@ -400,7 +400,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     value={individualData.fullName}
                     onChange={(e) => handleIndividualChange('fullName', e.target.value)}
                     placeholder="e.g. Zaid Malik"
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   />
                 </FormField>
 
@@ -419,7 +419,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     value={individualData.email}
                     onChange={(e) => handleIndividualChange('email', e.target.value)}
                     placeholder="zaid.malik@university.edu.pk"
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   />
                 </FormField>
               </div>
@@ -439,7 +439,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     value={individualData.phone}
                     onChange={(e) => handleIndividualChange('phone', e.target.value)}
                     placeholder="+92 300 1234567"
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   />
                 </FormField>
 
@@ -456,7 +456,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     value={individualData.institution}
                     onChange={(e) => handleIndividualChange('institution', e.target.value)}
                     placeholder="e.g. GIKI, LUMS, NUST"
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   />
                 </FormField>
 
@@ -475,7 +475,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                         e.target.value as GimunIndividualData['yearOfStudy']
                       )
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   >
                     <option value="" className="bg-canvas text-champagne">Select study level...</option>
                     <option value="freshman" className="bg-canvas text-champagne">Freshman / 1st Year</option>
@@ -496,7 +496,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                   <span className="w-2 h-2 rounded-full bg-champagne" />
                   <span>2. Committee &amp; Country Preferences</span>
                 </h3>
-                <p className="text-[11px] text-champagne/70">
+                <p className="text-[11px] text-text-3">
                   Select 3 distinct committee preferences in order of interest.
                 </p>
               </div>
@@ -512,7 +512,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     id="field-committeePreference1"
                     value={individualData.committeePreference1}
                     onChange={(e) => handleIndividualChange('committeePreference1', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   >
                     <option value="" className="bg-canvas text-champagne">Select 1st choice...</option>
                     {committees.map((c) => (
@@ -533,7 +533,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     id="field-committeePreference2"
                     value={individualData.committeePreference2}
                     onChange={(e) => handleIndividualChange('committeePreference2', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   >
                     <option value="" className="bg-canvas text-champagne">Select 2nd choice...</option>
                     {committees
@@ -556,7 +556,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     id="field-committeePreference3"
                     value={individualData.committeePreference3}
                     onChange={(e) => handleIndividualChange('committeePreference3', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   >
                     <option value="" className="bg-canvas text-champagne">Select 3rd choice...</option>
                     {committees
@@ -586,7 +586,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                   value={individualData.countryPreference}
                   onChange={(e) => handleIndividualChange('countryPreference', e.target.value)}
                   placeholder="e.g. United Kingdom, China, South Africa"
-                  className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                  className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                 />
               </FormField>
             </div>
@@ -601,14 +601,14 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-4">
                   <span className="text-xs font-semibold text-text">Have you attended MUN conferences before?</span>
-                  <div className="inline-flex rounded-xl border border-champagne/25 bg-canvas p-1 text-xs">
+                  <div className="inline-flex rounded-xl border border-line bg-canvas p-1 text-xs">
                     <button
                       type="button"
                       onClick={() => handleIndividualChange('hasExperience', true)}
                       className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
                         individualData.hasExperience
-                          ? 'bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-canvas shadow-xs'
-                          : 'text-champagne/70 hover:text-champagne'
+                          ? 'bg-champagne text-on-accent'
+                          : 'text-text-3 hover:text-champagne'
                       }`}
                     >
                       Yes
@@ -621,8 +621,8 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                       }}
                       className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
                         !individualData.hasExperience
-                          ? 'bg-linear-to-r from-champagne via-champagne-hi to-champagne-lo text-canvas shadow-xs'
-                          : 'text-champagne/70 hover:text-champagne'
+                          ? 'bg-champagne text-on-accent'
+                          : 'text-text-3 hover:text-champagne'
                       }`}
                     >
                       No (First MUN)
@@ -643,7 +643,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                       value={individualData.experienceDetails}
                       onChange={(e) => handleIndividualChange('experienceDetails', e.target.value)}
                       placeholder="e.g. LUMUN 2025 (DISEC, Outstanding Delegate), HMUN Asia 2024 (UNSC)..."
-                      className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                      className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                     />
                   </FormField>
                 )}
@@ -669,7 +669,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                   value={individualData.dietaryAccessibility}
                   onChange={(e) => handleIndividualChange('dietaryAccessibility', e.target.value)}
                   placeholder="Specify any dietary restrictions or wheelchair access requirements..."
-                  className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                  className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                 />
               </FormField>
 
@@ -688,7 +688,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                       e.target.value as GimunIndividualData['referralSource']
                     )
                   }
-                  className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                  className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                 >
                   <option value="" className="bg-canvas text-champagne">Select referral channel...</option>
                   <option value="social-media" className="bg-canvas text-champagne">Social Media (Instagram / Facebook / LinkedIn)</option>
@@ -728,7 +728,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     value={delegationData.delegationHeadName}
                     onChange={(e) => handleDelegationChange('delegationHeadName', e.target.value)}
                     placeholder="e.g. Prof. Tariq Ahmed / Sarah Khan"
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   />
                 </FormField>
 
@@ -747,7 +747,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     value={delegationData.delegationHeadEmail}
                     onChange={(e) => handleDelegationChange('delegationHeadEmail', e.target.value)}
                     placeholder="head.delegate@institution.edu.pk"
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   />
                 </FormField>
               </div>
@@ -767,7 +767,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     value={delegationData.delegationHeadPhone}
                     onChange={(e) => handleDelegationChange('delegationHeadPhone', e.target.value)}
                     placeholder="+92 300 9876543"
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   />
                 </FormField>
 
@@ -784,7 +784,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     value={delegationData.institution}
                     onChange={(e) => handleDelegationChange('institution', e.target.value)}
                     placeholder="e.g. Lahore University of Management Sciences"
-                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                    className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                   />
                 </FormField>
               </div>
@@ -798,7 +798,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     <span className="w-2 h-2 rounded-full bg-champagne" />
                     <span>2. Delegation Roster ({delegationData.delegates.length} Delegates)</span>
                   </h3>
-                  <p className="text-[11px] text-champagne/70">
+                  <p className="text-[11px] text-text-3">
                     Minimum 2 delegates; maximum 20 per roster submission.
                   </p>
                 </div>
@@ -815,13 +815,13 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                     value={rosterCountDraft ?? delegationData.delegateCount}
                     onChange={e => setRosterCountDraft(e.target.value)}
                     onBlur={() => { if (rosterCountDraft !== null && rosterCountDraft !== '') handleDelegateCountChange(Number(rosterCountDraft)); setRosterCountDraft(null); }}
-                    className="w-20 px-3 py-1.5 rounded-xl border border-line-2 bg-canvas text-text text-xs text-center font-bold font-mono focus:outline-none focus:ring-2 focus:ring-champagne/50"
+                    className="w-20 px-3 py-1.5 rounded-xl border border-line-2 bg-canvas text-text text-xs text-center font-bold font-mono focus:outline-none focus:ring-2 focus:ring-focus"
                   />
                 </div>
               </div>
 
               {(errors.delegateCount || errors.delegates) && (
-                <p role="alert" className="text-xs text-crimson-soft font-medium">{errors.delegateCount || errors.delegates}</p>
+                <p role="alert" className="text-xs text-accent-gimun font-medium">{errors.delegateCount || errors.delegates}</p>
               )}
 
               {/* Repeatable Delegate Cards */}
@@ -829,7 +829,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                 {delegationData.delegates.map((del, idx) => (
                   <div
                     key={idx}
-                    className="p-5 rounded-xl bg-raised/90 border border-champagne/25 hover:border-champagne/40 transition-colors space-y-4 relative shadow-md"
+                    className="p-5 rounded-xl bg-raised border border-line hover:border-line-2 transition-colors space-y-4 relative"
                   >
                     <div className="flex items-center justify-between gap-2 border-b border-line pb-2">
                       <span className="text-xs font-mono font-bold uppercase text-text">
@@ -839,7 +839,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                         <button
                           type="button"
                           onClick={() => handleRemoveDelegate(idx)}
-                          className="inline-flex items-center gap-1 text-[11px] text-champagne/70 hover:text-crimson-soft transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 text-[11px] text-text-3 hover:text-accent-gimun transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           <span>Remove</span>
@@ -861,7 +861,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                           value={del.name}
                           onChange={(e) => handleDelegateChange(idx, 'name', e.target.value)}
                           placeholder="Delegate name"
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                         />
                       </FormField>
 
@@ -879,7 +879,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                           value={del.email}
                           onChange={(e) => handleDelegateChange(idx, 'email', e.target.value)}
                           placeholder="delegate@institution.edu.pk"
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                         />
                       </FormField>
                     </div>
@@ -895,7 +895,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                           id={`field-delegate_${idx}_pref1`}
                           value={del.committeePreference1}
                           onChange={(e) => handleDelegateChange(idx, 'committeePreference1', e.target.value)}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                         >
                           <option value="" className="bg-canvas text-champagne">Select 1st choice...</option>
                           {committees.map((c) => (
@@ -915,7 +915,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                           id={`field-delegate_${idx}_pref2`}
                           value={del.committeePreference2}
                           onChange={(e) => handleDelegateChange(idx, 'committeePreference2', e.target.value)}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                         >
                           <option value="" className="bg-canvas text-champagne">Select 2nd choice...</option>
                           {committees
@@ -940,7 +940,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                           value={del.countryPreference}
                           onChange={(e) => handleDelegateChange(idx, 'countryPreference', e.target.value)}
                           placeholder="e.g. Germany"
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-xs focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-xs focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                         />
                       </FormField>
                     </div>
@@ -952,7 +952,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                 <button
                   type="button"
                   onClick={handleAddDelegate}
-                  className="w-full py-3.5 rounded-xl border-2 border-dashed border-champagne/30 hover:border-champagne/60 bg-raised/50 hover:bg-raised/80 text-xs font-bold text-champagne flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  className="w-full py-3.5 rounded-xl border-2 border-dashed border-line-2 hover:border-line-3 bg-raised/50 hover:bg-raised/80 text-xs font-bold text-champagne flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Another Delegate to Roster</span>
@@ -979,7 +979,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                   value={delegationData.dietaryAccessibility}
                   onChange={(e) => handleDelegationChange('dietaryAccessibility', e.target.value)}
                   placeholder="Specify accommodations required for any member of the delegation..."
-                  className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                  className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text placeholder-champagne/40 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                 />
               </FormField>
 
@@ -998,7 +998,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                       e.target.value as GimunDelegationData['referralSource']
                     )
                   }
-                  className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-champagne/50 focus:border-champagne"
+                  className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                 >
                   <option value="" className="bg-canvas text-champagne">Select referral channel...</option>
                   <option value="social-media" className="bg-canvas text-champagne">Social Media (Instagram / Facebook / LinkedIn)</option>
@@ -1026,7 +1026,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
         <button
           type="submit"
           disabled={status === 'submitting'}
-          className={`btn-shimmer-gold w-full py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-canvas flex items-center justify-center gap-2 transition-all shadow-xl cursor-pointer ${
+          className={`btn-shimmer-gold w-full py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-on-accent flex items-center justify-center gap-2 transition-all cursor-pointer ${
             status === 'submitting'
               ? 'opacity-70 cursor-wait animate-pulse'
               : 'hover:brightness-110 active:scale-[0.99]'

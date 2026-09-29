@@ -1,13 +1,22 @@
 import type { Metadata } from 'next';
-import { PageHero } from '@/components/ui/PageHero';
+import { BracketArt, ScalesArt } from '@/components/art/LineArt';
+import { HandoffStage } from '@/components/motion/HandoffStage';
+import { TransitionLink as Link } from '@/components/motion/TransitionLink';
+import { ChapterHead } from '@/components/sections/Chapter';
+import { Bridge } from '@/components/story/Bridge';
+import { ChapterRail } from '@/components/story/ChapterRail';
+import { Closing } from '@/components/sections/Closing';
+import { DateLedger } from '@/components/sections/DateLedger';
+import { CasePlacard } from '@/components/sections/Placards';
+import { Steps } from '@/components/sections/Steps';
 import { Button } from '@/components/ui/Button';
-import { CtaBanner } from '@/components/ui/CtaBanner';
-import { KeyDates } from '@/components/ui/KeyDates';
-import { Bezel, Eyebrow, FactList, Ledger, PageSection, SectionHeading, Steps, TextLink } from '@/components/ui/Editorial';
+import { FactList } from '@/components/ui/Editorial';
+import { PageHero } from '@/components/ui/PageHero';
 import { getMootCategories, getSiteConfig } from '@/lib/content';
 import { constructMetadata } from '@/lib/metadata';
-import { canRegister } from '@/lib/phase';
-import { formatEventDate, formatPublishedDate, getEventYear } from '@/lib/site-config';
+import { canRegister, serverRenderTime } from '@/lib/phase';
+import { formatEventDate, getEventYear } from '@/lib/site-config';
+import { formatDateRange } from '@/lib/utils';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
@@ -38,141 +47,169 @@ const HOW_IT_WORKS = [
 ];
 
 export default async function MootCupOverviewPage() {
-  const [categories, siteConfig] = await Promise.all([getMootCategories(), getSiteConfig()]);
-  const open = canRegister(siteConfig, 'mootCup');
-  const scoring = siteConfig.mootScoring;
+  const [categories, site] = await Promise.all([getMootCategories(), getSiteConfig()]);
+  const now = serverRenderTime();
+  const open = canRegister(site, 'mootCup', now);
+  const scoring = site.mootScoring;
+  const register = { label: open ? 'Register your team' : 'Registration status', href: '/register?track=moot-cup' };
 
   return (
-    <div className="pb-24">
-      <PageHero
-        variant="moot"
-        eyebrow={<Eyebrow>Track 02 · GIKI Moot Court</Eyebrow>}
-        title="Read the problem. Argue the law."
-        accentWords={['law.']}
-        description="The GIKI Moot Court is an appellate advocacy competition for law students: written memorials for both sides, then oral rounds before benches of legal practitioners."
-        actions={[
-          { label: open ? 'Register your team' : 'Registration status', href: '/register?track=moot-cup', variant: 'track-moot' },
-          { label: 'Problem categories', href: '/moot-cup/categories', variant: 'secondary' },
-        ]}
-        aside={
-          <Bezel>
-            <div className="p-7 sm:p-8">
-              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-champagne">At a glance</p>
-              <FactList
-                className="mt-4"
-                items={[
-                  { term: 'Team', value: '2–4 members: two oralists, up to two researchers' },
-                  { term: 'Written round', value: 'Applicant and Respondent memorials' },
-                  { term: 'Scoring', value: scoring ? `Memorial ${scoring.memorialWeight}% · Oral ${scoring.oralWeight}%` : 'Published with the rules' },
-                  { term: 'Awards', value: 'Champions, Best Memorial, Best Oralist' },
-                  { term: 'Registration closes', value: formatEventDate(siteConfig.registrationDeadlines.mootCup) },
-                ]}
-              />
-              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-                <TextLink href="/moot-cup/rules">Rules &amp; memorials</TextLink>
-                <TextLink href="/moot-cup/clarifications">Clarifications</TextLink>
-              </div>
+    <>
+      <ChapterRail />
+      <div className="handoff">
+        <div className="handoff__stage">
+          <div className="handoff__scene">
+            <PageHero
+              variant="moot"
+              meta={['Moot court', formatDateRange(site.eventDates.start, site.eventDates.end), 'GIKI, Topi']}
+              title="Read the problem. Argue the law."
+              accentPhrase="Argue the law."
+              description="An appellate advocacy competition for law students: written memorials for both sides, then oral rounds before benches of legal practitioners."
+              actions={[
+                { ...register, variant: 'track-moot' },
+                { label: 'Problem categories', href: '/moot-cup/categories', variant: 'secondary' },
+              ]}
+              aside={
+                <div className="glance glance--gmc">
+                  <ScalesArt className="glance__art" />
+                  <p className="glance__title">At a glance</p>
+                  <FactList
+                    items={[
+                      { term: 'Team', value: '2 to 4 members: two oralists, up to two researchers' },
+                      { term: 'Written round', value: 'Applicant and Respondent memorials' },
+                      { term: 'Scoring', value: scoring ? `Memorial ${scoring.memorialWeight}% · Oral ${scoring.oralWeight}%` : 'Published with the rules' },
+                      { term: 'Awards', value: 'Champions, Best Memorial, Best Oralist' },
+                      { term: 'Applications close', value: formatEventDate(site.registrationDeadlines.mootCup) },
+                    ]}
+                  />
+                </div>
+              }
+            />
+          </div>
+          <div className="handoff__dim" aria-hidden="true" />
+          <HandoffStage />
+        </div>
+
+        {/* From the problem to the Grand Final, with the knockout drawn beside it */}
+        <section className="handoff__sheet tone-deep chapter" aria-labelledby="how-title">
+          <div className="wrap steps-split">
+            <div className="steps-split__head">
+              <ChapterHead
+                id="how-title"
+                chapter={1}
+                act="From problem to final"
+                split={false}
+                reveal
+                title="From problem to Grand Final."
+                lead="Moot court is an appeal hearing, not a trial. You argue points of law directly to the judges, who will interrupt you."
+              >
+                <Link href="/moot-cup/rules" className="text-link w-fit">
+                  Rules &amp; memorials
+                </Link>
+              </ChapterHead>
+              <BracketArt className="steps-art draw-on-scroll" />
             </div>
-          </Bezel>
-        }
-      />
+            <Steps steps={HOW_IT_WORKS} accent="gmc" />
+          </div>
+          <div className="wrap">
+            <Bridge to="categories-title">It all starts with one problem. These are the areas of law it can come from.</Bridge>
+          </div>
+        </section>
+      </div>
 
-      <div className="space-y-28 pt-24 md:space-y-36">
-        <PageSection labelledBy="how-heading">
-          <SectionHeading
-            id="how-heading"
-            eyebrow="How it works"
-            title="From problem to Grand Final"
-            lead="Moot court is an appeal hearing, not a trial. You argue points of law directly to the judges, who will interrupt you."
-            className="mb-14"
-          />
-          <Steps steps={HOW_IT_WORKS} />
-        </PageSection>
+      {/* The case categories */}
+      <section className="chapter" aria-labelledby="categories-title">
+        <div className="wrap">
+          <ChapterHead
+            id="categories-title"
+            chapter={2}
+            act="The cases"
+            title={`${categories.length} areas of law.`}
+            lead="Choose the category your team prefers when you register. Questions about the problem go through the clarifications log, answered for every team at once."
+          >
+            <div className="flex flex-wrap gap-x-6 gap-y-3 lg:col-span-2">
+              <Link href="/moot-cup/categories" className="text-link">
+                All categories
+              </Link>
+              <Link href="/moot-cup/clarifications" className="text-link">
+                Clarifications
+              </Link>
+            </div>
+          </ChapterHead>
+          <div className="placard-grid placard-grid--three">
+            {categories.map((category) => (
+              <CasePlacard key={category.id} category={category} />
+            ))}
+          </div>
+          <Bridge to="team-title">Picked your area? Now the people who will argue it.</Bridge>
+        </div>
+      </section>
 
-        <PageSection labelledBy="team-heading" className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+      {/* Who can enter, and the fee */}
+      <section className="chapter" aria-labelledby="team-title">
+        <div className="wrap grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16">
           <div>
-            <SectionHeading id="team-heading" eyebrow="Who can enter" title="A team of law students" className="mb-10" />
+            <ChapterHead id="team-title" chapter={3} act="Your team" split={false} title="A team of law students." />
             <FactList
               items={[
-                { term: 'Eligibility', value: 'Students currently enrolled in an LL.B. or equivalent law programme, or a university moot court society.' },
+                { term: 'Eligibility', value: 'Students enrolled in an LL.B. or equivalent law programme, or a member of a university moot court society.' },
                 { term: 'Team size', value: 'Two oralists and up to two researchers. Several teams from one institution are welcome.' },
                 { term: 'Anonymity', value: 'Memorials and rounds use a team code only. Names or institutions in a memorial are penalised.' },
-                { term: 'Memorials due', value: siteConfig.memorialDeadline ? `${formatEventDate(siteConfig.memorialDeadline)}, 23:59 Pakistan time` : 'Announced with the problem' },
+                { term: 'Memorials due', value: site.memorialDeadline ? `${formatEventDate(site.memorialDeadline)}, 23:59 Pakistan time` : 'Announced with the problem' },
               ]}
             />
           </div>
-          <Bezel className="self-start">
-            <div className="p-8 sm:p-10">
-              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-champagne">Team fee</p>
-              <p className="mt-6 flex items-baseline gap-2">
-                <span className="text-4xl font-display font-medium tracking-tight text-text tabular-nums">{siteConfig.fees.mootCupTeam}</span>
-                <span className="text-sm text-text-4">per team</span>
-              </p>
-              <ul className="mt-6 space-y-2.5">
-                {['Memorial scoring with written feedback', 'All rounds, meals on conference days and socials', 'Accommodation on request, confirmed on acceptance'].map((point) => (
-                  <li key={point} className="flex gap-3 text-sm text-text-2">
-                    <span aria-hidden="true" className="mt-2 h-1 w-3 shrink-0 rounded-full bg-champagne" />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-6 text-sm leading-relaxed text-text-3">
-                Nothing is charged when you apply. Accepted teams receive an invoice with bank transfer details.
-              </p>
-              <div className="mt-8">
-                <Button variant="track-moot" href="/register?track=moot-cup" withArrow>
-                  {open ? 'Register your team' : 'Registration status'}
-                </Button>
-              </div>
+          <div className="glance glance--gmc self-start">
+            <p className="glance__title">Team fee</p>
+            <p className="flex items-baseline gap-2">
+              <span className="font-display text-[2.75rem] font-medium tracking-tight text-text" data-numeric="">
+                {site.fees.mootCupTeam}
+              </span>
+              <span className="text-small text-text-3">per team</span>
+            </p>
+            <ul className="stack__list">
+              <li>All rounds, lunch and tea on conference days, evening socials</li>
+              <li>Accommodation on request, confirmed on acceptance</li>
+            </ul>
+            <p className="mt-6 text-small text-text-3">Nothing is charged when you apply. Accepted teams receive an invoice with bank transfer details.</p>
+            <div className="mt-8">
+              <Button variant="track-moot" href={register.href} withArrow>
+                {register.label}
+              </Button>
             </div>
-          </Bezel>
-        </PageSection>
-
-        <KeyDates
-          title="GMC key dates"
-          dates={[
-            { label: 'Registration closes', date: siteConfig.registrationDeadlines.mootCup, note: '23:59 Pakistan time' },
-            { label: 'Memorials due', date: siteConfig.memorialDeadline, note: '23:59 Pakistan time, by email' },
-            { label: 'Preliminary rounds', date: siteConfig.eventDates.start },
-            { label: 'Grand Final', date: siteConfig.galaDate },
-          ]}
-        />
-
-        <PageSection labelledBy="categories-heading" className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-          <div className="lg:sticky lg:top-32 lg:self-start">
-            <SectionHeading
-              stacked
-              id="categories-heading"
-              eyebrow="Problem categories"
-              title={`${categories.length} areas of law`}
-              lead="Choose the category your team prefers when you register. Questions about the problem go through the clarifications log, answered for every team at once."
-              action={{ label: 'All categories', href: '/moot-cup/categories' }}
-            />
           </div>
-          <Ledger
-            rows={categories.map((cat) => ({
-              key: cat.id,
-              href: '/moot-cup/categories',
-              title: cat.name,
-              description: cat.description,
-              meta: [cat.areaOfLaw, `Revised ${formatPublishedDate(cat.lastUpdated)}`],
-            }))}
-          />
-        </PageSection>
+        </div>
+      </section>
 
-        <PageSection>
-          <CtaBanner
-            eyebrow={open ? 'Registration open' : undefined}
-            title="Bring your best advocates"
-            description="Register the team now and add the final roster details before the deadline. Clarification questions are open to every registered team."
-            footnote="No payment is taken online"
-            actions={[
-              { label: open ? 'Register your team' : 'Registration status', href: '/register?track=moot-cup', variant: 'track-moot' },
-              { label: 'Rules & memorials', href: '/moot-cup/rules', variant: 'secondary' },
+      {/* Key dates, on the paper sheet */}
+      <section className="sheet tone-inverse" aria-labelledby="dates-title">
+        <div className="sheet__ground" aria-hidden="true" />
+        <div className="wrap">
+          <ChapterHead id="dates-title" chapter={4} act="The clock" title="GMC key dates." lead="Deadlines are 23:59 Pakistan time." />
+          <DateLedger
+            now={now}
+            className="dates--flush"
+            dates={[
+              { iso: site.registrationDeadlines.mootCup, what: 'Applications close', note: 'Teams of two to four' },
+              ...(site.memorialDeadline ? [{ iso: site.memorialDeadline, what: 'Memorials due', note: 'By email to the moot court address, both sides' }] : []),
+              { iso: site.eventDates.start, what: 'Preliminary rounds begin', note: 'Two guaranteed rounds for every team' },
+              ...(site.galaDate ? [{ iso: site.galaDate, what: 'Grand Final', note: 'Before the full bench, then the awards gala' }] : []),
             ]}
           />
-        </PageSection>
-      </div>
-    </div>
+        </div>
+      </section>
+
+      <Closing
+        id="closing-title"
+        chapter={5}
+        act="Your bench"
+        title="Bring your best advocates."
+        lead="Register the team now and add the final roster details before the deadline. Clarification questions are open to every registered team."
+        actions={[
+          { ...register, variant: 'track-moot' },
+          { label: 'Rules & memorials', href: '/moot-cup/rules', variant: 'secondary' },
+        ]}
+      />
+    </>
   );
 }

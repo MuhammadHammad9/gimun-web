@@ -21,7 +21,10 @@ function waitForServer(timeoutMs = 120_000) {
         retry();
       });
       request.on('error', retry);
-      request.setTimeout(1_000, () => {
+      // The root layout intentionally renders against request-time content.
+      // Allow the first production render to finish instead of repeatedly
+      // aborting it while the server warms its route and font caches.
+      request.setTimeout(10_000, () => {
         request.destroy();
         retry();
       });
@@ -111,7 +114,7 @@ async function main() {
   const requestedArgs = process.argv.slice(2);
   const shards = requestedArgs.length > 0
     ? [requestedArgs]
-    : ['mobile-375', 'mobile-390', 'tablet-768', 'desktop-1024', 'desktop-1440']
+    : ['mobile-375', 'mobile-390', 'tablet-768', 'desktop-1024', 'desktop-1440', 'desktop-1440-dark']
         .map((project) => [`--project=${project}`]);
 
   for (const shard of shards) {

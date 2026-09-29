@@ -35,18 +35,18 @@ export function ClosedRegistrationBanner({
   return (
     <div className="double-bezel mx-auto max-w-2xl">
     <div className="double-bezel-inner space-y-6 p-8 text-center md:p-10">
-      <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-crest text-champagne border border-champagne/20 mx-auto">
+      <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-elevated text-champagne border border-line mx-auto">
         <Lock className="w-7 h-7" />
       </div>
 
       <div className="space-y-2">
-        <span className="px-3.5 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-brand-deep/70 text-crimson-soft border border-brand/60">
+        <span className="px-3.5 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-accent-gimun/8 text-accent-gimun border border-brand/60">
           {deadlinePassed ? 'Registration closed' : 'Not open right now'}
         </span>
         <h2 className="text-2xl md:text-3xl font-display font-medium text-text">
           {trackTitle} registration {deadlinePassed ? 'is closed' : 'is not open'}
         </h2>
-        <p className="text-sm text-champagne/80 max-w-lg mx-auto leading-relaxed">
+        <p className="text-sm text-text-2 max-w-lg mx-auto leading-relaxed">
           {deadlinePassed
             ? `The registration deadline${deadlineLabel ? ` (${deadlineLabel})` : ''} has passed, so this portal is no longer accepting applications.`
             : `Applications are not being accepted at the moment${deadlineLabel ? `; the current deadline is ${deadlineLabel}` : ''}. Check announcements for when registration opens.`}
@@ -59,14 +59,14 @@ export function ClosedRegistrationBanner({
           href="/contact?type=waitlist"
           className="p-4 rounded-xl border border-line hover:border-line-2 hover:bg-champagne/5 transition-all group space-y-1.5"
         >
-          <div className="flex items-center justify-between text-xs font-heading font-bold text-cream">
+          <div className="flex items-center justify-between text-xs font-display font-medium text-text">
             <span className="flex items-center gap-1.5">
               <Mail className="w-4 h-4 text-champagne" />
               <span>Waitlist</span>
             </span>
-            <ArrowRight className="w-3.5 h-3.5 text-champagne/60 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5 text-text-3 group-hover:translate-x-0.5 transition-transform" />
           </div>
-          <p className="text-[11px] text-champagne/70 leading-snug">
+          <p className="text-[11px] text-text-3 leading-snug">
             Contact Secretariat for emergency waitlist or roster changes.
           </p>
         </Link>
@@ -75,14 +75,14 @@ export function ClosedRegistrationBanner({
           href="/schedule"
           className="p-4 rounded-xl border border-line hover:border-line-2 hover:bg-champagne/5 transition-all group space-y-1.5"
         >
-          <div className="flex items-center justify-between text-xs font-heading font-bold text-cream">
+          <div className="flex items-center justify-between text-xs font-display font-medium text-text">
             <span className="flex items-center gap-1.5">
               <Calendar className="w-4 h-4 text-champagne" />
               <span>Schedule</span>
             </span>
-            <ArrowRight className="w-3.5 h-3.5 text-champagne/60 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5 text-text-3 group-hover:translate-x-0.5 transition-transform" />
           </div>
-          <p className="text-[11px] text-champagne/70 leading-snug">
+          <p className="text-[11px] text-text-3 leading-snug">
             Review sessions, committee timings, and courtroom fixtures.
           </p>
         </Link>
@@ -91,25 +91,25 @@ export function ClosedRegistrationBanner({
           href="/resources"
           className="p-4 rounded-xl border border-line hover:border-line-2 hover:bg-champagne/5 transition-all group space-y-1.5"
         >
-          <div className="flex items-center justify-between text-xs font-heading font-bold text-cream">
+          <div className="flex items-center justify-between text-xs font-display font-medium text-text">
             <span className="flex items-center gap-1.5">
               <FileText className="w-4 h-4 text-champagne" />
               <span>Resources</span>
             </span>
-            <ArrowRight className="w-3.5 h-3.5 text-champagne/60 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5 text-text-3 group-hover:translate-x-0.5 transition-transform" />
           </div>
-          <p className="text-[11px] text-champagne/70 leading-snug">
+          <p className="text-[11px] text-text-3 leading-snug">
             Download rules, the moot problem (compromis) and prep guides.
           </p>
         </Link>
       </div>
 
       {onSwitchTrack && (
-        <div className="pt-4 border-t border-champagne/15">
+        <div className="pt-4 border-t border-line">
           <button
             type="button"
             onClick={onSwitchTrack}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-champagne hover:text-cream hover:underline"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-champagne hover:text-text hover:underline"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Switch to the other competition track</span>

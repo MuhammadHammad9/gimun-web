@@ -79,7 +79,7 @@ export function SponsorStrip({ sponsors: allSponsors, title, className }: Sponso
       </div>
       {/* peer-* variants reach sibling elements only, so they sit on this
           wrapper and style the label through it. */}
-      <div className="mt-4 flex justify-center peer-checked:[&>label]:text-text-2 peer-focus-visible:[&>label]:ring-2 peer-focus-visible:[&>label]:ring-champagne">
+      <div className="mt-4 flex justify-center peer-checked:[&>label]:text-text-2 peer-focus-visible:[&>label]:ring-2 peer-focus-visible:[&>label]:ring-focus">
         <label
           htmlFor={pauseId}
           className="inline-flex min-h-8 cursor-pointer items-center rounded-full px-3 font-mono text-[11px] uppercase tracking-wider text-text-4 transition-colors hover:text-text-2"

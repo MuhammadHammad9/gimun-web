@@ -1,27 +1,33 @@
 'use client';
 
-import React, { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { useRef, useState } from 'react';
 import { Search } from 'lucide-react';
+import { useFlip } from '@/components/motion/useFlip';
+import { FilterBar } from '@/components/ui/FilterBar';
+
+type Status = 'available' | 'assigned' | 'reserved';
 
 interface CountryItem {
   country: string;
-  status: 'available' | 'assigned' | 'reserved';
+  status: Status;
 }
 
-interface CountryMatrixProps {
-  countryList: CountryItem[];
-}
+const STATUS_LABEL: Record<Status, string> = {
+  available: 'Available',
+  assigned: 'Assigned',
+  reserved: 'Reserved',
+};
 
-export function CountryMatrix({ countryList }: CountryMatrixProps) {
-  const [filter, setFilter] = useState<'all' | 'available' | 'assigned' | 'reserved'>('all');
+/**
+ * Every seat in a committee and whether it can still be requested. Status is
+ * carried by words and by the marker's shape (filled, hollow, struck), never
+ * by colour alone. Cells glide into place when the filter changes.
+ */
+export function CountryMatrix({ countryList }: { countryList: CountryItem[] }) {
+  const [filter, setFilter] = useState<'all' | Status>('all');
   const [search, setSearch] = useState('');
-
-  const filtered = countryList.filter((item) => {
-    const matchesFilter = filter === 'all' || item.status === filter;
-    const matchesSearch = item.country.toLowerCase().includes(search.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  const grid = useRef<HTMLUListElement>(null);
+  const { prime, capture } = useFlip(grid, '.seat');
 
   const counts = {
     all: countryList.length,
@@ -29,72 +35,58 @@ export function CountryMatrix({ countryList }: CountryMatrixProps) {
     assigned: countryList.filter((c) => c.status === 'assigned').length,
     reserved: countryList.filter((c) => c.status === 'reserved').length,
   };
+  const query = search.trim().toLowerCase();
+  const shown = countryList.filter((item) => (filter === 'all' || item.status === filter) && item.country.toLowerCase().includes(query));
 
   return (
-    <div className="space-y-4">
-      {/* Controls: Search and Filter Pills */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          {(['all', 'available', 'assigned', 'reserved'] as const).map((status) => (
-            <button
-              key={status}
-              type="button"
-              aria-pressed={filter === status}
-              onClick={() => setFilter(status)}
-              className={cn(
-                'px-3 py-1 rounded-full text-xs font-mono font-medium transition-colors capitalize',
-                filter === status
-                  ? 'bg-gradient-to-r from-champagne-hi via-champagne to-champagne-lo text-overlay font-bold shadow-xs'
-                  : 'bg-overlay/80 text-champagne/70 hover:bg-champagne/20 hover:text-cream'
-              )}
-            >
-              {status} ({counts[status]})
-            </button>
-          ))}
-        </div>
-
-        <div className="relative w-full sm:w-64">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-champagne/60" />
+    <div>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" onPointerEnter={prime} onFocusCapture={prime}>
+        <FilterBar
+          label="Filter seats by status"
+          options={(['all', 'available', 'assigned', 'reserved'] as const).map((value) => ({
+            value,
+            label: value === 'all' ? 'All' : STATUS_LABEL[value],
+            count: counts[value],
+          }))}
+          activeValue={filter}
+          onChange={(value) => {
+            capture();
+            setFilter(value);
+          }}
+        />
+        <label className="relative block w-full sm:w-72">
+          <span className="sr-only">Find a country or portfolio</span>
+          <Search aria-hidden="true" strokeWidth={1.75} className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-text-3" />
           <input
-            type="text"
-            placeholder="Filter country or portfolio..."
-            aria-label="Filter country or portfolio"
+            type="search"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-overlay/90 border border-champagne/30 text-xs text-cream placeholder:text-champagne/50 focus:outline-hidden focus:ring-2 focus:ring-champagne/20 focus:border-champagne"
+            placeholder="Find a country or portfolio"
+            onChange={(event) => {
+              capture();
+              setSearch(event.target.value);
+            }}
+            className="w-full rounded-full border border-line-2 bg-raised py-2.5 pl-10 pr-4 text-small text-text placeholder:text-text-4 focus:border-line-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           />
-        </div>
+        </label>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5">
-        {filtered.map((item, idx) => (
-          <div
-            key={idx}
-            className="p-3 rounded-xl bg-overlay/80 border border-champagne/20 flex flex-col justify-between gap-2 shadow-xs hover:border-champagne/60 transition-colors backdrop-blur-md"
-          >
-            <span className="font-heading font-semibold text-xs text-cream leading-tight">
-              {item.country}
+      <p className="sr-only" aria-live="polite">
+        {shown.length} of {countryList.length} seats shown
+      </p>
+
+      <ul ref={grid} className="seats">
+        {shown.map((item) => (
+          <li key={item.country} className="seat" data-status={item.status}>
+            <span className="seat__name">{item.country}</span>
+            <span className="seat__status">
+              <span className="seat__marker" aria-hidden="true" />
+              {STATUS_LABEL[item.status]}
             </span>
-            <span
-              className={cn(
-                'self-start px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider',
-                item.status === 'available' && 'bg-champagne/20 text-champagne border border-champagne/40',
-                item.status === 'assigned' && 'bg-champagne/10 text-champagne/60 border border-line',
-                item.status === 'reserved' && 'bg-brand-lit/40 text-champagne-hi border border-brand-lit'
-              )}
-            >
-              {item.status}
-            </span>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
 
-      {filtered.length === 0 && (
-        <div className="p-8 text-center text-xs font-mono text-champagne/60 bg-overlay/60 rounded-xl border border-dashed border-champagne/30">
-          No portfolios match your current search or filter.
-        </div>
-      )}
+      {shown.length === 0 && <p className="mt-6 rounded-2xl border border-dashed border-line-2 p-8 text-center text-small text-text-3">No seats match that search or filter.</p>}
     </div>
   );
 }

@@ -1,71 +1,54 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import type { SiteConfig, Announcement, Sponsor } from '@/lib/types';
-import { Navbar } from './Navbar';
-import { Footer } from './Footer';
-import { AnnouncementBanner } from './AnnouncementBanner';
+import { SiteHeader } from '@/components/chrome/SiteHeader';
+import { PointerGlow } from '@/components/motion/PointerGlow';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
+import { SmoothScroll } from '@/components/motion/SmoothScroll';
 import { TransitionProvider } from '@/components/motion/TransitionProvider';
 import { isKnownPublicPath } from '@/lib/motion/routes';
 
 /**
- * The public site shell: skip link, announcement bar, navbar, main, footer.
+ * The public site shell. The notice bar and the footer arrive as server-
+ * rendered elements from the root layout, so they cost no client JavaScript;
+ * this component only decides where they appear.
  *
- * `/admin` opts out of all of it — including smooth scroll and the progress
- * bar, which would fight the CMS's own dense, scrollable panels.
+ * `/admin` opts out of all of it (curtain, smooth scroll, progress bar), and
+ * unmatched routes render the focused 404 without chrome. Every direct child
+ * here lands directly in <body>, and <main> must stay one of them: the print
+ * stylesheet hides every body child except <main>.
  */
 export function SiteChrome({
-  site,
-  announcement,
-  sponsors,
+  banner,
+  footer,
   children,
 }: {
-  site: SiteConfig;
-  announcement?: Announcement;
-  sponsors: Sponsor[];
-  children: React.ReactNode;
+  banner: ReactNode;
+  footer: ReactNode;
+  children: ReactNode;
 }) {
   const path = usePathname();
 
-  if (path === '/admin' || path.startsWith('/admin/')) {
-    return <main id="main-content">{children}</main>;
-  }
-
-  // Unmatched routes are a focused recovery state. Omitting the regular
-  // chrome keeps hidden navigation out of the accessibility tree as well as
-  // out of sight behind the fixed 404 surface.
-  if (!isKnownPublicPath(path)) {
+  if (path === '/admin' || path.startsWith('/admin/') || !isKnownPublicPath(path)) {
     return <main id="main-content">{children}</main>;
   }
 
   return (
     <TransitionProvider>
+      <div className="atmosphere" aria-hidden="true" />
       <ScrollProgress />
-
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-champagne focus:px-4 focus:py-3 focus:font-semibold focus:text-canvas"
-      >
+      <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
-
-      <div className="print:hidden">
-        <AnnouncementBanner announcement={announcement} />
-      </div>
-
-      {/* The wrapper must stick: a sticky child cannot leave a header-height parent. */}
-      <div className="sticky top-0 z-40 print:hidden">
-        <Navbar />
-      </div>
-
-      <main id="main-content" className="flex-1 w-full print:p-0 print:m-0">
+      {banner}
+      <SiteHeader />
+      <main id="main-content" tabIndex={-1} className="w-full flex-1 outline-none print:m-0 print:p-0">
         {children}
       </main>
-
-      <div className="print:hidden">
-        <Footer siteConfig={site} sponsors={sponsors} />
-      </div>
+      {footer}
+      <SmoothScroll />
+      <PointerGlow />
     </TransitionProvider>
   );
 }

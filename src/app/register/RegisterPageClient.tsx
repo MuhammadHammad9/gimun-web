@@ -118,7 +118,7 @@ function RegisterContent({ committees, categories, siteConfig, initialTrack }: R
 
           <span className="text-sm text-text-4">
             Applying for{' '}
-            <strong className={selectedTrack === 'gimun' ? 'text-crimson-soft' : 'text-champagne'}>
+            <strong className={selectedTrack === 'gimun' ? 'text-accent-gimun' : 'text-champagne'}>
               {selectedTrack === 'gimun' ? 'Model United Nations (GIMUN)' : 'Moot Court (GMC)'}
             </strong>
           </span>

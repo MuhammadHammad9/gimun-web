@@ -836,7 +836,7 @@ export function RegistrationSuccess({
               <button
                 type="button"
                 onClick={handlePrint}
-                className="inline-flex h-11 items-center gap-2 rounded-full bg-champagne px-5 text-sm font-semibold text-canvas transition-colors hover:bg-champagne-hi"
+                className="inline-flex h-11 items-center gap-2 rounded-full bg-champagne px-5 text-sm font-semibold text-on-accent transition-colors hover:bg-champagne-hi"
               >
                 <Printer aria-hidden="true" className="h-4 w-4" />
                 Print or save as PDF

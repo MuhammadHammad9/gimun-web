@@ -1,9 +1,10 @@
 'use client';
 import { useState, useTransition } from 'react';
+import { Button } from '@/components/ui/Button';
 import { submitSurvey } from './actions';
 
 const control =
-  'mt-2 block w-full rounded-xl border border-line-2 bg-canvas px-4 py-3 text-base text-text placeholder:text-text-4 focus:border-champagne focus:outline-none focus:ring-2 focus:ring-champagne/40 sm:text-sm';
+  'mt-2 block w-full rounded-xl border border-line-2 bg-elevated px-4 py-3 text-base text-text placeholder:text-text-4 focus:border-champagne focus:outline-none focus:ring-2 focus:ring-champagne/40 sm:text-sm';
 
 export function SurveyForm({ token, questions }: { token: string; questions: { id: string; label: string; kind: string }[] }) {
   const [message, setMessage] = useState('');
@@ -37,7 +38,7 @@ export function SurveyForm({ token, questions }: { token: string; questions: { i
               {[1, 2, 3, 4, 5].map((v) => (
                 <label key={v} className="cursor-pointer">
                   <input type="radio" name={q.id} value={v} required className="peer sr-only" />
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-line-2 text-sm text-text-2 transition-colors peer-checked:border-champagne peer-checked:bg-champagne peer-checked:text-canvas peer-focus-visible:ring-2 peer-focus-visible:ring-champagne">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-line-2 text-sm text-text-2 transition-colors peer-checked:border-champagne peer-checked:bg-champagne peer-checked:text-on-accent peer-focus-visible:ring-2 peer-focus-visible:ring-focus">
                     {v}
                   </span>
                 </label>
@@ -52,14 +53,11 @@ export function SurveyForm({ token, questions }: { token: string; questions: { i
           </label>
         )
       )}
-      <button
-        disabled={pending}
-        className="btn-shimmer-gold inline-flex min-h-11 items-center rounded-full px-6 text-xs font-bold uppercase tracking-wider disabled:opacity-60"
-      >
+      <Button type="submit" variant="primary" loading={pending}>
         {pending ? 'Sending…' : 'Submit feedback'}
-      </button>
+      </Button>
       {message && (
-        <p role="alert" className="text-sm text-crimson-soft">
+        <p role="alert" className="text-sm text-accent-gimun">
           {message}
         </p>
       )}

@@ -367,6 +367,14 @@ for (const { url, sourceFile, isRenderedHtml } of discoveredLinks) {
     else if (rel.endsWith('.html')) {
       currentRoute = '/' + rel.replace(/\.html$/, '');
     }
+  } else {
+    // A source file under src/app belongs to the route of its folder, so a
+    // bare "#id" link in it points at that page (route groups dropped).
+    const rel = path.relative(path.join(rootDir, 'src', 'app'), path.dirname(sourceFile)).replace(/\\/g, '/');
+    if (!rel.startsWith('..') && !path.isAbsolute(rel)) {
+      const segments = rel.split('/').filter((s) => s && s !== '.' && !/^\(.*\)$/.test(s));
+      currentRoute = '/' + segments.join('/');
+    }
   }
 
   // Target route for hash anchor

@@ -1,0 +1,103 @@
+/* ==============================================================================
+   MOTION: CSS LAYER
+
+   Everything that moves at first paint is here, in CSS, so it never waits for
+   JavaScript and never delays the largest paint. JavaScript motion (GSAP,
+   anime.js) starts only after the visitor shows intent; see
+   src/lib/motion/gates.ts.
+
+   Rules that keep automated checks honest:
+   - entrances move transform only: text is fully opaque from the first frame;
+   - nothing at load animates layout, clip-path, filters or SVG strokes.
+   ============================================================================== */
+
+/* --- First-paint entrance ---------------------------------------------------
+   <h1 data-entrance>…, <p data-entrance="2">… The number staggers the start
+   by 90 ms per step. Under the page curtain the animations wait, paused, and
+   play as the new page is revealed (TransitionProvider clears the flag). */
+@keyframes entrance-rise {
+  from {
+    transform: translate3d(0, 0.875rem, 0);
+  }
+}
+
+[data-entrance] {
+  animation: entrance-rise 0.72s var(--ease-out-expo) both;
+}
+
+[data-entrance="2"] { animation-delay: 90ms; }
+[data-entrance="3"] { animation-delay: 180ms; }
+[data-entrance="4"] { animation-delay: 270ms; }
+[data-entrance="5"] { animation-delay: 360ms; }
+
+main[data-transition="covered"] [data-entrance] {
+  animation-play-state: paused;
+}
+
+/* --- Lenis (smooth scrolling, desktop only) --------------------------------- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
+}
+
+/* Smooth scrolling hides the scrollbar's width change when Lenis stops the
+   page for a menu or the curtain. */
+html.lenis {
+  scrollbar-gutter: stable;
+}
+
+/* --- Split text (GSAP SplitText) --------------------------------------------
+   The library adds its own masks; these keep split headings from changing
+   their wrapping or baseline while split. */
+[data-split] .split-line {
+  display: block;
+}
+
+/* --- Reduced motion ---------------------------------------------------------
+   The global rule in globals.css collapses every CSS animation and
+   transition. These cover what that rule cannot reach. */
+@media (prefers-reduced-motion: reduce) {
+  [data-entrance] {
+    animation: none;
+  }
+
+  .page-curtain {
+    display: none;
+  }
+}
+
+@media print {
+  .page-curtain {
+    display: none !important;
+  }
+}
+
+/* A list row rising into place (schedule, documents, clarifications). */
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.375rem);
+  }
+}
