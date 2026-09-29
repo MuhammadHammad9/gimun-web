@@ -21,12 +21,20 @@ const PanelArt = dynamic(() => import('./PanelArt'), { ssr: false });
 
 type PanelKind = 'gimun' | 'gmc' | 'about';
 
-/** Lead copy and art for the panel of each top-level section. */
-const PANEL_LEAD: Record<string, { kind: PanelKind; copy: string }> = {
-  gimun: { kind: 'gimun', copy: 'Model United Nations. Represent a country in committee, on your own or with a delegation.' },
-  gmc: { kind: 'gmc', copy: 'The GIKI Moot Court. Argue a case problem as a team before a bench of judges.' },
-  about: { kind: 'about', copy: 'The event, the campus at Topi, and answers before you ask.' },
+/**
+ * Fallback lead copy and art for a section panel, chosen by where the section
+ * points rather than by its id, so an entry an editor re-creates keeps its art.
+ * The copy shown is the navigation entry's own description when it has one.
+ */
+const PANEL_COPY: Record<PanelKind, string> = {
+  gimun: 'Model United Nations. Represent a country in committee, on your own or with a delegation.',
+  gmc: 'The GIKI Moot Court. Argue a case problem as a team before a bench of judges.',
+  about: 'The event, the campus at Topi, and answers before you ask.',
 };
+function panelLead(href: string): { kind: PanelKind; copy: string } {
+  const kind: PanelKind = href.startsWith('/gimun') ? 'gimun' : href.startsWith('/moot-cup') ? 'gmc' : 'about';
+  return { kind, copy: PANEL_COPY[kind] };
+}
 
 const HIDE_AFTER = 480;
 const noopSubscribe = () => () => {};
@@ -157,7 +165,7 @@ export function SiteHeader() {
             <span className="nav-glide" aria-hidden="true" />
             {items.map((item) => {
               const current = isCurrentPath(item.href, pathname);
-              const lead = PANEL_LEAD[item.id];
+              const lead = panelLead(item.href);
               const hasPanel = item.dropdown.length > 0;
               const open = panel === item.id;
               const panelId = `nav-panel-${item.id}`;
@@ -170,7 +178,7 @@ export function SiteHeader() {
                   onPointerEnter={hasPanel ? hoverOpen(item.id) : undefined}
                   onPointerLeave={hasPanel ? hoverClose : undefined}
                   onBlur={hasPanel ? onBlurWithin(item.id) : undefined}
-                  style={lead?.kind === 'gimun' ? ({ '--nav-accent': 'var(--color-accent-gimun)' } as React.CSSProperties) : undefined}
+                  style={lead.kind === 'gimun' ? ({ '--nav-accent': 'var(--color-accent-gimun)' } as React.CSSProperties) : undefined}
                 >
                   <Link href={item.href} className="nav-link" aria-current={current ? 'page' : undefined}>
                     {item.label}
@@ -190,14 +198,14 @@ export function SiteHeader() {
                   )}
                   {hasPanel && open && (
                     <div id={panelId} className="mega">
-                      <div className={lead?.kind === 'about' ? 'mega__lead tone-deep' : 'mega__lead tone-crest'}>
+                      <div className={lead.kind === 'about' ? 'mega__lead tone-deep' : 'mega__lead tone-crest'}>
                         <span className="mega__lead-title">{item.label}</span>
-                        <p className="mega__lead-copy">{item.description || lead?.copy}</p>
+                        <p className="mega__lead-copy">{item.description || lead.copy}</p>
                         <Link href={item.href} className="mega__lead-link" onClick={() => setPanel(null)}>
-                          {item.id === 'about' ? 'About the event' : `${item.label} overview`}
+                          {lead.kind === 'about' ? 'About the event' : `${item.label} overview`}
                           <ArrowRight aria-hidden="true" strokeWidth={1.75} className="size-4" />
                         </Link>
-                        {lead && <PanelArt kind={lead.kind} />}
+                        <PanelArt kind={lead.kind} />
                       </div>
                       <div className="mega__links">
                         {item.dropdown.map((child, index) => (
@@ -213,7 +221,7 @@ export function SiteHeader() {
                             {child.description && <span className="mega__link-copy">{child.description}</span>}
                           </Link>
                         ))}
-                        <MegaFoot kind={lead?.kind} onNavigate={() => setPanel(null)} />
+                        <MegaFoot kind={lead.kind} onNavigate={() => setPanel(null)} />
                       </div>
                     </div>
                   )}

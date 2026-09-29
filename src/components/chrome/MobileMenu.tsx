@@ -35,7 +35,8 @@ export function MobileMenu({
   const renderedAt = useRenderedAt();
   const pathname = usePathname();
   // The full set, not the header's: on a phone this is the only navigation.
-  const groups = navigationTree(site.navigation, 'footer');
+  // Register has its own button at the foot of the menu.
+  const groups = navigationTree(site.navigation, 'footer').filter((g) => g.href !== '/register');
   const registrationOpen = eventPhase(site, renderedAt) === 'registration-open';
   const menuRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);

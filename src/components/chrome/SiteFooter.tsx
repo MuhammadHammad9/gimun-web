@@ -34,7 +34,7 @@ export function SiteFooter({ site, sponsors }: { site: SiteConfig; sponsors: Spo
           <div>
             <BrandMark className="size-11" />
             <h2 id="site-footer-title" className="site-footer__statement mt-6">
-              Two rooms, one campus, four days in Topi.
+              {site.footerBlurb?.trim() || 'Two rooms, one campus, four days in Topi.'}
             </h2>
             <div className="site-footer__facts">
               <span>{formatDateRange(site.eventDates.start, site.eventDates.end)}</span>

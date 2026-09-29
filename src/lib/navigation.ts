@@ -1,4 +1,5 @@
 export type NavigationArea = 'header' | 'footer' | 'mobile' | 'all';
+export type FooterGroup = 'gimun' | 'moot' | 'event' | 'about';
 
 export interface NavigationItem {
   id: string;
@@ -8,6 +9,8 @@ export interface NavigationItem {
   parentId?: string;
   /** One short line shown under the label in dropdowns and the mobile menu. */
   description?: string;
+  /** Footer column for this entry. Defaults by section when unset. */
+  footerGroup?: FooterGroup;
 }
 
 /**
@@ -72,8 +75,9 @@ export const defaultNavigation: NavigationItem[] = [
   },
 
   // --- Standalone tasks --------------------------------------------------
-  { id: 'schedule', label: 'Schedule', href: '/schedule', area: 'all' },
-  { id: 'resources', label: 'Resources', href: '/resources', area: 'all' },
+  { id: 'register-footer', label: 'Register', href: '/register', area: 'footer', footerGroup: 'event' },
+  { id: 'schedule', label: 'Schedule', href: '/schedule', area: 'all', footerGroup: 'event' },
+  { id: 'resources', label: 'Resources', href: '/resources', area: 'all', footerGroup: 'event' },
 
   // --- About -------------------------------------------------------------
   { id: 'about', label: 'About', href: '/about', area: 'all' },
@@ -100,6 +104,7 @@ export const defaultNavigation: NavigationItem[] = [
     href: '/about/venue',
     area: 'all',
     description: 'Getting to GIKI and staying there',
+    footerGroup: 'event',
   },
   {
     id: 'about-team',
@@ -122,8 +127,8 @@ export const defaultNavigation: NavigationItem[] = [
   // Low-frequency or time-boxed pages. They stay one click from the footer
   // and are surfaced in context (the announcement bar, the results page gate)
   // rather than taking a permanent slot in the header.
-  { id: 'announcements', parentId: 'about', label: 'Announcements', href: '/announcements', area: 'footer' },
-  { id: 'results', parentId: 'about', label: 'Results', href: '/results', area: 'footer' },
+  { id: 'announcements', parentId: 'about', label: 'Announcements', href: '/announcements', area: 'footer', footerGroup: 'event' },
+  { id: 'results', parentId: 'about', label: 'Results', href: '/results', area: 'footer', footerGroup: 'event' },
   { id: 'sponsors', parentId: 'about', label: 'Sponsors', href: '/about/sponsors', area: 'footer' },
   { id: 'gallery', parentId: 'about', label: 'Gallery', href: '/about/gallery', area: 'footer' },
 ];
@@ -145,7 +150,7 @@ export function navigationTree(
   items: NavigationItem[] = defaultNavigation,
   area: Exclude<NavigationArea, 'all'>
 ): NavigationNode[] {
-  const source = items ?? defaultNavigation;
+  const source = items?.length ? items : defaultNavigation;
   const visible = source.filter((i) => i.area === 'all' || i.area === area);
 
   return visible
@@ -161,63 +166,61 @@ export interface FooterColumn {
   links: { label: string; href: string }[];
 }
 
-/**
- * Footer columns.
- *
- * Declared separately from the header tree rather than derived from it. The
- * two surfaces answer different questions: the header is "what do I want to
- * do", the footer is "what exists here". Deriving one from the other produced
- * a footer that was an exact copy of the nav, with single-link columns for
- * Schedule and Resources and a nine-item About column beside them.
- *
- * Unlike the header, each track column opens with its own overview page — in
- * a site map that entry is the point, not a duplicate.
- */
-export const footerColumns: FooterColumn[] = [
-  {
-    title: 'GIMUN',
-    links: [
-      { label: 'Overview', href: '/gimun' },
-      { label: 'Committees', href: '/gimun/committees' },
-      { label: 'Rules of procedure', href: '/gimun/rules' },
-    ],
-  },
-  {
-    title: 'Moot Court',
-    links: [
-      { label: 'Overview', href: '/moot-cup' },
-      { label: 'Problem categories', href: '/moot-cup/categories' },
-      { label: 'Rules & memorials', href: '/moot-cup/rules' },
-      { label: 'Clarifications', href: '/moot-cup/clarifications' },
-    ],
-  },
-  {
-    title: 'Event',
-    links: [
-      { label: 'Register', href: '/register' },
-      { label: 'Schedule', href: '/schedule' },
-      { label: 'Resources', href: '/resources' },
-      { label: 'Venue & travel', href: '/about/venue' },
-      { label: 'Announcements', href: '/announcements' },
-      { label: 'Results', href: '/results' },
-    ],
-  },
-  {
-    title: 'About',
-    links: [
-      { label: 'The event', href: '/about' },
-      { label: 'Team', href: '/about/team' },
-      { label: 'Sponsors', href: '/about/sponsors' },
-      { label: 'Gallery', href: '/about/gallery' },
-      { label: 'FAQ', href: '/about/faq' },
-      { label: 'Contact', href: '/contact' },
-    ],
-  },
+const FOOTER_GROUPS: { id: FooterGroup; title: string }[] = [
+  { id: 'gimun', title: 'GIMUN' },
+  { id: 'moot', title: 'Moot Court' },
+  { id: 'event', title: 'Event' },
+  { id: 'about', title: 'About' },
 ];
 
-/** Footer honors the same published navigation entries as the other surfaces. */
+// Entries saved before `footerGroup` existed still land in the right column.
+const DEFAULT_GROUP_BY_HREF: Record<string, FooterGroup> = {
+  '/register': 'event',
+  '/schedule': 'event',
+  '/resources': 'event',
+  '/about/venue': 'event',
+  '/announcements': 'event',
+  '/results': 'event',
+};
+const ROOT_GROUPS: Record<string, FooterGroup> = { gimun: 'gimun', gmc: 'moot', about: 'about' };
+
+function footerGroupOf(item: NavigationItem, byId: Map<string, NavigationItem>): FooterGroup {
+  if (item.footerGroup) return item.footerGroup;
+  const byHref = DEFAULT_GROUP_BY_HREF[item.href];
+  if (byHref) return byHref;
+  const root = item.parentId ? byId.get(item.parentId) : item;
+  if (root?.footerGroup) return root.footerGroup;
+  if (root && ROOT_GROUPS[root.id]) return ROOT_GROUPS[root.id];
+  if (root?.href.startsWith('/moot-cup')) return 'moot';
+  if (root?.href.startsWith('/gimun')) return 'gimun';
+  return 'about';
+}
+
+/**
+ * Footer columns built from the published navigation.
+ *
+ * The footer is the site map: four fixed columns (GIMUN, Moot Court, Event,
+ * About) so a visitor can predict where a page lives. Each entry picks its
+ * column through `footerGroup`, which editors set in the admin. A section
+ * root opens its column as "Overview" (or as the child that repeats its
+ * link), and a page linked twice is listed once.
+ */
 export function publishedFooterColumns(items: NavigationItem[]): FooterColumn[] {
- const visible=items.filter(i=>i.area==='all'||i.area==='footer');
- const roots=visible.filter(i=>!i.parentId);
- return roots.map(root=>({title:root.label,links:[{label:root.label,href:root.href},...visible.filter(i=>i.parentId===root.id&&i.href!==root.href).map(i=>({label:i.label,href:i.href}))]}));
+  const visible = items.filter((i) => i.area === 'all' || i.area === 'footer');
+  const byId = new Map(visible.map((i) => [i.id, i]));
+  const columns = new Map<FooterGroup, FooterColumn['links']>(FOOTER_GROUPS.map((g) => [g.id, []]));
+  const seen = new Set<string>();
+  // Roots first so each column opens with its overview.
+  const ordered = [...visible.filter((i) => !i.parentId), ...visible.filter((i) => i.parentId)];
+  for (const item of ordered) {
+    if (seen.has(item.href)) continue;
+    seen.add(item.href);
+    const group = footerGroupOf(item, byId);
+    const isSectionRoot = !item.parentId && visible.some((c) => c.parentId === item.id);
+    // A child that repeats the root link names it better ("The event").
+    const namesake = visible.find((c) => c.parentId === item.id && c.href === item.href);
+    const label = namesake?.label ?? (isSectionRoot ? 'Overview' : item.label);
+    columns.get(group)!.push({ label, href: item.href });
+  }
+  return FOOTER_GROUPS.map((g) => ({ title: g.title, links: columns.get(g.id)! })).filter((c) => c.links.length > 0);
 }

@@ -30,7 +30,7 @@ Do not expose the service key to browser code. Public revision responses contain
 | Committees and country assignments | Committee pages, availability matrix and registration choices |
 | Resources, moot categories | Resource library, linked guides and moot pages |
 | FAQ, team, sponsors, gallery | Their corresponding public pages |
-| Navigation | Header, mobile and footer; an empty collection intentionally has no links |
+| Navigation | Header, mobile and footer. Footer columns follow each entry's `footerGroup` (GIMUN, Moot Court, Event, About). If nothing is published the site falls back to its built-in menu, and the admin list warns about it |
 | Results | Results page after entry publication and site-wide release |
 | Registrations, attendance, inbox, mail, certificates, feedback | Authorized admin views and existing private recipient/verification routes |
 

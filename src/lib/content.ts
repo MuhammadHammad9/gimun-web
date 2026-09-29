@@ -32,7 +32,8 @@ import galleryData from '../../content/gallery.json';
 
 export async function getSiteConfig(): Promise<SiteConfig > {
   const [site,navigation] = await Promise.all([readSite(siteConfigData),readCollection('navigation',defaultNavigation)]);
-  return {...site,navigation};
+  // An empty published menu would leave the site with no navigation at all.
+  return {...site,navigation:navigation.length?navigation:defaultNavigation};
 }
 
 function resolveCanonicalTokens(value: string, site: SiteConfig) {

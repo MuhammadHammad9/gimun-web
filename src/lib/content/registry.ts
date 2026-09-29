@@ -38,7 +38,7 @@ export const siteSchema = z.object({
 });
 export const registry = {
   announcements: z.object({ id, title: required, body: required, track: z.enum(['gimun', 'moot-cup', 'shared', 'all', 'general']), timestamp: z.iso.datetime({ offset: true }), pinnedFlag: z.boolean(), badgeLabel: text.optional(), actionUrl: link.optional() }),
-  schedule: z.object({ id, day: z.number().int().min(1).max(31), dayLabel: text, startTime: z.string().regex(/^\d{2}:\d{2}$/), endTime: z.string().regex(/^\d{2}:\d{2}$/), title: required, track, location: required, notes: text, updatedFlag: z.boolean() }),
+  schedule: z.object({ id, day: z.number().int().min(1).max(31), dayLabel: text.optional(), startTime: z.string().regex(/^\d{2}:\d{2}$/), endTime: z.string().regex(/^\d{2}:\d{2}$/), title: required, track, location: required, notes: text, updatedFlag: z.boolean() }),
   committees: z.object({ id, name: required, type: z.enum(['general-assembly', 'specialized-agency', 'crisis', 'regional-body', 'other']), slug: id, topics: z.array(required).min(1), topicDescriptions: z.array(text), chairs: z.array(z.object({ id: id.optional(), name: required, role: required, photo: image.optional(), bio: text.optional(), group: text.optional(), links: personLinks.optional() })), backgroundGuideDocId: text, countryList: z.array(z.object({ country: required, status: z.enum(['available', 'assigned', 'reserved']) })), capacity: z.number().int().positive().nullable(), shortDescription: required }),
   'moot-categories': z.object({ id, name: required, areaOfLaw: required, description: required, propositionDocId: text, lastUpdated: date }),
   resources: z.object({ id, title: required, track, type: z.enum(['handbook', 'background-guide', 'proposition', 'rules', 'form', 'map', 'sponsorship-deck', 'other']), fileUrl: link, fileSize: required, fileFormat: required, versionDate: date }),
@@ -48,7 +48,7 @@ export const registry = {
   gallery: z.object({ id, title: required, category: z.enum(['gimun', 'moot-cup', 'campus', 'ceremonies']), edition: required, caption: text, location: text, aspectRatio: z.enum(['landscape', 'portrait', 'square', 'wide']), image: requiredImage }),
   clarifications: z.object({ id, number: z.number().int().positive(), question: required, answer: required, submittedAt: date }),
   results: z.object({ id, track, categoryOrCommittee: required, awardName: required, winnerName: required, institution: required, photo: image.optional() }),
-  navigation: z.object({ id, label: required, href: link, area: z.enum(['header', 'footer', 'mobile', 'all']), parentId: id.optional(), description: text.optional() }),
+  navigation: z.object({ id, label: required, href: link, area: z.enum(['header', 'footer', 'mobile', 'all']), parentId: id.optional(), description: text.optional(), footerGroup: z.enum(['gimun', 'moot', 'event', 'about']).optional() }),
 };
 export type Collection = keyof typeof registry;
 export const collections = Object.keys(registry) as Collection[];

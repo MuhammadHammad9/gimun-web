@@ -112,7 +112,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
       <div className="space-y-6">
         <div role="tablist" aria-label="Conference days" className="day-tabs">
           {days.map((dayNum, index) => {
-            const label = initialSchedule.find((s) => s.day === dayNum)?.dayLabel.split('—')[1]?.trim() || `Day ${dayNum}`;
+            const label = initialSchedule.find((s) => s.day === dayNum)?.dayLabel?.split('—')[1]?.trim() || `Day ${dayNum}`;
             const selected = selectedDay === dayNum;
             return (
               <button
