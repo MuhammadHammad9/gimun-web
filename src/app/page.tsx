@@ -4,7 +4,6 @@ import { ArrowRight } from 'lucide-react';
 
 import { DaysArt, DocumentsArt, GlobeArt, RouteArt, ScalesArt } from '@/components/art/LineArt';
 import { Seal } from '@/components/art/Seal';
-import { Counter } from '@/components/motion/Counter';
 import { HandoffStage } from '@/components/motion/HandoffStage';
 import { HorizontalPan } from '@/components/motion/HorizontalPan';
 import { Marquee } from '@/components/motion/Marquee';
@@ -13,7 +12,7 @@ import { StickyStack } from '@/components/motion/StickyStack';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead, ChapterKicker } from '@/components/sections/Chapter';
 import { Closing } from '@/components/sections/Closing';
-import { DateLedger } from '@/components/sections/DateLedger';
+import { DeadlineClock } from '@/components/sections/DeadlineClock';
 import { Door } from '@/components/sections/Door';
 import { CasePlacard, CommitteePlacard, seatsOpen } from '@/components/sections/Placards';
 import { TrackKey, trackDot } from '@/components/sections/TrackKey';
@@ -339,31 +338,13 @@ export default async function Home() {
       <section className="chapter" aria-labelledby="dates-title">
         <div className="wrap">
           <ChapterHead id="dates-title" chapter={chapter['home-clock']} act={clock.kicker} title={fill(clock.title, vars)} lead={fill(clock.lead, vars)} />
-          <div className="figures">
-            <div className="figure">
-              <Counter value={committees.length} className="figure__value" />
-              <span className="figure__label">committees</span>
-            </div>
-            <div className="figure">
-              <Counter value={seats} className="figure__value" />
-              <span className="figure__label">country seats</span>
-            </div>
-            <div className="figure">
-              <Counter value={openSeats} className="figure__value" />
-              <span className="figure__label">seats still open</span>
-            </div>
-            <div className="figure">
-              <Counter value={categories.length} className="figure__value" />
-              <span className="figure__label">case categories</span>
-            </div>
-          </div>
-          <DateLedger
+          <DeadlineClock
             now={now}
             dates={[
-              { iso: site.registrationDeadlines.gimun, what: 'GIMUN applications close', note: 'Individuals and delegations' },
-              ...(site.memorialDeadline ? [{ iso: site.memorialDeadline, what: 'GMC memorials due', note: '23:59 PKT, by email to the moot court address' }] : []),
-              { iso: site.registrationDeadlines.mootCup, what: 'GMC applications close', note: 'Teams of two to four' },
-              { iso: addDays(site.eventDates.start, -7), what: 'GIMUN position papers due', note: 'At least 7 days before Day 1' },
+              { iso: site.registrationDeadlines.gimun, what: 'GIMUN applications close', deadline: true, note: 'Individuals and delegations' },
+              ...(site.memorialDeadline ? [{ iso: site.memorialDeadline, what: 'GMC memorials due', deadline: true, note: '23:59 PKT, by email to the moot court address' }] : []),
+              { iso: site.registrationDeadlines.mootCup, what: 'GMC applications close', deadline: true, note: 'Teams of two to four' },
+              { iso: addDays(site.eventDates.start, -7), what: 'GIMUN position papers due', deadline: true, note: 'At least 7 days before Day 1' },
               { iso: site.eventDates.start, what: 'Conference opens', note: site.checkinDesk ?? 'Check-in on Day 1' },
               ...(site.galaDate ? [{ iso: site.galaDate, what: 'Grand Final and awards gala', note: 'Awards for both tracks' }] : []),
             ]}

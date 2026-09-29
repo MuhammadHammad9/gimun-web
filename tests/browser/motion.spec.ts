@@ -33,7 +33,8 @@ test('the committees globe comes alive after the first intent and turns', async 
   const globe = page.locator('.live-globe');
   await expect(globe).not.toHaveAttribute('data-live', '');
   await showIntent(page);
-  await expect(globe).toHaveAttribute('data-live', '');
+  // The globe's code is fetched only after the first intent; allow for a busy machine.
+  await expect(globe).toHaveAttribute('data-live', '', { timeout: 15000 });
   const lit = () =>
     page.evaluate(() => {
       const canvas = document.querySelector<HTMLCanvasElement>('.live-globe canvas')!;
@@ -46,6 +47,23 @@ test('the committees globe comes alive after the first intent and turns', async 
   await page.waitForTimeout(500);
   expect(first).toBeGreaterThan(0);
   expect(await lit()).not.toBe(first);
+});
+
+test('the clock counts down to the next deadline and draws its rail as it arrives', async ({ page }) => {
+  await page.goto('/');
+  const timer = page.getByRole('timer');
+  // The rolling digits are visual; the timer's text says it in words.
+  await expect(timer.locator('.countdown__digits')).toHaveAttribute('aria-hidden', 'true');
+  await expect(timer).toContainText(/\d+ days?, \d+ hours? and \d+ minutes? until .+ at 23:59 Pakistan time\./);
+  await expect(page.locator('.rail')).toHaveAttribute('aria-hidden', 'true');
+  await page.mouse.move(700, 450);
+  for (let i = 0; i < 80; i++) {
+    await page.mouse.wheel(0, 180);
+    await page.waitForTimeout(60);
+    if ((await page.locator('.rail').getAttribute('data-state')) === 'drawn') break;
+  }
+  await expect(page.locator('.rail')).toHaveAttribute('data-state', 'drawn');
+  await expect(page.locator('.clock')).toHaveAttribute('data-rolling', '');
 });
 
 test('the home marquee can be paused', async ({ page }) => {

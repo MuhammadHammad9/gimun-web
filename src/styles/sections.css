@@ -1924,3 +1924,290 @@
     animation: none;
   }
 }
+
+/* --- The clock (home): countdown and deadline rail ----------------------- */
+.clock {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.countdown {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.countdown__what {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.875rem;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(1.125rem, 2vw, 1.375rem);
+  font-weight: 500;
+}
+
+.countdown__next {
+  color: var(--color-champagne);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.countdown__what time {
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.countdown__digits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.countdown__unit {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.625rem;
+}
+
+.countdown__label {
+  padding-bottom: 0.55em;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+/* Each digit is a slot one line tall; a strip of 0-9 rolls inside it. The
+   soft mask makes a turning digit read as a wheel, not a jump. */
+.odo {
+  display: inline-flex;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  /* Sized so days, hours and minutes hold one line on a 360px phone. */
+  font-size: clamp(2.625rem, 11vw, 7rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.odo__slot {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+}
+
+.odo__strip {
+  display: grid;
+  grid-auto-rows: 1em;
+  transform: translateY(calc(var(--d) * -1em));
+}
+
+.clock[data-rolling] .odo__strip {
+  transition: transform 720ms var(--ease-out-expo);
+}
+
+.clock__done {
+  color: var(--color-text-2);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+/* The rail: spaced by step, today placed in proportion, the stretch from
+   today to the next deadline highlighted. */
+.rail {
+  position: relative;
+  height: 6rem;
+  margin: clamp(2.5rem, 5vw, 3.5rem) 1.25rem 0;
+}
+
+.rail__track,
+.rail__stretch {
+  position: absolute;
+  top: 50%;
+  height: 1px;
+}
+
+.rail__track {
+  inset-inline: 0;
+  background: linear-gradient(to right, var(--color-text-3) calc(var(--today) * 100%), var(--color-line-2) 0);
+}
+
+.rail__stretch {
+  left: calc(var(--today) * 100%);
+  width: calc((var(--stretch-end) - var(--today)) * 100%);
+  height: 3px;
+  margin-top: -1px;
+  border-radius: 999px;
+  background: var(--color-champagne);
+  transform-origin: left center;
+}
+
+.rail[data-state="armed"] .rail__stretch {
+  transform: scaleX(0);
+}
+
+.rail[data-state="drawn"] .rail__stretch {
+  transform: scaleX(1);
+  transition: transform 1100ms var(--ease-out-expo) 200ms;
+}
+
+.rail__tick {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--at) * 100%);
+  width: 0.75rem;
+  height: 0.75rem;
+  translate: -50% -50%;
+  border: 1px solid var(--color-line-3);
+  border-radius: 999px;
+  background: var(--color-canvas);
+  transition:
+    scale var(--dur-ui) var(--ease-brand),
+    opacity var(--dur-surface) var(--ease-out-expo),
+    background-color var(--dur-ui) var(--ease-brand);
+}
+
+.rail__tick[data-kind="event"] {
+  border-radius: 2px;
+  rotate: 45deg;
+}
+
+.rail__tick[data-state="past"] {
+  border-color: var(--color-text-3);
+  background: var(--color-text-3);
+}
+
+.rail__tick[data-state="next"] {
+  border-color: var(--color-champagne);
+  background: var(--color-champagne);
+}
+
+.rail__tick[data-active] {
+  scale: 1.6;
+  border-color: var(--color-champagne);
+}
+
+.rail[data-state="armed"] .rail__tick {
+  scale: 0.4;
+  opacity: 0.2;
+}
+
+.rail[data-state="drawn"] .rail__tick {
+  transition-delay: calc(300ms + var(--i) * 70ms);
+}
+
+.rail__date {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+
+/* Diamonds carry their label upright. */
+.rail__tick[data-kind="event"] .rail__date {
+  rotate: -45deg;
+}
+
+.rail__tick[data-side="above"] .rail__date {
+  bottom: 1.25rem;
+}
+
+.rail__tick[data-side="below"] .rail__date {
+  top: 1.25rem;
+}
+
+.rail__tick[data-state="next"] .rail__date,
+.rail__tick[data-active] .rail__date {
+  color: var(--color-champagne);
+}
+
+.rail__lead {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--at) * 100%);
+  /* Below the track: the first date label sits above it. */
+  translate: -50% 60%;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.rail__today {
+  position: absolute;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  left: calc(var(--today) * 100%);
+  width: 1px;
+  background: var(--color-champagne);
+}
+
+.rail__today-label {
+  position: absolute;
+  top: -0.875rem;
+  left: 50%;
+  translate: -50% -50%;
+  color: var(--color-champagne);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* The next deadline breathes, once the visitor is here (compositor only). */
+@media (prefers-reduced-motion: no-preference) {
+  .clock[data-rolling] .rail__tick[data-state="next"]::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 1px solid var(--color-champagne);
+    animation: rail-pulse 2.4s var(--ease-out-expo) infinite;
+  }
+}
+
+@keyframes rail-pulse {
+  to {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+
+@media (max-width: 639px) {
+  .rail {
+    margin-inline: 1rem;
+  }
+
+  .countdown__digits {
+    flex-wrap: nowrap;
+    gap: 0.875rem;
+  }
+
+  .countdown__unit {
+    gap: 0.375rem;
+  }
+
+  .countdown__label {
+    font-size: 0.75rem;
+  }
+
+  .rail__date {
+    font-size: 0.625rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .odo__strip,
+  .rail__stretch,
+  .rail__tick {
+    transition: none !important;
+  }
+}
