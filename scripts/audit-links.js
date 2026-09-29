@@ -77,23 +77,36 @@ const all31Routes = [
   '/api/contact',
   // Sitemap XML Route
   '/sitemap.xml',
-  // Admin console. Not part of the public site and excluded from the sitemap,
-  // but it is linked from within itself, so leaving it out of this list made
-  // every internal admin link report as broken. `/admin/<section>` is served
-  // by the dynamic `[section]` route and is matched separately below.
-  '/admin',
-  '/admin/login',
-  '/admin/password',
-  '/admin/mfa',
-  '/admin/settings',
-  '/admin/export',
+  // Admin console pages are added below from the filesystem: they are not
+  // part of the public site or the sitemap, but they link to each other.
 ];
 
+// Every static admin page or route handler (src/app/admin/**/page.tsx or
+// route.ts without a dynamic segment), read from disk so a new admin page is known without editing this
+// list. `/admin/<section>` is served by the dynamic `[section]` route and is
+// matched separately below.
+function staticAdminRoutes(dir, prefix = '/admin') {
+  const routes = [];
+  if (!fs.existsSync(dir)) return routes;
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  // A page or a route handler (such as the CSV export) makes the path linkable.
+  if (entries.some((entry) => entry.isFile() && /^(page|route)\.(tsx|ts|jsx|js)$/.test(entry.name))) routes.push(prefix);
+  for (const entry of entries) {
+    if (!entry.isDirectory() || entry.name.startsWith('[')) continue;
+    // Route groups "(name)" add no URL segment.
+    const next = /^\(.*\)$/.test(entry.name) ? prefix : `${prefix}/${entry.name}`;
+    routes.push(...staticAdminRoutes(path.join(dir, entry.name), next));
+  }
+  return routes;
+}
+all31Routes.push(...staticAdminRoutes(path.join(srcDir, 'app', 'admin')));
+
 // Sections accepted by src/app/admin/[section]/page.tsx. Kept in sync with
-// `sections` in src/lib/server/admin/permissions.ts.
+// `sections` in src/lib/server/admin/permissions.ts (collections, then the
+// operational sections).
 const adminSections = [
   'announcements', 'schedule', 'committees', 'moot-categories', 'resources',
-  'faq', 'team', 'sponsors', 'gallery', 'clarifications', 'results', 'navigation',
+  'faq', 'team', 'sponsors', 'gallery', 'clarifications', 'results', 'copy', 'navigation',
   'settings', 'registrations', 'inbox', 'email', 'event-day', 'allocations',
   'certificates', 'feedback', 'close-out', 'users', 'media', 'audit',
 ];
@@ -234,15 +247,14 @@ for (const file of allSrcFiles) {
   let route = null;
   const relPath = path.relative(srcDir, file).replace(/\\/g, '/');
   if (relPath.startsWith('app/')) {
-    const withoutApp = relPath.replace(/^app\//, '');
-    const segments = withoutApp.split('/');
-    if (segments.length > 1 && !segments[segments.length - 1].startsWith('page.')) {
-      route = '/' + segments.slice(0, -1).join('/');
-    } else {
-      const pagePath = withoutApp.replace(/\/page\.(tsx|ts|jsx|js)$/, '').replace(/\.(tsx|ts|jsx|js)$/, '');
-      route = pagePath === 'page' || pagePath === '' ? '/' : `/${pagePath}`;
-    }
-    if (route && route.includes('[')) route = null;
+    // The route of the file's folder, route groups dropped. A dynamic route
+    // keeps its template ("/admin/registrations/[reference]"): that is the key
+    // a same-page "#id" link in the same folder resolves to (see currentRoute
+    // below), while links to concrete public pages still resolve against the
+    // ids indexed from their prerendered HTML.
+    const folder = path.dirname(relPath.replace(/^app\//, ''));
+    const segments = folder.split('/').filter((s) => s && s !== '.' && !/^\(.*\)$/.test(s));
+    route = '/' + segments.join('/');
   }
 
   if (route) {
