@@ -244,7 +244,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
       {/* Still Have Questions CTA Banner */}
       <HelpCallout
         question="Still haven't found your answer?"
-        actions={[{ label: 'Contact the organizing team', href: '/contact' }]}
+        actions={[{ label: 'Venue and travel', href: '/about/venue' }]}
       />
     </div>
   );

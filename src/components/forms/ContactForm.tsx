@@ -150,7 +150,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
       <div className="flex items-center gap-2 pb-2 border-b border-line">
         <MessageSquare className="w-4 h-4 text-champagne" />
         <h2 className="text-sm font-mono uppercase font-bold text-text tracking-wide">
-          Direct Inquiry Dispatch
+          Send a message
         </h2>
       </div>
 

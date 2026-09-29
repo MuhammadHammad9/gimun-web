@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
 import { getFAQ } from "@/lib/content";
 import { FaqClient } from "./FaqClient";
-import { HelpCircle } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { TransitionLink as Link } from "@/components/motion/TransitionLink";
 import { getEventYear } from "@/lib/site-config";
 import { PageHero } from '@/components/ui/PageHero';
 
@@ -12,46 +11,33 @@ export async function generateMetadata(): Promise<Metadata> { return await const
   title: `Frequently Asked Questions | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
   path: '/about/faq',
   description:
-    "Official answers to inquiries regarding delegation allocations, OSCOLA memorial standards, zero-payment registration policy, transport shuttles, and GIKI campus hostels.",
+    "Answers about GIMUN and GMC: fees and refunds, committee allocation, memorial rules, accommodation at GIKI and travel to Topi.",
 }); }
 
 export default async function FaqPage() {
   const faqs = (await getFAQ());
 
   return (
-    <div className="space-y-12">
-      {/* Modern Atmospheric FAQ Hero */}
+    <>
       <PageHero
         variant="utility"
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'FAQ' }]}
-        title={'Frequently Asked Questions'}
-        accentWords={['Questions']}
-        description={'Find answers to common questions about GIMUN committee procedures, GMC courtroom advocacy, registration fees, on-campus accommodation at GIKI, and logistics.'}
-        eyebrow={
-          <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase bg-champagne/20 text-champagne border border-line-2">
-                        <HelpCircle className="w-3.5 h-3.5 text-champagne" />
-                        Official Knowledge Base
-                      </span>
-                      <span className="text-xs font-mono text-text-3 uppercase tracking-widest">
-                        Help &amp; Guidelines
-                      </span>
-                    </div>
-        }
+        meta={[`${faqs.length} answers`, 'Search or browse by topic']}
+        title="Questions, answered."
+        accentPhrase="answered."
+        description="Fees and refunds, committee procedure, the moot rounds, accommodation at GIKI and getting to Topi."
         actionsSlot={
-          <>
-            <div className="pt-2 flex flex-wrap items-center gap-4">
-                        <Button variant="secondary" href="/contact">
-                          Contact Organizing Team
-                        </Button>
-                        <Button variant="track-gimun" href="/gimun/rules">
-                          GIMUN Rules of Procedure
-                        </Button>
-                        <Button variant="track-moot" href="/moot-cup/rules">
-                          GMC Rules &amp; Guidelines
-                        </Button>
-                      </div>
-          </>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link href="/contact" className="text-link">
+              Ask the organizing team
+            </Link>
+            <Link href="/gimun/rules" className="text-link">
+              GIMUN rules
+            </Link>
+            <Link href="/moot-cup/rules" className="text-link">
+              GMC rules
+            </Link>
+          </div>
         }
       />
 
@@ -71,10 +57,11 @@ export default async function FaqPage() {
         }}
       />
 
-      {/* Main Interactive Body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <FaqClient initialFaqs={faqs} />
-      </div>
-    </div>
+      <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Answers">
+        <div className="wrap">
+          <FaqClient initialFaqs={faqs} />
+        </div>
+      </section>
+    </>
   );
 }
