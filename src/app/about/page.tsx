@@ -11,7 +11,8 @@ import { Steps } from '@/components/sections/Steps';
 import { Ledger } from '@/components/ui/Editorial';
 import { PageHero } from '@/components/ui/PageHero';
 import { PublishedStats } from '@/components/ui/PublishedStats';
-import { getCommittees, getMootCategories, getSchedule, getSiteConfig } from '@/lib/content';
+import { getCopy, getCommittees, getMootCategories, getSchedule, getSiteConfig } from '@/lib/content';
+import { chapterNumbers, fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister } from '@/lib/phase';
 import { formatEventDate, getEventYear } from '@/lib/site-config';
@@ -27,16 +28,33 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutOverviewPage() {
-  const [site, committees, categories, schedule] = await Promise.all([
+  const [site, committees, categories, schedule, copy] = await Promise.all([
     getSiteConfig(),
     getCommittees(),
     getMootCategories(),
     getSchedule(),
+    getCopy('about'),
   ]);
   const gimunOpen = canRegister(site, 'gimun');
   const mootOpen = canRegister(site, 'mootCup');
   const dateRange = formatDateRange(site.eventDates.start, site.eventDates.end);
   const campus = site.hostInstitution.split(',')[0];
+  const hero = copy('about-hero');
+  const tracks = copy('about-tracks');
+  const week = copy('about-week');
+  const who = copy('about-who');
+  const more = copy('about-more');
+  const closing = copy('about-closing');
+  // "Two rooms" carries the hero hand-off, so it is always shown.
+  const chapter = chapterNumbers(copy, ['about-tracks', 'about-week', 'about-who', 'about-more', 'about-closing']);
+  const vars = { campus, committees: committees.length, cases: categories.length, reply: site.replyTime || 'Questions to the organizing team.' };
+  const moreLinks = [
+    { key: 'team', href: '/about/team' },
+    { key: 'venue', href: '/about/venue' },
+    { key: 'faq', href: '/about/faq' },
+    { key: 'sponsors', href: '/about/sponsors' },
+    { key: 'contact', href: '/contact' },
+  ];
 
   // One step per conference day, from the published schedule.
   const days = [...new Set(schedule.map((s) => s.day))]
@@ -58,9 +76,9 @@ export default async function AboutOverviewPage() {
             <PageHero
               variant="utility"
               meta={['About the event', dateRange, 'GIKI, Topi']}
-              title="Two competitions, one campus, four days."
-              accentPhrase="one campus,"
-              description={`GIMUN and the GIKI Moot Court run side by side at ${campus}. Delegates debate in committee; law students argue before a bench. Both share the ceremonies, meals and evenings.`}
+              title={fill(hero.title, vars)}
+              accentPhrase={hero.accentPhrase}
+              description={fill(hero.lead, vars)}
               actions={[
                 { label: 'Explore GIMUN', href: '/gimun', variant: 'track-gimun' },
                 { label: 'Explore GMC', href: '/moot-cup', variant: 'track-moot' },
@@ -88,11 +106,11 @@ export default async function AboutOverviewPage() {
             ) : null}
             <ChapterHead
               id="tracks-title"
-              chapter={1}
-              act="Two rooms"
+              chapter={chapter['about-tracks']}
+              act={tracks.kicker}
               reveal
-              title="Pick the one you want to be tested in."
-              lead="They share dates and a campus, but the preparation, the rules and the judging are entirely different."
+              title={fill(tracks.title, vars)}
+              lead={fill(tracks.lead, vars)}
             />
             <Ledger
               rows={[
@@ -100,34 +118,35 @@ export default async function AboutOverviewPage() {
                   key: 'gimun',
                   href: '/gimun',
                   title: site.eventNames.gimun,
-                  description: `Represent a country in one of ${committees.length} committees, on your own or with your institution.`,
+                  description: fill(tracks.items?.[0]?.body, vars),
                   meta: [gimunOpen ? 'Applications open' : 'Registration closed', `Closes ${formatEventDate(site.registrationDeadlines.gimun, { month: 'short' })}`],
                 },
                 {
                   key: 'gmc',
                   href: '/moot-cup',
                   title: site.eventNames.mootCup,
-                  description: `Argue one problem as a team of law students, across ${categories.length} areas of law, before a bench.`,
+                  description: fill(tracks.items?.[1]?.body, vars),
                   meta: [mootOpen ? 'Applications open' : 'Registration closed', `Closes ${formatEventDate(site.registrationDeadlines.mootCup, { month: 'short' })}`],
                 },
               ]}
             />
-            <Bridge to="days-title">Both rooms share one week. This is how it runs.</Bridge>
+            {tracks.bridge && !week.hidden && <Bridge to="days-title">{fill(tracks.bridge, vars)}</Bridge>}
           </div>
         </section>
       </div>
 
       {/* How the week fits together */}
+      {!week.hidden && (
       <section className="chapter" aria-labelledby="days-title">
         <div className="wrap steps-split">
           <div className="steps-split__head">
             <ChapterHead
               id="days-title"
-              chapter={2}
-              act="The week"
+              chapter={chapter['about-week']}
+              act={week.kicker}
               split={false}
-              title="How the week fits together."
-              lead="Committees and courtrooms run in parallel; ceremonies, meals and evenings are shared."
+              title={fill(week.title, vars)}
+              lead={fill(week.lead, vars)}
             >
               <Link href="/schedule" className="text-link w-fit">
                 The full schedule
@@ -137,53 +156,52 @@ export default async function AboutOverviewPage() {
           <Steps steps={days} accent="gmc" />
         </div>
       </section>
+      )}
 
       {/* Who runs it */}
+      {!who.hidden && (
       <section className="sheet tone-crest" aria-labelledby="who-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
-          <ChapterKicker chapter={3} act="Who runs it" target="who-title" />
+          <ChapterKicker chapter={chapter['about-who']!} act={who.kicker ?? ''} target="who-title" />
           <h2 id="who-title" className="sr-only">
-            Who runs it
+            {who.kicker}
           </h2>
-          <ScrubText className="manifesto mt-8">
-            The secretariat, the moot convening committee and the logistics team are GIKI students. Applying is free;
-            accepted participants pay by bank transfer, never on this site.
-          </ScrubText>
+          <ScrubText className="manifesto mt-8">{fill(who.body, vars)}</ScrubText>
         </div>
       </section>
+      )}
 
       {/* Everything else about the event */}
+      {!more.hidden && (
       <section className="chapter" aria-labelledby="more-title">
         <div className="wrap steps-split">
           <div className="steps-split__head">
             <ChapterHead
               id="more-title"
-              chapter={4}
-              act="Everything else"
+              chapter={chapter['about-more']}
+              act={more.kicker}
               split={false}
-              title="Organized at GIKI."
-              lead="The people, the place and the answers to the questions most participants ask."
+              title={fill(more.title, vars)}
+              lead={fill(more.lead, vars)}
             />
           </div>
           <Ledger
-            rows={[
-              { key: 'team', href: '/about/team', title: 'Organizing team', description: 'Who runs each track, and how to reach them.', meta: ['People'] },
-              { key: 'venue', href: '/about/venue', title: 'Venue and travel', description: 'Getting to Topi, where each session happens, and what to bring.', meta: ['Logistics'] },
-              { key: 'faq', href: '/about/faq', title: 'Frequently asked questions', description: 'Fees, refunds, accommodation, dress code and more.', meta: ['Help'] },
-              { key: 'sponsors', href: '/about/sponsors', title: 'Sponsors and partners', description: 'Supporting organizations and the sponsorship deck.', meta: ['Partners'] },
-              { key: 'contact', href: '/contact', title: 'Contact', description: site.replyTime || 'Questions to the organizing team.', meta: ['Support'] },
-            ]}
+            rows={moreLinks.map((link, index) => {
+              const item = more.items?.[index];
+              return { ...link, title: fill(item?.title, vars), description: fill(item?.body, vars), meta: item?.meta ? [fill(item.meta, vars)] : [] };
+            })}
           />
         </div>
       </section>
+      )}
 
       <Closing
         id="closing-title"
-        chapter={5}
-        act="Your application"
-        title="Represent your institution at GIKI."
-        lead="Choose a track to see its fees, format and deadlines. Applying is free; you pay only once accepted."
+        chapter={chapter['about-closing']}
+        act={closing.kicker}
+        title={fill(closing.title, vars)}
+        lead={fill(closing.lead, vars)}
         actions={[
           { label: gimunOpen ? 'Apply for GIMUN' : 'GIMUN registration status', href: '/register?track=gimun', variant: 'track-gimun' },
           { label: mootOpen ? 'Register a GMC team' : 'GMC registration status', href: '/register?track=moot-cup', variant: 'track-moot' },

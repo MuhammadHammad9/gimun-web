@@ -1,4 +1,5 @@
-import { getSiteConfig } from '@/lib/content';
+import { getCopy, getSiteConfig } from '@/lib/content';
+import { fill } from '@/lib/copy';
 import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
 import { getDocuments } from "@/lib/content";
@@ -15,7 +16,8 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 }); }
 
 export default async function ResourcesPage() {
-  const documents = (await getDocuments());
+  const [documents, copy] = await Promise.all([getDocuments(), getCopy('resources')]);
+  const hero = copy('resources-hero');
   const gimunRulesDocument = documents.find(
     (document) => document.track === "gimun" && document.type === "rules",
   );
@@ -28,9 +30,9 @@ export default async function ResourcesPage() {
       <PageHero
         variant="utility"
         meta={[`${documents.length} documents`, 'Each with its revision date']}
-        title="The resource library."
-        accentPhrase="resource library."
-        description="Background guides, the case problem, both rulebooks, citation guides and travel information for both tracks."
+        title={fill(hero.title)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead)}
         actionsSlot={
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             {gimunRulesDocument && (

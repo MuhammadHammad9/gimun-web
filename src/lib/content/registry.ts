@@ -36,6 +36,25 @@ export const siteSchema = z.object({
   mootScoring: z.object({memorialWeight:z.number().min(0).max(100),oralWeight:z.number().min(0).max(100),citationStyle:required}).optional(),
   gimunRubric: z.array(z.object({label:required,weight:z.number().min(0).max(100)})).optional(),
 });
+/** Public pages whose copy is editable, in site order. */
+export const copyPages = ['home', 'gimun', 'committees', 'committee', 'gimun-rules', 'moot-cup', 'categories', 'moot-rules', 'clarifications', 'schedule', 'resources', 'announcements', 'results', 'register', 'about', 'faq', 'venue', 'team', 'sponsors', 'gallery', 'contact', 'privacy'] as const;
+const tokens = 'Words in braces, such as {dates}, are filled in from live data. Keep them as written.';
+const copy = z.object({
+  id,
+  page: z.enum(copyPages),
+  label: required.meta({ description: 'Where this appears. Shown only in the admin.' }),
+  kicker: text.optional().meta({ description: 'Chapter name or small line above the title.' }),
+  title: text.optional().meta({ description: tokens }),
+  accentPhrase: text.optional().meta({ description: 'Words from the title to set in the accent colour.' }),
+  lead: text.optional().meta({ description: tokens }),
+  body: text.optional(),
+  bridge: text.optional().meta({ description: 'One line leading into the next section.' }),
+  note: text.optional(),
+  items: z.array(z.object({ title: text, body: text.optional(), meta: text.optional() })).optional(),
+  actions: z.array(z.object({ label: required, href: link })).max(3).optional(),
+  image: image.optional(),
+  hidden: z.boolean().optional().meta({ description: 'Hide this section. Later chapters are renumbered.' }),
+}).refine((v) => !v.accentPhrase || (v.title ?? '').includes(v.accentPhrase), { message: 'The accent phrase must appear in the title', path: ['accentPhrase'] });
 export const registry = {
   announcements: z.object({ id, title: required, body: required, track: z.enum(['gimun', 'moot-cup', 'shared', 'all', 'general']), timestamp: z.iso.datetime({ offset: true }), pinnedFlag: z.boolean(), badgeLabel: text.optional(), actionUrl: link.optional() }),
   schedule: z.object({ id, day: z.number().int().min(1).max(31), dayLabel: text.optional(), startTime: z.string().regex(/^\d{2}:\d{2}$/), endTime: z.string().regex(/^\d{2}:\d{2}$/), title: required, track, location: required, notes: text, updatedFlag: z.boolean() }),
@@ -48,6 +67,7 @@ export const registry = {
   gallery: z.object({ id, title: required, category: z.enum(['gimun', 'moot-cup', 'campus', 'ceremonies']), edition: required, caption: text, location: text, aspectRatio: z.enum(['landscape', 'portrait', 'square', 'wide']), image: requiredImage }),
   clarifications: z.object({ id, number: z.number().int().positive(), question: required, answer: required, submittedAt: date }),
   results: z.object({ id, track, categoryOrCommittee: required, awardName: required, winnerName: required, institution: required, photo: image.optional() }),
+  copy,
   navigation: z.object({ id, label: required, href: link, area: z.enum(['header', 'footer', 'mobile', 'all']), parentId: id.optional(), description: text.optional(), footerGroup: z.enum(['gimun', 'moot', 'event', 'about']).optional() }),
 };
 export type Collection = keyof typeof registry;

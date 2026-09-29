@@ -131,5 +131,12 @@ try {
   assert.ok(walkin.referenceId);
   assert.equal((await db.query("select count(*)::int n from audit_log where action='walk-in-registration' and entity_id=$1",[walkin.referenceId])).rows[0].n,1);
   console.log('PASS: transactional walk-in registration and bound retention review');
+  await db.query("insert into content_entries(collection,id,status,sort_order,data) values('copy','home-hero','published',0,'{}')");
+  await assert.rejects(()=>db.query("insert into content_entries(collection,id,status,sort_order,data) values('pages','x','published',0,'{}')"),/check constraint/);
+  const copyEditor=randomUUID();await db.query('insert into auth.users values($1)',[copyEditor]);
+  await db.query("insert into admin_users(user_id,email,display_name,role,must_change_password) values($1,'editor@example.test','Editor','editor',false)",[copyEditor]);
+  assert.equal((await db.query('select admin_can($1,$2,true) as ok',[copyEditor,'copy'])).rows[0].ok,true);
+  assert.equal((await db.query('select admin_can($1,$2,true) as ok',[copyEditor,'registrations'])).rows[0].ok,false);
+  console.log('PASS: page copy collection and editor permission');
   console.log('PASS: migrations, private grants, idempotency, references, roster, revisions, attendance, certificates, allocation conflicts/capacity, guarded reset, retention dry-run/anonymization, database permissions and correction operations');
 } finally { await db.close(); }

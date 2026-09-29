@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { PageHero } from '@/components/ui/PageHero';
-import { getDocuments, getSiteConfig, getSponsors } from '@/lib/content';
+import { getCopy, getDocuments, getSiteConfig, getSponsors } from '@/lib/content';
+import { fill, nextSteps } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
 import { SponsorsClient } from './SponsorsClient';
@@ -17,6 +18,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SponsorsPage() {
+  const copy = await getCopy('sponsors');
+  const hero = copy('sponsors-hero');
+  const next = copy('sponsors-next');
   const [sponsors, documents] = await Promise.all([getSponsors(), getDocuments()]);
   const deck = documents.find((doc) => doc.type === 'sponsorship-deck');
   const deckUrl = deck?.fileUrl ?? '/resources';
@@ -27,9 +31,9 @@ export default async function SponsorsPage() {
         variant="utility"
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'Sponsors' }]}
         meta={['Sponsorship', deck ? `Deck revised ${deck.versionDate}` : 'Deck on request']}
-        title="Sponsors and partners."
-        accentPhrase="partners."
-        description="Partner with a student conference that brings delegates and law students from across Pakistan to GIKI. The sponsorship deck sets out the tiers and what each includes."
+        title={fill(hero.title)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead)}
         actionsSlot={
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <a href={deckUrl} className="text-link" data-no-transition="">
@@ -46,13 +50,7 @@ export default async function SponsorsPage() {
           <SponsorsClient initialSponsors={sponsors} />
         </div>
       </section>
-      <NextSteps
-        steps={[
-          { href: '/contact?type=sponsorship', title: 'Talk to us', body: 'Ask about the tiers, or a partnership that fits.' },
-          { href: '/about', title: 'The event', body: 'Who takes part and how the four days run.' },
-          { href: '/resources', title: 'Resources', body: 'Every published document, including the deck.' },
-        ]}
-      />
+      {!next.hidden && <NextSteps steps={nextSteps(next)} />}
     </>
   );
 }

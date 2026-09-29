@@ -120,3 +120,23 @@ test('preview cannot be switched on without signing in', async ({ page, request 
   await page.goto('/announcements');
   await expect(page.getByRole('heading', { name: title, exact: true })).toHaveCount(0);
 });
+
+test('edited page copy reaches an open public page, now and on schedule', async ({ page, request }) => {
+  const base='http://127.0.0.1:54329/rest/v1';const headers={apikey:'fixture-service'};
+  const users=await (await request.get(`${base}/admin_users`,{headers})).json();
+  const save=async(title:string,publishAt:string|null)=>{
+    const [entry]=await (await request.get(`${base}/content_entries?collection=eq.copy&id=eq.home-hero`,{headers})).json();
+    const data={...entry.data,title};delete data.accentPhrase;
+    const result=await request.post(`${base}/rpc/save_content`,{headers,data:{p_actor:users[0].user_id,p_entry:{...entry,status:'published',publish_at:publishAt,expire_at:null,data}}});
+    expect(result.ok()).toBeTruthy();
+  };
+  await page.goto('/');
+  const now=`Edited headline ${Date.now()}`;
+  await save(now,null);
+  await expect(page.getByRole('heading',{level:1,name:now})).toBeVisible({timeout:25000});
+  const later=`Scheduled headline ${Date.now()}`;
+  const release=Date.now()+3000;
+  await save(later,new Date(release).toISOString());
+  await expect(page.getByRole('heading',{level:1,name:later})).toBeVisible({timeout:30000});
+  expect(Date.now()-release).toBeLessThan(25000);
+});

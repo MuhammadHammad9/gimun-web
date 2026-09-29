@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { constructMetadata } from '@/lib/metadata';
-import { getCommittees, getProblemCategories, getSiteConfig } from '@/lib/content';
+import { getCopy, getCommittees, getProblemCategories, getSiteConfig } from '@/lib/content';
+import { fill } from '@/lib/copy';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { RegisterPageClient } from './RegisterPageClient';
 import { PageHero } from '@/components/ui/PageHero';
@@ -14,25 +15,20 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 }); }
 
 export default async function RegisterPage() {
-  const committees = (await getCommittees());
-  const categories = (await getProblemCategories());
-  const siteConfig = (await getSiteConfig());
+  const [committees, categories, siteConfig, copy] = await Promise.all([getCommittees(), getProblemCategories(), getSiteConfig(), getCopy('register')]);
+  const hero = copy('register-hero');
 
   return (
     <div className="pb-24 print:pb-0">
       <PageHero
         className="print:hidden"
         meta={[`Registration ${getEventYear(siteConfig)}`, 'Free to apply', 'About ten minutes']}
-        title="Apply for GIMUN or the GIKI Moot Court"
-        accentPhrase="GIKI Moot Court"
-        description="The organizing team reviews every application. You pay only if you are accepted, by bank transfer against an invoice."
+        title={fill(hero.title)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead)}
         aside={
           <ol className="steps" style={{ '--step-accent': 'var(--color-champagne)' } as React.CSSProperties}>
-            {[
-              ['Apply', 'Submit the form. You get a reference number and QR ticket by email straight away.'],
-              ['Review', 'The organizing team reviews applications and allocates committees or categories.'],
-              ['Pay', 'If accepted, you receive an invoice with bank details. Nothing is charged here.'],
-            ].map(([title, body], i) => (
+            {(hero.items ?? []).map(({ title, body }, i) => (
               <li key={title} className="step !py-5">
                 <span className="step__num !text-[1.75rem]" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                 <div>

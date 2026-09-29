@@ -10,7 +10,8 @@ import { Steps } from '@/components/sections/Steps';
 import { Button } from '@/components/ui/Button';
 import { CountryMatrix } from '@/components/ui/CountryMatrix';
 import { PageHero } from '@/components/ui/PageHero';
-import { getCommitteeBySlug, getCommittees, getDocuments, getSiteConfig } from '@/lib/content';
+import { getCommitteeBySlug, getCommittees, getCopy, getDocuments, getSiteConfig } from '@/lib/content';
+import { chapterNumbers, fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister } from '@/lib/phase';
 import { formatEventDate, getEventYear } from '@/lib/site-config';
@@ -40,7 +41,7 @@ export async function generateStaticParams() {
 
 export default async function CommitteeDetailPage({ params }: CommitteePageProps) {
   const { slug } = await params;
-  const [committee, committees, site, documents] = await Promise.all([getCommitteeBySlug(slug), getCommittees(), getSiteConfig(), getDocuments()]);
+  const [committee, committees, site, documents, copy] = await Promise.all([getCommitteeBySlug(slug), getCommittees(), getSiteConfig(), getDocuments(), getCopy('committee')]);
   if (!committee) notFound();
   // Old links may use the internal id (com-unsc); send them to the one canonical URL.
   if (committee.slug !== slug) permanentRedirect(`/gimun/committees/${committee.slug}`);
@@ -52,6 +53,12 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
   const index = committees.findIndex((c) => c.slug === committee.slug);
   const previous = index > 0 ? committees[index - 1] : undefined;
   const next = index >= 0 && index < committees.length - 1 ? committees[index + 1] : undefined;
+  const agenda = copy('committee-agenda');
+  const chairs = copy('committee-chairs');
+  const seatsCopy = copy('committee-seats');
+  const closing = copy('committee-closing');
+  const chapter = chapterNumbers(copy, ['committee-agenda', 'committee-chairs', 'committee-seats', 'committee-closing']);
+  const vars = { committee: committee.slug.toUpperCase(), name: committee.name };
   const apply = { label: open ? `Apply for ${committee.slug.toUpperCase()}` : 'Registration status', href: `/register?track=gimun&committee=${committee.slug}` };
 
   return (
@@ -91,28 +98,29 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           <div className="steps-split__head">
             <ChapterHead
               id="agenda-title"
-              chapter={1}
-              act="The agenda"
+              chapter={chapter['committee-agenda']}
+              act={agenda.kicker}
               split={false}
-              title="The agenda."
-              lead="The topics debated in this committee, in the order the chairs will open them."
+              title={fill(agenda.title, vars)}
+              lead={fill(agenda.lead, vars)}
             />
           </div>
           <Steps
             accent="gimun"
             steps={committee.topics.map((topic, i) => ({
               title: topic,
-              body: committee.topicDescriptions[i] || 'The background guide sets out the questions a resolution should answer.',
+              body: committee.topicDescriptions[i] || fill(agenda.note, vars),
             }))}
           />
         </div>
       </section>
 
+      {!chairs.hidden && (
       <section className="chapter" aria-labelledby="chairs-title">
         <div className="wrap">
-          <ChapterHead id="chairs-title" chapter={2} act="The chairs" title="The chairs." />
+          <ChapterHead id="chairs-title" chapter={chapter['committee-chairs']} act={chairs.kicker} title={fill(chairs.title, vars)} />
           {committee.chairs.length === 0 ? (
-            <p className="max-w-2xl text-lead text-text-2">The chairs for this committee will be announced with country allocations.</p>
+            <p className="max-w-2xl text-lead text-text-2">{fill(chairs.note, vars)}</p>
           ) : (
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {committee.chairs.map((chair) => (
@@ -126,26 +134,29 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           )}
         </div>
       </section>
+      )}
 
+      {!seatsCopy.hidden && (
       <section className="chapter chapter--flush-top" aria-labelledby="seats-title">
         <div className="wrap">
           <ChapterHead
             id="seats-title"
-            chapter={3}
-            act="The seats"
-            title="Country allocation."
-            lead="Seats marked available can be requested in your registration preferences. The secretariat confirms every allocation after review."
+            chapter={chapter['committee-seats']}
+            act={seatsCopy.kicker}
+            title={fill(seatsCopy.title, vars)}
+            lead={fill(seatsCopy.lead, vars)}
           />
           <CountryMatrix countryList={committee.countryList} />
         </div>
       </section>
+      )}
 
       <Closing
         id="seat-title"
-        chapter={4}
-        act="Take a seat"
-        title={`Take a seat in ${committee.slug.toUpperCase()}.`}
-        lead="Rank this committee among your three preferences when you apply. The secretariat allocates countries after reviewing every application."
+        chapter={chapter['committee-closing']}
+        act={closing.kicker}
+        title={fill(closing.title, vars)}
+        lead={fill(closing.lead, vars)}
         actions={[
           { ...apply, variant: 'track-gimun' },
           { label: 'All committees', href: '/gimun/committees', variant: 'secondary' },

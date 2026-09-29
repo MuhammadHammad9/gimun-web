@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { GlobeArt } from '@/components/art/LineArt';
 import { seatsOpen } from '@/components/sections/Placards';
 import { PageHero } from '@/components/ui/PageHero';
-import { getCommittees, getSiteConfig } from '@/lib/content';
+import { getCommittees, getCopy, getSiteConfig } from '@/lib/content';
+import { fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister } from '@/lib/phase';
 import { getEventYear } from '@/lib/site-config';
@@ -17,7 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CommitteesPage() {
-  const [committees, site] = await Promise.all([getCommittees(), getSiteConfig()]);
+  const [committees, site, copy] = await Promise.all([getCommittees(), getSiteConfig(), getCopy('committees')]);
+  const hero = copy('committees-hero');
   const seats = committees.reduce((sum, c) => sum + (c.countryList?.length ?? 0), 0);
   const open = committees.reduce((sum, c) => sum + seatsOpen(c), 0);
   const registrationOpen = canRegister(site, 'gimun');
@@ -28,9 +30,9 @@ export default async function CommitteesPage() {
         variant="gimun"
         breadcrumbs={[{ label: 'GIMUN', href: '/gimun' }, { label: 'Committees' }]}
         meta={[`${committees.length} committees`, `${seats} country seats`, `${open} still open`]}
-        title="The committees."
-        accentPhrase="committees."
-        description="From the Security Council to a crisis session of the National Assembly. Open a committee for its agenda, background guide and the countries still available."
+        title={fill(hero.title, { committees: committees.length })}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead, { committees: committees.length })}
         actions={[
           { label: registrationOpen ? 'Register for GIMUN' : 'Registration status', href: '/register?track=gimun', variant: 'track-gimun' },
           { label: 'Rules of procedure', href: '/gimun/rules', variant: 'secondary' },

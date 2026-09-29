@@ -1,4 +1,5 @@
-import { getSiteConfig } from '@/lib/content';
+import { getCopy, getSiteConfig } from '@/lib/content';
+import { fill, nextSteps } from '@/lib/copy';
 import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
 import { getSchedule } from "@/lib/content";
@@ -18,9 +19,9 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 }); }
 
 export default async function SchedulePage() {
-  const schedule = (await getSchedule());
-
-  const site = await getSiteConfig();
+  const [schedule, site, copy] = await Promise.all([getSchedule(), getSiteConfig(), getCopy('schedule')]);
+  const hero = copy('schedule-hero');
+  const next = copy('schedule-next');
   const days = new Set(schedule.map((item) => item.day)).size;
 
   return (
@@ -28,9 +29,9 @@ export default async function SchedulePage() {
       <PageHero
         variant="utility"
         meta={[formatDateRange(site.eventDates.start, site.eventDates.end), `${days} days`, `${schedule.length} sessions`]}
-        title="The schedule."
-        accentPhrase="schedule."
-        description="All four days for both tracks: GIMUN committee sessions, GMC rounds, the ceremonies, meals and evenings. Filter by track or day, or print a copy."
+        title={fill(hero.title)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead)}
         actionsSlot={
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <TransitionLink href="/about/venue" className="text-link">
@@ -48,13 +49,7 @@ export default async function SchedulePage() {
           <ScheduleClient initialSchedule={schedule} />
         </div>
       </section>
-      <NextSteps
-        steps={[
-          { href: '/about/venue', title: 'Venue and travel', body: 'Where each room is on campus, and how to get to Topi.' },
-          { href: '/announcements', title: 'Announcements', body: 'Room changes and notices, newest first.' },
-          { href: '/resources', title: 'Resources', body: 'The guides and rules to read before Day 1.' },
-        ]}
-      />
+      {!next.hidden && <NextSteps steps={nextSteps(next)} />}
     </>
   );
 }

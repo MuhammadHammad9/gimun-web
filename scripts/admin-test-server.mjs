@@ -10,7 +10,7 @@ for(const f of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.sql
 const user={id:randomUUID(),email:'owner@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:new Date().toISOString()};
 await db.query('insert into auth.users values($1)',[user.id]);await db.query("insert into admin_users(user_id,email,display_name,role,must_change_password) values($1,$2,'Fixture owner','owner',false)",[user.id,user.email]);
 const site=JSON.parse(await readFile('content/site.json','utf8'));await db.query("insert into site_settings(id,data) values('site',$1)",[JSON.stringify(site)]);
-for(const f of ['announcements','schedule','committees','moot-categories','resources','faq','team','sponsors','gallery','clarifications','results']){
+for(const f of ['announcements','schedule','committees','moot-categories','resources','faq','team','sponsors','gallery','clarifications','results','copy']){
   const data=JSON.parse(await readFile(`content/${f}.json`,'utf8'));for(const [index,item]of data.entries())await db.query("insert into content_entries(collection,id,status,sort_order,data) values($1,$2,'published',$3,$4)",[f,item.id,index,JSON.stringify(item)]);
 }
 const sessions=new Set();

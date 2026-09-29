@@ -4,50 +4,38 @@ import { useId, useState, type CSSProperties } from 'react';
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 import { ChapterHead } from '@/components/sections/Chapter';
 import { FilterBar } from '@/components/ui/FilterBar';
+import { fill, type Copy } from '@/lib/copy';
 import '@/styles/pages/moot-rules.css';
 
 const WORD_LIMIT = 8000;
-
-const FORMAT = [
-  {
-    term: 'Length',
-    value: '8,000 words at most',
-    note: 'Counts the pleadings and prayer for relief only. The contents, index of authorities and statement of facts do not count.',
-  },
-  {
-    term: 'Type',
-    value: 'Times New Roman',
-    note: 'Body 12pt at 1.5 spacing, footnotes 10pt single-spaced, 1-inch (2.54 cm) margins on every side.',
-  },
-];
-
-const TIMING = [
-  { value: '30 min', term: 'per side', note: 'Applicant and Respondent each have thirty minutes, kept by the clerk.' },
-  { value: '12 to 18', term: 'minutes per oralist', note: 'Both registered oralists speak; neither for less than 12 or more than 18 minutes.' },
-  { value: '3 min', term: 'rebuttal', note: 'Reserved at the start. The Applicant may rebut and the Respondent may reply.' },
-];
-
-const SCORING = {
-  memorial: [
-    { points: 12, title: 'Knowledge of the law', body: 'Command of the case law, treaties and customary rules that decide the problem.' },
-    { points: 10, title: 'Structure and persuasion', body: 'A clear roadmap, sound reasoning and facts applied to law.' },
-    { points: 10, title: 'Research and sources', body: 'Primary sources, state practice, scholarship and arbitral awards.' },
-    { points: 8, title: 'Style and citation', body: 'Consistent footnotes, accurate cross-references, clean grammar and layout.' },
-  ],
-  oral: [
-    { points: 20, title: 'Answering the bench', body: 'Direct, concise answers to the judges’ questions, without evasion.' },
-    { points: 18, title: 'Legal argument', body: 'Command of the facts, the burden of proof and the law in issue.' },
-    { points: 12, title: 'Courtroom manner', body: 'Formal address, clear delivery and composure under questioning.' },
-    { points: 10, title: 'Time and rebuttal', body: 'Keeping to time, a clean prayer and a rebuttal aimed at what was said.' },
-  ],
-} as const;
 
 /**
  * The detailed rules, as the page's later chapters: the memorial format with
  * a word-count check, the courtroom timings, and the scoring for each part.
  */
-export function MootRulesClient() {
+export function MootRulesClient({
+  format,
+  court,
+  scoring: scoringCopy,
+  oral,
+  chapters,
+}: {
+  format: Copy;
+  court: Copy;
+  scoring: Copy;
+  oral: Copy;
+  chapters: Record<string, number | undefined>;
+}) {
   const scoring = useSiteConfig().mootScoring;
+  const vars = {
+    citation: scoring?.citationStyle ?? 'the standard confirmed with the rules',
+    memorial: scoring?.memorialWeight ?? '',
+    oral: scoring?.oralWeight ?? '',
+  };
+  // Points are stored as text in the admin; anything unreadable counts as 0.
+  const criteria = (copy: Copy) =>
+    (copy.items ?? []).map((item) => ({ points: Number(item.meta) || 0, title: fill(item.title, vars), body: fill(item.body, vars) }));
+  const SCORING = { memorial: criteria(scoringCopy), oral: criteria(oral) };
   const [part, setPart] = useState<'memorial' | 'oral'>('memorial');
   const [words, setWords] = useState(7450);
   const inputId = useId();
@@ -56,23 +44,24 @@ export function MootRulesClient() {
 
   return (
     <>
+      {!format.hidden && (
       <section className="chapter" aria-labelledby="format-title">
         <div className="wrap">
           <ChapterHead
             id="format-title"
-            chapter={3}
-            act="The format"
-            title="What a memorial must look like."
-            lead={`Citations follow ${scoring?.citationStyle ?? 'the standard confirmed with the rules'}. A team code is the only identity a memorial may carry: a name, crest or institution in the file is penalised.`}
+            chapter={chapters['moot-rules-format']}
+            act={format.kicker}
+            title={fill(format.title, vars)}
+            lead={fill(format.lead, vars)}
           />
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             <dl className="divide-y divide-line border-y border-line">
-              {FORMAT.map((item) => (
-                <div key={item.term} className="grid gap-2 py-6 sm:grid-cols-[8rem_1fr] sm:gap-8">
-                  <dt className="text-meta font-mono uppercase text-text-3">{item.term}</dt>
+              {(format.items ?? []).map((item) => (
+                <div key={item.title} className="grid gap-2 py-6 sm:grid-cols-[8rem_1fr] sm:gap-8">
+                  <dt className="text-meta font-mono uppercase text-text-3">{fill(item.title, vars)}</dt>
                   <dd>
-                    <p className="font-display text-2xl font-medium text-text">{item.value}</p>
-                    <p className="mt-2 text-sm leading-relaxed text-text-2">{item.note}</p>
+                    <p className="font-display text-2xl font-medium text-text">{fill(item.meta, vars)}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-text-2">{fill(item.body, vars)}</p>
                   </dd>
                 </div>
               ))}
@@ -108,42 +97,42 @@ export function MootRulesClient() {
           </div>
         </div>
       </section>
+      )}
 
+      {!court.hidden && (
       <section className="sheet tone-inverse" aria-labelledby="court-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
           <ChapterHead
             id="court-title"
-            chapter={4}
-            act="In the courtroom"
-            title="Thirty minutes a side."
-            lead="The judges may interrupt at any point, and the clock keeps running while they do. Address the bench as “Your Honour”, answer, then return to your roadmap."
+            chapter={chapters['moot-rules-court']}
+            act={court.kicker}
+            title={fill(court.title, vars)}
+            lead={fill(court.lead, vars)}
           />
           <dl className="figures figures--three">
-            {TIMING.map((item) => (
-              <div key={item.term} className="figure">
-                <dt className="sr-only">{item.term}</dt>
-                <dd className="figure__value">{item.value}</dd>
-                <dd className="figure__label">{item.term}</dd>
-                <dd className="mt-3 max-w-xs text-sm leading-relaxed text-text-2">{item.note}</dd>
+            {(court.items ?? []).map((item) => (
+              <div key={item.title} className="figure">
+                <dt className="sr-only">{fill(item.title, vars)}</dt>
+                <dd className="figure__value">{fill(item.meta, vars)}</dd>
+                <dd className="figure__label">{fill(item.title, vars)}</dd>
+                <dd className="mt-3 max-w-xs text-sm leading-relaxed text-text-2">{fill(item.body, vars)}</dd>
               </div>
             ))}
           </dl>
         </div>
       </section>
+      )}
 
+      {!scoringCopy.hidden && (
       <section className="chapter" aria-labelledby="scoring-title">
         <div className="wrap">
           <ChapterHead
             id="scoring-title"
-            chapter={5}
-            act="The scoring"
-            title="How you are scored, out of 100."
-            lead={
-              scoring
-                ? `The memorial counts for ${scoring.memorialWeight}% and the oral rounds for ${scoring.oralWeight}%.`
-                : 'The weight of each part is confirmed with the published rules.'
-            }
+            chapter={chapters['moot-rules-scoring']}
+            act={scoringCopy.kicker}
+            title={fill(scoringCopy.title, vars)}
+            lead={scoring ? fill(scoringCopy.lead, vars) : 'The weight of each part is confirmed with the published rules.'}
           />
           <FilterBar
             label="Scoring part"
@@ -174,6 +163,7 @@ export function MootRulesClient() {
           </ol>
         </div>
       </section>
+      )}
     </>
   );
 }

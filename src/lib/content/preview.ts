@@ -48,6 +48,14 @@ export async function isPreviewing() {
   return (await previewSession()) !== null;
 }
 
+const COPY_PATHS: Record<string, string> = {
+  home: '/', gimun: '/gimun', committees: '/gimun/committees', committee: '/gimun/committees', 'gimun-rules': '/gimun/rules',
+  'moot-cup': '/moot-cup', categories: '/moot-cup/categories', 'moot-rules': '/moot-cup/rules', clarifications: '/moot-cup/clarifications',
+  schedule: '/schedule', resources: '/resources', announcements: '/announcements', results: '/results', register: '/register',
+  about: '/about', faq: '/about/faq', venue: '/about/venue', team: '/about/team', sponsors: '/about/sponsors', gallery: '/about/gallery',
+  contact: '/contact', privacy: '/privacy',
+};
+
 /** Where each collection is seen on the public site. */
 export function previewPath(collection: Collection, data: Record<string, unknown>): string {
   switch (collection) {
@@ -63,5 +71,6 @@ export function previewPath(collection: Collection, data: Record<string, unknown
     case 'clarifications': return '/moot-cup/clarifications';
     case 'results': return '/results';
     case 'navigation': return '/';
+    case 'copy': return COPY_PATHS[String(data.page)] ?? '/';
   }
 }

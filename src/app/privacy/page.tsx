@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { PageHero } from '@/components/ui/PageHero';
-import { getSiteConfig } from '@/lib/content';
+import { getCopy, getSiteConfig } from '@/lib/content';
+import { fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
 import { AnalyticsChoiceButton } from './AnalyticsChoiceButton';
@@ -24,6 +25,14 @@ const CONTENTS = [
 ];
 
 export default async function PrivacyPage() {
+  const copy = await getCopy('privacy');
+  const hero = copy('privacy-hero');
+  const collectCopy = copy('privacy-collect');
+  const useCopy = copy('privacy-use');
+  const servicesCopy = copy('privacy-services');
+  // The on-page contents follow any edited section titles.
+  const edited: Record<string, string | undefined> = { collect: collectCopy.title, use: useCopy.title, services: servicesCopy.title };
+  const contents = CONTENTS.map((item) => ({ ...item, label: fill(edited[item.id]) || item.label }));
   const site = await getSiteConfig();
 
   return (
@@ -31,9 +40,9 @@ export default async function PrivacyPage() {
       <PageHero
         variant="utility"
         meta={['Public data notice', site.privacyNotice ? 'Approved notice' : 'Draft notice']}
-        title="Privacy and data handling."
-        accentPhrase="data handling."
-        description="Registration, contact and clarification information is collected only to review applications, coordinate event logistics, answer questions and send official updates."
+        title={fill(hero.title)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead)}
         footnote={
           site.privacyNotice
             ? undefined
@@ -46,7 +55,7 @@ export default async function PrivacyPage() {
           <nav aria-label="On this page" className="lg:sticky lg:top-32 lg:self-start">
             <p className="text-meta font-mono uppercase text-text-3">On this page</p>
             <ol className="mt-4 space-y-2.5 text-sm">
-              {CONTENTS.map((item) => (
+              {contents.map((item) => (
                 <li key={item.id}>
                   <a href={`#${item.id}`} className="text-text-2 transition-colors hover:text-text">
                     {item.label}
@@ -60,45 +69,24 @@ export default async function PrivacyPage() {
             {site.privacyNotice && <p className="whitespace-pre-wrap text-base leading-relaxed text-text-2">{site.privacyNotice}</p>}
 
             <section id="collect" className="scroll-mt-28 space-y-3">
-              <h2 className="font-display text-2xl font-medium text-text">What we collect</h2>
-              <p>
-                Depending on the form, this may include names, institutional details, contact information, delegate or
-                team rosters, preferences, accessibility requirements, and the submitted message.
-              </p>
+              <h2 className="font-display text-2xl font-medium text-text">{fill(collectCopy.title)}</h2>
+              <p>{fill(collectCopy.body)}</p>
             </section>
 
             <section id="use" className="scroll-mt-28 space-y-3">
-              <h2 className="font-display text-2xl font-medium text-text">How it is used</h2>
-              <p>
-                The organizing committee uses this information for application review, allocation, venue and
-                accommodation planning, official notices, and responses to questions. We do not publish rosters or sell
-                participant information. Published award results and certificate verification links can show participant
-                names; clarification answers may be published after editorial review.
-              </p>
+              <h2 className="font-display text-2xl font-medium text-text">{fill(useCopy.title)}</h2>
+              <p>{fill(useCopy.body)}</p>
             </section>
 
             <section id="services" className="scroll-mt-28 space-y-3">
-              <h2 className="font-display text-2xl font-medium text-text">Services that process your data</h2>
+              <h2 className="font-display text-2xl font-medium text-text">{fill(servicesCopy.title)}</h2>
               <dl className="divide-y divide-line border-y border-line">
-                <div className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-6">
-                  <dt className="font-medium text-text">Supabase</dt>
-                  <dd>Stores registrations, messages and admin records.</dd>
-                </div>
-                <div className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-6">
-                  <dt className="font-medium text-text">Resend</dt>
-                  <dd>Delivers receipts, invoices, certificates and replies by email.</dd>
-                </div>
-                <div className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-6">
-                  <dt className="font-medium text-text">Upstash</dt>
-                  <dd>
-                    Counts requests to stop form abuse. It stores a one-way hash of your IP address, not the address
-                    itself, for a few minutes.
-                  </dd>
-                </div>
-                <div className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-6">
-                  <dt className="font-medium text-text">Vercel</dt>
-                  <dd>Hosts the website and keeps short-lived server logs.</dd>
-                </div>
+                {(servicesCopy.items ?? []).map((item) => (
+                  <div key={item.title} className="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-6">
+                    <dt className="font-medium text-text">{fill(item.title)}</dt>
+                    <dd>{fill(item.body)}</dd>
+                  </div>
+                ))}
               </dl>
             </section>
 

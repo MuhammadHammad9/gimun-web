@@ -3,7 +3,8 @@ import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ContactFormFromUrl } from '@/components/forms/ContactForm';
 import { CopyButton } from '@/components/ui/CopyButton';
 import { PageHero } from '@/components/ui/PageHero';
-import { getSiteConfig } from '@/lib/content';
+import { getCopy, getSiteConfig } from '@/lib/content';
+import { fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
 
@@ -17,6 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ContactPage() {
+  const copy = await getCopy('contact');
+  const hero = copy('contact-hero');
   const config = await getSiteConfig();
   const inboxes = [
     { label: 'General questions', email: config.contactEmails.general },
@@ -38,9 +41,9 @@ export default async function ContactPage() {
       <PageHero
         variant="utility"
         meta={[config.replyTime || 'Replies from the organizing team', 'GIKI, Topi']}
-        title="Write to the organizing team."
-        accentPhrase="organizing team."
-        description="A question about eligibility, committee selection, the GMC case problem, sponsorship or getting to campus? Send it below, or email the team that owns it."
+        title={fill(hero.title)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead)}
         actionsSlot={
           <Link href="/about/faq" className="text-link">
             Check the FAQ first

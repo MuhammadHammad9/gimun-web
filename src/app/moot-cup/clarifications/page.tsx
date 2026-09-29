@@ -1,4 +1,5 @@
-import { getSiteConfig } from '@/lib/content';
+import { getCopy, getSiteConfig } from '@/lib/content';
+import { fill, nextSteps } from '@/lib/copy';
 import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
 import { getClarifications, getDocuments } from "@/lib/content";
@@ -16,7 +17,9 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 }); }
 
 export default async function ClarificationsPage() {
-  const clarifications = (await getClarifications());
+  const [clarifications, copy] = await Promise.all([getClarifications(), getCopy('clarifications')]);
+  const hero = copy('clarifications-hero');
+  const next = copy('clarifications-next');
   const propositionDocument = (await getDocuments()).find(
     (document) => document.track === "moot-cup" && document.type === "proposition",
   );
@@ -27,9 +30,9 @@ export default async function ClarificationsPage() {
         variant="moot"
         breadcrumbs={[{ label: 'GMC', href: '/moot-cup' }, { label: 'Clarifications' }]}
         meta={[`${clarifications.length} published`, 'Binding on every team']}
-        title="The clarifications log."
-        accentPhrase="clarifications log."
-        description="Questions from registered teams and the bench's answers. Every clarification published here forms part of the case problem, for every team at once."
+        title={fill(hero.title)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead)}
         actionsSlot={
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             {propositionDocument && (
@@ -48,13 +51,7 @@ export default async function ClarificationsPage() {
           <ClarificationsClient initialClarifications={clarifications} />
         </div>
       </section>
-      <NextSteps
-        steps={[
-          { href: '/moot-cup/rules', title: 'Rules and memorials', body: 'Formatting, word limits and how the rounds are scored.' },
-          { href: '/moot-cup/categories', title: 'Case categories', body: 'The areas of law in this year’s problem.' },
-          { href: '/resources', title: 'Resources', body: 'The compromis and the competition rules as PDFs.' },
-        ]}
-      />
+      {!next.hidden && <NextSteps steps={nextSteps(next)} />}
     </>
   );
 }

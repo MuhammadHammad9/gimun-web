@@ -32,6 +32,7 @@ Do not expose the service key to browser code. Public revision responses contain
 | FAQ, team, sponsors, gallery | Their corresponding public pages |
 | Navigation | Header, mobile and footer. Footer columns follow each entry's `footerGroup` (GIMUN, Moot Court, Event, About). If nothing is published the site falls back to its built-in menu, and the admin list warns about it |
 | Results | Results page after entry publication and site-wide release |
+| Page copy (`copy`, one entry per page section) | Headings, leads, lists, links, images and show/hide for each public page section. `{tokens}` are filled from live data. Hiding a section renumbers the chapters after it. Needs migration `0013_page_copy.sql`, then `npm run content:seed` to add the defaults |
 | Registrations, attendance, inbox, mail, certificates, feedback | Authorized admin views and existing private recipient/verification routes |
 
 Operational country availability and schedule day labels are derived values, not independent content overrides.
