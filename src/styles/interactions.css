@@ -295,3 +295,112 @@ textarea {
 .nav-link {
   white-space: nowrap;
 }
+
+/* --- Live updates: the notice chip and what changed ------------------------ */
+.live-dot {
+  position: relative;
+  width: 0.625rem;
+  height: 0.625rem;
+  flex: none;
+  border-radius: 9999px;
+  background: var(--color-champagne);
+}
+
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: live-ping 1.8s var(--ease-out-expo) infinite;
+}
+
+@keyframes live-ping {
+  to {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+.live-notice {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  z-index: 50;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.live-notice__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.75rem;
+  padding: 0 1.125rem;
+  border: 1px solid var(--color-line-2);
+  border-radius: 999px;
+  background: var(--color-raised);
+  box-shadow: var(--shadow-panel);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  pointer-events: auto;
+  animation: live-chip-in 360ms var(--ease-out-expo) both;
+}
+
+button.live-notice__chip {
+  cursor: pointer;
+}
+
+button.live-notice__chip:hover {
+  border-color: var(--color-champagne);
+}
+
+button.live-notice__chip:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.live-notice__chip--quiet {
+  color: var(--color-text-2);
+  pointer-events: none;
+}
+
+@keyframes live-chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+/* A block whose content just changed: a ring that fades out. */
+[data-live-changed] {
+  animation: live-changed 2.4s var(--ease-out-expo) both;
+}
+
+@keyframes live-changed {
+  from {
+    box-shadow: 0 0 0 2px var(--color-champagne);
+  }
+  to {
+    box-shadow: 0 0 0 2px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot::after,
+  .live-notice__chip {
+    animation: none;
+  }
+
+  [data-live-changed] {
+    animation: none;
+    box-shadow: 0 0 0 2px var(--color-champagne);
+  }
+}
+
+@media print {
+  .live-notice {
+    display: none;
+  }
+}

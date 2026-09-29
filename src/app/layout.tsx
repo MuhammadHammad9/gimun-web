@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { connection } from 'next/server';
 import localFont from 'next/font/local';
 import './globals.css';
 import { SiteChrome } from '@/components/layout/SiteChrome';
@@ -12,7 +11,7 @@ import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { getAnalyticsMeasurementId } from '@/lib/site-config';
 import { serverRenderTime } from '@/lib/phase';
 import { THEME_BOOT_SCRIPT } from '@/lib/theme';
-import { publicRevision } from '@/lib/server/live';
+import { appliedRevision } from '@/lib/server/live';
 import { LiveUpdates } from '@/components/LiveUpdates';
 
 const satoshi = localFont({
@@ -53,8 +52,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await connection();
-  const live = await publicRevision();
+  // Pages stay cached. This stamp is the published revision they were built
+  // from; LiveUpdates compares it with /api/public/revision and refreshes.
+  const revision = await appliedRevision();
   const siteConfig = (await getSiteConfig());
   const announcements = (await getAnnouncements());
   const sponsors = (await getSponsors());
@@ -75,7 +75,7 @@ export default async function RootLayout({
       <body className="min-h-screen flex flex-col bg-canvas text-text antialiased">
         <GoogleAnalytics measurementId={getAnalyticsMeasurementId()} />
         <SiteConfigProvider value={siteConfig} renderedAt={renderedAt}>
-          <LiveUpdates initial={live.revision} />
+          <LiveUpdates initial={revision} eventStart={siteConfig.eventDates.start} eventEnd={siteConfig.eventDates.end} />
           <SiteChrome
             banner={<NoticeBar announcement={activeAnnouncement} />}
             footer={<SiteFooter site={siteConfig} sponsors={sponsors} />}

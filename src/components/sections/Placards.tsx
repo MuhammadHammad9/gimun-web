@@ -37,7 +37,7 @@ export function CommitteePlacard({
   const open = seatsOpen(committee);
   const headingId = `placard-${committee.slug}`;
   return (
-    <article className={cn('placard', className)} data-pan-panel={panel ? '' : undefined} aria-labelledby={headingId} data-glow="">
+    <article className={cn('placard', className)} data-pan-panel={panel ? '' : undefined} aria-labelledby={headingId} data-glow="" data-live-key={`committee-${committee.id}${panel ? '-panel' : ''}`}>
       <div className="placard__top">
         <span>{COMMITTEE_TYPE[committee.type] ?? 'Committee'}</span>
         {total > 0 && (
@@ -79,7 +79,7 @@ export function CommitteePlacard({
 export function CasePlacard({ category, className, panel = false }: { category: ProblemCategory; className?: string; panel?: boolean }) {
   const headingId = `case-${category.id}`;
   return (
-    <article className={cn('placard placard--case', className)} data-pan-panel={panel ? '' : undefined} aria-labelledby={headingId} data-glow="">
+    <article className={cn('placard placard--case', className)} data-pan-panel={panel ? '' : undefined} aria-labelledby={headingId} data-glow="" data-live-key={`case-${category.id}${panel ? '-panel' : ''}`}>
       <div className="placard__top">
         <span>Case category</span>
       </div>

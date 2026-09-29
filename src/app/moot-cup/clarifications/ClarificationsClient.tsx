@@ -50,7 +50,7 @@ export function ClarificationsClient({ initialClarifications }: ClarificationsCl
 
         <ol className="ruling-list">
           {rulings.map((item) => (
-            <li key={item.id} className="ruling">
+            <li key={item.id} className="ruling" data-live-key={`clarification-${item.id}`}>
               <p className="ruling__num" aria-hidden="true">
                 {String(item.number).padStart(2, '0')}
               </p>

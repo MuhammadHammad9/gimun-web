@@ -193,7 +193,7 @@ export function ResultsClient({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((item, idx) => (
                 <ScrollReveal key={item.id} delay={idx * 0.05}>
-                  <div className="double-bezel h-full">
+                  <div className="double-bezel h-full" data-live-key={`result-${item.id}`}>
                     <div className="double-bezel-inner p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">

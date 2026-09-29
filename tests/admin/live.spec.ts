@@ -49,3 +49,36 @@ test('scheduled publication and expiry update an open public page without anothe
   await expect(page.getByRole('heading',{name:title,exact:true})).toHaveCount(0,{timeout:22000});
   expect(Date.now()-(release+12000)).toBeLessThan(10000);
 });
+
+// Publishes an announcement straight through the fixture database (no save action).
+async function publishAnnouncement(request: import('@playwright/test').APIRequestContext, id: string, title: string) {
+  const base='http://127.0.0.1:54329/rest/v1';const headers={apikey:'fixture-service'};
+  const users=await (await request.get(`${base}/admin_users`,{headers})).json();
+  const entries=await (await request.get(`${base}/content_entries?collection=eq.announcements&id=eq.ann-01`,{headers})).json();
+  const entry=entries[0];
+  const result=await request.post(`${base}/rpc/save_content`,{headers,data:{p_actor:users[0].user_id,p_entry:{...entry,id,version:0,status:'published',publish_at:null,expire_at:null,data:{...entry.data,id,pinnedFlag:false,title}}}});
+  expect(result.ok()).toBeTruthy();
+}
+
+test('a visitor part-way through a form is offered the update instead of losing their place', async ({ page, request }) => {
+  await page.goto('/contact');
+  const name = page.getByLabel(/Your Full Name/);
+  await name.fill('Half-written message');
+  await page.getByRole('heading', { level: 1 }).click();
+  await publishAnnouncement(request, `hold-${Date.now()}`, `Held update ${Date.now()}`);
+  const chip = page.getByRole('button', { name: 'This page has updates. Show them' });
+  await expect(chip).toBeVisible({ timeout: 25000 });
+  await expect(name).toHaveValue('Half-written message');
+  await chip.click();
+  await expect(page.getByText('Updated just now')).toBeVisible({ timeout: 10000 });
+});
+
+test('a live refresh marks the content that changed', async ({ page, request }) => {
+  await page.goto('/announcements');
+  const id = `changed-${Date.now()}`;
+  const title = `Freshly changed notice ${Date.now()}`;
+  await publishAnnouncement(request, id, title);
+  await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible({ timeout: 10000 });
+  await expect(page.locator(`[data-live-key="announcement-${id}"]`)).toHaveAttribute('data-live-changed', '');
+  await expect(page.getByText('Updated just now')).toBeVisible();
+});

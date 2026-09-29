@@ -148,7 +148,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
           {filteredSessions.map((session) => {
             const isLive = liveSessionIds.has(session.id);
             return (
-              <li key={session.id} className={cn('session', isLive && 'session--live')}>
+              <li key={session.id} className={cn('session', isLive && 'session--live')} data-live-key={`session-${session.id}`}>
                 <p className="session__time">
                   <time>{session.startTime}</time>
                   <span aria-hidden="true">–</span>

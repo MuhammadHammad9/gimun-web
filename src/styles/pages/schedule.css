@@ -150,34 +150,8 @@
   color: var(--color-champagne);
 }
 
-.live-dot {
-  position: relative;
-  width: 0.625rem;
-  height: 0.625rem;
-  flex: none;
-  border-radius: 9999px;
-  background: var(--color-champagne);
-}
-
-.live-dot::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: inherit;
-  animation: live-ping 1.8s var(--ease-out-expo) infinite;
-}
-
-@keyframes live-ping {
-  to {
-    opacity: 0;
-    transform: scale(2.6);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .session,
-  .live-dot::after {
+  .session {
     animation: none;
   }
 }

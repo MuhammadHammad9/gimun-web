@@ -68,6 +68,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
               <ScrollReveal key={item.id}>
                 <article
                   id={item.id}
+                  data-live-key={`announcement-${item.id}`}
                   className="scroll-mt-28 space-y-4 rounded-2xl border border-line-2 bg-raised p-8 transition-shadow target:ring-2 target:ring-focus sm:p-10"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
@@ -109,6 +110,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
             <ScrollReveal key={item.id} delay={idx * 0.05}>
               <div
                 id={item.id}
+                data-live-key={`announcement-${item.id}`}
                 className="rounded-2xl border border-line bg-raised hover:border-line-3 hover:bg-raised transition-all duration-300 h-full scroll-mt-28 target:ring-2 target:ring-focus"
               >
                 <div className="p-7 flex flex-col justify-between h-full space-y-4">

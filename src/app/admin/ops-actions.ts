@@ -46,7 +46,7 @@ export async function runOperation(operation: string, input: unknown): Promise<{
       parsed.html=emailHtml(`Reference: ${parsed.reference}\nApplication status: ${parsed.status}\nPayment status: ${parsed.payment_status}`);
     }
     const result=await operate(sections[key],key,parsed);
-    if(['allocation','reserve','unassign'].includes(key)) updateTag('content:committees');
+    if(['allocation','reserve','unassign'].includes(key)){updateTag('content:committees');updateTag('content:allocations');}
     if(key==='archive') updateTag('content:site');
     revalidatePath('/admin','layout');
     if(key==='outbox' || key==='resend-ticket' || parsed.notify) after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Dispatch deferred');}});
