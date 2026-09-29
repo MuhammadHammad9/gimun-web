@@ -13,6 +13,7 @@ import { BrandMark } from './BrandMark';
 import { MobileMenu } from './MobileMenu';
 import { isCurrentPath } from './nav-utils';
 import { GlobeArt, PorticoArt, ScalesArt } from '@/components/art/LineArt';
+import { QuickJumpButton } from './QuickJumpButton';
 import { ThemeSwitch } from './ThemeSwitch';
 
 type PanelKind = 'gimun' | 'gmc' | 'about';
@@ -219,6 +220,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="header-actions">
+            <QuickJumpButton />
             <ThemeSwitch />
 
             <div
