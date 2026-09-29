@@ -40,21 +40,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
   const regularItems = filtered.filter((i) => !i.pinnedFlag);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
-      {/* Header */}
-      <header className="space-y-4 max-w-3xl">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-champagne/20 border border-line-2 text-champagne">
-          <span className="w-2 h-2 rounded-full bg-champagne animate-ping" />
-          <span>Live Dispatch Feed</span>
-        </div>
-        <h1 className="text-3xl sm:text-5xl font-display font-medium text-text tracking-tight">
-          Announcements
-        </h1>
-        <p className="text-sm sm:text-base text-text-2 leading-relaxed">
-          Real-time notices, schedule adjustments, dais releases, and logistical bulletins issued directly by the GIMUN Secretariat and GMC Court Administration.
-        </p>
-      </header>
-
+    <div className="space-y-12">
       {/* Filter & Search Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-line">
         <FilterBar
@@ -217,7 +203,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
               Registered delegates and team heads
             </h3>
             <p className="text-xs sm:text-sm text-text-2 leading-relaxed">
-              All committee-specific directives and emergency room adjustments are mirrored to official Head Delegate WhatsApp groups during the conference days.
+              Room changes and committee directives are posted here and on the schedule as soon as they are made. Check both each morning of the conference.
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0">

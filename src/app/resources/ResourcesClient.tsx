@@ -8,7 +8,7 @@ import { SearchInput } from "@/components/ui/SearchInput";
 import { FilterBar } from "@/components/ui/FilterBar";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Download, Sparkles } from "lucide-react";
+import { Download } from "lucide-react";
 import type { Document } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { getEventYear } from "@/lib/site-config";
@@ -20,15 +20,28 @@ interface ResourcesClientProps {
 
 export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
   const eventYear = getEventYear(useSiteConfig());
-  const gimunRulesDocument = initialDocuments.find(
-    (document) => document.track === "gimun" && document.type === "rules",
-  );
-  const mootRulesDocument = initialDocuments.find(
-    (document) => document.track === "moot-cup" && document.type === "rules",
-  );
-  const campusMapDocument = initialDocuments.find(
-    (document) => document.track === "shared" && document.type === "map",
-  );
+  const find = (track: Document["track"], type: Document["type"]) =>
+    initialDocuments.find((document) => document.track === track && document.type === type);
+  const starters = [
+    {
+      title: "GIMUN delegates",
+      body: "Read the rules of procedure first, then the background guide for your committee.",
+      documents: [find("gimun", "rules")],
+    },
+    {
+      title: "GMC teams",
+      body: `The ${eventYear} case problem, then the competition rules, which also cover memorial formatting and citation.`,
+      documents: [find("moot-cup", "proposition"), find("moot-cup", "rules")],
+    },
+    {
+      title: "Travelling to Topi",
+      body: "The campus and venue map, and the participant handbook for everyone attending.",
+      documents: [find("shared", "map"), find("shared", "handbook")],
+    },
+  ].map((starter) => ({
+    ...starter,
+    documents: starter.documents.filter((document): document is Document => Boolean(document)),
+  }));
   const [searchQuery, setSearchQuery] = useState("");
   const [trackFilter, setTrackFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -61,100 +74,33 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
 
   return (
     <div className="space-y-12">
-      {/* 1. CURATED STARTER PACKS BENTO */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-champagne" />
-          <h2 className="text-xs font-mono uppercase font-bold tracking-wider text-text-2">
-            Start here
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Pack 1 */}
-          <div className="p-6 rounded-2xl bg-overlay/90 text-champagne border border-line relative overflow-hidden flex flex-col justify-between space-y-4 shadow-xl">
-            <div className="relative z-10 space-y-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold bg-champagne/20 text-text border border-line-2">
-                Diplomatic Starter Pack
+      <section className="space-y-6" aria-labelledby="start-here-title">
+        <h2 id="start-here-title" className="text-meta font-mono uppercase text-text-2">
+          Start here
+        </h2>
+        <ol className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-3">
+          {starters.map((starter, index) => (
+            <li key={starter.title} className="flex flex-col gap-4 bg-raised p-6 sm:p-7">
+              <span className="font-mono text-xs text-text-3" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
               </span>
-              <h3 className="font-display font-medium text-lg text-text">
-                GIMUN Delegate Kit
-              </h3>
-              <p className="text-xs text-text-2 leading-relaxed">
-                Includes the official Rules of Procedure handbook, parliamentary motions cheat sheet, and sample resolution template.
-              </p>
-            </div>
-            <div className="relative z-10 pt-2 border-t border-line">
-              {gimunRulesDocument ? (
-                <a
-                  href={gimunRulesDocument.fileUrl}
-                  className="inline-flex items-center gap-2 text-xs font-mono font-bold text-champagne hover:text-text transition-colors"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Download RoP Handbook</span>
-                </a>
-              ) : (
-                <span className="text-xs font-mono text-text-3">Handbook pending publication</span>
-              )}
-            </div>
-          </div>
-
-          {/* Pack 2 */}
-          <div className="p-6 rounded-2xl bg-overlay/90 text-champagne border border-line relative overflow-hidden flex flex-col justify-between space-y-4 shadow-xl">
-            <div className="relative z-10 space-y-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold bg-champagne/20 text-text border border-line-2">
-                Courtroom Briefing Pack
-              </span>
-              <h3 className="font-display font-medium text-lg text-text">
-                GMC Written Arguments Kit
-              </h3>
-              <p className="text-xs text-text-2 leading-relaxed">
-                Includes the {eventYear} official case problem (Compromis), citation style guidelines, and courtroom scoring rubric.
-              </p>
-            </div>
-            <div className="relative z-10 pt-2 border-t border-line">
-              {mootRulesDocument ? (
-                <a
-                  href={mootRulesDocument.fileUrl}
-                  className="inline-flex items-center gap-2 text-xs font-mono font-bold text-champagne hover:text-text transition-colors"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Download Rules &amp; Guide</span>
-                </a>
-              ) : (
-                <span className="text-xs font-mono text-text-3">Rules guide pending publication</span>
-              )}
-            </div>
-          </div>
-
-          {/* Pack 3 */}
-          <div className="p-6 rounded-2xl bg-overlay/90 text-champagne border border-line relative overflow-hidden flex flex-col justify-between space-y-4 shadow-xl">
-            <div className="relative z-10 space-y-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold bg-champagne/20 text-text border border-line-2">
-                Campus Logistics Pack
-              </span>
-              <h3 className="font-display font-medium text-lg text-text">
-                Outstation Travel Kit
-              </h3>
-              <p className="text-xs text-text-2 leading-relaxed">
-                Campus access security guidelines, M-1 motorway directions, hostel check-in protocols, and emergency medical contacts.
-              </p>
-            </div>
-            <div className="relative z-10 pt-2 border-t border-line">
-              {campusMapDocument ? (
-                <a
-                  href={campusMapDocument.fileUrl}
-                  className="inline-flex items-center gap-2 text-xs font-mono font-bold text-champagne hover:text-text transition-colors"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Download Campus Map &amp; Guide</span>
-                </a>
-              ) : (
-                <span className="text-xs font-mono text-text-3">Campus guide pending publication</span>
-              )}
-            </div>
-          </div>
-        </div>
+              <h3 className="font-display text-lg font-medium text-text">{starter.title}</h3>
+              <p className="text-sm leading-relaxed text-text-2">{starter.body}</p>
+              <ul className="mt-auto space-y-2 border-t border-line pt-4">
+                {starter.documents.map((document) => (
+                  <li key={document.id}>
+                    <a href={document.fileUrl} className="text-link text-sm" data-no-transition="">
+                      {document.title} ({document.fileFormat})
+                    </a>
+                  </li>
+                ))}
+                {starter.documents.length === 0 && (
+                  <li className="text-sm text-text-3">Published here when ready.</li>
+                )}
+              </ul>
+            </li>
+          ))}
+        </ol>
       </section>
 
       {/* 2. REPOSITORY SEARCH & FILTER SUITE */}

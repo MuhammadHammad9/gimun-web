@@ -108,9 +108,9 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
   const getCategoryBadgeClass = (cat: FAQItem['category']) => {
     switch (cat) {
       case 'gimun-specific':
-        return 'bg-champagne/20 text-cream border border-champagne/40';
+        return 'bg-champagne/15 text-text border border-line-2';
       case 'moot-cup-specific':
-        return 'bg-brand text-cream border border-champagne/30';
+        return 'bg-raised text-text border border-line-2';
       case 'registration-fees':
         return 'bg-elevated text-champagne border border-line-2';
       case 'logistics':

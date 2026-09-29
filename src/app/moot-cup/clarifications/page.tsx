@@ -42,7 +42,7 @@ export default async function ClarificationsPage() {
           </div>
         }
       />
-      <section className="handoff__sheet tone-deep chapter" aria-label="Clarifications">
+      <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Clarifications">
         <div className="wrap">
           <ClarificationsClient initialClarifications={clarifications} />
         </div>

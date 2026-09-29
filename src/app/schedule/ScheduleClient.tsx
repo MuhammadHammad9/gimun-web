@@ -280,7 +280,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
 
         <div className="space-y-1">
           <h4 className="font-display font-medium text-base text-text">
-            Room Allocations &amp; Real-time Schedule Adjustments
+            Room allocations and schedule changes
           </h4>
           <p className="text-xs sm:text-sm text-text-2">
             Any emergency time shifts or chamber transfers during conference days will automatically publish on our live Announcements broadcast.
