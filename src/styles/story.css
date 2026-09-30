@@ -79,7 +79,8 @@
   transition: opacity var(--dur-ui) var(--ease-brand), visibility var(--dur-ui);
 }
 
-[data-corridor] .chapter-index {
+[data-corridor] .chapter-index,
+.chapter-index[data-aside] {
   visibility: hidden;
   opacity: 0;
 }

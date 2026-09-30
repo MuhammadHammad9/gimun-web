@@ -47,6 +47,9 @@ function goTo(id: string) {
 export function ChapterIndex() {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [active, setActive] = useState<string | null>(null);
+  // The rail steps aside over the hero (before the first chapter arrives) and
+  // over the footer, where it would sit on top of their text.
+  const [aside, setAside] = useState(true);
 
   // Bridge links: smooth, focus-moving chapter jumps.
   useEffect(() => {
@@ -96,7 +99,24 @@ export function ChapterIndex() {
         { rootMargin: '-35% 0px -60% 0px' },
       );
       sections.forEach((_, section) => observer?.observe(section));
+      first = markers[0]?.closest('section') ?? null;
+      place();
     };
+
+    let first: Element | null = null;
+    let frame = 0;
+    const place = () => {
+      frame = 0;
+      const footer = document.querySelector('.site-footer');
+      const arrived = first ? first.getBoundingClientRect().top < window.innerHeight * 0.8 : false;
+      const ending = footer ? footer.getBoundingClientRect().top < window.innerHeight * 0.85 : false;
+      setAside(!arrived || ending);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(place);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
 
     firstIntent().then(start);
     wide.addEventListener('change', start);
@@ -104,13 +124,16 @@ export function ChapterIndex() {
       cancelled = true;
       observer?.disconnect();
       wide.removeEventListener('change', start);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(frame);
     };
   }, []);
 
   if (chapters.length < 2) return null;
 
   return (
-    <nav className="chapter-index" aria-label="Chapters on this page">
+    <nav className="chapter-index" aria-label="Chapters on this page" data-aside={aside ? '' : undefined}>
       <span className="chapter-index__thread" aria-hidden="true" />
       <ol>
         {chapters.map((chapter) => (

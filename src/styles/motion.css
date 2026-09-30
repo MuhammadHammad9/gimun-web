@@ -101,3 +101,40 @@ html.lenis {
     transform: translateY(0.375rem);
   }
 }
+
+/* --- Lacquer light ----------------------------------------------------------
+   The WebGL light behind a hero (LacquerLight). It fades in on its first
+   frame and is masked away from the headline side, so the text keeps its
+   contrast; it never takes pointer events and never prints. */
+.lacquer {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.8s var(--ease-out-expo);
+  -webkit-mask-image: radial-gradient(ellipse 70% 85% at 72% 48%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(ellipse 70% 85% at 72% 48%, #000 30%, transparent 78%);
+}
+
+.lacquer[data-lit] {
+  opacity: 1;
+}
+
+.lacquer canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .lacquer {
+    display: none;
+  }
+}
+
+/* At the close the light gathers behind the turning seal on the right. */
+.lacquer--closing {
+  -webkit-mask-image: radial-gradient(ellipse 60% 90% at 78% 50%, #000 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse 60% 90% at 78% 50%, #000 25%, transparent 75%);
+}

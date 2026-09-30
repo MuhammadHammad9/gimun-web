@@ -32,6 +32,8 @@ export interface PageHeroProps {
   aside?: React.ReactNode;
   /** Right-hand decorative art (used when there is no aside). */
   art?: React.ReactNode;
+  /** A decorative layer behind the whole hero (the lacquer light). */
+  backdrop?: React.ReactNode;
   /** Short affirmative points under the description. */
   bullets?: string[];
   /** Accepted for compatibility; the placard mosaic is retired. */
@@ -67,6 +69,7 @@ export function PageHero({
   actionsSlot,
   aside,
   art,
+  backdrop,
   bullets,
   breadcrumbs,
   variant = 'utility',
@@ -180,6 +183,7 @@ export function PageHero({
   if (home) {
     return (
       <section className={cn('home-hero wrap', className)}>
+        {backdrop}
         <div className="home-hero__grid">
           {body}
           {side && (
@@ -194,6 +198,7 @@ export function PageHero({
 
   return (
     <section className={cn('page-hero', className)}>
+      {backdrop}
       <div className="wrap">
         {breadcrumbs && breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} className="mb-10" />}
         <div className="page-hero__grid" data-aside={side ? '' : undefined}>

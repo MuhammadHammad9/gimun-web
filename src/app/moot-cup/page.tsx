@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { LacquerLight } from '@/components/art/LacquerLight';
 import { BracketArt, ScalesArt } from '@/components/art/LineArt';
 import { HandoffStage } from '@/components/motion/HandoffStage';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
@@ -52,6 +53,7 @@ export default async function MootCupOverviewPage() {
         <div className="handoff__stage">
           <div className="handoff__scene">
             <PageHero
+              backdrop={<LacquerLight tint="gmc" />}
               variant="moot"
               meta={['Moot court', formatDateRange(site.eventDates.start, site.eventDates.end), 'GIKI, Topi']}
               title={fill(hero.title, vars)}

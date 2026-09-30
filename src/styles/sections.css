@@ -413,6 +413,8 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  /* clip, not a scroll container, so scroll timelines inside see the page */
+  overflow: clip;
   display: flex;
   flex-direction: column;
   min-height: 36rem;
@@ -479,6 +481,48 @@
   font-weight: 600;
   line-height: 0.85;
   letter-spacing: -0.045em;
+}
+
+/* Light across the mark: as a door scrolls into view a band of light crosses
+   its large word, the lacquer catching it once. A copy of the word (data-text)
+   painted with a moving highlight clipped to the letters; the mark itself never
+   changes, so without scroll timelines, or under reduced motion (the global
+   rule stops every animation), it is simply the mark. */
+.door__mark[data-text] {
+  position: relative;
+}
+
+@keyframes mark-glint {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -20% 0;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .door__mark[data-text]::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(105deg, transparent 38%, color-mix(in oklab, var(--color-text) 85%, transparent) 50%, transparent 62%);
+    background-size: 250% 100%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    pointer-events: none;
+    animation: mark-glint linear both;
+    animation-timeline: view();
+    animation-range: entry 60% cover 55%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .door__mark[data-text]::after {
+    content: none;
+  }
 }
 
 .door__name {
@@ -1554,6 +1598,7 @@
 /* --- Closing call to action --------------------------------------------- */
 .closing {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
 }

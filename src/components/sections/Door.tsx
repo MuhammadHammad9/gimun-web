@@ -55,7 +55,7 @@ export function Door({
         )}
       </div>
       {mark && (
-        <p className="door__mark" aria-hidden="true">
+        <p className="door__mark" aria-hidden="true" data-text={mark}>
           {mark}
         </p>
       )}
