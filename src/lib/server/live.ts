@@ -9,14 +9,32 @@ import { can, sections, type AdminUser } from './admin/permissions';
 
 type PublicRevision = { revision: string; connected: boolean; reason: string };
 
+/**
+ * Every open public page polls the revision. When the database is failing,
+ * each poll used to wait out a full request timeout, so an outage during the
+ * event multiplied into hundreds of slow function calls against a database
+ * that was already struggling. After a failure this instance answers
+ * "unavailable" at once for a short while before trying again.
+ */
+const OUTAGE_BACKOFF_MS = 15_000;
+let failedAt = 0;
+
 async function freshRevision(): Promise<PublicRevision> {
+  if (Date.now() - failedAt < OUTAGE_BACKOFF_MS) {
+    return { revision: 'unavailable', connected: false, reason: 'Website connection unavailable.' };
+  }
   const health = await contentHealth();
-  if (health.fallback) return { revision: 'unavailable', connected: false, reason: health.reason };
+  if (health.fallback) {
+    if (health.transient) failedAt = Date.now();
+    return { revision: 'unavailable', connected: false, reason: health.reason };
+  }
   try {
     const { data, error } = await database().rpc('public_revision');
     if (error) throw error;
+    failedAt = 0;
     return { revision: String(data), connected: true, reason: '' };
   } catch {
+    failedAt = Date.now();
     return { revision: 'unavailable', connected: false, reason: 'Live updates are unavailable. Check the database migration.' };
   }
 }

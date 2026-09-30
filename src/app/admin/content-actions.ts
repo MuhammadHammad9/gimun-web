@@ -16,6 +16,7 @@ export async function saveContent(input: unknown) {
     const { error } = await database().rpc('save_content', { p_entry: entry, p_actor: user.user_id });
     if (error) {console.error('[CMS save]',error);return {error:error.code==='P0001'?error.message:'Unable to save. Check for an existing identifier or contact an administrator.'};}
     updateTag(`content:${entry.collection}`);
+    revalidatePath('/', 'layout');
     revalidatePath('/admin','layout');
     return { version: entry.version + 1, entry: { ...entry, version: entry.version + 1 } };
   } catch (error) { unstable_rethrow(error); return { fieldErrors:error instanceof z.ZodError?Object.fromEntries(error.issues.map(i=>[i.path.join('.').replace(/^data\./,''),i.message])):undefined, error: error instanceof z.ZodError ? error.issues.map(i=>`${i.path.join('.')}: ${i.message}`).join('; ') : 'Invalid content or insufficient permission. Check all fields.' }; }
@@ -30,17 +31,23 @@ export async function saveSettings(input: unknown, version: number) {
     const { error } = await database().rpc('save_content', { p_entry: { collection: 'site', id: 'site', data, version }, p_actor: user.user_id });
     if (error) return { error: 'Settings changed or could not be saved. Reload and try again.' };
     updateTag('content:site');
+    revalidatePath('/', 'layout');
     return { version: version + 1, data };
   } catch (error) { unstable_rethrow(error); return { error: 'Invalid settings or insufficient permission.' }; }
 }
 export async function restoreRevision(id: number, version: number) {
-  await requireAdmin();
-  const { data, error } = await database().from('content_revisions').select('*').eq('id', id).single();
-  if (error || !data) return { error: 'Revision unavailable.' };
-  await requirePermission(data.collection === 'site' ? 'settings' : data.collection, true);
-  if (data.collection === 'site') return saveSettings(data.snapshot.data, version);
-  if (!isCollection(data.collection)) return { error: 'Invalid collection.' };
-  return saveContent({ ...data.snapshot, version, status:'draft', publish_at:null, expire_at:null });
+  try {
+    await requireAdmin();
+    const { data, error } = await database().from('content_revisions').select('*').eq('id', id).single();
+    if (error || !data) return { error: 'Revision unavailable.' };
+    await requirePermission(data.collection === 'site' ? 'settings' : data.collection, true);
+    // A revision whose snapshot is missing or malformed cannot be restored; say so instead of crashing the action.
+    const snapshot = data.snapshot && typeof data.snapshot === 'object' ? data.snapshot as Record<string, unknown> : null;
+    if (!snapshot) return { error: 'This revision has no restorable content.' };
+    if (data.collection === 'site') return snapshot.data ? saveSettings(snapshot.data, version) : { error: 'This revision has no restorable settings.' };
+    if (!isCollection(data.collection)) return { error: 'Invalid collection.' };
+    return saveContent({ ...snapshot, version, status:'draft', publish_at:null, expire_at:null });
+  } catch (error) { unstable_rethrow(error); return { error: 'Revision could not be restored. Check your permission and try again.' }; }
 }
 export async function saveContentBatch(input: unknown[]) {
   if(!Array.isArray(input)||!input.length||input.length>100)return {error:'Save between 1 and 100 entries per batch.'};
@@ -51,14 +58,16 @@ export async function saveContentBatch(input: unknown[]) {
     for(const entry of entries)await checkContentLinks(entry);
     const {error}=await database().rpc('save_content_batch',{p_entries:entries,p_actor:user.user_id});
     if(error)return {error:'Batch not saved. Check IDs, versions and pin conflicts.'};
-    updateTag(`content:${collection}`);revalidatePath('/admin','layout');return {success:true};
+    updateTag(`content:${collection}`);revalidatePath('/', 'layout');revalidatePath('/admin','layout');return {success:true};
   }catch(error){unstable_rethrow(error);return {error:'Invalid batch or insufficient permission.'};}
 }
 
 export async function cancelSchedule(collection:string,id:string,version:number){
  if(!isCollection(collection))return {error:'Unknown collection.'};
- const user=await requirePermission(collection,true);
- const {error}=await database().rpc('cancel_content_schedule',{p_collection:collection,p_id:id,p_version:version,p_actor:user.user_id});
- if(error)return {error:'The entry changed or its schedule could not be cancelled. Reload and try again.'};
- revalidatePath('/admin','layout');return {version:version+1};
+ try{
+  const user=await requirePermission(collection,true);
+  const {error}=await database().rpc('cancel_content_schedule',{p_collection:collection,p_id:id,p_version:version,p_actor:user.user_id});
+  if(error)return {error:'The entry changed or its schedule could not be cancelled. Reload and try again.'};
+  revalidatePath('/admin','layout');return {version:version+1};
+ }catch(error){unstable_rethrow(error);return {error:'The schedule could not be cancelled. Check your permission and try again.'};}
 }

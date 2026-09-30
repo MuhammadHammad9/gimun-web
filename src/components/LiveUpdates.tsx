@@ -3,9 +3,16 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { syncLiveContent } from '@/app/live-actions';
 
-/** Pages where minutes matter: checked every 5 s. Everywhere else every 15 s. */
+/** Pages where minutes matter: checked every 4 s. Everywhere else every 15 s. */
 const FAST_PATHS = ['/schedule', '/announcements', '/register', '/results'];
 const EXCLUDED_PUBLIC = ['/admin', '/survey/', '/verify/'];
+/**
+ * Each admin check runs the sign-in, two-factor and permission checks plus two
+ * revision queries, several database round trips in all, so admin tabs poll
+ * less often than public pages (which the CDN answers).
+ */
+const ADMIN_INTERVAL_MS = 10_000;
+const MAX_BACKOFF_MS = 120_000;
 
 function onEventDay(start?: string, end?: string) {
   if (!start || !end) return false;
@@ -99,12 +106,15 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
     if (!admin) trackPublicForms();
     let inFlight = false;
     let cancelled = false;
+    // Consecutive failed checks. Each one doubles the wait (up to two
+    // minutes), so an outage is not met with a steady stream of retries from
+    // every open page; the first success returns to the normal pace.
+    let failures = 0;
     let timer: ReturnType<typeof setTimeout>;
     const controller = new AbortController();
     const interval = () => {
-      if (admin) return 5000;
-      const base = FAST_PATHS.some((p) => path.startsWith(p)) || onEventDay(eventStart, eventEnd) ? 5000 : 15000;
-      return base * (0.9 + Math.random() * 0.2);
+      const base = admin ? ADMIN_INTERVAL_MS : FAST_PATHS.some((p) => path.startsWith(p)) || onEventDay(eventStart, eventEnd) ? 4000 : 15000;
+      return Math.min(base * 2 ** failures, MAX_BACKOFF_MS) * (0.9 + Math.random() * 0.2);
     };
     async function check() {
       if (inFlight) return;
@@ -120,6 +130,7 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
         const result = await response.json();
         if (!result.connected) throw new Error('Unavailable');
         if (cancelled) return;
+        failures = 0;
         setTime(new Date().toLocaleTimeString());
         if (result.revision !== baseline.current) {
           if (admin) {
@@ -140,8 +151,9 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
               start(() => router.refresh());
             }
           }
-        } else if (admin) setStatus(result.websiteConnected === false ? 'Admin connected · website in fallback' : 'Live · checks every 5 seconds');
+        } else if (admin) setStatus(result.websiteConnected === false ? 'Admin connected · website in fallback' : 'Live · checks every 10 seconds');
       } catch {
+        failures = Math.min(failures + 1, 6);
         if (!cancelled && admin) setStatus(navigator.onLine ? 'Updates delayed · retrying' : 'Offline · changes may be out of date');
       } finally {
         inFlight = false;

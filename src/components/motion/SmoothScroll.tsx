@@ -18,8 +18,11 @@ export function SmoothScroll() {
     const start = async () => {
       if (stop || loading || motionTier() !== 'full') return;
       loading = true;
-      const { startLenis } = await import('@/lib/motion/lenis');
+      // A failed chunk load (a stale tab after a deploy) keeps native scrolling.
+      const lenisModule = await import('@/lib/motion/lenis').catch(() => null);
       loading = false;
+      if (!lenisModule) return;
+      const { startLenis } = lenisModule;
       if (!cancelled && !stop && motionTier() === 'full') stop = startLenis();
     };
 

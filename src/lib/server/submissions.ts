@@ -173,6 +173,25 @@ export function rateLimitSubject(ip: string) {
   return `${groups.slice(0, 4).map((g) => g.replace(/^0+(?=.)/, '')).join(':')}::/64`;
 }
 
+/**
+ * The per-instance fallback limiter only runs while Upstash is unavailable,
+ * but its entries were never removed, so a long outage grew the map with
+ * every new visitor address for the life of the instance. Expired windows
+ * are dropped once the map is large; past the hard cap the oldest entries go
+ * (a Map iterates in insertion order), which at worst lets a few long-idle
+ * addresses start a fresh window early.
+ */
+const MEMORY_RATE_LIMIT_PRUNE_AT = 5_000;
+const MEMORY_RATE_LIMIT_MAX = 20_000;
+function pruneMemoryRateLimits(now: number) {
+  if (memoryRateLimits.size < MEMORY_RATE_LIMIT_PRUNE_AT) return;
+  for (const [key, entry] of memoryRateLimits) if (now >= entry.resetAt) memoryRateLimits.delete(key);
+  for (const key of memoryRateLimits.keys()) {
+    if (memoryRateLimits.size < MEMORY_RATE_LIMIT_MAX) break;
+    memoryRateLimits.delete(key);
+  }
+}
+
 // Deliberately independent of the submission/email configuration: admin
 // sign-in must keep working when, say, NOTIFICATION_EMAIL is missing.
 export async function enforceRateLimit(bucket: RateLimitBucket, ip: string) {
@@ -226,6 +245,7 @@ export async function enforceRateLimit(bucket: RateLimitBucket, ip: string) {
   }
 
   const now = Date.now();
+  pruneMemoryRateLimits(now);
   const current = memoryRateLimits.get(key);
   if (!current || now >= current.resetAt) {
     memoryRateLimits.set(key, { count: 1, resetAt: now + RATE_LIMIT.windowMs });
@@ -722,13 +742,23 @@ export async function dispatchEmailOutbox(limit = 4) {
         : 0;
       const exhausted = message.attempts >= 20 || !Number.isFinite(retryUntil) || Date.now() >= retryUntil;
       const status = !exhausted && (dispatchError.retryable || dispatchError.uncertain) ? 'retry' : dispatchError.uncertain ? 'needs_review' : 'failed';
-      await updateOutbox(message.id, workerId, {
-        status,
-        next_attempt_at: new Date(Date.now() + Math.min(60 * 60 * 1000, 2 ** Math.min(message.attempts, 10) * 60_000)).toISOString(),
-        locked_at: null,
-        locked_by: null,
-        last_error: dispatchError.message.slice(0, 240),
-      });
+      try {
+        await updateOutbox(message.id, workerId, {
+          status,
+          next_attempt_at: new Date(Date.now() + Math.min(60 * 60 * 1000, 2 ** Math.min(message.attempts, 10) * 60_000)).toISOString(),
+          locked_at: null,
+          locked_by: null,
+          last_error: dispatchError.message.slice(0, 240),
+        });
+      } catch {
+        // Recording the failure failed too (a database blip). The lease
+        // expires in ten minutes and the message is claimed again then, so
+        // count it as a retry and carry on with the rest of this batch
+        // instead of abandoning every message claimed after it.
+        console.error('[Outbox] Could not record a delivery failure; the lease will expire and retry.');
+        retried += 1;
+        continue;
+      }
       if (status === 'needs_review') needsReview += 1;
       else if (status === 'failed') failed += 1;
       else retried += 1;

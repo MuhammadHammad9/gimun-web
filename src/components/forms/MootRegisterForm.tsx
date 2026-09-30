@@ -19,6 +19,7 @@ import { FormErrorSummary, focusFirstError } from './FormErrorSummary';
 import { PrivacyStatement } from './PrivacyStatement';
 import { getEventYear } from '@/lib/site-config';
 import { SubmitButton } from './SubmitButton';
+import { newSubmissionKey, readSubmissionResponse } from '@/lib/uuid';
 
 interface MootRegisterFormProps {
   endpoint?: string;
@@ -157,7 +158,7 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
         _ts: formLoadedAt.current,
         // Fill time on the visitor's own clock; the server never compares clocks.
         _elapsed: Date.now() - formLoadedAt.current,
-        submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
+        submission_key: submissionKey.current ?? (submissionKey.current = newSubmissionKey()),
       };
 
       const res = await fetch(endpoint, {
@@ -166,7 +167,7 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
         body: JSON.stringify(payload),
       });
 
-      const data: SubmissionResponse = await res.json();
+      const data = await readSubmissionResponse<SubmissionResponse>(res);
 
       if (!res.ok || !data.success) {
         setStatus('error');

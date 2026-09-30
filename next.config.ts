@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
-const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin : '';
+// A malformed value must not crash the config itself; scripts/check-env.mjs
+// reports it by name before a production build.
+const supabaseUrl = (() => {
+  try {
+    return process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL) : null;
+  } catch {
+    return null;
+  }
+})();
+const supabaseOrigin = supabaseUrl?.origin ?? '';
 
 // Next injects inline bootstrap scripts, so script-src needs 'unsafe-inline'
 // without a nonce setup; the value of this policy is in everything else:
@@ -31,7 +40,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     qualities: [75, 85, 90],
-    remotePatterns: process.env.NEXT_PUBLIC_SUPABASE_URL ? [{ protocol: 'https', hostname: new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname, pathname: '/storage/v1/object/public/media/**' }] : [],
+    remotePatterns: supabaseUrl ? [{ protocol: 'https', hostname: supabaseUrl.hostname, pathname: '/storage/v1/object/public/media/**' }] : [],
   },
   // Short URLs for posters, QR codes and social bios.
   async redirects() {

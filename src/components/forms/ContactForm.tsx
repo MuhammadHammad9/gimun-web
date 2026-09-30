@@ -9,6 +9,7 @@ import { FormField } from './FormField';
 import { HoneypotField } from './HoneypotField';
 import { focusFirstError } from './FormErrorSummary';
 import { SubmitButton } from './SubmitButton';
+import { newSubmissionKey } from '@/lib/uuid';
 
 const MESSAGE_MAX = 3000;
 
@@ -77,7 +78,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
+          submission_key: submissionKey.current ?? (submissionKey.current = newSubmissionKey()),
           _hp: honeypot,
           _ts: formLoadedAt.current,
           _elapsed: Date.now() - formLoadedAt.current,

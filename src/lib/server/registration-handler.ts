@@ -1,4 +1,4 @@
-import { requirePermission } from '@/lib/server/admin/auth';
+import type { AdminUser } from '@/lib/server/admin/permissions';
 import { randomUUID } from 'node:crypto';
 import { after, NextRequest, NextResponse } from 'next/server';
 import {
@@ -34,8 +34,9 @@ async function isTrackOpen(track: 'gimun' | 'moot-cup') {
 
 
 
-export async function handleRegistration(req: NextRequest, walkIn = false) {
-  const actor=walkIn?await requirePermission('registrations',true):null;
+/** `actor` is the signed-in staff member recording a walk-in; its route checks the permission first. */
+export async function handleRegistration(req: NextRequest, actor: AdminUser | null = null) {
+  const walkIn = actor !== null;
   if(walkIn&&process.env.SUBMISSIONS_BACKEND==='memory')return NextResponse.json({success:false,message:'Connect the persistent submission backend before recording walk-ins.'},{status:503});
   try {
     let body: unknown;

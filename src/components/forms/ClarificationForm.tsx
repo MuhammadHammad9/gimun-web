@@ -9,6 +9,7 @@ import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
 import { validateEmail } from '@/lib/validation';
 import { getEventYear } from '@/lib/site-config';
 import { SubmitButton } from './SubmitButton';
+import { newSubmissionKey, readSubmissionResponse } from '@/lib/uuid';
 
 export function ClarificationForm() {
   const eventYear = getEventYear(useSiteConfig());
@@ -52,7 +53,7 @@ export function ClarificationForm() {
           email: teamEmail.trim(),
           queryType: 'moot-cup',
           kind: 'clarification',
-          submission_key: submissionKey.current ?? (submissionKey.current = crypto.randomUUID()),
+          submission_key: submissionKey.current ?? (submissionKey.current = newSubmissionKey()),
           message: `[GMC Compromis Clarification]\nCompromis Citation: ${paragraphRef.trim()}\n\nQuestion:\n${questionText.trim()}`,
           _hp: honeypot,
           _ts: formLoadedAt.current,
@@ -60,7 +61,7 @@ export function ClarificationForm() {
         }),
       });
 
-      const data = await res.json();
+      const data = await readSubmissionResponse<{ success?: boolean; message?: string }>(res);
       if (res.ok && data.success) {
         setStatus('success');
       } else {

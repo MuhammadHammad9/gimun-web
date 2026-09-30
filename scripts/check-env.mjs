@@ -50,6 +50,10 @@ require('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'admin sign-in');
 if (!has('SUPABASE_SECRET_KEY') && !has('SUPABASE_SERVICE_ROLE_KEY')) {
   errors.push('SUPABASE_SECRET_KEY is not set (server database access).');
 }
+for (const name of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_URL']) {
+  const parsed = has(name) ? url(name) : null;
+  if (has(name) && (!parsed || parsed.protocol !== 'https:')) errors.push(`${name} must be an https:// URL (for example https://<project>.supabase.co).`);
+}
 const serverDb = url(has('SUPABASE_URL') ? 'SUPABASE_URL' : 'NEXT_PUBLIC_SUPABASE_URL');
 const browserDb = url('NEXT_PUBLIC_SUPABASE_URL');
 if (serverDb && browserDb && serverDb.host !== browserDb.host) {

@@ -36,12 +36,21 @@ function asText(value: unknown): string {
   return typeof value === 'string' ? value : '';
 }
 
-export function normalizeFormStrings<T>(value: T): T {
+/**
+ * The deepest a real form value goes is formData → delegates → delegate →
+ * field (4 levels). Anything much deeper is not a form. Without a limit, a
+ * body nested tens of thousands of levels (it fits in the 256 KB cap) blew
+ * the stack here; deeper values now become null and fail validation normally.
+ */
+const MAX_FORM_DEPTH = 8;
+
+export function normalizeFormStrings<T>(value: T, depth = 0): T {
   if (typeof value === 'string') return value.trim() as T;
-  if (Array.isArray(value)) return value.map((item) => normalizeFormStrings(item)) as T;
+  if (depth >= MAX_FORM_DEPTH) return (value !== null && typeof value === 'object' ? null : value) as T;
+  if (Array.isArray(value)) return value.map((item) => normalizeFormStrings(item, depth + 1)) as T;
   if (value !== null && typeof value === 'object') {
     return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>).map(([key, child]) => [key, normalizeFormStrings(child)]),
+      Object.entries(value as Record<string, unknown>).map(([key, child]) => [key, normalizeFormStrings(child, depth + 1)]),
     ) as T;
   }
   return value;

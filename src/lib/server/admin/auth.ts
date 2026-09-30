@@ -3,7 +3,7 @@ import { cache } from 'react';
 import { adminRevision } from '../live';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
 import { database } from '../supabase';
 import { can, type AdminUser } from './permissions';
 
@@ -40,7 +40,8 @@ export const requireAdmin=cache(async(allowPasswordChange = false, allowMfaSetup
     if (mfa.needsCode || mfa.needsEnrolment) redirect('/admin/mfa');
   }
   const { data: user, error: profileError } = await database().from('admin_users').select('*').eq('user_id', data.user.id).eq('active', true).maybeSingle();
-  if (profileError || !user) throw new Error('This account has no active admin access.');
+  if (profileError) throw new Error('The admin profile could not be loaded. Try again shortly.');
+  if (!user) throw new Error('This account has no active admin access.');
   if (user.must_change_password && !allowPasswordChange) redirect('/admin/password');
   await adminRevision(user as AdminUser).catch(()=>undefined);
   return user as AdminUser;
@@ -49,4 +50,23 @@ export async function requirePermission(section: string, write = false) {
   const user = await requireAdmin();
   if (!can(user, section, write)) throw new Error('You do not have permission for this operation.');
   return user;
+}
+
+/**
+ * Permission check for route handlers. requirePermission redirects to sign-in
+ * or throws, which a route handler turned into a bare 500.
+ * - `fetch` callers (JSON): every failure becomes a 401 JSON answer, since a
+ *   redirect would hand the page an HTML login screen it cannot parse.
+ * - Browser navigations: the sign-in redirect still happens; missing access
+ *   or an unreachable database becomes a plain 403/503 page.
+ */
+export async function routePermission(section: string, write: boolean, mode: 'json' | 'page'): Promise<AdminUser | Response> {
+  try {
+    return await requirePermission(section, write);
+  } catch (error) {
+    if (mode === 'json') return Response.json({ success: false, connected: false, message: 'Your admin session has expired or lacks permission. Sign in again.' }, { status: 401, headers: { 'Cache-Control': 'private, no-store' } });
+    unstable_rethrow(error);
+    const denied = error instanceof Error && /permission|no active admin/i.test(error.message);
+    return new Response(denied ? 'You do not have permission for this page.' : 'The admin workspace is temporarily unavailable. Try again shortly.', { status: denied ? 403 : 503, headers: { 'Cache-Control': 'private, no-store' } });
+  }
 }

@@ -2,7 +2,7 @@ import { draftMode } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { isCollection } from '@/lib/content/registry';
 import { previewPath } from '@/lib/content/preview';
-import { requireAdmin } from '@/lib/server/admin/auth';
+import { routePermission } from '@/lib/server/admin/auth';
 import { can } from '@/lib/server/admin/permissions';
 import { database } from '@/lib/server/supabase';
 
@@ -16,7 +16,8 @@ export async function GET(request: Request) {
   const collection = params.get('collection') ?? '';
   const id = params.get('id') ?? '';
   if (!isCollection(collection) || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) return new Response('Unknown entry', { status: 404 });
-  const user = await requireAdmin();
+  const user = await routePermission(collection, false, 'page');
+  if (user instanceof Response) return user;
   if (!can(user, collection)) return new Response('You do not have permission to preview this content.', { status: 403 });
   const { data, error } = await database().from('content_entries').select('data').eq('collection', collection).eq('id', id).maybeSingle();
   if (error || !data) return new Response('Save the entry before previewing it.', { status: 404 });

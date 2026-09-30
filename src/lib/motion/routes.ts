@@ -53,11 +53,20 @@ export function normalizePath(pathname: string): string {
   return path.length > 1 ? path.replace(/\/+$/, '') : path;
 }
 
+/** A malformed escape such as "%E0%A4" or "50%off" makes decodeURIComponent throw. */
+function safeDecode(segment: string): string {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    return segment;
+  }
+}
+
 export function routeLabel(pathname: string): RouteLabel {
   const path = REDIRECTS[normalizePath(pathname)] ?? normalizePath(pathname);
   if (LABELS[path]) return LABELS[path];
   const committee = path.match(/^\/gimun\/committees\/([^/]+)$/);
-  if (committee) return { section: 'GIMUN committee', title: decodeURIComponent(committee[1]).toUpperCase(), accent: 'gimun' };
+  if (committee) return { section: 'GIMUN committee', title: safeDecode(committee[1]).toUpperCase(), accent: 'gimun' };
   if (path.startsWith('/verify/')) return { section: 'Certificate', title: 'Verification' };
   if (path.startsWith('/survey/')) return { section: 'Feedback', title: 'Survey' };
   return FALLBACK;

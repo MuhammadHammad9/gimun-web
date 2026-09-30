@@ -17,6 +17,9 @@ export async function checkContentLinks(entry:ContentEntry){
   await checkPublicHref(href,db);
   if(entry.data.parentId){if(entry.data.parentId===entry.id)throw new Error('A navigation item cannot be its own parent.');const {data,error}=await db.from('content_entries').select('data').eq('collection','navigation').eq('id',entry.data.parentId).maybeSingle();if(error||!data||data.data.parentId)throw new Error('Choose an existing top-level navigation parent.');if(data.data.area!=='all'&&data.data.area!==entry.data.area)throw new Error('The parent must appear on the same navigation surface.');}
  }
+ // The notice bar and announcements page link here; a broken or unknown local
+ // path was a dead link on every page (and a malformed one froze the page transition).
+ if(entry.collection==='announcements'&&entry.data.actionUrl)await checkPublicHref(String(entry.data.actionUrl),db);
  if(entry.collection==='copy'){
   const actions=Array.isArray(entry.data.actions)?entry.data.actions as {href?:unknown}[]:[];
   for(const action of actions)await checkPublicHref(String(action.href??''),db);

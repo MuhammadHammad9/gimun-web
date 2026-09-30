@@ -27,7 +27,7 @@ Registration pages offer **Send invoice** (PDF built from amount due, amount pai
 - Enable TOTP MFA in Supabase Auth. Admins enrol from **Two-factor** in the admin header; set `ADMIN_REQUIRE_MFA=1` to make enrolment mandatory before any admin page loads.
 - Changing a password requires the current password and signs out the account's other sessions.
 - The database enforces section permissions itself (`admin_can`, migration 0011), and every CSV export writes an audit-log row. Read-only viewers cannot export.
-- `/api/health` returns 200 when configuration is complete, the CMS is reachable and the database has migration 0011 (`schema: "outdated"` means migrations are behind the code); point an uptime monitor at it.
+- `/api/health` returns 200 when configuration is complete, the CMS is reachable and the database has migration 0011 (`schema: "outdated"` means migrations are behind the code); point an uptime monitor at it. `outbox: "delayed"` means an email has waited more than 30 minutes past its due time: no worker is draining the queue, so run `supabase/email_scheduler.sql` (GO_LIVE.md) or check its job in `cron.job_run_details`. The answer is reused for 10 seconds.
 
 ## How the backend degrades
 

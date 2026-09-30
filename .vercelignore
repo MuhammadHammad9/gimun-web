@@ -1,0 +1,17 @@
+node_modules
+.next
+.next-admin-test
+.vercel
+artifacts
+playwright-report
+test-results
+tests
+Claude Skills
+.git
+.github
+.agents
+.claude
+.impeccable
+*.log
+*.docx
+GIMUN_PRD_extracted.txt

@@ -94,27 +94,45 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
       busy.current = true;
       sourcePath.current = pathname;
       const main = mainElement();
-      if (main) main.inert = true;
-      setLabel(dom, routeLabel(href));
-      setPhase(dom, 'covering');
-      emitTransition('covering');
-      lockScroll('page-curtain');
-      // Plain anchors were never prefetched; start the request under the cover.
-      router.prefetch(href);
+      // Once the page is inert and busy, any failure must hand it back:
+      // otherwise the page stays unclickable and every later navigation is
+      // ignored. Open the curtain and navigate without it.
+      const recover = () => {
+        void openCurtain(true).catch(() => {
+          busy.current = false;
+          if (main) main.inert = false;
+          unlockScroll('page-curtain');
+        });
+        go(options.scroll);
+      };
+      try {
+        if (main) main.inert = true;
+        setLabel(dom, routeLabel(href));
+        setPhase(dom, 'covering');
+        emitTransition('covering');
+        lockScroll('page-curtain');
+        // Plain anchors were never prefetched; start the request under the cover.
+        router.prefetch(href);
+      } catch {
+        recover();
+        return;
+      }
 
-      void cover(dom).then(() => {
-        if (!busy.current) return;
-        coveredAt.current = performance.now();
-        setPhase(dom, 'covered');
-        emitTransition('covered');
-        if (main) main.dataset.transition = 'covered';
-        // Scroll now, while nothing is visible, so the new page (and anything
-        // that measures scroll position during its first render) starts at
-        // the top. Anchors let the router scroll to their target instead.
-        if (!hash && options.scroll !== false) scrollTo(0, { immediate: true });
-        go(hash ? options.scroll : false);
-        failsafe.current = setTimeout(() => void openCurtain(true), CURTAIN.failsafe);
-      });
+      void cover(dom)
+        .then(() => {
+          if (!busy.current) return;
+          coveredAt.current = performance.now();
+          setPhase(dom, 'covered');
+          emitTransition('covered');
+          if (main) main.dataset.transition = 'covered';
+          // Scroll now, while nothing is visible, so the new page (and anything
+          // that measures scroll position during its first render) starts at
+          // the top. Anchors let the router scroll to their target instead.
+          if (!hash && options.scroll !== false) scrollTo(0, { immediate: true });
+          go(hash ? options.scroll : false);
+          failsafe.current = setTimeout(() => void openCurtain(true), CURTAIN.failsafe);
+        })
+        .catch(recover);
     },
     [openCurtain, pathname, router],
   );

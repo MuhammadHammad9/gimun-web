@@ -43,7 +43,7 @@ export function SectionReveals() {
         }
         gsap.set(sheets, { clearProps: 'clipPath' });
       };
-    })();
+    })().catch(() => undefined); // Optional motion: a failed chunk load leaves the page static.
     return () => {
       controller.abort();
       cleanup?.();
