@@ -76,8 +76,8 @@
 }
 
 /* The rail slides out past the left edge over the hero and the footer, and
-   while the chambers corridor is pinned (its panels pass under it); it slides
-   back in as the chapters return. */
+   while the chambers corridor holds the middle of the screen (its panels
+   pass under it); it slides back in as the chapters return. */
 .chapter-index {
   transition:
     transform 0.7s var(--ease-out-expo),

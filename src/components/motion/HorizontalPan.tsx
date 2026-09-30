@@ -2,31 +2,29 @@
 
 import { useRef, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { scrollTo } from '@/lib/motion/bridge';
 import { prefersReducedMotion } from '@/lib/motion/policy';
 import { useEnhance } from './useEnhance';
 
 /**
  * A row of panels you travel along sideways.
  *
- * Everywhere, it works as a scroll-snapped track: swipe it, scroll it with
- * the keyboard (the track is a focusable region) or use the arrow buttons.
- * On the full motion tier (fine pointer, wide screen) the heading and track
- * are pinned together and the track moves with the page scroll instead, a
- * corridor you walk down. Tabbing to a panel while pinned scrolls the page
- * to where that panel shows.
+ * Everywhere, it is a native horizontal track: swipe it, scroll it sideways
+ * with a trackpad or the keyboard (the track is a focusable region) or use
+ * the arrow buttons. The page's own vertical scroll always passes straight
+ * through it; the corridor never takes the page over.
  *
- * Pinned, the corridor also answers the hand: drag it (with momentum; the
- * drag moves the page scroll, so the pin and the track never disagree), it
- * leans with the speed of travel (clamped to a few degrees), a rail shows how
- * far along you are, the panel under the pointer tilts toward it, and a small
- * "Drag" chip follows a fine pointer across the track.
+ * On the full motion tier (fine pointer, wide screen) it also answers the
+ * hand: drag it with momentum (the drag moves only the track) and a throw
+ * comes to rest with a panel's edge at the start of the view; it leans with
+ * the speed of travel (clamped to a couple of degrees), a rail shows how far
+ * along you are, the panel under the pointer tilts toward it, a small "Drag"
+ * chip rides beside a fine pointer, and the chapter rail steps aside while
+ * the corridor holds the middle of the screen.
  */
 const MAX_SKEW = 2;
 const TILT = 3;
 export function HorizontalPan({ label, header, children }: { label: string; header?: ReactNode; children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
-  const pin = useRef<HTMLDivElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
 
@@ -35,44 +33,35 @@ export function HorizontalPan({ label, header, children }: { label: string; head
     async (section, signal) => {
       const trackEl = track.current;
       const viewportEl = viewport.current;
-      const pinEl = pin.current;
-      if (!trackEl || !viewportEl || !pinEl) return;
+      if (!trackEl || !viewportEl) return;
       const motion = await import('@/lib/motion/gsap');
       const Draggable = await motion.draggable();
       if (signal.aborted) return;
       const { gsap } = motion;
 
-      section.dataset.pan = 'pinned';
-      const distance = () => Math.max(0, trackEl.scrollWidth - viewportEl.clientWidth);
+      section.dataset.pan = 'drag';
+      const max = () => Math.max(0, viewportEl.scrollWidth - viewportEl.clientWidth);
 
-      // Lean with the speed of travel, settling back to upright.
-      const skewTo = gsap.quickTo(trackEl, 'skewX', { duration: 0.5, ease: 'brand' });
-      const settle = () => skewTo(0);
+      // Progress along the track, and a lean with the speed of travel that
+      // settles back to upright.
       const progress = section.querySelector<HTMLElement>('.pan__progress');
-      const tween = gsap.to(trackEl, {
-        x: () => -distance(),
-        ease: 'none',
-        scrollTrigger: {
-          trigger: pinEl,
-          start: 'top top',
-          end: () => `+=${distance()}`,
-          pin: pinEl,
-          scrub: 0.6,
-          invalidateOnRefresh: true,
-          anticipatePin: 1,
-          onScrubComplete: settle,
-          // Panels slide under the fixed chapter rail; step it aside meanwhile.
-          onToggle: (self) => {
-            if (self.isActive) document.documentElement.dataset.corridor = '';
-            else delete document.documentElement.dataset.corridor;
-          },
-          onUpdate: (self) => {
-            progress?.style.setProperty('--pan-progress', self.progress.toFixed(4));
-            skewTo(Math.max(-MAX_SKEW, Math.min(MAX_SKEW, self.getVelocity() / -300)));
-          },
-        },
-      });
-
+      const skewTo = gsap.quickTo(trackEl, 'skewX', { duration: 0.5, ease: 'brand' });
+      let lastLeft = viewportEl.scrollLeft;
+      let lastTime = performance.now();
+      let settleTimer = 0;
+      const onScroll = () => {
+        const now = performance.now();
+        const left = viewportEl.scrollLeft;
+        const velocity = ((left - lastLeft) / Math.max(1, now - lastTime)) * 1000;
+        lastLeft = left;
+        lastTime = now;
+        progress?.style.setProperty('--pan-progress', (max() ? left / max() : 0).toFixed(4));
+        skewTo(Math.max(-MAX_SKEW, Math.min(MAX_SKEW, velocity / -600)));
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(() => skewTo(0), 120);
+      };
+      viewportEl.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
 
       // The panel under a fine pointer tilts toward it; the chip follows it.
       const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -85,26 +74,18 @@ export function HorizontalPan({ label, header, children }: { label: string; head
         tilted = null;
       };
 
-      // Dragging moves the page scroll; the scrubbed tween follows it. The
-      // drag and its throw stay inside the corridor's own stretch of scroll
-      // (a hard throw used to fling the page chapters past it), and a throw
-      // comes to rest with a panel's edge at the start of the view.
+      // Dragging moves the track's own scroll, never the page's. A proxy
+      // carries the drag and its throw; its x maps to scrollLeft = from - x,
+      // bounded to the track, and a throw settles on a panel's left edge.
       const proxy = document.createElement('div');
       let from = 0;
-      const range = () => {
-        const trigger = tween.scrollTrigger;
-        return trigger ? { start: trigger.start, end: trigger.end } : { start: window.scrollY, end: window.scrollY };
-      };
       const follow = function (this: { x: number }) {
-        const { start, end } = range();
-        scrollTo(Math.min(end, Math.max(start, from - this.x)), { immediate: true });
+        viewportEl.scrollLeft = Math.min(max(), Math.max(0, from - this.x));
       };
-      // Scroll positions at which each panel's left edge meets the track's start.
       const stops = () => {
-        const { start, end } = range();
         const panels = [...trackEl.querySelectorAll<HTMLElement>('[data-pan-panel]')];
         const first = panels[0]?.offsetLeft ?? 0;
-        return panels.map((panel) => Math.min(end, start + panel.offsetLeft - first)).concat(end);
+        return panels.map((panel) => Math.min(max(), panel.offsetLeft - first)).concat(max());
       };
       const [drag] = Draggable.create(proxy, {
         type: 'x',
@@ -114,14 +95,15 @@ export function HorizontalPan({ label, header, children }: { label: string; head
         throwResistance: 3600,
         maxDuration: 1.2,
         minDuration: 0.3,
+        allowNativeTouchScrolling: true,
         cursor: 'grab',
         activeCursor: 'grabbing',
         onPress() {
-          const { start, end } = range();
-          from = window.scrollY;
+          from = viewportEl.scrollLeft;
           gsap.set(proxy, { x: 0 });
-          // x maps to scroll as scroll = from - x.
-          this.applyBounds({ minX: from - end, maxX: from - start });
+          this.applyBounds({ minX: from - max(), maxX: from });
+          // Native snapping would fight the drag; the throw snaps instead.
+          section.dataset.panDragging = '';
           untilt();
           delete section.dataset.panHover;
         },
@@ -134,9 +116,11 @@ export function HorizontalPan({ label, header, children }: { label: string; head
         },
         onDrag: follow,
         onThrowUpdate: follow,
-        onThrowComplete: settle,
+        onThrowComplete() {
+          delete section.dataset.panDragging;
+        },
         onRelease() {
-          settle();
+          if (!this.isThrowing) delete section.dataset.panDragging;
           if (fine) section.dataset.panHover = '';
         },
       });
@@ -170,29 +154,32 @@ export function HorizontalPan({ label, header, children }: { label: string; head
       viewportEl.addEventListener('pointerenter', onEnter);
       viewportEl.addEventListener('pointerleave', onLeave);
 
-      const onFocus = (event: FocusEvent) => {
-        const panel = (event.target as Element | null)?.closest<HTMLElement>('[data-pan-panel]');
-        const trigger = tween.scrollTrigger;
-        if (!panel || !trigger || distance() === 0) return;
-        const progress = Math.min(1, Math.max(0, (panel.offsetLeft - 32) / distance()));
-        scrollTo(trigger.start + progress * (trigger.end - trigger.start), { immediate: true });
-      };
-      section.addEventListener('focusin', onFocus);
+      // Panels slide under the fixed chapter rail; step it aside while the
+      // corridor holds the middle of the screen.
+      const centred = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) document.documentElement.dataset.corridor = '';
+          else delete document.documentElement.dataset.corridor;
+        },
+        { rootMargin: '-45% 0px -45% 0px' },
+      );
+      centred.observe(viewportEl);
 
       return () => {
-        section.removeEventListener('focusin', onFocus);
+        window.clearTimeout(settleTimer);
+        centred.disconnect();
+        delete document.documentElement.dataset.corridor;
+        viewportEl.removeEventListener('scroll', onScroll);
         viewportEl.removeEventListener('pointermove', onMove);
         viewportEl.removeEventListener('pointerenter', onEnter);
         viewportEl.removeEventListener('pointerleave', onLeave);
         drag.kill();
-        tween.scrollTrigger?.kill();
-        tween.kill();
         gsap.set(trackEl, { clearProps: 'transform' });
         gsap.set(trackEl.querySelectorAll('[data-pan-panel]'), { clearProps: 'transform' });
         delete section.dataset.pan;
         delete section.dataset.panHover;
+        delete section.dataset.panDragging;
         section.removeAttribute('data-pan-clickable');
-        delete document.documentElement.dataset.corridor;
       };
     },
     { tiers: ['full'] },
@@ -206,7 +193,7 @@ export function HorizontalPan({ label, header, children }: { label: string; head
 
   return (
     <div ref={root} className="pan">
-      <div ref={pin} className="pan__pin">
+      <div className="pan__pin">
         <div className="wrap pan__head">
           {header}
           <div className="pan__controls">

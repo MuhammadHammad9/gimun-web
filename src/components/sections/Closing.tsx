@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { SeatScanner } from '@/components/art/Backdrops';
 import { Seal } from '@/components/art/Seal';
 import { Magnetic } from '@/components/motion/Magnetic';
 import { Button } from '@/components/ui/Button';
@@ -34,12 +35,13 @@ export function Closing({
   /** The closing chapter's number and name in the page's story. */
   chapter?: number;
   act?: string;
-  /** A decorative layer behind the chapter (the lacquer light on the home page). */
+  /** A decorative layer behind the chapter. Defaults to the seat's scanner on
+   *  every page that ends on the seat; pass null for none. */
   backdrop?: ReactNode;
 }) {
   return (
     <section className="chapter closing tone-crest" aria-labelledby={id}>
-      {backdrop}
+      {backdrop === undefined ? <SeatScanner /> : backdrop}
       <div className="wrap closing__grid">
         <div>
           {chapter !== undefined && act && <ChapterKicker chapter={chapter} act={act} target={id} />}

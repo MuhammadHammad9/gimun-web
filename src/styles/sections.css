@@ -292,6 +292,12 @@
   overflow: visible;
 }
 
+.seal__face {
+  border-radius: 50%;
+  background: var(--art-fill, var(--color-canvas));
+  box-shadow: 0 1.5rem 3.5rem -2rem rgb(11 2 1 / 0.55);
+}
+
 .seal__ring--spin {
   animation: seal-spin 96s linear infinite;
 }
@@ -645,16 +651,21 @@
 }
 
 /* --- Horizontal pan (the chambers) ------------------------------------------
-   Natively a scroll-snapped track anyone can swipe or tab through. On the
-   full motion tier PanMotion pins the section and moves the track with the
-   page scroll instead. */
+   Natively a scroll-snapped track anyone can swipe or tab through; the
+   page's vertical scroll always passes through it. On the full motion tier
+   HorizontalPan adds dragging with momentum (data-pan="drag"). */
 .pan {
   position: relative;
 }
 
 .pan__viewport {
+  /* Sideways it scrolls; up and down it never does, and never holds on to
+     the wheel, so the page's vertical scroll always passes through. Both
+     axes are spelled out: a lone -x longhand was compiled into a shorthand
+     that also contained vertical overscroll, trapping the wheel here. */
   overflow-x: auto;
-  overscroll-behavior-x: contain;
+  overflow-y: hidden;
+  overscroll-behavior: contain auto;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
   scrollbar-width: none;
@@ -676,12 +687,12 @@
   padding-bottom: 0.25rem;
 }
 
-.pan[data-pan="pinned"] .pan__viewport {
-  overflow: hidden;
+/* While a drag or its throw runs, the throw does the snapping. */
+.pan[data-pan-dragging] .pan__viewport {
   scroll-snap-type: none;
 }
 
-.pan[data-pan="pinned"] .pan__track {
+.pan[data-pan="drag"] .pan__track {
   will-change: transform;
 }
 
@@ -703,23 +714,10 @@
   }
 }
 
-/* Pinned, the heading and the corridor fill one screen together. */
-.pan[data-pan="pinned"] .pan__pin {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 100svh;
-  padding-block: 1.5rem;
-}
-
 .pan__controls {
   display: flex;
   justify-self: end;
   gap: 0.5rem;
-}
-
-.pan[data-pan="pinned"] .pan__controls {
-  visibility: hidden;
 }
 
 .pan__button {
@@ -1714,12 +1712,12 @@
   }
 }
 
-/* --- Corridor extras (pinned only) --------------------------------------- */
+/* --- Corridor extras (drag mode only) ------------------------------------ */
 .pan__viewport {
   position: relative;
 }
 
-.pan[data-pan="pinned"] .pan__track {
+.pan[data-pan="drag"] .pan__track {
   /* Room for a tilted panel inside the clipped viewport. */
   padding-block: 1.25rem;
 }
@@ -1728,7 +1726,7 @@
   display: none;
 }
 
-.pan[data-pan="pinned"] .pan__progress {
+.pan[data-pan="drag"] .pan__progress {
   position: relative;
   display: block;
   height: 1px;
@@ -1737,7 +1735,7 @@
   background: var(--color-line);
 }
 
-.pan[data-pan="pinned"] .pan__progress::after {
+.pan[data-pan="drag"] .pan__progress::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -1768,7 +1766,7 @@
     scale var(--dur-ui) var(--ease-brand);
 }
 
-.pan[data-pan="pinned"] .pan__chip {
+.pan[data-pan="drag"] .pan__chip {
   display: block;
 }
 
@@ -1781,9 +1779,9 @@
   opacity: 0;
 }
 
-/* Pinned panels tilt in 3D under the pointer; a layer of their own keeps
-   their edges and text smooth while they turn. */
-.pan[data-pan="pinned"] [data-pan-panel] {
+/* Panels tilt in 3D under the pointer; a layer of their own keeps their
+   edges and text smooth while they turn. */
+.pan[data-pan="drag"] [data-pan-panel] {
   will-change: transform;
   backface-visibility: hidden;
 }

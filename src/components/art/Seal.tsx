@@ -36,6 +36,9 @@ export function Seal({ id, className, spin = true, motion = false }: { id: strin
 
   return (
     <div className={cn('seal', className)} aria-hidden="true">
+      {/* A solid face in the ground's colour: the seal sits above any moving
+          background (clouds, scanner) instead of letting it show through. */}
+      <span className="seal__face" />
       <div className={cn('seal__ring', spin && 'seal__ring--spin')}>
         <svg viewBox="0 0 400 400" focusable="false">
           <defs>
