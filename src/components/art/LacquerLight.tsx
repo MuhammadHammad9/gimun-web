@@ -83,6 +83,6 @@ function readColors(element: Element, tint: Tint): LacquerColors {
   // GMC's room is champagne: its folds turn warm and the sheen stays pale.
   const fold = tint === 'gmc' ? champagne : crimson;
   // Champagne folds read brighter than crimson ones on the same ground.
-  const strength = (light ? 0.5 : 1) * (tint === 'gmc' ? 0.7 : 1);
+  const strength = (light ? 0.85 : 1) * (tint === 'gmc' ? 0.7 : 1);
   return { fold, sheen: champagne, strength };
 }

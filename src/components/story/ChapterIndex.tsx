@@ -47,8 +47,8 @@ function goTo(id: string) {
 export function ChapterIndex() {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [active, setActive] = useState<string | null>(null);
-  // The rail steps aside over the hero (before the first chapter arrives) and
-  // over the footer, where it would sit on top of their text.
+  // The rail slides out to the left over the hero (before the first chapter
+  // arrives) and over the footer; the story rail belongs to the chapters.
   const [aside, setAside] = useState(true);
 
   // Bridge links: smooth, focus-moving chapter jumps.
@@ -107,9 +107,12 @@ export function ChapterIndex() {
     let frame = 0;
     const place = () => {
       frame = 0;
-      const footer = document.querySelector('.site-footer');
-      const arrived = first ? first.getBoundingClientRect().top < window.innerHeight * 0.8 : false;
-      const ending = footer ? footer.getBoundingClientRect().top < window.innerHeight * 0.85 : false;
+      // Arrived once the first chapter covers half the screen (the hero has
+      // mostly gone); ending once the page's content is lifting off the
+      // footer (its bottom edge is above the lower part of the screen).
+      const main = document.getElementById('main-content');
+      const arrived = first ? first.getBoundingClientRect().top < window.innerHeight * 0.5 : false;
+      const ending = main ? main.getBoundingClientRect().bottom < window.innerHeight * 0.9 : false;
       setAside(!arrived || ending);
     };
     const onScroll = () => {

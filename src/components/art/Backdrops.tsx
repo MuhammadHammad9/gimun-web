@@ -79,12 +79,12 @@ function moltenColors(element: Element): MoltenColors {
     return {
       // Blush, rose and warm sand: the light mode darkens its ridges, so the
       // brown champagne ink would turn grey there.
-      color1: mixRGB(ground, crimson, 0.1),
-      color2: mixRGB(ground, crimson, 0.26),
-      color3: mixRGB(mixRGB(ground, champagne, 0.3), crimson, 0.08),
+      color1: mixRGB(ground, crimson, 0.2),
+      color2: mixRGB(ground, crimson, 0.45),
+      color3: mixRGB(mixRGB(ground, champagne, 0.55), crimson, 0.18),
       background: ground,
       light: true,
-      opacity: 0.5,
+      opacity: 0.9,
     };
   }
   return {

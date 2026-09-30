@@ -63,10 +63,10 @@ function readColors(element: Element): CloudColors {
   if (isLight(ground)) {
     // Day: warm white tops, a sand-and-rose underside, on the cream ground.
     return {
-      lit: [1, 0.995, 0.98],
-      shade: mixRGB(mixRGB(ground, champagne, 0.5), crimson, 0.1),
-      sky: mixRGB(mixRGB(ground, champagne, 0.3), crimson, 0.12),
-      skyAlpha: 0.75,
+      lit: [1, 1, 0.99],
+      shade: mixRGB(mixRGB(ground, champagne, 0.62), crimson, 0.16),
+      sky: mixRGB(mixRGB(ground, champagne, 0.42), crimson, 0.2),
+      skyAlpha: 1,
       strength: 1,
     };
   }
