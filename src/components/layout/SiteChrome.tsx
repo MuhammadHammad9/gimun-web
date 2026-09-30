@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
+import { FloatingTop } from '@/components/chrome/FooterBits';
 import { SiteHeader } from '@/components/chrome/SiteHeader';
 import { PointerGlow } from '@/components/motion/PointerGlow';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
@@ -48,6 +49,7 @@ export function SiteChrome({
         {children}
       </main>
       {footer}
+      <FloatingTop />
       <SmoothScroll />
       <SectionReveals />
       <PointerGlow />

@@ -5,7 +5,7 @@
  * Reads the prerendered HTML of key pages, collects every script, stylesheet
  * and preloaded font the browser fetches before the page can respond, and
  * fails when
- *  - a motion library (GSAP, Lenis, anime.js) is part of that first load.
+ *  - a motion library (GSAP, Lenis, anime.js, Motion) is part of that first load.
  *    They must arrive later through dynamic imports, after the page is
  *    visible, or LCP and TBT pay for them; or
  *  - a page's gzipped JavaScript grew more than 10 KB over the recorded
@@ -34,6 +34,8 @@ const SIGNATURES = [
   ['GSAP Flip', /data-flip-id/],
   ['Lenis', /lenisVersion/],
   ['anime.js', /AnimeJS/],
+  // Motion (Framer Motion), used by the React Bits toast: an object key.
+  ['Motion', /framerAppearId/],
 ];
 
 assertFreshBuild(root);

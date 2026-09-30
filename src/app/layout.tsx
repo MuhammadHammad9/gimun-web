@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 import { SiteChrome } from '@/components/layout/SiteChrome';
 import { NoticeBar, noticeBootScript } from '@/components/chrome/NoticeBar';
+import { Notices } from '@/components/chrome/Notices';
 import { SiteFooter } from '@/components/chrome/SiteFooter';
 import { SiteConfigProvider } from '@/components/SiteConfigProvider';
 import { getSiteConfig, getAnnouncements, getSponsors } from '@/lib/content';
@@ -68,6 +69,11 @@ export default async function RootLayout({
 
   const activeAnnouncement =
     announcements.find((a) => a.pinnedFlag) || announcements[0];
+  // The newest announcement, for the "new since your last visit" notice.
+  const newest = [...announcements].sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))[0];
+  const latestNotice = newest
+    ? { id: newest.id, title: newest.title, timestamp: newest.timestamp, inBanner: newest.id === activeAnnouncement?.id }
+    : undefined;
 
   return (
     // The boot script sets data-theme before first paint, so <html> differs
@@ -87,6 +93,7 @@ export default async function RootLayout({
           >
             {children}
           </SiteChrome>
+          <Notices latest={latestNotice} />
         </SiteConfigProvider>
       </body>
     </html>

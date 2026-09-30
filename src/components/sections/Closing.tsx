@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { SeatScanner } from '@/components/art/Backdrops';
 import { Seal } from '@/components/art/Seal';
 import { Magnetic } from '@/components/motion/Magnetic';
+import ClickSpark from '@/components/reactbits/ClickSpark';
 import { Button } from '@/components/ui/Button';
 import { ChapterKicker } from './Chapter';
 
@@ -52,9 +53,11 @@ export function Closing({
           <div className="mt-10 flex flex-wrap gap-3">
             {actions.map((action) => (
               <Magnetic key={action.href + action.label}>
-                <Button href={action.href} variant={action.variant} size="lg" withArrow>
-                  {action.label}
-                </Button>
+                <ClickSpark>
+                  <Button href={action.href} variant={action.variant} size="lg" withArrow>
+                    {action.label}
+                  </Button>
+                </ClickSpark>
               </Magnetic>
             ))}
           </div>

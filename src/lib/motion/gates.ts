@@ -27,6 +27,8 @@ export function firstIntent(): Promise<void> {
   intentPromise = new Promise((resolve) => {
     const done = () => {
       intentSeen = true;
+      // CSS can wait for intent too ([data-intent]): the notice sheen, say.
+      document.documentElement.dataset.intent = '';
       for (const type of INTENT_EVENTS) window.removeEventListener(type, done, true);
       window.removeEventListener('scroll', onScroll);
       resolve();

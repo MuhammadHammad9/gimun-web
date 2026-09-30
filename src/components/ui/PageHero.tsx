@@ -1,5 +1,6 @@
 import React from 'react';
 import { LacquerLight } from '@/components/art/LacquerLight';
+import ClickSpark from '@/components/reactbits/ClickSpark';
 import { cn } from '@/lib/utils';
 import { Button } from './Button';
 import { Breadcrumbs, type Crumb } from './Breadcrumbs';
@@ -161,15 +162,16 @@ export function PageHero({
       {!actionsSlot && actions && actions.length > 0 && (
         <div className={cn('page-hero__actions', centered && 'justify-center')} data-entrance="3">
           {actions.map((action, i) => (
-            <Button
-              key={action.href + action.label}
-              href={action.href}
-              size="lg"
-              variant={action.variant ?? (i === 0 ? 'primary' : 'secondary')}
-              withArrow={i === 0}
-            >
-              {action.label}
-            </Button>
+            <ClickSpark key={action.href + action.label}>
+              <Button
+                href={action.href}
+                size="lg"
+                variant={action.variant ?? (i === 0 ? 'primary' : 'secondary')}
+                withArrow={i === 0}
+              >
+                {action.label}
+              </Button>
+            </ClickSpark>
           ))}
         </div>
       )}

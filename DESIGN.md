@@ -235,6 +235,15 @@ From 1280px a rail in the left margin lists the page's chapters, marks the one i
 ### Micro-interactions
 Only on the visitor's own action, transform and opacity only, off under reduced motion: a highlight glides between header links; text-link underlines draw in from the left; button arrows step out as a new one steps in; doors, placards, pinned announcements, team cards and next-step cards carry a pointer spotlight along their edge (fine pointers only); copy buttons turn into a tick and announce it; the FAQ chevron turns and answers rise in.
 
+### Notices and feedback
+- **Notices** (`Notices`, with the React Bits SwipeToast from the shadcn registry): important news as one toast at a time, bottom left: a registration deadline within two weeks (once a visit per track, never on the register page; the rule is `deadlineReminders` in `src/lib/notices.ts`), an announcement published since the last visit that the notice bar is not already showing, and losing or regaining the connection. Deadline and news toasts wait for the first intent; the toast and its motion library load only once there is something to say (fetched when idle after intent, so an offline notice still shows). Each toast is a polite live region, pauses while hovered or focused, and closes with Escape, a swipe down or its close button.
+- **Tooltips:** icon-only controls (search, theme, social links, back to top) carry `data-tip`: a short label that rises in on hover (after a short wait) and at once on keyboard focus, beside the control's full accessible name.
+- **Click sparks** (React Bits ClickSpark): champagne sparks burst from the hero and closing calls to action when pressed; the loop runs only while sparks fly, and never under reduced motion.
+- **Notice sheen:** after the first intent a band of light crosses the notice bar's message every few seconds (wide screens, motion allowed).
+- **Floating back to top:** a round button in the lower right whose ring fills with reading progress; it appears once the reader is into the page and steps away as the footer arrives (CSS scroll timelines; always shown under reduced motion).
+
+The React Bits registry is configured in `components.json` (`@react-bits`), and the shadcn MCP server in `.mcp.json`; components added from it live in `src/components/reactbits`, adapted to the tokens and to the rule that no motion library joins a first load (`audit:bundle` checks for Motion too).
+
 ### The Curtain
 Five maroon panels (three on phones, four on tablets) close from the bottom in a 60ms stagger, 480ms each, on internal link clicks, show the destination's name, then open upward (520ms). Back and Forward are instant; reduced motion skips it.
 

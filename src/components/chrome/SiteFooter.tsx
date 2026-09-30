@@ -97,7 +97,7 @@ export function SiteFooter({ site, sponsors }: { site: SiteConfig; sponsors: Spo
               <ul className="flex gap-2" aria-label="Social media">
                 {socials.map(({ Icon, label, href }) => (
                   <li key={label}>
-                    <a href={href} target="_blank" rel="noopener noreferrer" className="site-footer__social" aria-label={`${label} (opens in a new tab)`}>
+                    <a href={href} target="_blank" rel="noopener noreferrer" className="site-footer__social" aria-label={`${label} (opens in a new tab)`} data-tip={label}>
                       <Icon aria-hidden="true" className="size-4" />
                     </a>
                   </li>

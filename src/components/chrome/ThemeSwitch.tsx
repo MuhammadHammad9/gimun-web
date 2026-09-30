@@ -81,7 +81,7 @@ export function ThemeSwitch({ variant = 'icon', className }: { variant?: 'icon' 
     <button
       type="button"
       aria-label={label}
-      title={label}
+      data-tip={`${current.label} theme`}
       onClick={(event) => switchTheme(next.value, event)}
       className={cn('theme-icon', className)}
     >
