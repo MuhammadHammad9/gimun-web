@@ -133,15 +133,18 @@ export interface ScannerColors {
 
 export function startScanner(container: HTMLElement, colors: ScannerColors, onFirstFrame: () => void) {
   const mouse = { current: [0.5, 0.5], target: [0.5, 0.5], active: 0, targetActive: 0 };
-  // Settings from the component's published example, tuned to a slower sweep.
+  // From the component's published example, tuned for the seat: a calm but
+  // clearly moving sweep (a band crosses in about 6-7 s; the published 0.2
+  // speed took over half a minute and read as frozen), and a clean surface
+  // without the CRT raster or heavy grain.
   const backdrop = startBackdrop(container, {
     vertex: FULLSCREEN_VERTEX,
     fragment: FRAGMENT,
     uniforms: {
       iTime: { value: 0 },
       iResolution: { value: new Float32Array([1, 1]) },
-      uSpeed: { value: 0.2 },
-      uSweepSpeed: { value: 0.25 },
+      uSpeed: { value: 0.55 },
+      uSweepSpeed: { value: 0.45 },
       uSweepWidth: { value: 1.6 },
       uSweepFalloff: { value: 5.7 },
       uScale: { value: 1.5 },
@@ -156,9 +159,9 @@ export function startScanner(container: HTMLElement, colors: ScannerColors, onFi
       uSoftness: { value: 1.4 },
       uVignette: { value: 0.84 },
       uOpacity: { value: colors.opacity },
-      uScanline: { value: 1 },
+      uScanline: { value: 0 },
       uGrain: { value: 1 },
-      uGrainIntensity: { value: 0.15 },
+      uGrainIntensity: { value: 0.04 },
       uDirection: { value: 0 },
       uMouse: { value: new Float32Array([0.5, 0.5]) },
       uMouseEnabled: { value: 1 },
