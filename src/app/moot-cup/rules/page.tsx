@@ -10,6 +10,7 @@ import { ChapterHead } from '@/components/sections/Chapter';
 import { ChapterRail } from '@/components/story/ChapterRail';
 import { Steps } from '@/components/sections/Steps';
 import { BracketArt, ScalesArt } from '@/components/art/LineArt';
+import { LiveArt } from '@/components/art/LiveArt';
 import { TransitionLink } from '@/components/motion/TransitionLink';
 import { NextSteps } from '@/components/story/NextSteps';
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
@@ -53,7 +54,11 @@ export default async function MootRulesPage() {
             </TransitionLink>
           </div>
         }
-        art={<ScalesArt className="mx-auto hidden w-full max-w-[18rem] text-accent-gmc opacity-50 lg:block" />}
+        art={
+          <LiveArt className="mx-auto hidden w-full max-w-[18rem] text-accent-gmc opacity-50 lg:block">
+            <ScalesArt live className="w-full" />
+          </LiveArt>
+        }
       />
 
       <section className="handoff__sheet tone-deep chapter" aria-labelledby="submission-heading">

@@ -138,3 +138,161 @@ html.lenis {
   -webkit-mask-image: radial-gradient(ellipse 60% 90% at 78% 50%, #000 25%, transparent 75%);
   mask-image: radial-gradient(ellipse 60% 90% at 78% 50%, #000 25%, transparent 75%);
 }
+
+/* --- Living line art ----------------------------------------------------------
+   The hero drawings each keep one slow idle loop once LiveArt sets data-live
+   (after the first intent, while on screen). Transform and opacity only; the
+   parts that exist only to move (traveller, satellite, ring) are hidden at
+   rest, so the still drawing is complete without them. */
+.live-art .art-beam,
+.live-art .art-pan,
+.live-art .art-gavel,
+.live-art .art-sheet-back,
+.live-art .art-writing {
+  transform-box: view-box;
+}
+
+.live-art .art-beam {
+  transform-origin: 120px 74px;
+}
+
+.live-art .art-pan--left {
+  transform-origin: 44px 76px;
+}
+
+.live-art .art-pan--right {
+  transform-origin: 196px 76px;
+}
+
+.live-art .art-gavel {
+  transform-origin: 179px 188px;
+}
+
+.live-art .art-sheet-back {
+  transform-origin: 72px 196px;
+}
+
+.live-art .art-writing {
+  transform-origin: 90px 154px;
+}
+
+.live-art .art-session {
+  opacity: 0.4;
+}
+
+.live-art .art-traveller,
+.live-art .art-orbiter,
+.live-art .art-ring {
+  opacity: 0;
+  offset-rotate: 0deg;
+}
+
+.live-art[data-live] .art-beam {
+  animation: art-beam 5.6s var(--ease-in-out-sine, cubic-bezier(0.37, 0, 0.63, 1)) infinite alternate;
+}
+
+.live-art[data-live] .art-pan--left {
+  animation: art-pan-left 5.6s var(--ease-in-out-sine, cubic-bezier(0.37, 0, 0.63, 1)) infinite alternate;
+}
+
+.live-art[data-live] .art-pan--right {
+  animation: art-pan-right 5.6s var(--ease-in-out-sine, cubic-bezier(0.37, 0, 0.63, 1)) infinite alternate;
+}
+
+.live-art[data-live] .art-gavel {
+  animation: art-gavel 4.8s infinite;
+}
+
+.live-art[data-live] .art-ring {
+  animation: art-ring 4.8s infinite;
+}
+
+.live-art[data-live] .art-sheet-back {
+  animation: art-sheet 6.4s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+}
+
+.live-art[data-live] .art-writing {
+  animation: art-writing 3.2s var(--ease-out-expo) infinite;
+}
+
+.live-art[data-live] .art-session {
+  animation: art-session 8s linear infinite;
+  animation-delay: calc(var(--i, 0) * 0.8s);
+}
+
+.live-art[data-live] .art-traveller {
+  animation: art-journey 7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.live-art[data-live] .art-orbiter {
+  animation: art-orbit 9s linear infinite;
+}
+
+/* Level to tipped: the beam turns 2.5 degrees and each pan follows its end. */
+@keyframes art-beam {
+  from { transform: rotate(-2.5deg); }
+  to { transform: rotate(2.5deg); }
+}
+
+@keyframes art-pan-left {
+  from { transform: translateY(3.3px); }
+  to { transform: translateY(-3.3px); }
+}
+
+@keyframes art-pan-right {
+  from { transform: translateY(-3.3px); }
+  to { transform: translateY(3.3px); }
+}
+
+/* The gavel rests, lifts, and strikes; the block rings once. */
+@keyframes art-gavel {
+  0%, 62% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  76% { transform: rotate(10deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  82%, 100% { transform: rotate(0deg); }
+}
+
+@keyframes art-ring {
+  0%, 81% { opacity: 0; transform: translateY(0); }
+  84% { opacity: 0.9; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-6px); }
+}
+
+@keyframes art-sheet {
+  from { transform: rotate(-1.5deg); }
+  to { transform: rotate(1.5deg); }
+}
+
+/* The last line of the page is written, held, and written again. */
+@keyframes art-writing {
+  0% { transform: scaleX(0); }
+  45%, 90% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* A light passes through the sessions, day by day. */
+@keyframes art-session {
+  0%, 100% { opacity: 0.4; }
+  5% { opacity: 1; }
+  14% { opacity: 0.4; }
+}
+
+@keyframes art-journey {
+  0% { offset-distance: 0%; opacity: 0; }
+  8% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+/* The satellite crosses the front of the globe, then passes behind it. */
+@keyframes art-orbit {
+  0% { offset-distance: 0%; opacity: 0; }
+  6% { opacity: 1; }
+  94% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-art[data-live] * {
+    animation: none !important;
+  }
+}

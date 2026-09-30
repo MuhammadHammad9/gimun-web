@@ -69,7 +69,8 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                 <article
                   id={item.id}
                   data-live-key={`announcement-${item.id}`}
-                  className="scroll-mt-28 space-y-4 rounded-2xl border border-line-2 bg-raised p-8 transition-shadow target:ring-2 target:ring-focus sm:p-10"
+                  data-glow=""
+                  className="relative scroll-mt-28 space-y-4 rounded-2xl border border-line-2 bg-raised p-8 transition-shadow target:ring-2 target:ring-focus sm:p-10"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">

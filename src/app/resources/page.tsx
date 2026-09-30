@@ -5,6 +5,7 @@ import { constructMetadata } from "@/lib/metadata";
 import { getDocuments } from "@/lib/content";
 import { ResourcesClient } from "./ResourcesClient";
 import { DocumentsArt } from "@/components/art/LineArt";
+import { LiveArt } from "@/components/art/LiveArt";
 import { getEventYear } from "@/lib/site-config";
 import { PageHero } from '@/components/ui/PageHero';
 
@@ -47,7 +48,11 @@ export default async function ResourcesPage() {
             )}
           </div>
         }
-        art={<DocumentsArt className="mx-auto hidden w-full max-w-[18rem] text-champagne opacity-50 lg:block" />}
+        art={
+          <LiveArt className="mx-auto hidden w-full max-w-[18rem] text-champagne opacity-50 lg:block">
+            <DocumentsArt live className="w-full" />
+          </LiveArt>
+        }
       />
       <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Documents">
         <div className="wrap">

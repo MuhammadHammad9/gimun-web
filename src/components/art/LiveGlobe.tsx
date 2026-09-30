@@ -54,12 +54,17 @@ export function LiveGlobe({ markers, fallback, className }: { markers: GlobeMark
       let frame = 0;
       let last = performance.now();
 
+      // Setting a canvas's size clears it, so resize only on a real change and
+      // redraw at once (the observer's first call would otherwise blank a frame).
       const resize = () => {
         const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        const width = Math.round(canvas.clientWidth * ratio);
+        if (width === canvas.width && width === canvas.height) return;
         size = canvas.clientWidth;
-        canvas.width = Math.round(size * ratio);
-        canvas.height = Math.round(size * ratio);
+        canvas.width = width;
+        canvas.height = width;
         context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        if ('live' in element.dataset) render(context, size, rotation * RAD, markersRef.current, colors, performance.now());
       };
 
       const draw = (now: number) => {
@@ -68,6 +73,9 @@ export function LiveGlobe({ markers, fallback, className }: { markers: GlobeMark
         last = now;
         if (!dragging) rotation += SPIN_DEG_PER_S * elapsed;
         render(context, size, rotation * RAD, markersRef.current, colors, now);
+        // Swap the drawing for the canvas only once the canvas has a frame,
+        // so the globe never blinks empty on a busy page.
+        if (!('live' in element.dataset)) element.dataset.live = '';
         if (visible && !document.hidden) frame = requestAnimationFrame(draw);
       };
       const start = () => {
@@ -78,7 +86,6 @@ export function LiveGlobe({ markers, fallback, className }: { markers: GlobeMark
       };
 
       resize();
-      element.dataset.live = '';
       start();
 
       const onScreen = new IntersectionObserver(([entry]) => {

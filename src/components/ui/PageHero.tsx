@@ -1,4 +1,5 @@
 import React from 'react';
+import { LacquerLight } from '@/components/art/LacquerLight';
 import { cn } from '@/lib/utils';
 import { Button } from './Button';
 import { Breadcrumbs, type Crumb } from './Breadcrumbs';
@@ -32,7 +33,8 @@ export interface PageHeroProps {
   aside?: React.ReactNode;
   /** Right-hand decorative art (used when there is no aside). */
   art?: React.ReactNode;
-  /** A decorative layer behind the whole hero (the lacquer light). */
+  /** A decorative layer behind the whole hero. Defaults to the lacquer light in
+   *  the page's colour on every hero but the home one; pass null for none. */
   backdrop?: React.ReactNode;
   /** Short affirmative points under the description. */
   bullets?: string[];
@@ -198,7 +200,7 @@ export function PageHero({
 
   return (
     <section className={cn('page-hero', className)}>
-      {backdrop}
+      {backdrop === undefined ? <LacquerLight tint={variant === 'gimun' ? 'gimun' : variant === 'moot' ? 'gmc' : 'house'} /> : backdrop}
       <div className="wrap">
         {breadcrumbs && breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} className="mb-10" />}
         <div className="page-hero__grid" data-aside={side ? '' : undefined}>

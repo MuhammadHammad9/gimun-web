@@ -6,6 +6,7 @@ import { getSchedule } from "@/lib/content";
 import { ScheduleClient } from "./ScheduleClient";
 import { TransitionLink } from "@/components/motion/TransitionLink";
 import { DaysArt } from "@/components/art/LineArt";
+import { LiveArt } from "@/components/art/LiveArt";
 import { formatDateRange } from "@/lib/utils";
 import { getEventYear } from "@/lib/site-config";
 import { PageHero } from '@/components/ui/PageHero';
@@ -42,7 +43,11 @@ export default async function SchedulePage() {
             </TransitionLink>
           </div>
         }
-        art={<DaysArt className="mx-auto hidden w-full max-w-[18rem] text-champagne opacity-50 lg:block" />}
+        art={
+          <LiveArt className="mx-auto hidden w-full max-w-[18rem] text-champagne opacity-50 lg:block">
+            <DaysArt live className="w-full" />
+          </LiveArt>
+        }
       />
       <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Schedule">
         <div className="wrap">

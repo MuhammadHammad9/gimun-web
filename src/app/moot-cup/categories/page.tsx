@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ScalesArt } from '@/components/art/LineArt';
+import { LiveArt } from '@/components/art/LiveArt';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
 import { HelpCallout } from '@/components/ui/HelpCallout';
@@ -48,7 +49,11 @@ export default async function MootCategoriesPage() {
             </Link>
           </div>
         }
-        art={<ScalesArt className="mx-auto hidden w-full max-w-[18rem] text-accent-gmc opacity-50 lg:block" />}
+        art={
+          <LiveArt className="mx-auto hidden w-full max-w-[18rem] text-accent-gmc opacity-50 lg:block">
+            <ScalesArt live className="w-full" />
+          </LiveArt>
+        }
       />
 
       <section className="handoff__sheet tone-deep chapter" aria-labelledby="categories-title">

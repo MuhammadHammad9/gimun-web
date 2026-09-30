@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { GlobeArt } from '@/components/art/LineArt';
+import { LiveArt } from '@/components/art/LiveArt';
 import { ChapterHead } from '@/components/sections/Chapter';
 import { ChapterRail } from '@/components/story/ChapterRail';
 import { Steps } from '@/components/sections/Steps';
@@ -52,7 +53,11 @@ export default async function GimunRulesPage() {
             </a>
           </div>
         }
-        art={<GlobeArt className="mx-auto hidden w-full max-w-[20rem] text-accent-gimun opacity-40 lg:block" />}
+        art={
+          <LiveArt className="mx-auto hidden w-full max-w-[20rem] text-accent-gimun opacity-40 lg:block">
+            <GlobeArt live className="w-full" />
+          </LiveArt>
+        }
       />
 
       <section className="handoff__sheet tone-deep chapter" aria-labelledby="stages-title">

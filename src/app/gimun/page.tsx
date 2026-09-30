@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { LacquerLight } from '@/components/art/LacquerLight';
 import { GlobeArt } from '@/components/art/LineArt';
+import { LiveArt } from '@/components/art/LiveArt';
 import { HandoffStage } from '@/components/motion/HandoffStage';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
@@ -55,7 +55,6 @@ export default async function GimunOverviewPage() {
         <div className="handoff__stage">
           <div className="handoff__scene">
             <PageHero
-              backdrop={<LacquerLight tint="gimun" />}
               variant="gimun"
               meta={['Model United Nations', formatDateRange(site.eventDates.start, site.eventDates.end), 'GIKI, Topi']}
               title={fill(hero.title, vars)}
@@ -67,7 +66,9 @@ export default async function GimunOverviewPage() {
               ]}
               aside={
                 <div className="glance">
-                  <GlobeArt className="glance__art" />
+                  <LiveArt className="glance__art">
+                    <GlobeArt live className="w-full" />
+                  </LiveArt>
                   <p className="glance__title">At a glance</p>
                   <FactList
                     items={[

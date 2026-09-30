@@ -6,6 +6,7 @@ import { ResultsClient } from './ResultsClient';
 import { formatEventDate, getEventYear } from '@/lib/site-config';
 import { PageHero } from '@/components/ui/PageHero';
 import { GavelArt } from '@/components/art/LineArt';
+import { LiveArt } from '@/components/art/LiveArt';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Official Results & Awardees | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
@@ -25,7 +26,11 @@ export default async function ResultsPage() {
         meta={[published ? 'Published' : `Announced at the awards gala${siteConfig.galaDate ? `, ${formatEventDate(siteConfig.galaDate, { month: 'short' })}` : ''}`]}
         title={fill(hero.title)}
         description={fill(hero.lead)}
-        art={<GavelArt className="mx-auto hidden w-full max-w-[18rem] text-champagne opacity-50 lg:block" />}
+        art={
+          <LiveArt className="mx-auto hidden w-full max-w-[18rem] text-champagne opacity-50 lg:block">
+            <GavelArt live className="w-full" />
+          </LiveArt>
+        }
       />
       <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Awards">
         <div className="wrap">

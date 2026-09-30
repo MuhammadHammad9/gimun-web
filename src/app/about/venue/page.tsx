@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Check } from 'lucide-react';
 import { RouteArt } from '@/components/art/LineArt';
+import { LiveArt } from '@/components/art/LiveArt';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
 import { ChapterRail } from '@/components/story/ChapterRail';
@@ -58,7 +59,11 @@ export default async function VenuePage() {
             </a>
           ) : undefined
         }
-        art={<RouteArt className="mx-auto hidden w-full max-w-[18rem] text-champagne opacity-50 lg:block" />}
+        art={
+          <LiveArt className="mx-auto hidden w-full max-w-[18rem] text-champagne opacity-50 lg:block">
+            <RouteArt live className="w-full" />
+          </LiveArt>
+        }
       />
 
       {/* Getting there */}

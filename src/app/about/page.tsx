@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { GlobeArt, ScalesArt } from '@/components/art/LineArt';
+import { LiveArt } from '@/components/art/LiveArt';
 import { HandoffStage } from '@/components/motion/HandoffStage';
 import { ScrubText } from '@/components/motion/ScrubText';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
@@ -85,8 +86,12 @@ export default async function AboutOverviewPage() {
               ]}
               art={
                 <div className="mx-auto hidden max-w-[24rem] grid-cols-2 items-center gap-10 text-champagne opacity-50 lg:grid">
-                  <GlobeArt className="w-full text-accent-gimun" />
-                  <ScalesArt className="w-full" />
+                  <LiveArt className="w-full text-accent-gimun">
+                    <GlobeArt live className="w-full" />
+                  </LiveArt>
+                  <LiveArt className="w-full">
+                    <ScalesArt live className="w-full" />
+                  </LiveArt>
                 </div>
               }
             />
