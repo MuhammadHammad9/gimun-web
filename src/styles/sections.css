@@ -1753,7 +1753,6 @@
   z-index: 2;
   display: none;
   padding: 0.375rem 0.75rem;
-  translate: -50% -140%;
   border-radius: 999px;
   background: var(--color-text);
   color: var(--color-canvas);
@@ -1776,6 +1775,17 @@
 .pan[data-pan-hover] .pan__chip {
   opacity: 1;
   scale: 1;
+}
+
+.pan[data-pan-clickable] .pan__chip {
+  opacity: 0;
+}
+
+/* Pinned panels tilt in 3D under the pointer; a layer of their own keeps
+   their edges and text smooth while they turn. */
+.pan[data-pan="pinned"] [data-pan-panel] {
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* --- Marquee (delegations in session) ------------------------------------ */

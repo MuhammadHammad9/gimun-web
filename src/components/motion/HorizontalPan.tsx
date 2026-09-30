@@ -22,8 +22,8 @@ import { useEnhance } from './useEnhance';
  * far along you are, the panel under the pointer tilts toward it, and a small
  * "Drag" chip follows a fine pointer across the track.
  */
-const MAX_SKEW = 4;
-const TILT = 6;
+const MAX_SKEW = 2;
+const TILT = 3;
 export function HorizontalPan({ label, header, children }: { label: string; header?: ReactNode; children: ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
   const pin = useRef<HTMLDivElement>(null);
@@ -74,28 +74,6 @@ export function HorizontalPan({ label, header, children }: { label: string; head
       });
 
 
-      // Dragging moves the page scroll; the scrubbed tween follows it.
-      const proxy = document.createElement('div');
-      let from = 0;
-      const follow = function (this: { x: number }) {
-        scrollTo(from - this.x, { immediate: true });
-      };
-      const [drag] = Draggable.create(proxy, {
-        type: 'x',
-        trigger: viewportEl,
-        inertia: true,
-        cursor: 'grab',
-        activeCursor: 'grabbing',
-        onPress() {
-          gsap.set(proxy, { x: 0 });
-          from = window.scrollY;
-        },
-        onDrag: follow,
-        onThrowUpdate: follow,
-        onThrowComplete: settle,
-        onRelease: settle,
-      });
-
       // The panel under a fine pointer tilts toward it; the chip follows it.
       const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
       const chip = section.querySelector<HTMLElement>('.pan__chip');
@@ -106,14 +84,75 @@ export function HorizontalPan({ label, header, children }: { label: string; head
         if (tilted) gsap.to(tilted, { rotationX: 0, rotationY: 0, duration: 0.6, ease: 'brand' });
         tilted = null;
       };
+
+      // Dragging moves the page scroll; the scrubbed tween follows it. The
+      // drag and its throw stay inside the corridor's own stretch of scroll
+      // (a hard throw used to fling the page chapters past it), and a throw
+      // comes to rest with a panel's edge at the start of the view.
+      const proxy = document.createElement('div');
+      let from = 0;
+      const range = () => {
+        const trigger = tween.scrollTrigger;
+        return trigger ? { start: trigger.start, end: trigger.end } : { start: window.scrollY, end: window.scrollY };
+      };
+      const follow = function (this: { x: number }) {
+        const { start, end } = range();
+        scrollTo(Math.min(end, Math.max(start, from - this.x)), { immediate: true });
+      };
+      // Scroll positions at which each panel's left edge meets the track's start.
+      const stops = () => {
+        const { start, end } = range();
+        const panels = [...trackEl.querySelectorAll<HTMLElement>('[data-pan-panel]')];
+        const first = panels[0]?.offsetLeft ?? 0;
+        return panels.map((panel) => Math.min(end, start + panel.offsetLeft - first)).concat(end);
+      };
+      const [drag] = Draggable.create(proxy, {
+        type: 'x',
+        trigger: viewportEl,
+        inertia: true,
+        edgeResistance: 0.85,
+        throwResistance: 3600,
+        maxDuration: 1.2,
+        minDuration: 0.3,
+        cursor: 'grab',
+        activeCursor: 'grabbing',
+        onPress() {
+          const { start, end } = range();
+          from = window.scrollY;
+          gsap.set(proxy, { x: 0 });
+          // x maps to scroll as scroll = from - x.
+          this.applyBounds({ minX: from - end, maxX: from - start });
+          untilt();
+          delete section.dataset.panHover;
+        },
+        snap: {
+          x: (endX: number) => {
+            const target = from - endX;
+            const nearest = stops().reduce((best, stop) => (Math.abs(stop - target) < Math.abs(best - target) ? stop : best), target);
+            return from - nearest;
+          },
+        },
+        onDrag: follow,
+        onThrowUpdate: follow,
+        onThrowComplete: settle,
+        onRelease() {
+          settle();
+          if (fine) section.dataset.panHover = '';
+        },
+      });
+
       const onMove = (event: PointerEvent) => {
         if (!fine) return;
         const box = viewportEl.getBoundingClientRect();
-        chipX?.(event.clientX - box.left);
-        chipY?.(event.clientY - box.top);
-        const panel = (event.target as Element | null)?.closest<HTMLElement>('[data-pan-panel]') ?? null;
+        // The chip rides beside the pointer, never on the words under it,
+        // and steps away over links and buttons, which click rather than drag.
+        chipX?.(event.clientX - box.left + 18);
+        chipY?.(event.clientY - box.top + 22);
+        const target = event.target as Element | null;
+        section.toggleAttribute('data-pan-clickable', Boolean(target?.closest('a, button')));
+        const panel = target?.closest<HTMLElement>('[data-pan-panel]') ?? null;
         if (panel !== tilted) untilt();
-        if (!panel || drag.isPressed) return;
+        if (!panel || drag.isPressed || drag.isThrowing) return;
         tilted = panel;
         const rect = panel.getBoundingClientRect();
         const dx = (event.clientX - rect.left) / rect.width - 0.5;
@@ -152,6 +191,7 @@ export function HorizontalPan({ label, header, children }: { label: string; head
         gsap.set(trackEl.querySelectorAll('[data-pan-panel]'), { clearProps: 'transform' });
         delete section.dataset.pan;
         delete section.dataset.panHover;
+        section.removeAttribute('data-pan-clickable');
         delete document.documentElement.dataset.corridor;
       };
     },

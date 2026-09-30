@@ -1,4 +1,5 @@
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6';
+import { FooterMolten } from '@/components/art/Backdrops';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { SponsorStrip } from '@/components/ui/SponsorStrip';
 import { publishedFooterColumns } from '@/lib/navigation';
@@ -29,6 +30,7 @@ export function SiteFooter({ site, sponsors }: { site: SiteConfig; sponsors: Spo
 
   return (
     <footer className="site-footer" aria-labelledby="site-footer-title">
+      <FooterMolten />
       <div className="site-footer__inner">
         <div className="site-footer__top">
           <div>

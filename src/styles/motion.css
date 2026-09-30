@@ -133,12 +133,6 @@ html.lenis {
   }
 }
 
-/* At the close the light gathers behind the turning seal on the right. */
-.lacquer--closing {
-  -webkit-mask-image: radial-gradient(ellipse 60% 90% at 78% 50%, #000 25%, transparent 75%);
-  mask-image: radial-gradient(ellipse 60% 90% at 78% 50%, #000 25%, transparent 75%);
-}
-
 /* --- Living line art ----------------------------------------------------------
    The hero drawings each keep one slow idle loop once LiveArt sets data-live
    (after the first intent, while on screen). Transform and opacity only; the

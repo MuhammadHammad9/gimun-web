@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import type { CSSProperties, ReactNode } from 'react';
 import { ArrowRight } from 'lucide-react';
 
-import { LacquerLight } from '@/components/art/LacquerLight';
+import { HeroClouds } from '@/components/art/HeroClouds';
+import { SeatScanner } from '@/components/art/Backdrops';
 import { DaysArt, DocumentsArt, GlobeArt, RouteArt, ScalesArt } from '@/components/art/LineArt';
 import { Seal } from '@/components/art/Seal';
 import { HandoffStage } from '@/components/motion/HandoffStage';
@@ -150,7 +151,7 @@ export default async function Home() {
       {/* Hero, then the first chapter slides over it like a sheet. */}
       <div className="handoff">
         <div className="handoff__stage">
-          <LacquerLight />
+          <HeroClouds />
           <div className="handoff__scene">
             <PageHero
               variant="home"
@@ -396,7 +397,7 @@ export default async function Home() {
       {/* 07 Your seat */}
       <Closing
         id="closing-title"
-        backdrop={<LacquerLight className="lacquer--closing" />}
+        backdrop={<SeatScanner />}
         chapter={chapter['home-closing']}
         act={closing.kicker}
         title={fill(closing.title, vars)}
