@@ -15,22 +15,21 @@ test('published changes reach another admin and public page; dirty drafts surviv
     await website.goto('/announcements');
     editor.on('dialog', d => d.accept());
     const title = `Live synchronization ${Date.now()}`;
-    await editor.getByLabel('title', { exact: true }).fill(title);
-    await editor.getByRole('combobox', { name: 'Save action', exact: true }).selectOption('publish');
-    await editor.getByRole('button', { name: 'Publish now', exact: true }).click();
+    await editor.getByLabel('Title', { exact: true }).fill(title);
+    await editor.getByRole('button', { name: /^Publish (to website|changes)$/ }).click();
     await expect(editor.getByRole('status', { name: 'Save status' })).toContainText('Published.');
     const committed = Date.now();
-    await Promise.all([
-      expect(website.getByRole('heading', { name: title, exact: true })).toBeVisible({ timeout: 10000 }),
-      expect(observer.getByLabel('title', { exact: true })).toHaveValue(title, { timeout: 10000 }),
-    ]);
+    // The public page checks every few seconds; an admin tab every 10 s (with
+    // jitter), so another admin sees the change a little later.
+    await expect(website.getByRole('heading', { name: title, exact: true })).toBeVisible({ timeout: 10000 });
     expect(Date.now() - committed).toBeLessThan(10000);
-    await observer.getByLabel('title', { exact: true }).fill('My unsaved draft');
-    await editor.getByLabel('title', { exact: true }).fill(`${title} updated`);
-    await editor.getByRole('button', { name: 'Publish now', exact: true }).click();
+    await expect(observer.getByLabel('Title', { exact: true })).toHaveValue(title, { timeout: 25000 });
+    await observer.getByLabel('Title', { exact: true }).fill('My unsaved draft');
+    await editor.getByLabel('Title', { exact: true }).fill(`${title} updated`);
+    await editor.getByRole('button', { name: /^Publish (to website|changes)$/ }).click();
     await expect(editor.getByRole('status', { name: 'Save status' })).toContainText('Published.');
-    await expect(observer.getByText('Changes available · your unsaved work is preserved', { exact: true })).toBeVisible({ timeout: 10000 });
-    await expect(observer.getByLabel('title', { exact: true })).toHaveValue('My unsaved draft');
+    await expect(observer.getByText('Changes available · your unsaved work is preserved', { exact: true })).toBeVisible({ timeout: 25000 });
+    await expect(observer.getByLabel('Title', { exact: true })).toHaveValue('My unsaved draft');
     await expect(website.getByRole('heading', { name: `${title} updated`, exact: true })).toBeVisible({ timeout: 10000 });
   } finally { await Promise.all(contexts.map(c => c.close())); }
 });

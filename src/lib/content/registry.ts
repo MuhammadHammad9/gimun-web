@@ -8,11 +8,24 @@ const link = z.string().max(2048).refine(v => v === '' || /^\/(?!\/)/.test(v) ||
 // Images render through next/image, which only optimizes bundled files and
 // the Supabase media bucket (next.config.ts). An arbitrary external URL would
 // throw at render time and break the page, so image fields accept only those.
-const image = link.refine(
-  v => v === '' || v.startsWith('/') || (/^https:\/\/[^/]+\/storage\/v1\/object\/public\/media\//.test(v) && Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) && new URL(v).hostname === new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname),
-  'Upload the image in Admin → Media and use its link'
-);
-const requiredImage = image.refine(v => v !== '', 'An image is required');
+// A malformed link (or env value) must fail validation, never throw: a throw
+// inside safeParse would drop the whole collection on the public pages.
+// The link must come from this project's own media bucket: same origin as the
+// configured Supabase URL (https in production, http for a local Supabase).
+function isMediaBucketLink(v: string): boolean {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return false;
+  try {
+    const link = new URL(v);
+    return link.origin === new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin && link.pathname.startsWith('/storage/v1/object/public/media/');
+  } catch {
+    return false;
+  }
+}
+const image = z.string().max(2048).refine(
+  v => v === '' || (v.startsWith('/') && !v.startsWith('//')) || isMediaBucketLink(v),
+  'Upload the image in the Media library, or pick one from it'
+).meta({ media: 'image' });
+const requiredImage = image.refine(v => v !== '', 'An image is required').meta({ media: 'image' });
 const track = z.enum(['gimun', 'moot-cup', 'shared']);
 const email = z.email();
 const personLinks = z.object({ email: email.optional(), linkedin: link.optional() });
@@ -60,7 +73,7 @@ export const registry = {
   schedule: z.object({ id, day: z.number().int().min(1).max(31), dayLabel: text.optional(), startTime: z.string().regex(/^\d{2}:\d{2}$/), endTime: z.string().regex(/^\d{2}:\d{2}$/), title: required, track, location: required, notes: text, updatedFlag: z.boolean() }),
   committees: z.object({ id, name: required, type: z.enum(['general-assembly', 'specialized-agency', 'crisis', 'regional-body', 'other']), slug: id, topics: z.array(required).min(1), topicDescriptions: z.array(text), chairs: z.array(z.object({ id: id.optional(), name: required, role: required, photo: image.optional(), bio: text.optional(), group: text.optional(), links: personLinks.optional() })), backgroundGuideDocId: text, countryList: z.array(z.object({ country: required, status: z.enum(['available', 'assigned', 'reserved']) })), capacity: z.number().int().positive().nullable(), shortDescription: required }),
   'moot-categories': z.object({ id, name: required, areaOfLaw: required, description: required, propositionDocId: text, lastUpdated: date }),
-  resources: z.object({ id, title: required, track, type: z.enum(['handbook', 'background-guide', 'proposition', 'rules', 'form', 'map', 'sponsorship-deck', 'other']), fileUrl: link, fileSize: required, fileFormat: required, versionDate: date }),
+  resources: z.object({ id, title: required, track, type: z.enum(['handbook', 'background-guide', 'proposition', 'rules', 'form', 'map', 'sponsorship-deck', 'other']), fileUrl: link.meta({ media: 'file' }), fileSize: required, fileFormat: required, versionDate: date }),
   faq: z.object({ id, category: z.enum(['general', 'registration-fees', 'gimun-specific', 'moot-cup-specific', 'logistics']), question: required, answer: required }),
   team: z.object({ id, name: required, role: required, group: z.enum(['secretariat', 'convening-committee', 'organizing-committee']), photo: image, bio: text, links: personLinks.optional() }),
   sponsors: z.object({ id, name: required, tier: z.enum(['title', 'gold', 'silver', 'partner', 'media-partner']), logo: image, url: link, description: text.optional() }),

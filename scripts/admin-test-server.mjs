@@ -13,6 +13,7 @@ const site=JSON.parse(await readFile('content/site.json','utf8'));await db.query
 for(const f of ['announcements','schedule','committees','moot-categories','resources','faq','team','sponsors','gallery','clarifications','results','copy']){
   const data=JSON.parse(await readFile(`content/${f}.json`,'utf8'));for(const [index,item]of data.entries())await db.query("insert into content_entries(collection,id,status,sort_order,data) values($1,$2,'published',$3,$4)",[f,item.id,index,JSON.stringify(item)]);
 }
+const objects=new Map();const uploadTokens=new Map();
 const sessions=new Set();
 function token(){const now=Math.floor(Date.now()/1000);const t=[{alg:'HS256',typ:'JWT'},{sub:user.id,email:user.email,aud:'authenticated',role:'authenticated',iat:now,exp:now+3600}].map(v=>Buffer.from(JSON.stringify(v)).toString('base64url')).join('.')+'.'+Buffer.alloc(32).toString('base64url');sessions.add(t);return t;}
 const ident=v=>{if(!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(v))throw new Error('Invalid identifier');return `"${v}"`;};
@@ -20,10 +21,23 @@ const col=v=>{const [name,json]=v.split('->>');return ident(name)+(json?`->>'${j
 const tables=new Set((await db.query("select tablename from pg_tables where schemaname='public' union select viewname as tablename from pg_views where schemaname='public'")).rows.map(r=>r.tablename));
 function where(params,values){const clauses=[];for(const [key,value]of params){if(['select','order','limit','offset','on_conflict'].includes(key))continue;if(key==='or'){const terms=value.slice(1,-1).split(',').map(term=>{const dot=term.indexOf('.');return where(new URLSearchParams([[term.slice(0,dot),term.slice(dot+1)]]),values).replace(/^ where /,'');});clauses.push('('+terms.join(' or ')+')');continue;}const match=/^(eq|neq|is|not.is|gt|gte|lt|lte|in|not.in|ilike)\.(.*)$/.exec(value);if(!match)throw new Error(`Unsupported filter ${key}`);const [,op,v]=match;const column=col(key);if(op==='is'||op==='not.is'){clauses.push(`${column} is ${op==='not.is'?'not ':''}${v==='null'?'null':v==='true'?'true':'false'}`);continue;}if(op==='in'||op==='not.in'){values.push(v.slice(1,-1).split(',').map(s=>s.replace(/^"|"$/g,'')));clauses.push(`${op==='not.in'?'not ':''}(${column}::text=any($${values.length}::text[]))`);continue;}values.push(v);clauses.push(`${column}::text ${{eq:'=',neq:'<>',gt:'>',gte:'>=',lt:'<',lte:'<=',ilike:'ilike'}[op]} $${values.length}`);}return clauses.length?' where '+clauses.join(' and '):'';}
 function splitSelect(s){let depth=0,out=[],start=0;for(let i=0;i<s.length;i++){if(s[i]==='(')depth++;if(s[i]===')')depth--;if(s[i]===','&&!depth){out.push(s.slice(start,i));start=i+1;}}out.push(s.slice(start));return out;}
-const server=createServer(async(req,res)=>{let status=200;const url=new URL(req.url,`http://127.0.0.1:${port}`);const send=(data)=>{res.writeHead(status,{'Content-Type':'application/json','Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'*','Access-Control-Expose-Headers':'Content-Range',...res.getHeaders()});res.end(req.method==='HEAD'?undefined:JSON.stringify(data));};
+const server=createServer(async(req,res)=>{let status=200;const url=new URL(req.url,`http://127.0.0.1:${port}`);const send=(data)=>{res.writeHead(status,{'Content-Type':'application/json','Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'*','Access-Control-Allow-Methods':'GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS','Access-Control-Expose-Headers':'Content-Range',...res.getHeaders()});res.end(req.method==='HEAD'?undefined:JSON.stringify(data));};
 try{
  if(req.method==='OPTIONS'){status=204;return send(null);}
- let body='';for await(const chunk of req)body+=chunk;const input=body?JSON.parse(body):null;
+ const chunks=[];for await(const chunk of req)chunks.push(chunk);const raw=Buffer.concat(chunks);
+ // Supabase Storage, in memory: the signed-upload flow the admin uses, file
+ // info for verification, removal, and public reads for rendered pages.
+ if(url.pathname.startsWith('/storage/v1/object/')){
+   const rest=url.pathname.slice('/storage/v1/object/'.length);
+   const bucketPath=(prefix)=>decodeURIComponent(rest.slice(prefix.length));
+   if(req.method==='POST'&&rest.startsWith('upload/sign/')){const key=bucketPath('upload/sign/');const t=randomUUID();uploadTokens.set(t,key);return send({url:`/object/upload/sign/${key}?token=${t}`});}
+   if(req.method==='PUT'&&rest.startsWith('upload/sign/')){const key=bucketPath('upload/sign/');if(uploadTokens.get(url.searchParams.get('token')||'')!==key){status=400;return send({statusCode:'400',error:'InvalidSignature',message:'Invalid upload token'});}uploadTokens.delete(url.searchParams.get('token'));const form=await new Request('http://fixture/',{method:'POST',headers:{'content-type':req.headers['content-type']||''},body:raw}).formData();const file=[...form.values()].find(v=>typeof v!=='string');if(!file){status=400;return send({message:'No file'});}objects.set(key,{bytes:Buffer.from(await file.arrayBuffer()),type:file.type});return send({Key:key});}
+   if(req.method==='GET'&&rest.startsWith('info/')){const o=objects.get(bucketPath('info/'));if(!o){status=404;return send({statusCode:'404',error:'not_found',message:'Object not found'});}return send({size:o.bytes.length,content_type:o.type});}
+   if(req.method==='GET'&&rest.startsWith('public/')){const o=objects.get(bucketPath('public/'));if(!o){status=404;return send({message:'Object not found'});}res.writeHead(200,{'Content-Type':o.type,'Access-Control-Allow-Origin':'*'});return res.end(o.bytes);}
+   if(req.method==='DELETE'){const bucket=rest.replace(/\/$/,'');const {prefixes=[]}=raw.length?JSON.parse(raw.toString()):{};const removed=prefixes.filter(k=>objects.delete(`${bucket}/${k}`));return send(removed.map(name=>({name})));}
+   status=404;return send({message:'Unsupported storage call'});
+ }
+ const body=raw.toString();const input=body?JSON.parse(body):null;
  if(url.pathname.startsWith('/auth/v1/')){
    console.log('Fixture auth',req.method,url.pathname);
    if(url.pathname.endsWith('/token')){if(input.email!==user.email||input.password!=='fixture-password-123'){status=400;return send({error:'invalid_grant',error_description:'Invalid credentials'});}return send({access_token:token(),refresh_token:'fixture-refresh',token_type:'bearer',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,user});}
