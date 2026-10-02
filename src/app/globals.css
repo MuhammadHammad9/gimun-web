@@ -1,12 +1,12 @@
 @import "tailwindcss";
-@import "../styles/theme.css";
-@import "../styles/motion.css";
-@import "../styles/backdrops.css";
-@import "../styles/feedback.css";
-@import "../styles/chrome.css";
-@import "../styles/sections.css";
-@import "../styles/story.css";
-@import "../styles/interactions.css";
+@import "../../frontend/styles/theme.css";
+@import "../../frontend/styles/motion.css";
+@import "../../frontend/styles/backdrops.css";
+@import "../../frontend/styles/feedback.css";
+@import "../../frontend/styles/chrome.css";
+@import "../../frontend/styles/sections.css";
+@import "../../frontend/styles/story.css";
+@import "../../frontend/styles/interactions.css";
 
 /* ==============================================================================
    GIMUN & GMC 2027 — DESIGN TOKENS

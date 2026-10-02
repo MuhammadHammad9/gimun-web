@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react';
-import { requirePermission } from '@/lib/server/admin/auth';
-import { can } from '@/lib/server/admin/permissions';
+import { requirePermission } from '@backend/server/admin/auth';
+import { can } from '@backend/server/admin/permissions';
 import { AdminNav } from '../AdminNav';
 import { AdminPageHeader } from '../AdminPageHeader';
 import { MediaLibrary } from '../MediaLibrary';

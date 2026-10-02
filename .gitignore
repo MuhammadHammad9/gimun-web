@@ -44,15 +44,15 @@ ehthumbs.db
 .vercel
 
 # supabase CLI local state
-/supabase/.temp/
+/backend/supabase/.temp/
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
 # local runtime data submissions
-data/submissions/*.json
-!data/submissions/.gitkeep
+backend/data/submissions/*.json
+!backend/data/submissions/.gitkeep
 
 # test results
 test-results/

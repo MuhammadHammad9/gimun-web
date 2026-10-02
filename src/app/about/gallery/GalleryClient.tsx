@@ -1,5 +1,5 @@
 'use client';
-import { ComingSoon } from '@/components/ui/ComingSoon';
+import { ComingSoon } from '@frontend/components/ui/ComingSoon';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
@@ -13,8 +13,8 @@ import {
   Layers,
   ZoomIn,
 } from 'lucide-react';
-import type { GalleryItem } from '@/lib/types';
-import { FilterBar } from '@/components/ui/FilterBar';
+import type { GalleryItem } from '@shared/lib/types';
+import { FilterBar } from '@frontend/components/ui/FilterBar';
 
 interface GalleryClientProps {
   initialItems: GalleryItem[];

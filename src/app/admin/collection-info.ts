@@ -1,4 +1,4 @@
-import type { Collection } from '@/lib/content/registry';
+import type { Collection } from '@shared/lib/content/registry';
 
 /**
  * How each content section is described to the people who edit it: its name,

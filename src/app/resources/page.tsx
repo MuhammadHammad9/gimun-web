@@ -1,13 +1,13 @@
-import { getCopy, getSiteConfig } from '@/lib/content';
-import { fill } from '@/lib/copy';
+import { getCopy, getSiteConfig } from '@backend/lib/content';
+import { fill } from '@shared/lib/copy';
 import type { Metadata } from "next";
-import { constructMetadata } from "@/lib/metadata";
-import { getDocuments } from "@/lib/content";
+import { constructMetadata } from "@frontend/lib/metadata";
+import { getDocuments } from "@backend/lib/content";
 import { ResourcesClient } from "./ResourcesClient";
-import { DocumentsArt } from "@/components/art/LineArt";
-import { LiveArt } from "@/components/art/LiveArt";
-import { getEventYear } from "@/lib/site-config";
-import { PageHero } from '@/components/ui/PageHero';
+import { DocumentsArt } from "@frontend/components/art/LineArt";
+import { LiveArt } from "@frontend/components/art/LiveArt";
+import { getEventYear } from "@shared/lib/site-config";
+import { PageHero } from '@frontend/components/ui/PageHero';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Resource Hub & Document Archive | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,

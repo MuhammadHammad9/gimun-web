@@ -1,14 +1,14 @@
 "use client";
-import { ComingSoon } from '@/components/ui/ComingSoon';
+import { ComingSoon } from '@frontend/components/ui/ComingSoon';
 
 import React, { useState } from "react";
 import Image from "next/image";
 import { Mail } from "lucide-react";
-import type { TeamMember } from "@/lib/types";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { SearchInput } from "@/components/ui/SearchInput";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { cn } from "@/lib/utils";
+import type { TeamMember } from "@shared/lib/types";
+import { ScrollReveal } from "@frontend/components/ui/ScrollReveal";
+import { SearchInput } from "@frontend/components/ui/SearchInput";
+import { EmptyState } from "@frontend/components/ui/EmptyState";
+import { cn } from "@frontend/lib/utils";
 
 interface TeamClientProps {
   initialMembers: TeamMember[];

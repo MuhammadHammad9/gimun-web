@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { siteSchema, type ContentEntry } from '@/lib/content/registry';
-import { requirePermission } from '@/lib/server/admin/auth';
-import { can } from '@/lib/server/admin/permissions';
-import { database } from '@/lib/server/supabase';
-import { getSiteConfig } from '@/lib/content';
+import { siteSchema, type ContentEntry } from '@shared/lib/content/registry';
+import { requirePermission } from '@backend/server/admin/auth';
+import { can } from '@backend/server/admin/permissions';
+import { database } from '@backend/server/supabase';
+import { getSiteConfig } from '@backend/lib/content';
 import { AdminNav } from '../AdminNav';
 import { ContentEditor } from '../ContentEditor';
 import type { Schema } from '../SchemaForm';

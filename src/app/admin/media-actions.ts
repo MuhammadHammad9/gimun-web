@@ -3,9 +3,9 @@ import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { unstable_rethrow } from 'next/navigation';
-import { requirePermission } from '@/lib/server/admin/auth';
-import { someRow } from '@/lib/server/admin/read-all';
-import { database } from '@/lib/server/supabase';
+import { requirePermission } from '@backend/server/admin/auth';
+import { someRow } from '@backend/server/admin/read-all';
+import { database } from '@backend/server/supabase';
 const types={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','application/pdf':'pdf'} as const;
 export type UploadedMedia={url:string;alt:string;size:number;mime:string;path:string};
 /**

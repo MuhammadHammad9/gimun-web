@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { ClarificationForm } from '@/components/forms/ClarificationForm';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { SearchInput } from '@/components/ui/SearchInput';
-import type { Clarification } from '@/lib/types';
-import '@/styles/pages/clarifications.css';
+import { ClarificationForm } from '@frontend/components/forms/ClarificationForm';
+import { EmptyState } from '@frontend/components/ui/EmptyState';
+import { SearchInput } from '@frontend/components/ui/SearchInput';
+import type { Clarification } from '@shared/lib/types';
+import '@frontend/styles/pages/clarifications.css';
 
 interface ClarificationsClientProps {
   initialClarifications: Clarification[];

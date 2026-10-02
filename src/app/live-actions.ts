@@ -1,7 +1,7 @@
 'use server';
 import { updateTag } from 'next/cache';
-import { appliedRevision, publicRevision } from '@/lib/server/live';
-import { enforceRateLimit } from '@/lib/server/submissions';
+import { appliedRevision, publicRevision } from '@backend/server/live';
+import { enforceRateLimit } from '@backend/server/submissions';
 
 /** What a page can report as the revision it shows: a published stamp, or the outage marker. */
 const REVISION = /^(?:[0-9a-f]{32}|unavailable)$/;

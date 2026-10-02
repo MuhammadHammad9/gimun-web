@@ -2,10 +2,10 @@
 
 import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
-import { useSiteConfig } from '@/components/SiteConfigProvider';
-import { PublishedStats } from '@/components/ui/PublishedStats';
-import type { Sponsor } from '@/lib/types';
-import { getEventYear } from '@/lib/site-config';
+import { useSiteConfig } from '@frontend/components/SiteConfigProvider';
+import { PublishedStats } from '@frontend/components/ui/PublishedStats';
+import type { Sponsor } from '@shared/lib/types';
+import { getEventYear } from '@shared/lib/site-config';
 
 interface SponsorsClientProps {
   initialSponsors: Sponsor[];

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { canReveal, curtainReducer, initialCurtain, isBusy, panelCount } from '../../src/lib/motion/curtain-machine';
-import { EASE, EASE_CSS_VAR, DURATION } from '../../src/lib/motion/tokens';
-import { isDocumentHref, isKnownPublicPath, isTransitionable, normalizePath, routeLabel } from '../../src/lib/motion/routes';
+import { canReveal, curtainReducer, initialCurtain, isBusy, panelCount } from '../../frontend/motion/curtain-machine';
+import { EASE, EASE_CSS_VAR, DURATION } from '../../frontend/motion/tokens';
+import { isDocumentHref, isKnownPublicPath, isTransitionable, normalizePath, routeLabel } from '../../frontend/motion/routes';
 
 describe('page transition routes', () => {
   const current = new URL('https://gimun.test/gimun');

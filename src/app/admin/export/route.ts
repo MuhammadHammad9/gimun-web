@@ -1,6 +1,6 @@
-import { routePermission } from '@/lib/server/admin/auth';
-import { database } from '@/lib/server/supabase';
-import { csv } from '@/lib/csv';
+import { routePermission } from '@backend/server/admin/auth';
+import { database } from '@backend/server/supabase';
+import { csv } from '@backend/lib/csv';
 // Exports carry personal data out of the system, so they need write access to
 // the owning section (read-only viewers cannot export) and each one is logged.
 const tables:Record<string,{table:string;section:string;select:string;order:string}>={

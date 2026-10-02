@@ -1,12 +1,12 @@
-import { PageHero } from '@/components/ui/PageHero';
-import { getCopy, getSiteConfig } from '@/lib/content';
-import { fill, nextSteps } from '@/lib/copy';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { getCopy, getSiteConfig } from '@backend/lib/content';
+import { fill, nextSteps } from '@shared/lib/copy';
 import type { Metadata } from 'next';
-import { constructMetadata } from '@/lib/metadata';
-import { getAnnouncements } from '@/lib/content';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { getAnnouncements } from '@backend/lib/content';
 import { AnnouncementsClient } from './AnnouncementsClient';
-import { getEventYear } from '@/lib/site-config';
-import { NextSteps } from '@/components/story/NextSteps';
+import { getEventYear } from '@shared/lib/site-config';
+import { NextSteps } from '@frontend/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Live Announcements & News | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,

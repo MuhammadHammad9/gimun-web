@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
-import { publicCsp } from "./src/lib/csp";
+import { publicCsp } from "./backend/lib/csp";
 
-// A malformed value must not crash the config itself; scripts/check-env.mjs
+// A malformed value must not crash the config itself; backend/scripts/check-env.mjs
 // reports it by name before a production build.
 const supabaseUrl = (() => {
   try {
@@ -20,8 +20,8 @@ const nextConfig: NextConfig = {
   // PDFs embed this font from disk. Tracing finds it today; listing it keeps
   // certificate and invoice generation from breaking after a refactor.
   outputFileTracingIncludes: {
-    '/admin/**': ['./src/assets/fonts/GeneralSans-Variable.woff2'],
-    '/verify/**': ['./src/assets/fonts/GeneralSans-Variable.woff2'],
+    '/admin/**': ['./shared/assets/fonts/GeneralSans-Variable.woff2'],
+    '/verify/**': ['./shared/assets/fonts/GeneralSans-Variable.woff2'],
   },
   images: {
     qualities: [75, 85, 90],

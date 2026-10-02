@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { siteSchema } from '../../src/lib/content/registry';
-import { feeAmount, formatFee, parseFeeText } from '../../src/lib/fees';
-import { canRegister } from '../../src/lib/phase';
-import { getCanonicalEventDateRange } from '../../src/lib/site-config';
-import { pickGimunDelegation } from '../../src/lib/registration-data';
+import { siteSchema } from '../../shared/lib/content/registry';
+import { feeAmount, formatFee, parseFeeText } from '../../shared/lib/fees';
+import { canRegister } from '../../shared/lib/phase';
+import { getCanonicalEventDateRange } from '../../shared/lib/site-config';
+import { pickGimunDelegation } from '../../backend/lib/registration-data';
 
-const site = siteSchema.parse(JSON.parse(readFileSync('content/site.json', 'utf8')));
+const site = siteSchema.parse(JSON.parse(readFileSync('shared/content/site.json', 'utf8')));
 
 describe('fees', () => {
   it('reads amounts from display text without mangling separators', () => {
@@ -55,7 +55,7 @@ describe('stored registration data', () => {
   });
 });
 
-import { rateLimitSubject } from '../../src/lib/server/submissions';
+import { rateLimitSubject } from '../../backend/server/submissions';
 describe('rate limit subjects', () => {
   it('groups IPv6 addresses by /64 and keeps IPv4 exact', () => {
     expect(rateLimitSubject('203.0.113.7')).toBe('203.0.113.7');

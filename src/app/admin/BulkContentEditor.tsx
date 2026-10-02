@@ -2,11 +2,11 @@
 import { useState,useTransition } from 'react';
 import { useDirtyGuard } from './useDirtyGuard';
 import { useRouter } from 'next/navigation';
-import type { Collection } from '@/lib/content/registry';
+import type { Collection } from '@shared/lib/content/registry';
 import { SchemaForm,emptyValue,type Schema } from './SchemaForm';
 import { saveContentBatch } from './content-actions';
 import { MediaUpload } from './MediaUpload';
-import { newSubmissionKey } from '@/lib/uuid';
+import { newSubmissionKey } from '@frontend/lib/uuid';
 export function BulkContentEditor({collection,schema}:{collection:Collection;schema:Schema}){
   const [items,setItems]=useState<Record<string,unknown>[]>([]);const [status,setStatus]=useState('draft');const [message,setMessage]=useState('');const [pending,start]=useTransition();
   useDirtyGuard(items.length>0);const router=useRouter();

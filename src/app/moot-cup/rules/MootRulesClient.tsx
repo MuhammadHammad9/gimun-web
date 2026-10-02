@@ -1,11 +1,11 @@
 'use client';
 
 import { useId, useState, type CSSProperties } from 'react';
-import { useSiteConfig } from '@/components/SiteConfigProvider';
-import { ChapterHead } from '@/components/sections/Chapter';
-import { FilterBar } from '@/components/ui/FilterBar';
-import { fill, type Copy } from '@/lib/copy';
-import '@/styles/pages/moot-rules.css';
+import { useSiteConfig } from '@frontend/components/SiteConfigProvider';
+import { ChapterHead } from '@frontend/components/sections/Chapter';
+import { FilterBar } from '@frontend/components/ui/FilterBar';
+import { fill, type Copy } from '@shared/lib/copy';
+import '@frontend/styles/pages/moot-rules.css';
 
 const WORD_LIMIT = 8000;
 

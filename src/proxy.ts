@@ -1,8 +1,8 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { HEAD_BOOT_SCRIPT } from '@/lib/boot-script';
-import { adminCsp } from '@/lib/csp';
+import { HEAD_BOOT_SCRIPT } from '@frontend/lib/boot-script';
+import { adminCsp } from '@backend/lib/csp';
 
 /**
  * A path with a broken percent escape ("/gimun/committees/abc%") makes Next

@@ -1,5 +1,5 @@
-import { NotFoundActions } from '@/components/errors/NotFoundActions';
-import { GlitchCode } from '@/components/errors/GlitchCode';
+import { NotFoundActions } from '@frontend/components/errors/NotFoundActions';
+import { GlitchCode } from '@frontend/components/errors/GlitchCode';
 
 export default function NotFound() {
   return (

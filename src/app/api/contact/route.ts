@@ -1,15 +1,15 @@
 import { after, NextRequest, NextResponse } from 'next/server';
-import { normalizeFormStrings, validateContactForm } from '@/lib/validation';
+import { normalizeFormStrings, validateContactForm } from '@shared/lib/validation';
 import {
   dispatchEmailOutbox,
   clientIp,
   createContactMessage,
   enforceRateLimit,
   SubmissionServiceError,
-} from '@/lib/server/submissions';
-import type { ContactFormData } from '@/lib/types';
-import { botCheckResponse, botSignal, JsonBodyError, readJsonBody } from '@/lib/server/request';
-import { TURNSTILE_FAILED_MESSAGE, verifyTurnstile } from '@/lib/server/turnstile';
+} from '@backend/server/submissions';
+import type { ContactFormData } from '@shared/lib/types';
+import { botCheckResponse, botSignal, JsonBodyError, readJsonBody } from '@backend/server/request';
+import { TURNSTILE_FAILED_MESSAGE, verifyTurnstile } from '@backend/server/turnstile';
 
 export const maxDuration = 60;
 

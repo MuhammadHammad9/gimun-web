@@ -1,9 +1,9 @@
 import { timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
-import { contentHealth } from '@/lib/content/repository';
-import { getMissingProductionConfig } from '@/lib/server/config';
-import { rateLimiterHealth } from '@/lib/server/submissions';
-import { database, hasDatabase } from '@/lib/server/supabase';
+import { contentHealth } from '@backend/lib/content/repository';
+import { getMissingProductionConfig } from '@backend/server/config';
+import { rateLimiterHealth } from '@backend/server/submissions';
+import { database, hasDatabase } from '@backend/server/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +19,7 @@ type Health = {
 /**
  * An email still waiting this long after it was due means no worker is
  * draining the outbox: Vercel's own cron runs once a day, so retries rely on
- * the Supabase scheduler in supabase/email_scheduler.sql.
+ * the Supabase scheduler in backend/supabase/email_scheduler.sql.
  */
 const OUTBOX_DELAY_MS = 30 * 60 * 1000;
 /** The probe is public; answering from memory stops it becoming a database load generator. */

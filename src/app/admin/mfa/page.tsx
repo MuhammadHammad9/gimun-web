@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { authClient, mfaState, requireAdmin } from '@/lib/server/admin/auth';
+import { authClient, mfaState, requireAdmin } from '@backend/server/admin/auth';
 import { MfaForm } from '../MfaForm';
 export default async function MfaPage() {
   await requireAdmin(true, true);

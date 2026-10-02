@@ -17,7 +17,9 @@ const eslintConfig = defineConfig([
     "test-results/**",
     "artifacts/**",
     "next-env.d.ts",
-    "scripts/**",
+    "frontend/scripts/**",
+    "backend/scripts/**",
+    "shared/scripts/**",
     // Third-party agent skills (vendored tooling, not site code).
     ".claude/**",
     ".agents/**",
@@ -25,8 +27,8 @@ const eslintConfig = defineConfig([
   // Page changes run the curtain transition only through TransitionLink.
   // The admin keeps plain links: it has no curtain and no smooth scroll.
   {
-    files: ["src/**/*.{ts,tsx}"],
-    ignores: ["src/app/admin/**", "src/components/motion/TransitionLink.tsx"],
+    files: ["src/**/*.{ts,tsx}", "frontend/**/*.{ts,tsx}", "backend/**/*.{ts,tsx}", "shared/**/*.{ts,tsx}"],
+    ignores: ["src/app/admin/**", "frontend/components/motion/TransitionLink.tsx"],
     rules: {
       "no-restricted-imports": [
         "warn",
@@ -34,7 +36,7 @@ const eslintConfig = defineConfig([
           paths: [
             {
               name: "next/link",
-              message: "Use TransitionLink from @/components/motion/TransitionLink so page changes run the curtain.",
+              message: "Use TransitionLink from @frontend/components/motion/TransitionLink so page changes run the curtain.",
             },
           ],
         },

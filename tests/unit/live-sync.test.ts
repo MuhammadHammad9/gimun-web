@@ -5,8 +5,8 @@ const { updateTag, state, enforceRateLimit } = vi.hoisted(() => {
   return { state, updateTag: vi.fn(), enforceRateLimit: vi.fn(async () => ({ allowed: state.allowed, retryAfterSeconds: 10 })) };
 });
 vi.mock('next/cache', () => ({ updateTag }));
-vi.mock('@/lib/server/live', () => ({ publicRevision: async () => state.live, appliedRevision: async () => state.applied }));
-vi.mock('@/lib/server/submissions', () => ({ enforceRateLimit }));
+vi.mock('@backend/server/live', () => ({ publicRevision: async () => state.live, appliedRevision: async () => state.applied }));
+vi.mock('@backend/server/submissions', () => ({ enforceRateLimit }));
 
 import { syncLiveContent } from '../../src/app/live-actions';
 

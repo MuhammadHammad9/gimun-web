@@ -1,7 +1,7 @@
 'use client';
 import { useState,useTransition } from 'react';
 import { runOperation } from './ops-actions';
-import type { Committee } from '@/lib/types';
+import type { Committee } from '@shared/lib/types';
 type Person={id:string;name:string;registration_ref:string};
 export function AllocationBoard({people,committees,initial,reservations}:{people:Person[];committees:Committee[];initial:{participant_id:string;committee_slug:string;country:string}[];reservations:{committee_slug:string;country:string}[]}){
   const [selected,setSelected]=useState('');const [allocations,setAllocations]=useState(initial);const [source,setSource]=useState(JSON.stringify(initial));if(source!==JSON.stringify(initial)){setSource(JSON.stringify(initial));setAllocations(initial);}const [message,setMessage]=useState('');const [search,setSearch]=useState('');const [pending,start]=useTransition();

@@ -2,7 +2,7 @@
 
 <!-- impeccable:product-schema 1 -->
 
-Sources: the repository (`content/`, `CONTENT_SIGNOFF.md`, `GO_LIVE.md`, `README.md`) and decisions the organizer made while planning the September 2026 redesign. Items marked *(inferred)* come from repository evidence and have not been separately confirmed.
+Sources: the repository (`shared/content/`, `docs/CONTENT_SIGNOFF.md`, `docs/GO_LIVE.md`, `README.md`) and decisions the organizer made while planning the September 2026 redesign. Items marked *(inferred)* come from repository evidence and have not been separately confirmed.
 
 ## Platform
 
@@ -40,7 +40,7 @@ Two rooms, one event: committee diplomacy and courtroom advocacy run side by sid
 - Registration can be closed per track; pages must show the closed state honestly.
 - Release gates: Lighthouse on mobile (performance at least 0.85, accessibility and SEO at least 0.95, LCP at most 3 s, TBT at most 200 ms, CLS at most 0.1, plus no non-composited animations, console errors or back/forward-cache blockers), axe at five widths, link and SEO audits, Playwright contracts on labels and ids, a first-load bundle guard.
 - The schedule, application confirmation and certificate pages must print cleanly.
-- Many event facts are defaults awaiting organizer confirmation (`CONTENT_SIGNOFF.md`). The design must hold up when a fact changes, disappears or grows longer.
+- Many event facts are defaults awaiting organizer confirmation (`docs/CONTENT_SIGNOFF.md`). The design must hold up when a fact changes, disappears or grows longer.
 
 ## Brand Commitments
 
@@ -50,7 +50,7 @@ Two rooms, one event: committee diplomacy and courtroom advocacy run side by sid
 
 ## Evidence on Hand
 
-- Real content: dates, venue, fees, deadlines, contact addresses, four committees with their country lists (UNSC 15, DISEC 10, UNHRC 8, PNA 8), three moot categories, FAQ, schedule and rules text, all in `content/`. Several are provisional (see `CONTENT_SIGNOFF.md`).
+- Real content: dates, venue, fees, deadlines, contact addresses, four committees with their country lists (UNSC 15, DISEC 10, UNHRC 8, PNA 8), three moot categories, FAQ, schedule and rules text, all in `shared/content/`. Several are provisional (see `docs/CONTENT_SIGNOFF.md`).
 - Absent, and not to be invented: past-edition statistics, testimonials, team members, committee chairs, sponsors, gallery photos, an emergency phone number, final PDFs and the institution's privacy terms. Pages hide these sections or say "to be announced" until the CMS has them.
 
 ## Product Principles

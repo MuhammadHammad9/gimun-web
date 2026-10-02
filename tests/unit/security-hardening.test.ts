@@ -1,9 +1,9 @@
 import { createHash } from 'node:crypto';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { isLocalPath, registry } from '../../src/lib/content/registry';
-import { clientIp, rateLimitSubject } from '../../src/lib/server/submissions';
-import { adminCsp, publicCsp } from '../../src/lib/csp';
-import { HEAD_BOOT_SCRIPT, NOTICE_KEY_ATTRIBUTE } from '../../src/lib/boot-script';
+import { isLocalPath, registry } from '../../shared/lib/content/registry';
+import { clientIp, rateLimitSubject } from '../../backend/server/submissions';
+import { adminCsp, publicCsp } from '../../backend/lib/csp';
+import { HEAD_BOOT_SCRIPT, NOTICE_KEY_ATTRIBUTE } from '../../frontend/lib/boot-script';
 
 afterEach(() => vi.unstubAllEnvs());
 

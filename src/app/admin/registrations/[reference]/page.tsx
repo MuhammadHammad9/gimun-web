@@ -1,9 +1,9 @@
 import { RecordDetails } from '../../RecordDetails';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { requirePermission } from '@/lib/server/admin/auth';
-import { can } from '@/lib/server/admin/permissions';
-import { database } from '@/lib/server/supabase';
+import { requirePermission } from '@backend/server/admin/auth';
+import { can } from '@backend/server/admin/permissions';
+import { database } from '@backend/server/supabase';
 import { AdminNav } from '../../AdminNav';
 import { OperationForm } from '../../OperationForm';
 import { RegistrationTools } from '../../RegistrationTools';

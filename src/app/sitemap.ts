@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
-import { getCommittees } from '@/lib/content';
-import { getSiteUrl } from '@/lib/site-config';
+import { getCommittees } from '@backend/lib/content';
+import { getSiteUrl } from '@shared/lib/site-config';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getSiteUrl();

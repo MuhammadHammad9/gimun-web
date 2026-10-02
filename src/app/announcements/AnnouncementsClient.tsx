@@ -1,15 +1,15 @@
 'use client';
 
 import React, { startTransition, useState, ViewTransition } from 'react';
-import { TrackBadge } from '@/components/ui/TrackBadge';
-import { SearchInput } from '@/components/ui/SearchInput';
-import { FilterBar } from '@/components/ui/FilterBar';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { TrackBadge } from '@frontend/components/ui/TrackBadge';
+import { SearchInput } from '@frontend/components/ui/SearchInput';
+import { FilterBar } from '@frontend/components/ui/FilterBar';
+import { ScrollReveal } from '@frontend/components/ui/ScrollReveal';
+import { EmptyState } from '@frontend/components/ui/EmptyState';
 import { Pin, Calendar } from 'lucide-react';
-import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import type { Announcement, Track } from '@/lib/types';
-import { formatPublishedDate } from '@/lib/site-config';
+import { TransitionLink as Link } from '@frontend/components/motion/TransitionLink';
+import type { Announcement, Track } from '@shared/lib/types';
+import { formatPublishedDate } from '@shared/lib/site-config';
 
 interface AnnouncementsClientProps {
   initialAnnouncements: Announcement[];

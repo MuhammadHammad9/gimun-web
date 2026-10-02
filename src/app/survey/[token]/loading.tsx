@@ -1,4 +1,4 @@
-import '@/styles/pages/utility.css';
+import '@frontend/styles/pages/utility.css';
 
 export default function Loading() {
   return (

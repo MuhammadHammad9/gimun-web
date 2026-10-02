@@ -1,13 +1,13 @@
 import { describe,it,expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { registry,collections,siteSchema,validateEntry } from '../../src/lib/content/registry';
-import { eventPhase } from '../../src/lib/phase';
-import { can,type AdminUser } from '../../src/lib/server/admin/permissions';
-import { csv } from '../../src/lib/csv';
-import { isValidIsoDate,isRegistrationDeadlinePassed } from '../../src/lib/site-config';
-const site=siteSchema.parse(JSON.parse(readFileSync('content/site.json','utf8')));
+import { registry,collections,siteSchema,validateEntry } from '../../shared/lib/content/registry';
+import { eventPhase } from '../../shared/lib/phase';
+import { can,type AdminUser } from '../../backend/server/admin/permissions';
+import { csv } from '../../backend/lib/csv';
+import { isValidIsoDate,isRegistrationDeadlinePassed } from '../../shared/lib/site-config';
+const site=siteSchema.parse(JSON.parse(readFileSync('shared/content/site.json','utf8')));
 describe('shared content schemas',()=>{
-  for(const collection of collections.filter(c=>c!=='navigation'))it(`accepts seed ${collection}`,()=>{expect(()=>registry[collection].array().parse(JSON.parse(readFileSync(`content/${collection}.json`,'utf8')))).not.toThrow();});
+  for(const collection of collections.filter(c=>c!=='navigation'))it(`accepts seed ${collection}`,()=>{expect(()=>registry[collection].array().parse(JSON.parse(readFileSync(`shared/content/${collection}.json`,'utf8')))).not.toThrow();});
   it('rejects unsafe URLs',()=>{expect(registry.navigation.safeParse({id:'bad',label:'Bad',href:'javascript:alert(1)',area:'all'}).success).toBe(false);});
   it('rejects invalid publication windows',()=>{expect(()=>validateEntry({collection:'navigation',id:'nav',version:0,status:'published',sort_order:0,publish_at:'2027-01-02T00:00:00Z',expire_at:'2027-01-01T00:00:00Z',data:{id:'nav',label:'Home',href:'/',area:'all'}})).toThrow();});
 });

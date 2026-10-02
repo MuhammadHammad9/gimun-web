@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react';
 import {
   ChevronDown,
   } from 'lucide-react';
-import type { FAQItem } from '@/lib/types';
-import { SearchInput } from '@/components/ui/SearchInput';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { FilterBar } from '@/components/ui/FilterBar';
-import { HelpCallout } from '@/components/ui/HelpCallout';
+import type { FAQItem } from '@shared/lib/types';
+import { SearchInput } from '@frontend/components/ui/SearchInput';
+import { EmptyState } from '@frontend/components/ui/EmptyState';
+import { FilterBar } from '@frontend/components/ui/FilterBar';
+import { HelpCallout } from '@frontend/components/ui/HelpCallout';
 
 interface FaqClientProps {
   initialFaqs: FAQItem[];

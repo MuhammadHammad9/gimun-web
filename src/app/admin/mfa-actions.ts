@@ -1,8 +1,8 @@
 'use server';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { authClient, mfaState, requireAdmin } from '@/lib/server/admin/auth';
-import { clientIp, enforceRateLimit } from '@/lib/server/submissions';
+import { authClient, mfaState, requireAdmin } from '@backend/server/admin/auth';
+import { clientIp, enforceRateLimit } from '@backend/server/submissions';
 import { headers } from 'next/headers';
 const code = z.string().regex(/^\d{6}$/);
 /** Limited per address and per account, so a code cannot be guessed from many addresses. */

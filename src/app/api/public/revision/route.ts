@@ -1,4 +1,4 @@
-import { publicRevision } from '@/lib/server/live';
+import { publicRevision } from '@backend/server/live';
 
 export const dynamic = 'force-dynamic';
 

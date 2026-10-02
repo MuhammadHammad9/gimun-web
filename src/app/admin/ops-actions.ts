@@ -2,16 +2,16 @@
 import { after } from 'next/server';
 import { revalidatePath, updateTag } from 'next/cache';
 import { unstable_rethrow } from 'next/navigation';
-import { invoiceEmailHtml, invoiceNumber, invoicePdf, type InvoiceRegistration } from '@/lib/server/invoice';
-import { getSiteConfig } from '@/lib/content';
-import { feeAmount, formatFee } from '@/lib/fees';
+import { invoiceEmailHtml, invoiceNumber, invoicePdf, type InvoiceRegistration } from '@backend/server/invoice';
+import { getSiteConfig } from '@backend/lib/content';
+import { feeAmount, formatFee } from '@shared/lib/fees';
 import { z } from 'zod';
-import { operate, emailHtml, renderTemplate } from '@/lib/server/admin/operations';
-import { requirePermission } from '@/lib/server/admin/auth';
-import { database } from '@/lib/server/supabase';
-import { getServerConfig } from '@/lib/server/config';
-import { drainEmailOutbox } from '@/lib/server/submissions';
-import { validateEntry } from '@/lib/content/registry';
+import { operate, emailHtml, renderTemplate } from '@backend/server/admin/operations';
+import { requirePermission } from '@backend/server/admin/auth';
+import { database } from '@backend/server/supabase';
+import { getServerConfig } from '@backend/server/config';
+import { drainEmailOutbox } from '@backend/server/submissions';
+import { validateEntry } from '@shared/lib/content/registry';
 /**
  * Messages that are safe and useful to show staff. Server actions return them
  * rather than throwing: production replaces a thrown message with a generic one.

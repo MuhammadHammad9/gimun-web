@@ -3,20 +3,20 @@
 import React, { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import type { Committee, ProblemCategory, SiteConfig } from '@/lib/types';
+import type { Committee, ProblemCategory, SiteConfig } from '@shared/lib/types';
 import dynamic from 'next/dynamic';
-import { TrackChooser } from '@/components/forms/TrackChooser';
-import { ClosedRegistrationBanner } from '@/components/forms/ClosedRegistrationBanner';
+import { TrackChooser } from '@frontend/components/forms/TrackChooser';
+import { ClosedRegistrationBanner } from '@frontend/components/forms/ClosedRegistrationBanner';
 
 // The page opens on the track chooser, so the forms (and the receipt with
 // its QR code library) load only once a track is chosen. Keeping them out of
 // the first load lets the page become usable sooner on slow phones.
 const formLoading = () => <p className="mx-auto max-w-3xl py-10 text-center text-sm text-text-3">Loading the application form…</p>;
-const GimunRegisterForm = dynamic(() => import('@/components/forms/GimunRegisterForm').then((m) => m.GimunRegisterForm), { loading: formLoading });
-const MootRegisterForm = dynamic(() => import('@/components/forms/MootRegisterForm').then((m) => m.MootRegisterForm), { loading: formLoading });
-const RegistrationSuccess = dynamic(() => import('@/components/forms/RegistrationSuccess').then((m) => m.RegistrationSuccess));
-import { canRegister } from '@/lib/phase';
-import { useRenderedAt } from '@/components/SiteConfigProvider';
+const GimunRegisterForm = dynamic(() => import('@frontend/components/forms/GimunRegisterForm').then((m) => m.GimunRegisterForm), { loading: formLoading });
+const MootRegisterForm = dynamic(() => import('@frontend/components/forms/MootRegisterForm').then((m) => m.MootRegisterForm), { loading: formLoading });
+const RegistrationSuccess = dynamic(() => import('@frontend/components/forms/RegistrationSuccess').then((m) => m.RegistrationSuccess));
+import { canRegister } from '@shared/lib/phase';
+import { useRenderedAt } from '@frontend/components/SiteConfigProvider';
 
 interface RegisterPageClientProps {
   committees: Committee[];

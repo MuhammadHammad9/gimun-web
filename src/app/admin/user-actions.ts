@@ -1,9 +1,9 @@
 'use server';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import { requirePermission } from '@/lib/server/admin/auth';
-import { database } from '@/lib/server/supabase';
-import { sections } from '@/lib/server/admin/permissions';
+import { requirePermission } from '@backend/server/admin/auth';
+import { database } from '@backend/server/supabase';
+import { sections } from '@backend/server/admin/permissions';
 export async function manageUser(input:unknown){
   const owner=await requirePermission('users',true);
   const p=z.object({id:z.union([z.uuid(),z.literal('')]),email:z.email(),display_name:z.string().min(1).max(100),role:z.enum(['owner','admin','editor','registrar','checkin','viewer']),sections:z.array(z.enum(sections)),active:z.boolean(),password:z.string().max(200)}).parse(input);

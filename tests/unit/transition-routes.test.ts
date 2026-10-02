@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { LABELLED_ROUTES, REDIRECTS, isTransitionable, routeLabel } from '../../src/lib/motion/routes';
-import { isCurrentPath } from '../../src/components/chrome/nav-utils';
-import committees from '../../content/committees.json';
+import { LABELLED_ROUTES, REDIRECTS, isTransitionable, routeLabel } from '../../frontend/motion/routes';
+import { isCurrentPath } from '../../frontend/components/chrome/nav-utils';
+import committees from '../../shared/content/committees.json';
 
 describe('curtain routing', () => {
   it('mirrors the redirects in next.config.ts', () => {

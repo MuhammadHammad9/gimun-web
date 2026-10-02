@@ -1,24 +1,24 @@
 import type { Metadata } from 'next';
-import { GlobeArt } from '@/components/art/LineArt';
-import { LiveArt } from '@/components/art/LiveArt';
-import { HandoffStage } from '@/components/motion/HandoffStage';
-import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { ChapterHead } from '@/components/sections/Chapter';
-import { Bridge } from '@/components/story/Bridge';
-import { ChapterRail } from '@/components/story/ChapterRail';
-import { Closing } from '@/components/sections/Closing';
-import { DateLedger } from '@/components/sections/DateLedger';
-import { Door } from '@/components/sections/Door';
-import { CommitteePlacard, seatsOpen } from '@/components/sections/Placards';
-import { Steps } from '@/components/sections/Steps';
-import { FactList } from '@/components/ui/Editorial';
-import { PageHero } from '@/components/ui/PageHero';
-import { getCommittees, getCopy, getDocuments, getSiteConfig } from '@/lib/content';
-import { chapterNumbers, fill } from '@/lib/copy';
-import { constructMetadata } from '@/lib/metadata';
-import { canRegister, serverRenderTime } from '@/lib/phase';
-import { formatEventDate, getEventYear } from '@/lib/site-config';
-import { addDays, formatDateRange } from '@/lib/utils';
+import { GlobeArt } from '@frontend/components/art/LineArt';
+import { LiveArt } from '@frontend/components/art/LiveArt';
+import { HandoffStage } from '@frontend/components/motion/HandoffStage';
+import { TransitionLink as Link } from '@frontend/components/motion/TransitionLink';
+import { ChapterHead } from '@frontend/components/sections/Chapter';
+import { Bridge } from '@frontend/components/story/Bridge';
+import { ChapterRail } from '@frontend/components/story/ChapterRail';
+import { Closing } from '@frontend/components/sections/Closing';
+import { DateLedger } from '@frontend/components/sections/DateLedger';
+import { Door } from '@frontend/components/sections/Door';
+import { CommitteePlacard, seatsOpen } from '@frontend/components/sections/Placards';
+import { Steps } from '@frontend/components/sections/Steps';
+import { FactList } from '@frontend/components/ui/Editorial';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { getCommittees, getCopy, getDocuments, getSiteConfig } from '@backend/lib/content';
+import { chapterNumbers, fill } from '@shared/lib/copy';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { canRegister, serverRenderTime } from '@shared/lib/phase';
+import { formatEventDate, getEventYear } from '@shared/lib/site-config';
+import { addDays, formatDateRange } from '@frontend/lib/utils';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({

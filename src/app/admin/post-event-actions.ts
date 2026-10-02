@@ -3,12 +3,12 @@ import { z } from 'zod';
 import { unstable_rethrow } from 'next/navigation';
 import { after } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { requirePermission } from '@/lib/server/admin/auth';
-import { operate,emailHtml } from '@/lib/server/admin/operations';
-import { database } from '@/lib/server/supabase';
-import { getServerConfig } from '@/lib/server/config';
-import { drainEmailOutbox } from '@/lib/server/submissions';
-import { certificatePdf } from '@/lib/server/certificate-pdf';
+import { requirePermission } from '@backend/server/admin/auth';
+import { operate,emailHtml } from '@backend/server/admin/operations';
+import { database } from '@backend/server/supabase';
+import { getServerConfig } from '@backend/server/config';
+import { drainEmailOutbox } from '@backend/server/submissions';
+import { certificatePdf } from '@backend/server/certificate-pdf';
 
 export async function queuePostEvent(input:unknown){
   const issued:string[]=[];

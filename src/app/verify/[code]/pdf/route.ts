@@ -1,6 +1,6 @@
-import { findCertificate } from '@/lib/server/certificates';
-import { certificatePdf } from '@/lib/server/certificate-pdf';
-import { clientIp, enforceRateLimit } from '@/lib/server/submissions';
+import { findCertificate } from '@backend/server/certificates';
+import { certificatePdf } from '@backend/server/certificate-pdf';
+import { clientIp, enforceRateLimit } from '@backend/server/submissions';
 export async function GET(request:Request,{params}:{params:Promise<{code:string}>}){
   // Each download builds a PDF and embeds a font; limit it like a form submission.
   if(!(await enforceRateLimit('certificate-pdf',clientIp(request))).allowed)return new Response('Too many downloads. Try again in a few minutes.',{status:429,headers:{'Retry-After':'600'}});

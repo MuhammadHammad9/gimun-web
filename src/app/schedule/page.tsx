@@ -1,16 +1,16 @@
-import { getCopy, getSiteConfig } from '@/lib/content';
-import { fill, nextSteps } from '@/lib/copy';
+import { getCopy, getSiteConfig } from '@backend/lib/content';
+import { fill, nextSteps } from '@shared/lib/copy';
 import type { Metadata } from "next";
-import { constructMetadata } from "@/lib/metadata";
-import { getSchedule } from "@/lib/content";
+import { constructMetadata } from "@frontend/lib/metadata";
+import { getSchedule } from "@backend/lib/content";
 import { ScheduleClient } from "./ScheduleClient";
-import { TransitionLink } from "@/components/motion/TransitionLink";
-import { DaysArt } from "@/components/art/LineArt";
-import { LiveArt } from "@/components/art/LiveArt";
-import { formatDateRange } from "@/lib/utils";
-import { getEventYear } from "@/lib/site-config";
-import { PageHero } from '@/components/ui/PageHero';
-import { NextSteps } from '@/components/story/NextSteps';
+import { TransitionLink } from "@frontend/components/motion/TransitionLink";
+import { DaysArt } from "@frontend/components/art/LineArt";
+import { LiveArt } from "@frontend/components/art/LiveArt";
+import { formatDateRange } from "@frontend/lib/utils";
+import { getEventYear } from "@shared/lib/site-config";
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { NextSteps } from '@frontend/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Unified Itinerary & Schedule | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,

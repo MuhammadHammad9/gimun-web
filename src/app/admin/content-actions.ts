@@ -2,11 +2,11 @@
 import { unstable_rethrow } from 'next/navigation';
 import { updateTag, revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { checkContentLinks } from '@/lib/server/admin/content-validation';
-import { requirePermission } from '@/lib/server/admin/auth';
-import { requireAdmin } from '@/lib/server/admin/auth';
-import { database } from '@/lib/server/supabase';
-import { validateEntry, siteSchema, isCollection } from '@/lib/content/registry';
+import { checkContentLinks } from '@backend/server/admin/content-validation';
+import { requirePermission } from '@backend/server/admin/auth';
+import { requireAdmin } from '@backend/server/admin/auth';
+import { database } from '@backend/server/supabase';
+import { validateEntry, siteSchema, isCollection } from '@shared/lib/content/registry';
 
 export async function saveContent(input: unknown) {
   try {

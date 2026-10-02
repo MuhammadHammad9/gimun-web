@@ -1,6 +1,6 @@
 import { timingSafeEqual } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { drainEmailOutbox, SubmissionServiceError } from '@/lib/server/submissions';
+import { drainEmailOutbox, SubmissionServiceError } from '@backend/server/submissions';
 
 export const maxDuration = 60;
 export const runtime = 'nodejs';

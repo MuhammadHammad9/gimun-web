@@ -1,11 +1,11 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useFlip } from '@/components/motion/useFlip';
-import { COMMITTEE_TYPE, CommitteePlacard } from '@/components/sections/Placards';
-import { FilterBar } from '@/components/ui/FilterBar';
-import { HelpCallout } from '@/components/ui/HelpCallout';
-import type { Committee } from '@/lib/types';
+import { useFlip } from '@frontend/components/motion/useFlip';
+import { COMMITTEE_TYPE, CommitteePlacard } from '@frontend/components/sections/Placards';
+import { FilterBar } from '@frontend/components/ui/FilterBar';
+import { HelpCallout } from '@frontend/components/ui/HelpCallout';
+import type { Committee } from '@shared/lib/types';
 
 const FILTER_LABEL: Record<string, string> = {
   'general-assembly': 'General Assembly',

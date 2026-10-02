@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import committees from '../../content/committees.json';
-import gallery from '../../content/gallery.json';
+import committees from '../../shared/content/committees.json';
+import gallery from '../../shared/content/gallery.json';
 
 const publicRoutes = [
   '/',

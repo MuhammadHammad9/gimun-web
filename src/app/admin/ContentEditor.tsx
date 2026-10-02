@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { CalendarClock, CheckCircle2, ChevronDown, CircleDashed, Eye, EyeOff, History, PencilLine, Send, Undo2 } from 'lucide-react';
 import { SchemaForm, emptyValue, type Schema } from './SchemaForm';
 import { saveContent, saveSettings, restoreRevision, cancelSchedule } from './content-actions';
-import type { ContentEntry } from '@/lib/content/registry';
+import type { ContentEntry } from '@shared/lib/content/registry';
 import type { UploadedMedia } from './media-actions';
 import { MediaContext } from './MediaField';
 import { useDirtyGuard } from './useDirtyGuard';

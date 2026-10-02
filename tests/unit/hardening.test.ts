@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('next/cache', () => ({ unstable_cache: (fn: unknown) => fn }));
 const rpc = vi.fn(), update = vi.fn(), maybeSingle = vi.fn();
-vi.mock('@/lib/server/supabase', () => ({
+vi.mock('@backend/server/supabase', () => ({
   database: () => ({
     rpc,
     from: () => {
@@ -14,11 +14,11 @@ vi.mock('@/lib/server/supabase', () => ({
     },
   }),
 }));
-vi.mock('@/lib/content', () => ({ getSiteConfig: async () => ({}), getCommittees: async () => [], getProblemCategories: async () => [] }));
-import { newSubmissionKey, readSubmissionResponse } from '../../src/lib/uuid';
-import { normalizeFormStrings } from '../../src/lib/validation';
-import { dispatchEmailOutbox } from '../../src/lib/server/submissions';
-import { CertificateLookupError, findCertificate } from '../../src/lib/server/certificates';
+vi.mock('@backend/lib/content', () => ({ getSiteConfig: async () => ({}), getCommittees: async () => [], getProblemCategories: async () => [] }));
+import { newSubmissionKey, readSubmissionResponse } from '../../frontend/lib/uuid';
+import { normalizeFormStrings } from '../../shared/lib/validation';
+import { dispatchEmailOutbox } from '../../backend/server/submissions';
+import { CertificateLookupError, findCertificate } from '../../backend/server/certificates';
 
 // The server's check in registration-handler.ts.
 const SERVER_KEY = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

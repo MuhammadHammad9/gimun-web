@@ -6,7 +6,7 @@ const state: { configured: boolean; settings: { data: unknown; error: unknown };
   settings: { data: { id: 'site' }, error: null },
   entries: { data: [], error: null },
 };
-vi.mock('@/lib/server/supabase', () => {
+vi.mock('@backend/server/supabase', () => {
   const builder = (result: () => { data: unknown; error: unknown }) => {
     const chain: Record<string, unknown> = {};
     for (const method of ['select', 'eq', 'order']) chain[method] = () => chain;
@@ -22,9 +22,9 @@ vi.mock('@/lib/server/supabase', () => {
   };
 });
 
-import { botSignal, looksAutomated } from '../../src/lib/server/request';
-import { enforceRateLimit } from '../../src/lib/server/submissions';
-import { readCollection } from '../../src/lib/content/repository';
+import { botSignal, looksAutomated } from '../../backend/server/request';
+import { enforceRateLimit } from '../../backend/server/submissions';
+import { readCollection } from '../../backend/lib/content/repository';
 
 afterEach(() => {
   vi.unstubAllEnvs();

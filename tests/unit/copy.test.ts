@@ -1,9 +1,9 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import seed from '../../content/copy.json';
-import { registry } from '@/lib/content/registry';
-import { chapterNumbers, copyReader, fill, type Copy } from '@/lib/copy';
+import seed from '../../shared/content/copy.json';
+import { registry } from '@shared/lib/content/registry';
+import { chapterNumbers, copyReader, fill, type Copy } from '@shared/lib/copy';
 
 const entries = seed as Copy[];
 
@@ -34,7 +34,7 @@ describe('page copy seed', () => {
     expect(used.size).toBeGreaterThan(0);
     for (const [id, page] of used) {
       const entry = entries.find((e) => e.id === id);
-      expect(entry, `copy "${id}" missing from content/copy.json`).toBeDefined();
+      expect(entry, `copy "${id}" missing from shared/content/copy.json`).toBeDefined();
       expect(entry!.page).toBe(page);
     }
   });

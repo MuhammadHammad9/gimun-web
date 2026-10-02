@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { turnstileEnabled, verifyTurnstile } from '../../src/lib/server/turnstile';
+import { turnstileEnabled, verifyTurnstile } from '../../backend/server/turnstile';
 
 const siteverify = vi.fn();
 beforeEach(() => {

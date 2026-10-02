@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 const state=vi.hoisted(()=>({asset:null as null|Record<string,unknown>,remove:vi.fn(),info:vi.fn(),createUpload:vi.fn(),insert:vi.fn(),references:[] as Record<string,unknown>[],filters:[] as unknown[][]}));
 vi.mock('next/cache',()=>({revalidatePath:vi.fn()}));
-vi.mock('@/lib/server/admin/auth',()=>({requirePermission:async()=>({user_id:'owner'})}));
-vi.mock('@/lib/server/admin/read-all',()=>({readAll:async()=>state.references,someRow:async(_t:string,_s:string,_o:string,match:(row:Record<string,unknown>)=>boolean)=>state.references.some(match)}));
-vi.mock('@/lib/server/supabase',()=>({database:()=>({
+vi.mock('@backend/server/admin/auth',()=>({requirePermission:async()=>({user_id:'owner'})}));
+vi.mock('@backend/server/admin/read-all',()=>({readAll:async()=>state.references,someRow:async(_t:string,_s:string,_o:string,match:(row:Record<string,unknown>)=>boolean)=>state.references.some(match)}));
+vi.mock('@backend/server/supabase',()=>({database:()=>({
  from:()=>{const chain={select:()=>chain,eq:(...args:unknown[])=>{state.filters.push(args);return chain;},single:async()=>({data:state.asset,error:null}),maybeSingle:async()=>({data:state.asset,error:null}),insert:state.insert,delete:()=>chain,update:()=>chain};return chain;},
  storage:{from:()=>({createSignedUploadUrl:state.createUpload,remove:state.remove,info:state.info,getPublicUrl:()=>({data:{publicUrl:'https://media.test/file.png'}})})},
 })}));

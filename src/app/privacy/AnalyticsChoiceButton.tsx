@@ -1,6 +1,6 @@
 'use client';
 
-import { resetAnalyticsChoice } from '@/components/analytics/GoogleAnalytics';
+import { resetAnalyticsChoice } from '@frontend/components/analytics/GoogleAnalytics';
 
 export function AnalyticsChoiceButton() {
   return (

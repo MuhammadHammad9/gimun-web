@@ -30,7 +30,7 @@ export default defineConfig({
     { name: 'desktop-1440-dark', use: { viewport: { width: 1440, height: 900 }, colorScheme: 'dark' } },
   ],
   webServer: managedServer ? undefined : {
-    command: `"${process.execPath}" scripts/playwright-server.cjs`,
+    command: `"${process.execPath}" frontend/scripts/playwright-server.cjs`,
     url: `http://127.0.0.1:${port}`,
     reuseExistingServer: true,
     timeout: 120_000,

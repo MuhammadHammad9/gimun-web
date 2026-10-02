@@ -1,24 +1,24 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
-import { SiteChrome } from '@/components/layout/SiteChrome';
-import { NoticeBar, noticeStorageKey } from '@/components/chrome/NoticeBar';
-import { Notices } from '@/components/chrome/Notices';
-import { SiteFooter } from '@/components/chrome/SiteFooter';
-import { SiteConfigProvider } from '@/components/SiteConfigProvider';
-import { getSiteConfig, getAnnouncements, getSponsors } from '@/lib/content';
-import { constructMetadata } from '@/lib/metadata';
-import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
-import { getAnalyticsMeasurementId } from '@/lib/site-config';
-import { serverRenderTime } from '@/lib/phase';
-import { HEAD_BOOT_SCRIPT, NOTICE_KEY_ATTRIBUTE } from '@/lib/boot-script';
-import { appliedRevision } from '@/lib/server/live';
-import { LiveUpdates } from '@/components/LiveUpdates';
-import { PreviewBar } from '@/components/chrome/PreviewBar';
-import { isPreviewing } from '@/lib/content/preview';
+import { SiteChrome } from '@frontend/components/layout/SiteChrome';
+import { NoticeBar, noticeStorageKey } from '@frontend/components/chrome/NoticeBar';
+import { Notices } from '@frontend/components/chrome/Notices';
+import { SiteFooter } from '@frontend/components/chrome/SiteFooter';
+import { SiteConfigProvider } from '@frontend/components/SiteConfigProvider';
+import { getSiteConfig, getAnnouncements, getSponsors } from '@backend/lib/content';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { GoogleAnalytics } from '@frontend/components/analytics/GoogleAnalytics';
+import { getAnalyticsMeasurementId } from '@shared/lib/site-config';
+import { serverRenderTime } from '@shared/lib/phase';
+import { HEAD_BOOT_SCRIPT, NOTICE_KEY_ATTRIBUTE } from '@frontend/lib/boot-script';
+import { appliedRevision } from '@backend/server/live';
+import { LiveUpdates } from '@frontend/components/LiveUpdates';
+import { PreviewBar } from '@frontend/components/chrome/PreviewBar';
+import { isPreviewing } from '@backend/lib/content/preview';
 
 const satoshi = localFont({
-  src: '../assets/fonts/Satoshi-Variable.woff2',
+  src: '../../shared/assets/fonts/Satoshi-Variable.woff2',
   variable: '--font-satoshi',
   display: 'swap',
   weight: '300 900',
@@ -29,7 +29,7 @@ const satoshi = localFont({
 // as 0.77. The display and body faces are worth the critical-path bytes; the
 // mono face, used only for small labels, is not.
 const generalSans = localFont({
-  src: '../assets/fonts/GeneralSans-Variable.woff2',
+  src: '../../shared/assets/fonts/GeneralSans-Variable.woff2',
   variable: '--font-body-sans',
   display: 'swap',
   weight: '200 700',
@@ -41,7 +41,7 @@ const generalSans = localFont({
 // connection, which delayed first paint — and first paint is when the LCP
 // element lands, so it delayed LCP one-for-one.
 const jetbrainsMono = localFont({
-  src: '../assets/fonts/JetBrainsMono-Variable.woff2',
+  src: '../../shared/assets/fonts/JetBrainsMono-Variable.woff2',
   variable: '--font-jetbrains-mono',
   display: 'swap',
   weight: '400 600',

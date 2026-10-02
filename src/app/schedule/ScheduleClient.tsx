@@ -2,14 +2,14 @@
 
 import { Fragment, useEffect, useState, type KeyboardEvent } from 'react';
 import { MapPin, Printer } from 'lucide-react';
-import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { useSiteConfig } from '@/components/SiteConfigProvider';
-import { trackDot } from '@/components/sections/TrackKey';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { FilterBar } from '@/components/ui/FilterBar';
-import type { ScheduleItem } from '@/lib/types';
-import { cn } from '@/lib/utils';
-import '@/styles/pages/schedule.css';
+import { TransitionLink as Link } from '@frontend/components/motion/TransitionLink';
+import { useSiteConfig } from '@frontend/components/SiteConfigProvider';
+import { trackDot } from '@frontend/components/sections/TrackKey';
+import { EmptyState } from '@frontend/components/ui/EmptyState';
+import { FilterBar } from '@frontend/components/ui/FilterBar';
+import type { ScheduleItem } from '@shared/lib/types';
+import { cn } from '@frontend/lib/utils';
+import '@frontend/styles/pages/schedule.css';
 
 /** Absolute instant for a session clock time, in Pakistan time (UTC+5, no DST). */
 function sessionInstant(eventStart: string, day: number, time: string) {

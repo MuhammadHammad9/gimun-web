@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
-import { GlobeArt } from '@/components/art/LineArt';
-import { LiveGlobe, type GlobeMarker } from '@/components/art/LiveGlobe';
-import { centroidOf } from '@/lib/geo/centroids';
-import { seatsOpen } from '@/components/sections/Placards';
-import { PageHero } from '@/components/ui/PageHero';
-import { getCommittees, getCopy, getSiteConfig } from '@/lib/content';
-import { fill } from '@/lib/copy';
-import { constructMetadata } from '@/lib/metadata';
-import { canRegister } from '@/lib/phase';
-import { getEventYear } from '@/lib/site-config';
+import { GlobeArt } from '@frontend/components/art/LineArt';
+import { LiveGlobe, type GlobeMarker } from '@frontend/components/art/LiveGlobe';
+import { centroidOf } from '@frontend/lib/geo/centroids';
+import { seatsOpen } from '@frontend/components/sections/Placards';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { getCommittees, getCopy, getSiteConfig } from '@backend/lib/content';
+import { fill } from '@shared/lib/copy';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { canRegister } from '@shared/lib/phase';
+import { getEventYear } from '@shared/lib/site-config';
 import { CommitteesClient } from './CommitteesClient';
 
 export async function generateMetadata(): Promise<Metadata> {

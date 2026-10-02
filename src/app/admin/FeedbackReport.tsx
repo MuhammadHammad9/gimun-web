@@ -1,5 +1,5 @@
-import { readAll } from '@/lib/server/admin/read-all';
-import { requirePermission } from '@/lib/server/admin/auth';
+import { readAll } from '@backend/server/admin/read-all';
+import { requirePermission } from '@backend/server/admin/auth';
 export async function FeedbackReport(){
  await requirePermission('feedback');const [responses,people]=await Promise.all([readAll('survey_responses','answers','participant_id'),readAll('participants','checked_in_at')]);const eligible=people.filter(p=>p.checked_in_at).length;
  const groups=new Map<string,{label:string;kind:string;values:unknown[]}>();

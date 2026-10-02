@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { PageHero } from '@/components/ui/PageHero';
-import { getCopy, getSiteConfig, getTeamMembers } from '@/lib/content';
-import { fill, nextSteps } from '@/lib/copy';
-import { constructMetadata } from '@/lib/metadata';
-import { getEventYear } from '@/lib/site-config';
+import { TransitionLink as Link } from '@frontend/components/motion/TransitionLink';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { getCopy, getSiteConfig, getTeamMembers } from '@backend/lib/content';
+import { fill, nextSteps } from '@shared/lib/copy';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { getEventYear } from '@shared/lib/site-config';
 import { TeamClient } from './TeamClient';
-import { NextSteps } from '@/components/story/NextSteps';
+import { NextSteps } from '@frontend/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({

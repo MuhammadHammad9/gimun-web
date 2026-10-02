@@ -2,8 +2,8 @@
 
 import { useRef, useState } from 'react';
 import { Search } from 'lucide-react';
-import { useFlip } from '@/components/motion/useFlip';
-import { FilterBar } from '@/components/ui/FilterBar';
+import { useFlip } from '@frontend/components/motion/useFlip';
+import { FilterBar } from '@frontend/components/ui/FilterBar';
 
 export interface MotionItem {
   name: string;

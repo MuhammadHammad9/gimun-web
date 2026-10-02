@@ -1,12 +1,12 @@
-import { getCopy, getSiteConfig } from '@/lib/content';
-import { fill } from '@/lib/copy';
+import { getCopy, getSiteConfig } from '@backend/lib/content';
+import { fill } from '@shared/lib/copy';
 import type { Metadata } from "next";
-import { constructMetadata } from "@/lib/metadata";
-import { getFAQ } from "@/lib/content";
+import { constructMetadata } from "@frontend/lib/metadata";
+import { getFAQ } from "@backend/lib/content";
 import { FaqClient } from "./FaqClient";
-import { TransitionLink as Link } from "@/components/motion/TransitionLink";
-import { getEventYear } from "@/lib/site-config";
-import { PageHero } from '@/components/ui/PageHero';
+import { TransitionLink as Link } from "@frontend/components/motion/TransitionLink";
+import { getEventYear } from "@shared/lib/site-config";
+import { PageHero } from '@frontend/components/ui/PageHero';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Frequently Asked Questions | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,

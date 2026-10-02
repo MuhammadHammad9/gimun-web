@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { constructMetadata } from '@/lib/metadata';
-import { getCopy, getResults, getSiteConfig } from '@/lib/content';
-import { fill } from '@/lib/copy';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { getCopy, getResults, getSiteConfig } from '@backend/lib/content';
+import { fill } from '@shared/lib/copy';
 import { ResultsClient } from './ResultsClient';
-import { formatEventDate, getEventYear } from '@/lib/site-config';
-import { PageHero } from '@/components/ui/PageHero';
-import { GavelArt } from '@/components/art/LineArt';
-import { LiveArt } from '@/components/art/LiveArt';
+import { formatEventDate, getEventYear } from '@shared/lib/site-config';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { GavelArt } from '@frontend/components/art/LineArt';
+import { LiveArt } from '@frontend/components/art/LiveArt';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Official Results & Awardees | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,

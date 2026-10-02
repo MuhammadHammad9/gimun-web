@@ -1,13 +1,13 @@
-import { getCopy, getSiteConfig } from '@/lib/content';
-import { fill, nextSteps } from '@/lib/copy';
+import { getCopy, getSiteConfig } from '@backend/lib/content';
+import { fill, nextSteps } from '@shared/lib/copy';
 import type { Metadata } from "next";
-import { constructMetadata } from "@/lib/metadata";
-import { getClarifications, getDocuments } from "@/lib/content";
+import { constructMetadata } from "@frontend/lib/metadata";
+import { getClarifications, getDocuments } from "@backend/lib/content";
 import { ClarificationsClient } from "./ClarificationsClient";
-import { TransitionLink } from "@/components/motion/TransitionLink";
-import { getEventYear } from "@/lib/site-config";
-import { PageHero } from '@/components/ui/PageHero';
-import { NextSteps } from '@/components/story/NextSteps';
+import { TransitionLink } from "@frontend/components/motion/TransitionLink";
+import { getEventYear } from "@shared/lib/site-config";
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { NextSteps } from '@frontend/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Official Clarifications Log & Rulings | GMC ${getEventYear(await getSiteConfig())}`,

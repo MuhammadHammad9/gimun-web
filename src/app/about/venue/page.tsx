@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
 import { Check } from 'lucide-react';
-import { RouteArt } from '@/components/art/LineArt';
-import { LiveArt } from '@/components/art/LiveArt';
-import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { ChapterHead } from '@/components/sections/Chapter';
-import { ChapterRail } from '@/components/story/ChapterRail';
-import { Steps } from '@/components/sections/Steps';
-import { MapFacade } from '@/components/ui/MapFacade';
-import { PageHero } from '@/components/ui/PageHero';
-import { getCopy, getDocuments, getSiteConfig } from '@/lib/content';
-import { chapterNumbers, fill, nextSteps } from '@/lib/copy';
-import { constructMetadata } from '@/lib/metadata';
-import { formatDateRange } from '@/lib/utils';
-import { NextSteps } from '@/components/story/NextSteps';
+import { RouteArt } from '@frontend/components/art/LineArt';
+import { LiveArt } from '@frontend/components/art/LiveArt';
+import { TransitionLink as Link } from '@frontend/components/motion/TransitionLink';
+import { ChapterHead } from '@frontend/components/sections/Chapter';
+import { ChapterRail } from '@frontend/components/story/ChapterRail';
+import { Steps } from '@frontend/components/sections/Steps';
+import { MapFacade } from '@frontend/components/ui/MapFacade';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { getCopy, getDocuments, getSiteConfig } from '@backend/lib/content';
+import { chapterNumbers, fill, nextSteps } from '@shared/lib/copy';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { formatDateRange } from '@frontend/lib/utils';
+import { NextSteps } from '@frontend/components/story/NextSteps';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({

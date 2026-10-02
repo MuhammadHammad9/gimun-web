@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { can, sections, type AdminUser } from '../../src/lib/server/admin/permissions';
+import { can, sections, type AdminUser } from '../../backend/server/admin/permissions';
 
 /**
  * The role rules live twice: can() in permissions.ts guards the app, and the
@@ -9,7 +9,7 @@ import { can, sections, type AdminUser } from '../../src/lib/server/admin/permis
  * without the other makes the admin offer edits the database then refuses
  * (or the reverse). This compares them for every role and section.
  */
-const dir = path.resolve('supabase/migrations');
+const dir = path.resolve('backend/supabase/migrations');
 const latest = readdirSync(dir)
   .filter((file) => file.endsWith('.sql'))
   .sort()

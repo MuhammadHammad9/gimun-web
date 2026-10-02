@@ -1,18 +1,18 @@
 'use client';
 
-import { useSiteConfig } from '@/components/SiteConfigProvider';
+import { useSiteConfig } from '@frontend/components/SiteConfigProvider';
 
 import React, { useState } from 'react';
-import { TrackBadge } from '@/components/ui/TrackBadge';
-import { SearchInput } from '@/components/ui/SearchInput';
-import { FilterBar } from '@/components/ui/FilterBar';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { TrackBadge } from '@frontend/components/ui/TrackBadge';
+import { SearchInput } from '@frontend/components/ui/SearchInput';
+import { FilterBar } from '@frontend/components/ui/FilterBar';
+import { ScrollReveal } from '@frontend/components/ui/ScrollReveal';
+import { EmptyState } from '@frontend/components/ui/EmptyState';
 import { ShieldCheck } from 'lucide-react';
-import type { ResultAward, Track } from '@/lib/types';
-import { getEventYear } from '@/lib/site-config';
-import { HelpCallout } from '@/components/ui/HelpCallout';
-import { fill, type Copy } from '@/lib/copy';
+import type { ResultAward, Track } from '@shared/lib/types';
+import { getEventYear } from '@shared/lib/site-config';
+import { HelpCallout } from '@frontend/components/ui/HelpCallout';
+import { fill, type Copy } from '@shared/lib/copy';
 
 interface ResultsClientProps {
   initialResults: ResultAward[];

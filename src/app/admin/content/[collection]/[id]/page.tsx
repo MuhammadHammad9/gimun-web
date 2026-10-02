@@ -1,19 +1,19 @@
-import { readAll } from '@/lib/server/admin/read-all';
-import { getSiteConfig, getDocuments } from '@/lib/content';
+import { readAll } from '@backend/server/admin/read-all';
+import { getSiteConfig, getDocuments } from '@backend/lib/content';
 import { randomUUID } from 'node:crypto';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
-import { isCollection, registry, type ContentEntry } from '@/lib/content/registry';
-import { requirePermission } from '@/lib/server/admin/auth';
-import { can } from '@/lib/server/admin/permissions';
-import { database } from '@/lib/server/supabase';
+import { isCollection, registry, type ContentEntry } from '@shared/lib/content/registry';
+import { requirePermission } from '@backend/server/admin/auth';
+import { can } from '@backend/server/admin/permissions';
+import { database } from '@backend/server/supabase';
 import { AdminNav } from '../../../AdminNav';
 import { ContentEditor } from '../../../ContentEditor';
 import type { Schema } from '../../../SchemaForm';
 import { toSerializable } from '../../../serializable';
 import { AdminPageHeader } from '../../../AdminPageHeader';
 import { COLLECTION_INFO, entryTitle } from '../../../collection-info';
-import { previewPath } from '@/lib/content/preview';
+import { previewPath } from '@backend/lib/content/preview';
 export default async function EntryPage({ params }: { params: Promise<{ collection: string; id: string }> }) {
   const { collection,id } = await params; if (!isCollection(collection)) notFound();
   const user = await requirePermission(collection);

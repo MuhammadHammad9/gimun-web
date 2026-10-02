@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { constructMetadata } from '@/lib/metadata';
-import { getCopy, getCommittees, getProblemCategories, getSiteConfig } from '@/lib/content';
-import { fill } from '@/lib/copy';
-import { TransitionLink as Link } from '@/components/motion/TransitionLink';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { getCopy, getCommittees, getProblemCategories, getSiteConfig } from '@backend/lib/content';
+import { fill } from '@shared/lib/copy';
+import { TransitionLink as Link } from '@frontend/components/motion/TransitionLink';
 import { RegisterPageClient } from './RegisterPageClient';
-import { PageHero } from '@/components/ui/PageHero';
-import { getEventYear } from '@/lib/site-config';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { getEventYear } from '@shared/lib/site-config';
 
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Official Registration Portal | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,

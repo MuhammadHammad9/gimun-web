@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
-import { GlobeArt } from '@/components/art/LineArt';
-import { LiveArt } from '@/components/art/LiveArt';
-import { ChapterHead } from '@/components/sections/Chapter';
-import { ChapterRail } from '@/components/story/ChapterRail';
-import { Steps } from '@/components/sections/Steps';
-import { HelpCallout } from '@/components/ui/HelpCallout';
-import { PageHero } from '@/components/ui/PageHero';
-import { getCopy, getDocuments, getSiteConfig } from '@/lib/content';
-import { chapterNumbers, fill } from '@/lib/copy';
-import { constructMetadata } from '@/lib/metadata';
-import { formatEventDate, getEventYear } from '@/lib/site-config';
+import { GlobeArt } from '@frontend/components/art/LineArt';
+import { LiveArt } from '@frontend/components/art/LiveArt';
+import { ChapterHead } from '@frontend/components/sections/Chapter';
+import { ChapterRail } from '@frontend/components/story/ChapterRail';
+import { Steps } from '@frontend/components/sections/Steps';
+import { HelpCallout } from '@frontend/components/ui/HelpCallout';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { getCopy, getDocuments, getSiteConfig } from '@backend/lib/content';
+import { chapterNumbers, fill } from '@shared/lib/copy';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { formatEventDate, getEventYear } from '@shared/lib/site-config';
 import { GimunRulesClient } from './GimunRulesClient';
 
 export async function generateMetadata(): Promise<Metadata> {

@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { requireAdmin } from '@/lib/server/admin/auth';
-import { can } from '@/lib/server/admin/permissions';
-import { database } from '@/lib/server/supabase';
-import { contentHealth } from '@/lib/content/repository';
-import { getSiteConfig,getSchedule,getCommittees,getDocuments } from '@/lib/content';
-import { eventPhase,canRegister } from '@/lib/phase';
+import { requireAdmin } from '@backend/server/admin/auth';
+import { can } from '@backend/server/admin/permissions';
+import { database } from '@backend/server/supabase';
+import { contentHealth } from '@backend/lib/content/repository';
+import { getSiteConfig,getSchedule,getCommittees,getDocuments } from '@backend/lib/content';
+import { eventPhase,canRegister } from '@shared/lib/phase';
 import { AdminNav } from './AdminNav';
 import { BookOpenText, CalendarDays, ChevronRight, Image, Images, Megaphone, Settings2, Type, UserRound } from 'lucide-react';
 

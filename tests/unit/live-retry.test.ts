@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FIRST_RETRY_MS, MAX_RETRY_MS, markUnreachable, waitingOn } from '../../src/lib/live-retry';
+import { FIRST_RETRY_MS, MAX_RETRY_MS, markUnreachable, waitingOn } from '../../frontend/lib/live-retry';
 
 const R2 = 'b'.repeat(32);
 const R3 = 'c'.repeat(32);

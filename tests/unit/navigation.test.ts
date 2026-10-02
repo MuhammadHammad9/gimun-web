@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultNavigation, navigationTree, publishedFooterColumns, type NavigationItem } from '@/lib/navigation';
+import { defaultNavigation, navigationTree, publishedFooterColumns, type NavigationItem } from '@shared/lib/navigation';
 
 describe('footer columns', () => {
   const columns = publishedFooterColumns(defaultNavigation);

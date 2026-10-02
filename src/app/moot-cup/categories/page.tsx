@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
-import { ScalesArt } from '@/components/art/LineArt';
-import { LiveArt } from '@/components/art/LiveArt';
-import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { ChapterHead } from '@/components/sections/Chapter';
-import { HelpCallout } from '@/components/ui/HelpCallout';
-import { PageHero } from '@/components/ui/PageHero';
-import { getCopy, getDocuments, getMootCategories, getSiteConfig } from '@/lib/content';
-import { fill } from '@/lib/copy';
-import { constructMetadata } from '@/lib/metadata';
-import { canRegister } from '@/lib/phase';
-import { formatEventDate, formatPublishedDate, getEventYear } from '@/lib/site-config';
+import { ScalesArt } from '@frontend/components/art/LineArt';
+import { LiveArt } from '@frontend/components/art/LiveArt';
+import { TransitionLink as Link } from '@frontend/components/motion/TransitionLink';
+import { ChapterHead } from '@frontend/components/sections/Chapter';
+import { HelpCallout } from '@frontend/components/ui/HelpCallout';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { getCopy, getDocuments, getMootCategories, getSiteConfig } from '@backend/lib/content';
+import { fill } from '@shared/lib/copy';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { canRegister } from '@shared/lib/phase';
+import { formatEventDate, formatPublishedDate, getEventYear } from '@shared/lib/site-config';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({

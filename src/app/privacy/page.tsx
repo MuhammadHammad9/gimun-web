@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { PageHero } from '@/components/ui/PageHero';
-import { getCopy, getSiteConfig } from '@/lib/content';
-import { fill } from '@/lib/copy';
-import { constructMetadata } from '@/lib/metadata';
-import { getEventYear } from '@/lib/site-config';
+import { TransitionLink as Link } from '@frontend/components/motion/TransitionLink';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { getCopy, getSiteConfig } from '@backend/lib/content';
+import { fill } from '@shared/lib/copy';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { getEventYear } from '@shared/lib/site-config';
 import { AnalyticsChoiceButton } from './AnalyticsChoiceButton';
-import '@/styles/pages/privacy.css';
+import '@frontend/styles/pages/privacy.css';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({

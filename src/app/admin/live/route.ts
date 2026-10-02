@@ -1,5 +1,5 @@
-import { requireAdmin } from '@/lib/server/admin/auth';
-import { adminRevision } from '@/lib/server/live';
+import { requireAdmin } from '@backend/server/admin/auth';
+import { adminRevision } from '@backend/server/live';
 export const dynamic='force-dynamic';
 const headers={'Cache-Control':'private, no-store'};
 /** Polled by every open admin tab. Failures answer JSON: the poller cannot follow a redirect to the login page. */

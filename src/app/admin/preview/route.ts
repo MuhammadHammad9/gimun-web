@@ -1,10 +1,10 @@
 import { draftMode } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { isCollection } from '@/lib/content/registry';
-import { previewPath } from '@/lib/content/preview';
-import { routePermission } from '@/lib/server/admin/auth';
-import { can } from '@/lib/server/admin/permissions';
-import { database } from '@/lib/server/supabase';
+import { isCollection } from '@shared/lib/content/registry';
+import { previewPath } from '@backend/lib/content/preview';
+import { routePermission } from '@backend/server/admin/auth';
+import { can } from '@backend/server/admin/permissions';
+import { database } from '@backend/server/supabase';
 
 /**
  * "Preview on site": turns on draft mode for this editor and opens the public

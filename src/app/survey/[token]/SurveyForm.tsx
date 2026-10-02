@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@frontend/components/ui/Button';
 import { submitSurvey } from './actions';
 
 const control =

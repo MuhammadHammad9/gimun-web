@@ -1,18 +1,18 @@
-import { getCopy, getSiteConfig, getDocuments } from '@/lib/content';
-import { chapterNumbers, fill, nextSteps } from '@/lib/copy';
+import { getCopy, getSiteConfig, getDocuments } from '@backend/lib/content';
+import { chapterNumbers, fill, nextSteps } from '@shared/lib/copy';
 import type { Metadata } from 'next';
-import { constructMetadata } from '@/lib/metadata';
+import { constructMetadata } from '@frontend/lib/metadata';
 import { MootRulesClient } from './MootRulesClient';
-import { formatEventDate, getEventYear } from '@/lib/site-config';
-import { PageHero } from '@/components/ui/PageHero';
-import { FactList } from '@/components/ui/Editorial';
-import { ChapterHead } from '@/components/sections/Chapter';
-import { ChapterRail } from '@/components/story/ChapterRail';
-import { Steps } from '@/components/sections/Steps';
-import { BracketArt, ScalesArt } from '@/components/art/LineArt';
-import { LiveArt } from '@/components/art/LiveArt';
-import { TransitionLink } from '@/components/motion/TransitionLink';
-import { NextSteps } from '@/components/story/NextSteps';
+import { formatEventDate, getEventYear } from '@shared/lib/site-config';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { FactList } from '@frontend/components/ui/Editorial';
+import { ChapterHead } from '@frontend/components/sections/Chapter';
+import { ChapterRail } from '@frontend/components/story/ChapterRail';
+import { Steps } from '@frontend/components/sections/Steps';
+import { BracketArt, ScalesArt } from '@frontend/components/art/LineArt';
+import { LiveArt } from '@frontend/components/art/LiveArt';
+import { TransitionLink } from '@frontend/components/motion/TransitionLink';
+import { NextSteps } from '@frontend/components/story/NextSteps';
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Rules & Memorial Guidelines | GMC ${getEventYear(await getSiteConfig())}`,
   path: '/moot-cup/rules',

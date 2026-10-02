@@ -3,9 +3,9 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { createClient } from '@supabase/supabase-js';
-import { authClient, requireAdmin } from '@/lib/server/admin/auth';
-import { database } from '@/lib/server/supabase';
-import { clientIp, enforceRateLimit, rateLimitSubject } from '@/lib/server/submissions';
+import { authClient, requireAdmin } from '@backend/server/admin/auth';
+import { database } from '@backend/server/supabase';
+import { clientIp, enforceRateLimit, rateLimitSubject } from '@backend/server/submissions';
 
 /** Sign-in and password checks for one account: per account and network, plus an account-wide ceiling. */
 async function accountThrottled(email: string, ip: string) {

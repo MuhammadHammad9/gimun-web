@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import seed from '../../content/site.json';
-import { deadlineReminders, reminderTitle } from '@/lib/notices';
-import type { SiteConfig } from '@/lib/types';
+import seed from '../../shared/content/site.json';
+import { deadlineReminders, reminderTitle } from '@frontend/lib/notices';
+import type { SiteConfig } from '@shared/lib/types';
 
 // The seed: event Mar 18-21, 2027; GIMUN closes Feb 15, GMC Mar 5; both open.
 const site = seed as unknown as SiteConfig;

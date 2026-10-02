@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
-import { database } from '@/lib/server/supabase';
+import { database } from '@backend/server/supabase';
 import { SurveyForm } from './SurveyForm';
-import '@/styles/pages/utility.css';
+import '@frontend/styles/pages/utility.css';
 export const dynamic='force-dynamic';
 export const metadata={title:{absolute:'Event feedback | GIMUN & GMC'},robots:{index:false,follow:false},alternates:{canonical:null}};
 export default async function SurveyPage({params}:{params:Promise<{token:string}>}){const {token}=await params;if(!z.uuid().safeParse(token).success)notFound();const db=database();const {data:p,error:lookupError}=await db.from('participants').select('id').eq('survey_token',token).maybeSingle();

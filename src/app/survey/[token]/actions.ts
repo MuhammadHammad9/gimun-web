@@ -1,8 +1,8 @@
 'use server';
 import { z } from 'zod';
 import { headers } from 'next/headers';
-import { database } from '@/lib/server/supabase';
-import { enforceRateLimit,clientIp } from '@/lib/server/submissions';
+import { database } from '@backend/server/supabase';
+import { enforceRateLimit,clientIp } from '@backend/server/submissions';
 export async function submitSurvey(token:string,answers:Record<string,unknown>){
   try{return await saveSurvey(token,answers);}
   catch{console.error('[Survey] Submission failed');return {error:'Could not save right now. Please try again in a moment.'};}

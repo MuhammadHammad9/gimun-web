@@ -6,7 +6,7 @@ import {
   Archive, Award, BookOpenText, CalendarDays, ClipboardCheck, ExternalLink, FileText, Gavel, Globe2, HelpCircle, Image, Images, Inbox,
   LayoutDashboard, LogOut, Mail, Map, Megaphone, Menu, MessageSquareQuote, ScrollText, Settings2, ShieldCheck, Sparkles, Type, UserRound, Users, X, type LucideIcon,
 } from 'lucide-react';
-import { collections } from '@/lib/content/registry';
+import { collections } from '@shared/lib/content/registry';
 import { COLLECTION_INFO, CONTENT_GROUPS } from './collection-info';
 import { logout } from './auth-actions';
 

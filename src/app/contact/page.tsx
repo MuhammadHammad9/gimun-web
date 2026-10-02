@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { ContactFormFromUrl } from '@/components/forms/ContactForm';
-import { CopyButton } from '@/components/ui/CopyButton';
-import { PageHero } from '@/components/ui/PageHero';
-import { getCopy, getSiteConfig } from '@/lib/content';
-import { fill } from '@/lib/copy';
-import { constructMetadata } from '@/lib/metadata';
-import { getEventYear } from '@/lib/site-config';
+import { TransitionLink as Link } from '@frontend/components/motion/TransitionLink';
+import { ContactFormFromUrl } from '@frontend/components/forms/ContactForm';
+import { CopyButton } from '@frontend/components/ui/CopyButton';
+import { PageHero } from '@frontend/components/ui/PageHero';
+import { getCopy, getSiteConfig } from '@backend/lib/content';
+import { fill } from '@shared/lib/copy';
+import { constructMetadata } from '@frontend/lib/metadata';
+import { getEventYear } from '@shared/lib/site-config';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({

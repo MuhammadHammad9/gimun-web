@@ -1,7 +1,7 @@
 'use server';
 import { z } from 'zod';
-import { requirePermission } from '@/lib/server/admin/auth';
-import { database } from '@/lib/server/supabase';
+import { requirePermission } from '@backend/server/admin/auth';
+import { database } from '@backend/server/supabase';
 export async function retentionCleanup(input:unknown){
   const owner=await requirePermission('close-out',true);
   const p=z.object({before:z.iso.datetime({offset:true}),policy:z.string().min(10).max(2000),legal_basis:z.string().min(5).max(2000),privacy_contact:z.string().min(5).max(500),execute:z.boolean(),expected:z.number().int().min(0),confirmation:z.string(),token:z.string().default('')}).parse(input);

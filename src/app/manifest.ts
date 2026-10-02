@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getSiteConfig } from '@/lib/content';
+import { getSiteConfig } from '@backend/lib/content';
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const site = await getSiteConfig();

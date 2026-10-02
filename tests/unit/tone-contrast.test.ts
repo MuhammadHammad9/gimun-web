@@ -8,7 +8,7 @@ import { resolve } from 'node:path';
  * stylesheets themselves, so a palette edit cannot drift past this check.
  */
 const globals = readFileSync(resolve(process.cwd(), 'src/app/globals.css'), 'utf8');
-const theme = readFileSync(resolve(process.cwd(), 'src/styles/theme.css'), 'utf8');
+const theme = readFileSync(resolve(process.cwd(), 'frontend/styles/theme.css'), 'utf8');
 
 /** The rule whose full selector is `selector` (not a member of a longer list). */
 function block(css: string, selector: string): string {

@@ -1,9 +1,9 @@
 import { beforeEach,afterEach,it,expect,vi } from 'vitest';
 vi.mock('next/cache',()=>({unstable_cache:(fn:unknown)=>fn}));
-vi.mock('@/lib/content',()=>({getSiteConfig:async()=>({eventDates:{start:'2028-01-01',end:'2028-01-04'},eventNames:{combined:'Test'},contactEmails:{general:'a@example.test'},hostInstitution:'Test University',venue:'Test'})}));
+vi.mock('@backend/lib/content',()=>({getSiteConfig:async()=>({eventDates:{start:'2028-01-01',end:'2028-01-04'},eventNames:{combined:'Test'},contactEmails:{general:'a@example.test'},hostInstitution:'Test University',venue:'Test'})}));
 const rpc=vi.fn(),update=vi.fn();
-vi.mock('@/lib/server/supabase',()=>({database:()=>({rpc,from:()=>({update:()=>({eq:()=>({eq:update})})})})}));
-import { createRegistration,enforceRateLimit,dispatchEmailOutbox } from '../../src/lib/server/submissions';
+vi.mock('@backend/server/supabase',()=>({database:()=>({rpc,from:()=>({update:()=>({eq:()=>({eq:update})})})})}));
+import { createRegistration,enforceRateLimit,dispatchEmailOutbox } from '../../backend/server/submissions';
 beforeEach(()=>{vi.stubEnv('NODE_ENV','test');vi.stubEnv('SUBMISSIONS_BACKEND','memory');vi.stubEnv('UPSTASH_REDIS_REST_URL','');vi.stubEnv('UPSTASH_REDIS_REST_TOKEN','');rpc.mockReset();update.mockReset();});
 afterEach(()=>{vi.unstubAllEnvs();vi.unstubAllGlobals();});
 it.each([['concurrent_idempotent_requests',1,0],['invalid_idempotent_request',0,1]])('handles Resend conflict %s',async(name,retried,failed)=>{

@@ -1,17 +1,17 @@
 "use client";
 
-import { useSiteConfig } from '@/components/SiteConfigProvider';
+import { useSiteConfig } from '@frontend/components/SiteConfigProvider';
 
 import React, { useState } from "react";
-import { TrackBadge } from "@/components/ui/TrackBadge";
-import { SearchInput } from "@/components/ui/SearchInput";
-import { FilterBar } from "@/components/ui/FilterBar";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { TrackBadge } from "@frontend/components/ui/TrackBadge";
+import { SearchInput } from "@frontend/components/ui/SearchInput";
+import { FilterBar } from "@frontend/components/ui/FilterBar";
+import { EmptyState } from "@frontend/components/ui/EmptyState";
 import { Download } from "lucide-react";
-import type { Document } from "@/lib/types";
-import { getEventYear } from "@/lib/site-config";
-import { HelpCallout } from '@/components/ui/HelpCallout';
-import '@/styles/pages/resources.css';
+import type { Document } from "@shared/lib/types";
+import { getEventYear } from "@shared/lib/site-config";
+import { HelpCallout } from '@frontend/components/ui/HelpCallout';
+import '@frontend/styles/pages/resources.css';
 
 interface ResourcesClientProps {
   initialDocuments: Document[];
