@@ -32,7 +32,7 @@ Implemented 2026-10-01 in four phases. Each phase was verified with typecheck, l
 | L5 | ✅ | `/api/health` answers `{ok}` publicly; details need `Authorization: Bearer $CRON_SECRET`. |
 | L6 | ✅ | Covered by the global purge throttle (M1). |
 | L7 | ✅ · ⚠️ **apply migration 0014** | `0014_definer_search_path.sql` pins `search_path = public, pg_temp` on every SECURITY DEFINER function; the migration test asserts it. |
-| L8 | ✅ Partly | `.lhserver.log` and the dead `data/submission-counter.json` are untracked. The PRD documents and skill zips are left for you to decide. |
+| L8 | ✅ Fixed | `.lhserver.log`, the dead `data/submission-counter.json`, the PRD documents and the `Claude Skills/` zips are untracked and ignored (still in git history). |
 | L9 | ✅ | Actions are pinned to commit SHAs; Dependabot already updates them. |
 | L10 | Open | Dev-only; waits on an `@lhci/cli` release. |
 | L11 | ✅ | `vitest.config.mts`. |

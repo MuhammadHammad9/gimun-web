@@ -77,3 +77,7 @@ scratch/
 
 # Legacy file-based submission counter (submissions live in Supabase)
 data/submission-counter.json
+
+# Planning material kept locally, not in the repository
+/Claude Skills/
+/GIMUN_PRD_extracted.txt
