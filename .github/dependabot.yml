@@ -5,6 +5,17 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Majors the toolchain cannot take yet. Remove an entry once
+    # eslint-config-next supports it (ESLint 10 crashes eslint-plugin-react,
+    # typescript-eslint rejects TS 7). @types/node follows the Node 24
+    # runtime (CI, Vercel); newer majors describe APIs the runtime lacks.
+    ignore:
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       minor-and-patch:
         update-types: [minor, patch]
