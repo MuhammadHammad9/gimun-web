@@ -4,11 +4,17 @@ import React, { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import type { Committee, ProblemCategory, SiteConfig } from '@/lib/types';
+import dynamic from 'next/dynamic';
 import { TrackChooser } from '@/components/forms/TrackChooser';
-import { GimunRegisterForm } from '@/components/forms/GimunRegisterForm';
-import { MootRegisterForm } from '@/components/forms/MootRegisterForm';
 import { ClosedRegistrationBanner } from '@/components/forms/ClosedRegistrationBanner';
-import { RegistrationSuccess } from '@/components/forms/RegistrationSuccess';
+
+// The page opens on the track chooser, so the forms (and the receipt with
+// its QR code library) load only once a track is chosen. Keeping them out of
+// the first load lets the page become usable sooner on slow phones.
+const formLoading = () => <p className="mx-auto max-w-3xl py-10 text-center text-sm text-text-3">Loading the application form…</p>;
+const GimunRegisterForm = dynamic(() => import('@/components/forms/GimunRegisterForm').then((m) => m.GimunRegisterForm), { loading: formLoading });
+const MootRegisterForm = dynamic(() => import('@/components/forms/MootRegisterForm').then((m) => m.MootRegisterForm), { loading: formLoading });
+const RegistrationSuccess = dynamic(() => import('@/components/forms/RegistrationSuccess').then((m) => m.RegistrationSuccess));
 import { canRegister } from '@/lib/phase';
 import { useRenderedAt } from '@/components/SiteConfigProvider';
 

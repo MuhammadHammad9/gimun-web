@@ -171,11 +171,20 @@
   background: var(--color-elevated);
   color: var(--color-text);
   box-shadow: 0 0.75rem 1.75rem -0.75rem rgb(11 2 1 / 0.6);
-  visibility: hidden;
+  /* Hidden and inert until FloatingTop marks it shown (FooterBits.tsx).
+     Only opacity and transform move, so the browser composites the fade. */
   opacity: 0;
+  transform: translateY(0.75rem);
   transition:
+    opacity 0.3s var(--ease-out-expo),
+    transform 0.3s var(--ease-out-expo),
     background-color 0.2s var(--ease-out-expo),
     scale 0.2s var(--ease-out-expo);
+}
+
+.float-top[data-shown='true'] {
+  opacity: 1;
+  transform: none;
 }
 
 .float-top > svg:not(.float-top__ring) {
@@ -209,52 +218,12 @@
   stroke-dashoffset: 1;
 }
 
-@keyframes float-top-show {
-  0%,
-  6% {
-    visibility: hidden;
-    opacity: 0;
-    transform: translateY(0.75rem);
-  }
-  10%,
-  86% {
-    visibility: visible;
-    opacity: 1;
-    transform: none;
-  }
-  92%,
-  100% {
-    visibility: hidden;
-    opacity: 0;
-    transform: translateY(0.75rem);
-  }
-}
-
-@keyframes float-top-fill {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@supports (animation-timeline: scroll()) {
-  .float-top {
-    animation: float-top-show linear both;
-    animation-timeline: scroll(root block);
-  }
-
-  .float-top__progress {
-    animation: float-top-fill linear both;
-    animation-timeline: scroll(root block);
-  }
-}
-
-/* Without motion the button simply stays in its corner. */
+/* Without motion the button simply stays in its corner (FloatingTop keeps it shown). */
 @media (prefers-reduced-motion: reduce) {
   .float-top {
-    visibility: visible;
     opacity: 1;
+    transform: none;
     transition: none;
-    animation: none !important;
   }
 }
 
