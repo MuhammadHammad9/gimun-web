@@ -5,15 +5,23 @@ import { z } from 'zod';
 import { createClient } from '@supabase/supabase-js';
 import { authClient, requireAdmin } from '@/lib/server/admin/auth';
 import { database } from '@/lib/server/supabase';
-import { clientIp, enforceRateLimit } from '@/lib/server/submissions';
+import { clientIp, enforceRateLimit, rateLimitSubject } from '@/lib/server/submissions';
+
+/** Sign-in and password checks for one account: per account and network, plus an account-wide ceiling. */
+async function accountThrottled(email: string, ip: string) {
+  const account = email.toLowerCase();
+  if (!(await enforceRateLimit('admin-login-account', `${account}|${rateLimitSubject(ip)}`)).allowed) return true;
+  if ((await enforceRateLimit('admin-login-account-global', account)).allowed) return false;
+  console.warn('[Auth] Account-wide sign-in ceiling reached; sign-in for this account is paused for up to an hour.');
+  return true;
+}
 export async function login(_previous: string, form: FormData) {
   const input = z.object({ email: z.email(), password: z.string().min(1).max(200) }).safeParse(Object.fromEntries(form));
   if (!input.success) return 'Enter an email address and password.';
   try {
-    const request = new Request('http://localhost', { headers: await headers() });
-    if (!(await enforceRateLimit('admin-login', clientIp(request))).allowed) return 'Too many attempts. Please try later.';
-    // Per account too, so guessing one password from many addresses is still slow.
-    if (!(await enforceRateLimit('admin-login-account', input.data.email.toLowerCase())).allowed) return 'Too many attempts. Please try later.';
+    const ip = clientIp(new Request('http://localhost', { headers: await headers() }));
+    if (!(await enforceRateLimit('admin-login', ip)).allowed) return 'Too many attempts. Please try later.';
+    if (await accountThrottled(input.data.email, ip)) return 'Too many attempts. Please try later.';
     const { error } = await (await authClient()).auth.signInWithPassword(input.data);
     if (error) return 'Unable to sign in. Check your credentials.';
   } catch { return 'Sign-in is unavailable. Check the server configuration.'; }
@@ -37,7 +45,7 @@ export async function changePassword(_previous: string, form: FormData) {
   if (!url || !key) return 'Password changes are unavailable. Check the server configuration.';
   // Same per-account limit as sign-in, so a stolen session cannot be used to
   // guess the password through this form.
-  if (!(await enforceRateLimit('admin-login-account', user.email.toLowerCase())).allowed) return 'Too many attempts. Please try later.';
+  if (await accountThrottled(user.email, clientIp(new Request('http://localhost', { headers: await headers() })))) return 'Too many attempts. Please try later.';
   const verifier = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const check = await verifier.auth.signInWithPassword({ email: user.email, password: current.data });
   if (check.error) return 'The current password is incorrect.';

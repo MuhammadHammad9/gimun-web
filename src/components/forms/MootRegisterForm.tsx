@@ -20,6 +20,7 @@ import { PrivacyStatement } from './PrivacyStatement';
 import { getEventYear } from '@/lib/site-config';
 import { SubmitButton } from './SubmitButton';
 import { newSubmissionKey, readSubmissionResponse } from '@/lib/uuid';
+import { TURNSTILE_PENDING_MESSAGE, useTurnstile } from './Turnstile';
 
 interface MootRegisterFormProps {
   endpoint?: string;
@@ -68,6 +69,8 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
   const [serverError, setServerError] = useState<string | null>(null);
   const [honeypot, setHoneypot] = useState('');
   const formLoadedAt = useRef(0);
+  // Staff walk-ins post to their own signed-in endpoint and skip the human check.
+  const turnstile = useTurnstile(endpoint === '/api/register');
 
   useEffect(() => {
     formLoadedAt.current = Date.now();
@@ -147,6 +150,10 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
     }
 
     setErrors({});
+    if (turnstile.pending()) {
+      setServerError(TURNSTILE_PENDING_MESSAGE);
+      return;
+    }
     setStatus('submitting');
 
     try {
@@ -159,6 +166,7 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
         // Fill time on the visitor's own clock; the server never compares clocks.
         _elapsed: Date.now() - formLoadedAt.current,
         submission_key: submissionKey.current ?? (submissionKey.current = newSubmissionKey()),
+        turnstile_token: turnstile.token(),
       };
 
       const res = await fetch(endpoint, {
@@ -168,6 +176,8 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
       });
 
       const data = await readSubmissionResponse<SubmissionResponse>(res);
+      // Tokens are single-use; get a fresh one for any further attempt.
+      turnstile.reset();
 
       if (!res.ok || !data.success) {
         setStatus('error');
@@ -196,6 +206,12 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
         timestamp: data.receipt?.submittedAt,
         checkinToken: data.checkinToken,
       };
+      // A reference ending in zeros is the anti-bot decoy: nothing was stored.
+      if (data.referenceId && /-0+$/.test(data.referenceId)) {
+        setStatus('error');
+        setServerError('Your application could not be confirmed. Reload the page, check your details and submit again, or email the Secretariat.');
+        return;
+      }
       if (!data.referenceId || !/^REG-MOOT-\d{4}-\d{4,}$/.test(data.referenceId)) {
         setStatus('error');
         setServerError('The submission was stored but did not return a valid reference number. Please contact the Secretariat before submitting again.');
@@ -204,6 +220,7 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
 
       onSuccess(data.referenceId, `${formData.teamName} (${formData.institution})`, details);
     } catch {
+      turnstile.reset();
       console.error('Registration request failed.');
       setStatus('error');
       setServerError('Unable to reach registration server. Please check your connection.');
@@ -583,6 +600,7 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
 
       {/* Submit Action Block */}
       <div className="space-y-4 pt-3 border-t border-line">
+        {turnstile.widget}
         <FormErrorSummary errors={errors} />
         <SubmitButton
           pending={status === 'submitting'}

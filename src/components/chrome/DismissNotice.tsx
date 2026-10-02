@@ -3,7 +3,7 @@
 import { X } from 'lucide-react';
 import { useEffect } from 'react';
 
-/** Hides the notice now and on later visits (see noticeBootScript). */
+/** Hides the notice now and on later visits (see HEAD_BOOT_SCRIPT in src/lib/boot-script.ts). */
 export function DismissNotice({ storageKey }: { storageKey: string }) {
   useEffect(() => {
     try {

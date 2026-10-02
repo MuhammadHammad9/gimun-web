@@ -138,5 +138,12 @@ try {
   assert.equal((await db.query('select admin_can($1,$2,true) as ok',[copyEditor,'copy'])).rows[0].ok,true);
   assert.equal((await db.query('select admin_can($1,$2,true) as ok',[copyEditor,'registrations'])).rows[0].ok,false);
   console.log('PASS: page copy collection and editor permission');
+  // Every SECURITY DEFINER function pins its lookup path with pg_temp last (0014).
+  const definers=(await db.query("select p.proname, p.proconfig from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.prosecdef")).rows;
+  assert.ok(definers.length>=2,'save_content and admin_operation are security definer');
+  for(const f of definers)assert.ok((f.proconfig||[]).some(c=>/^search_path=public, ?pg_temp$/.test(c)),`${f.proname} must set search_path = public, pg_temp`);
+  // The guarded entry points still work with the new setting.
+  assert.equal((await db.query('select admin_can($1,$2,true) as ok',[copyEditor,'copy'])).rows[0].ok,true);
+  console.log('PASS: security definer functions pin search_path with pg_temp last');
   console.log('PASS: migrations, private grants, idempotency, references, roster, revisions, attendance, certificates, allocation conflicts/capacity, guarded reset, retention dry-run/anonymization, database permissions and correction operations');
 } finally { await db.close(); }

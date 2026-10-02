@@ -10,6 +10,7 @@ import { validateEmail } from '@/lib/validation';
 import { getEventYear } from '@/lib/site-config';
 import { SubmitButton } from './SubmitButton';
 import { newSubmissionKey, readSubmissionResponse } from '@/lib/uuid';
+import { TURNSTILE_PENDING_MESSAGE, useTurnstile } from './Turnstile';
 
 export function ClarificationForm() {
   const eventYear = getEventYear(useSiteConfig());
@@ -22,6 +23,7 @@ export function ClarificationForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const formLoadedAt = useRef(0);
   const submissionKey = useRef<string | null>(null);
+  const turnstile = useTurnstile();
 
   useEffect(() => {
     formLoadedAt.current = Date.now();
@@ -41,6 +43,11 @@ export function ClarificationForm() {
       return;
     }
 
+    if (turnstile.pending()) {
+      setServerError(TURNSTILE_PENDING_MESSAGE);
+      setStatus('error');
+      return;
+    }
     setStatus('submitting');
     setServerError(null);
 
@@ -58,10 +65,12 @@ export function ClarificationForm() {
           _hp: honeypot,
           _ts: formLoadedAt.current,
           _elapsed: Date.now() - formLoadedAt.current,
+          turnstile_token: turnstile.token(),
         }),
       });
 
       const data = await readSubmissionResponse<{ success?: boolean; message?: string }>(res);
+      turnstile.reset();
       if (res.ok && data.success) {
         setStatus('success');
       } else {
@@ -69,6 +78,7 @@ export function ClarificationForm() {
         setServerError(data.message || 'Failed to submit clarification query.');
       }
     } catch {
+      turnstile.reset();
       setStatus('error');
       setServerError('Network error. Please verify your connection and try again.');
     }
@@ -176,6 +186,7 @@ export function ClarificationForm() {
         />
       </FormField>
 
+      {turnstile.widget}
       <SubmitButton
         pending={status === 'submitting'}
         className="btn-shimmer-gold w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-on-accent"

@@ -57,6 +57,20 @@ function publicFormInProgress() {
   return false;
 }
 
+/**
+ * The poll's abort signal: the component's own, or a 4 s timeout. Chrome
+ * before 116 and Safari before 17.4 lack AbortSignal.any, and calling it threw
+ * on every poll, so live updates silently never ran there.
+ */
+function pollSignal(parent: AbortSignal, ms: number): AbortSignal {
+  if (typeof AbortSignal.any === 'function' && typeof AbortSignal.timeout === 'function') return AbortSignal.any([parent, AbortSignal.timeout(ms)]);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  parent.addEventListener('abort', () => controller.abort(), { once: true });
+  controller.signal.addEventListener('abort', () => clearTimeout(timer), { once: true });
+  return controller.signal;
+}
+
 /** Text of every element that marks itself as live content, by key. */
 function snapshot() {
   const map = new Map<string, string>();
@@ -81,6 +95,10 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
   const target = useRef<string | null>(null);
   const rendered = useRef(initial);
   const retries = useRef(0);
+  // A revision that refreshing could not bring this page to (its cached copy
+  // did not regenerate). Ignored until something newer arrives, so a stuck
+  // page never refreshes itself every few seconds for an hour.
+  const unreachable = useRef<string | null>(null);
 
   const sync = async () => {
     const live = await syncLiveContent(baseline.current).catch(() => null);
@@ -99,6 +117,7 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
     baseline.current = initial;
     rendered.current = initial;
     refreshing.current = false;
+    unreachable.current = null;
   }, [initial, path]);
 
   useEffect(() => {
@@ -125,14 +144,14 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
       }
       inFlight = true;
       try {
-        const response = await fetch(admin ? '/admin/live' : '/api/public/revision', { cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(4000)]) });
+        const response = await fetch(admin ? '/admin/live' : '/api/public/revision', { cache: 'no-store', signal: pollSignal(controller.signal, 4000) });
         if (!response.ok || response.redirected) throw new Error('Unavailable');
         const result = await response.json();
         if (!result.connected) throw new Error('Unavailable');
         if (cancelled) return;
         failures = 0;
         setTime(new Date().toLocaleTimeString());
-        if (result.revision !== baseline.current) {
+        if (result.revision !== baseline.current && result.revision !== unreachable.current) {
           if (admin) {
             if (document.querySelector('[data-admin-dirty="true"]')) setStatus('Changes available · your unsaved work is preserved');
             else if (!refreshing.current) {
@@ -185,6 +204,14 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
       retries.current += 1;
       const retry = setTimeout(() => start(() => router.refresh()), 1000 * retries.current);
       return () => clearTimeout(retry);
+    }
+    if (previous && target.current && rendered.current !== target.current) {
+      // Still behind after the retries: stop chasing this revision, and do not claim an update.
+      unreachable.current = target.current;
+      refreshing.current = false;
+      target.current = null;
+      before.current = null;
+      return;
     }
     refreshing.current = false;
     target.current = null;

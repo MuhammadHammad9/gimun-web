@@ -24,10 +24,13 @@ Registration pages offer **Send invoice** (PDF built from amount due, amount pai
 
 ## Admin security
 
-- Enable TOTP MFA in Supabase Auth. Admins enrol from **Two-factor** in the admin header; set `ADMIN_REQUIRE_MFA=1` to make enrolment mandatory before any admin page loads.
+- Enable TOTP MFA in Supabase Auth. Admins enrol from **Two-factor** in the admin header; `ADMIN_REQUIRE_MFA=1` makes enrolment mandatory before any admin page loads; production builds fail without it.
+- Supabase Auth settings the code cannot enforce (Dashboard → Authentication): turn **off** "Allow new users to sign up" (admins are created from **Users**), turn **on** leaked-password protection, set the minimum password length to 12, and set a session time-box (for example 12 hours) and an inactivity timeout (for example 1 hour).
+- Google Analytics: in the GA4 data stream's enhanced measurement, turn **off** "Page changes based on browser history events". The site sends its own page views and never for `/admin`, `/survey/…` or `/verify/…`, whose addresses carry private tokens; the automatic setting would report them.
+- Hosting outside Vercel: rate limits read the visitor's address from `X-Forwarded-For`, counting `TRUSTED_PROXY_HOPS` entries from the right (default 1, for one reverse proxy that appends the address it saw). `X-Real-IP` is trusted only on Vercel.
 - Changing a password requires the current password and signs out the account's other sessions.
 - The database enforces section permissions itself (`admin_can`, migration 0011), and every CSV export writes an audit-log row. Read-only viewers cannot export.
-- `/api/health` returns 200 when configuration is complete, the CMS is reachable and the database has migration 0011 (`schema: "outdated"` means migrations are behind the code); point an uptime monitor at it. `outbox: "delayed"` means an email has waited more than 30 minutes past its due time: no worker is draining the queue, so run `supabase/email_scheduler.sql` (GO_LIVE.md) or check its job in `cron.job_run_details`. The answer is reused for 10 seconds.
+- `/api/health` returns 200 when configuration is complete, the CMS is reachable, the database has migration 0012 and the shared rate limiter (Upstash) answers; otherwise 503. Point an uptime monitor at it. Anonymous callers see only `{"ok":…}`; send `Authorization: Bearer $CRON_SECRET` to see each part: `schema: "outdated"` means migrations are behind the code, `rateLimit: "degraded"` means Upstash is unreachable and each server instance is limiting on its own (almost no protection). `outbox: "delayed"` means an email has waited more than 30 minutes past its due time: no worker is draining the queue, so run `supabase/email_scheduler.sql` (GO_LIVE.md) or check its job in `cron.job_run_details`. The answer is reused for 10 seconds.
 
 ## How the backend degrades
 

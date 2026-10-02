@@ -2,9 +2,11 @@
 
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const KEY = 'gimun_analytics_consent';
+/** Pages whose address is private (tokens, codes, staff records): never measured. */
+const isPrivatePath = (path: string) => /^\/(admin|survey|verify)(\/|$)/.test(path);
 type Choice = 'granted' | 'denied' | null;
 
 function readChoice(): Choice {
@@ -41,7 +43,30 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
     return () => window.removeEventListener('analytics-consent-reset', sync);
   }, []);
 
-  if (/^\/(admin|survey|verify)(\/|$)/.test(pathname) || !measurementId || choice === 'unknown') return null;
+  // Page views are sent here, not by Google's automatic history tracking, so
+  // a private address (a survey token, a certificate code, an admin record)
+  // never reaches Google after the script has loaded on a public page.
+  // GA4's "Page changes based on browser history events" must stay off
+  // (OPERATIONS_RUNBOOK.md); Google's own opt-out flag covers everything else.
+  const loadedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (choice !== 'granted' || !measurementId) return;
+    const privatePage = isPrivatePath(pathname);
+    (window as unknown as Record<string, unknown>)[`ga-disable-${measurementId}`] = privatePage;
+    if (privatePage) return;
+    // The first public page is counted by the config call in the script below.
+    if (loadedFor.current === null) {
+      loadedFor.current = pathname;
+      return;
+    }
+    if (loadedFor.current === pathname) return;
+    loadedFor.current = pathname;
+    // Defined by the config script below, which has run by the time a second page is shown.
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+    gtag?.('event', 'page_view', { page_location: `${location.origin}${pathname}`, page_title: document.title });
+  }, [choice, measurementId, pathname]);
+
+  if (isPrivatePath(pathname) || !measurementId || choice === 'unknown') return null;
 
   const decide = (value: 'granted' | 'denied') => {
     try {
@@ -61,7 +86,8 @@ export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
           id="google-analytics"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
-            __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', ${id}, { anonymize_ip: true });`,
+            // Address without the query string, and no automatic page views after this one.
+            __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', ${id}, { anonymize_ip: true, page_location: location.origin + location.pathname });`,
           }}
         />
       </>

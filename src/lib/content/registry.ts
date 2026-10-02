@@ -4,7 +4,21 @@ const text = z.string().max(20000);
 const required = text.min(1);
 const id = z.string().regex(/^[a-zA-Z0-9_-]+$/).max(100);
 const date = z.iso.date();
-const link = z.string().max(2048).refine(v => v === '' || /^\/(?!\/)/.test(v) || /^https:\/\//.test(v), 'Use a local path or HTTPS URL');
+// A local path must stay on this site. Browsers treat "\" like "/" and drop
+// tabs and newlines, so "/\evil.com" or "/<tab>/evil.com" would open another
+// host: no backslash or whitespace is allowed anywhere in a local path.
+export function isLocalPath(v: string): boolean {
+  return /^\/(?![/\\])[^\s\\]*$/.test(v);
+}
+function isHttpsUrl(v: string): boolean {
+  if (!/^https:\/\/[^\s\\]+$/.test(v)) return false;
+  try {
+    return new URL(v).protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+const link = z.string().max(2048).refine(v => v === '' || isLocalPath(v) || isHttpsUrl(v), 'Use a local path or HTTPS URL');
 // Images render through next/image, which only optimizes bundled files and
 // the Supabase media bucket (next.config.ts). An arbitrary external URL would
 // throw at render time and break the page, so image fields accept only those.
@@ -22,7 +36,7 @@ function isMediaBucketLink(v: string): boolean {
   }
 }
 const image = z.string().max(2048).refine(
-  v => v === '' || (v.startsWith('/') && !v.startsWith('//')) || isMediaBucketLink(v),
+  v => v === '' || isLocalPath(v) || isMediaBucketLink(v),
   'Upload the image in the Media library, or pick one from it'
 ).meta({ media: 'image' });
 const requiredImage = image.refine(v => v !== '', 'An image is required').meta({ media: 'image' });

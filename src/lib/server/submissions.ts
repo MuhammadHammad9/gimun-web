@@ -162,10 +162,11 @@ function buildRegistrationReference(track: Track, year: string) {
 
 /**
  * IPv6 clients usually control a whole /64, so limiting single addresses lets
- * one host rotate freely. Keys use the /64 prefix; IPv4 is used as-is.
+ * one host rotate freely. Keys use the /64 prefix; IPv4 and non-address keys
+ * (an email, an "account|network" pair) are used as-is.
  */
 export function rateLimitSubject(ip: string) {
-  if (!ip.includes(':')) return ip;
+  if (!ip.includes(':') || !/^[0-9a-f:.]+$/i.test(ip)) return ip;
   const [head, tail = ''] = ip.toLowerCase().split('::');
   const left = head ? head.split(':') : [];
   const right = tail ? tail.split(':') : [];
@@ -189,6 +190,34 @@ function pruneMemoryRateLimits(now: number) {
   for (const key of memoryRateLimits.keys()) {
     if (memoryRateLimits.size < MEMORY_RATE_LIMIT_MAX) break;
     memoryRateLimits.delete(key);
+  }
+}
+
+/**
+ * When this instance last had to use its own memory instead of the shared
+ * limiter in production. Serverless runs many instances, so per-instance
+ * limits barely limit anything; /api/health reports it so it gets fixed.
+ */
+let limiterFallbackAt = 0;
+const LIMITER_HEALTH_WINDOW_MS = 5 * 60 * 1000;
+export async function rateLimiterHealth(): Promise<'ok' | 'degraded'> {
+  if (Date.now() - limiterFallbackAt < LIMITER_HEALTH_WINDOW_MS) return 'degraded';
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  // Not configured: production builds refuse this (check-env) and health
+  // already reports it as incomplete configuration.
+  if (!url || !token) return 'ok';
+  try {
+    const response = await fetch(url.replace(/\/$/, ''), {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(['PING']),
+      cache: 'no-store',
+      signal: AbortSignal.timeout(3000),
+    });
+    return response.ok ? 'ok' : 'degraded';
+  } catch {
+    return 'degraded';
   }
 }
 
@@ -245,6 +274,7 @@ export async function enforceRateLimit(bucket: RateLimitBucket, ip: string) {
   }
 
   const now = Date.now();
+  if (production) limiterFallbackAt = now;
   pruneMemoryRateLimits(now);
   const current = memoryRateLimits.get(key);
   if (!current || now >= current.resetAt) {
@@ -259,18 +289,28 @@ export async function enforceRateLimit(bucket: RateLimitBucket, ip: string) {
   };
 }
 
+/**
+ * The visitor's address for rate limiting. Every header here can be sent by
+ * the visitor too, so only the ones the hosting platform overwrites count:
+ * - On Vercel (VERCEL=1) its edge sets x-vercel-forwarded-for and x-real-ip.
+ * - Elsewhere only X-Forwarded-For is used, read from the right: each trusted
+ *   reverse proxy appends the address it saw, so the entry TRUSTED_PROXY_HOPS
+ *   from the end (default 1: one proxy) is the client, and anything a caller
+ *   prepends is ignored. x-real-ip is not trusted off Vercel: a proxy that
+ *   does not overwrite it would let every request claim a new address.
+ */
 export function clientIp(request: Request) {
-  const trustedVercelIp = request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim();
-  const realIp = request.headers.get('x-real-ip')?.trim();
+  if (process.env.VERCEL === '1') {
+    const vercelIp = request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip')?.trim();
+    if (vercelIp) return vercelIp;
+  }
   const forwarded = request.headers.get('x-forwarded-for')
     ?.split(',')
     .map((value) => value.trim())
     .filter(Boolean);
-
-  // Vercel's edge header is authoritative in production. For generic reverse
-  // proxies, use the last appended X-Forwarded-For hop so a caller cannot
-  // bypass the limiter by prepending a forged address.
-  return trustedVercelIp || realIp || forwarded?.at(-1) || 'unknown';
+  const configuredHops = Number.parseInt(process.env.TRUSTED_PROXY_HOPS || '', 10);
+  const hops = Number.isInteger(configuredHops) && configuredHops > 0 ? configuredHops : 1;
+  return forwarded?.at(-hops) || forwarded?.[0] || 'unknown';
 }
 
 /**

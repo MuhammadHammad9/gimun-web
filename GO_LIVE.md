@@ -79,7 +79,7 @@ Sign in as the owner, change the temporary password and set up two-factor. Then 
 - [ ] Export each CSV and confirm the export appears in **Audit**.
 - [ ] Broadcast to the test audience only.
 - [ ] Post an emergency schedule change and restore a previous content revision.
-- [ ] `https://<domain>/api/health` returns `{"ok":true,...}`; add it to an uptime monitor.
+- [ ] `https://<domain>/api/health` returns `{"ok":true}`; add it to an uptime monitor. For the breakdown, send `Authorization: Bearer <CRON_SECRET>`.
 
 ## 9. Launch
 

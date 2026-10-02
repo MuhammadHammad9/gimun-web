@@ -7,16 +7,6 @@ export function noticeStorageKey(announcement: Announcement): string {
   return `gimun_announcement_dismissed_${announcement.id}_${announcement.publicationVersion ?? announcement.timestamp}`;
 }
 
-/**
- * Runs in <head> before first paint: a visitor who already closed this
- * notice never sees it appear and then vanish.
- */
-export function noticeBootScript(announcement?: Announcement): string {
-  if (!announcement) return '';
-  const key = JSON.stringify(noticeStorageKey(announcement)).replace(/</g, '\\u003c');
-  return `try{if(localStorage.getItem(${key})==='true')document.documentElement.dataset.bannerDismissed='1'}catch(e){}`;
-}
-
 /** The pinned or latest notice, as a slim strip above the header. */
 export function NoticeBar({ announcement }: { announcement?: Announcement }) {
   if (!announcement?.title) return null;

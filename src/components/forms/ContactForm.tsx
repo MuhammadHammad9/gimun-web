@@ -10,6 +10,7 @@ import { HoneypotField } from './HoneypotField';
 import { focusFirstError } from './FormErrorSummary';
 import { SubmitButton } from './SubmitButton';
 import { newSubmissionKey } from '@/lib/uuid';
+import { TURNSTILE_PENDING_MESSAGE, useTurnstile } from './Turnstile';
 
 const MESSAGE_MAX = 3000;
 
@@ -42,6 +43,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
   const formLoadedAt = useRef(0);
   // One key per message, kept across retries of the same submission.
   const submissionKey = useRef<string | null>(null);
+  const turnstile = useTurnstile();
 
   useEffect(() => {
     formLoadedAt.current = Date.now();
@@ -70,6 +72,11 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
     }
 
     setErrors({});
+    if (turnstile.pending()) {
+      setStatus('error');
+      setServerMessage(TURNSTILE_PENDING_MESSAGE);
+      return;
+    }
     setStatus('submitting');
 
     try {
@@ -82,12 +89,14 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
           _hp: honeypot,
           _ts: formLoadedAt.current,
           _elapsed: Date.now() - formLoadedAt.current,
+          turnstile_token: turnstile.token(),
         }),
       });
 
       // A proxy or platform error page is not JSON. That is a server problem,
       // not the visitor's connection, so say so.
       const data = (await res.json().catch(() => null)) as SubmissionResponse | null;
+      turnstile.reset();
 
       if (!data || !res.ok || !data.success) {
         setStatus('error');
@@ -106,6 +115,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
       setServerMessage(data.message);
       submissionKey.current = null;
     } catch {
+      turnstile.reset();
       console.error('Contact request failed.');
       setStatus('error');
       setServerMessage('Unable to reach inquiry server. Please check your network connection.');
@@ -219,6 +229,7 @@ export function ContactForm({ initialType = '' }: { initialType?: string }) {
 
       <HoneypotField value={honeypot} onChange={setHoneypot} />
 
+      {turnstile.widget}
       <SubmitButton
         pending={status === 'submitting'}
         className="btn-shimmer-gold w-full py-3.5 rounded-xl font-bold text-xs transition-all hover:brightness-110 active:scale-[0.99]"

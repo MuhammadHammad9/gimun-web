@@ -23,6 +23,10 @@ function flatten(row:Record<string,unknown>){
   return out;
 }
 export async function GET(request:Request){
+  // A link on another site could otherwise make a signed-in admin's browser
+  // download (and log) an export. Browsers mark such requests; admin links
+  // are same-origin, and typing the URL directly sends "none".
+  const site=request.headers.get('sec-fetch-site');if(site&&site!=='same-origin'&&site!=='none')return new Response('Start exports from the admin workspace.',{status:403,headers:{'Cache-Control':'private, no-store'}});
   const params=new URL(request.url).searchParams;const type=params.get('type')||'registrations';
   const config=Object.hasOwn(tables,type)?tables[type]:null;if(!config)return new Response('Invalid export',{status:400});
   const user=await routePermission(config.section,true,'page');if(user instanceof Response)return user;

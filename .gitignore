@@ -74,3 +74,6 @@ scratch/
 .impeccable/config.local.json
 .hallmark/
 .claude/skills/impeccable/scripts/bin/
+
+# Legacy file-based submission counter (submissions live in Supabase)
+data/submission-counter.json

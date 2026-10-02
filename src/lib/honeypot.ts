@@ -23,7 +23,20 @@ export const RATE_LIMITS = {
   survey: { maxRequests: override ?? 20, windowMs: TEN_MINUTES },
   'certificate-pdf': { maxRequests: override ?? 30, windowMs: TEN_MINUTES },
   'admin-login': { maxRequests: override ?? 20, windowMs: 15 * 60 * 1000 },
+  // Per account *and* network: someone guessing elsewhere cannot lock the
+  // real owner out. The account-wide ceiling still stops guessing spread over
+  // many addresses (and two-factor sign-in makes guessing pointless anyway).
   'admin-login-account': { maxRequests: override ?? 5, windowMs: 15 * 60 * 1000 },
+  'admin-login-account-global': { maxRequests: override ?? 50, windowMs: 60 * 60 * 1000 },
+  'admin-mfa-account': { maxRequests: override ?? 10, windowMs: 15 * 60 * 1000 },
+  // Receipts go to the address typed into the form, so without this anyone
+  // could make the site email a stranger over and over. Keyed by address, not
+  // IP, so rotating addresses does not help. A real applicant needs one or two.
+  'receipt-recipient': { maxRequests: override ?? 5, windowMs: 24 * 60 * 60 * 1000 },
+  // One shared key: at most one visitor-triggered content purge per ten
+  // seconds across every server instance (src/app/live-actions.ts). Not
+  // affected by RATE_LIMIT_MAX, which would let tests purge on every call.
+  'live-purge': { maxRequests: 1, windowMs: 10 * 1000 },
 } as const;
 export type RateLimitBucket = keyof typeof RATE_LIMITS;
 
