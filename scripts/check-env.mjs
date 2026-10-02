@@ -94,8 +94,10 @@ if (has('NEXT_PUBLIC_TURNSTILE_SITE_KEY') !== has('TURNSTILE_SECRET_KEY')) {
   warnings.push('Cloudflare Turnstile is not configured: public forms have no human check (rate limits still apply).');
 }
 
-// Admin accounts can read every applicant's personal data; a password alone is not enough.
-if (env.ADMIN_REQUIRE_MFA !== '1') errors.push('ADMIN_REQUIRE_MFA must be 1: admin accounts need two-factor sign-in.');
+// Admin accounts can read every applicant's personal data, so two-factor
+// sign-in should be required. It is optional for now by the organizers'
+// decision (2026-10-02); this stays a warning in every build until it is on.
+if (env.ADMIN_REQUIRE_MFA !== '1') warnings.push('ADMIN_REQUIRE_MFA is not 1: admin two-factor sign-in is optional, so a stolen password opens the admin. Set it to 1 once admins have enrolled.');
 
 const label = strict ? 'production' : `non-production (${env.VERCEL_ENV || 'local'})`;
 for (const w of warnings) console.warn(`[check-env] warning: ${w}`);

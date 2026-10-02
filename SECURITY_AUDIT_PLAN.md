@@ -11,7 +11,7 @@ Implemented 2026-10-01 in four phases. Each phase was verified with typecheck, l
 | C1 | ✅ Code · ⚠️ **you must rotate the secret** | `email_scheduler.sql` restored to placeholders. New `npm run scan:secrets` (in CI and `qa:full`) and an opt-in pre-commit hook (`npm run hooks:install`). |
 | C2 | ✅ | Next.js and eslint-config-next upgraded to 16.3.8; `npm audit` is clean. |
 | H1 | ✅ · ⚠️ needs Cloudflare keys | Per-recipient receipt cap (5 per address per day) is enforced now. Cloudflare Turnstile is on all four public forms and switches on when `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are set. |
-| H2 | ✅ · ⚠️ **set `ADMIN_REQUIRE_MFA=1` in Vercel before the next deploy** | Production builds now fail without it. A password-only session can't enrol a second authenticator. Code checks use only verified factors and are limited per account. |
+| H2 | ⚠️ Partly: enforcement deferred (2026-10-02) | Two-factor sign-in stays optional for now by the organizers' decision; builds warn while `ADMIN_REQUIRE_MFA` is not `1`. Turn it on once admins have enrolled. A password-only session can't enrol a second authenticator. Code checks use only verified factors and are limited per account. |
 | H3 | ✅ | A page stamped "unavailable" is purged. The client stops chasing a revision it can't reach. |
 | H4 | ✅ | Only the honeypot returns the silent decoy, and it's logged. Timing checks now answer with a visible "submit again". The client never shows success for a `…-0000` reference. |
 | M1 | ✅ | Content purges go through one global throttle (Upstash); visitor-reported values must look like revisions. |
