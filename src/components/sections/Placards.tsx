@@ -1,3 +1,4 @@
+import { ViewTransition } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ScalesArt } from '@/components/art/LineArt';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
@@ -37,7 +38,7 @@ export function CommitteePlacard({
   const open = seatsOpen(committee);
   const headingId = `placard-${committee.slug}`;
   return (
-    <article className={cn('placard', className)} data-pan-panel={panel ? '' : undefined} aria-labelledby={headingId} data-glow="">
+    <article className={cn('placard', className)} data-pan-panel={panel ? '' : undefined} aria-labelledby={headingId} data-glow="" data-live-key={`committee-${committee.id}${panel ? '-panel' : ''}`}>
       <div className="placard__top">
         <span>{COMMITTEE_TYPE[committee.type] ?? 'Committee'}</span>
         {total > 0 && (
@@ -46,9 +47,12 @@ export function CommitteePlacard({
           </span>
         )}
       </div>
-      <p className="placard__mark" aria-hidden="true">
-        {committee.slug.toUpperCase()}
-      </p>
+      {/* Morphs into the committee page's mark (see TransitionLink morph). */}
+      <ViewTransition name={`committee-mark-${committee.slug}`} share="morph" default="none">
+        <p className="placard__mark" aria-hidden="true">
+          {committee.slug.toUpperCase()}
+        </p>
+      </ViewTransition>
       <h3 id={headingId} className="placard__name">
         {committee.name}
       </h3>
@@ -65,7 +69,7 @@ export function CommitteePlacard({
               Apply
             </Link>
           )}
-          <Link href={`/gimun/committees/${committee.slug}`} className="text-link" aria-label={`${committee.name}: committee page`}>
+          <Link href={`/gimun/committees/${committee.slug}`} className="text-link" aria-label={`${committee.name}: committee page`} morph>
             Committee
             <ArrowRight aria-hidden="true" strokeWidth={1.75} className="size-4" />
           </Link>
@@ -79,7 +83,7 @@ export function CommitteePlacard({
 export function CasePlacard({ category, className, panel = false }: { category: ProblemCategory; className?: string; panel?: boolean }) {
   const headingId = `case-${category.id}`;
   return (
-    <article className={cn('placard placard--case', className)} data-pan-panel={panel ? '' : undefined} aria-labelledby={headingId} data-glow="">
+    <article className={cn('placard placard--case', className)} data-pan-panel={panel ? '' : undefined} aria-labelledby={headingId} data-glow="" data-live-key={`case-${category.id}${panel ? '-panel' : ''}`}>
       <div className="placard__top">
         <span>Case category</span>
       </div>

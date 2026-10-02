@@ -147,7 +147,7 @@ export function TeamClient({ initialMembers }: TeamClientProps) {
 
           return (
             <ScrollReveal key={member.id} delay={idx * 0.04}>
-              <div className="rounded-2xl border border-line bg-raised hover:border-line-3 hover:bg-raised transition-all duration-300 h-full group hover:translate-y-[-2px]">
+              <div data-glow="" className="relative rounded-2xl border border-line bg-raised hover:border-line-3 hover:bg-raised transition-all duration-300 h-full group hover:translate-y-[-2px]">
                 <div className="p-6 sm:p-7 flex flex-col justify-between h-full space-y-5">
                   <div className="space-y-4">
                     {/* Header with Monogram Avatar & Branch Tag */}

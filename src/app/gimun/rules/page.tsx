@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import { GlobeArt } from '@/components/art/LineArt';
+import { LiveArt } from '@/components/art/LiveArt';
 import { ChapterHead } from '@/components/sections/Chapter';
 import { ChapterRail } from '@/components/story/ChapterRail';
 import { Steps } from '@/components/sections/Steps';
 import { HelpCallout } from '@/components/ui/HelpCallout';
 import { PageHero } from '@/components/ui/PageHero';
-import { getDocuments, getSiteConfig } from '@/lib/content';
+import { getCopy, getDocuments, getSiteConfig } from '@/lib/content';
+import { chapterNumbers, fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { formatEventDate, getEventYear } from '@/lib/site-config';
 import { GimunRulesClient } from './GimunRulesClient';
@@ -18,37 +20,16 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-const STAGES = [
-  {
-    title: 'Roll call and quorum',
-    body: "The chairs read the country roster. Answer 'Present' to keep the right to abstain on resolutions, or 'Present and voting' to give it up and vote Yes or No. Quorum is one third of assigned countries. Tip: say 'Present' if you may need to stay neutral.",
-  },
-  {
-    title: 'General speakers list',
-    body: 'Speeches of 90 seconds by default; the list stays open across sessions. Finish early and you must yield your remaining time. Tip: yielding to points of information shows command of your position.',
-  },
-  {
-    title: 'Caucuses',
-    body: 'Between speeches, move a moderated caucus to debate one sub-issue, or an unmoderated caucus to negotiate, draft clauses and merge blocs. Tip: keep a moderated caucus topic narrow so speeches stay concrete.',
-  },
-  {
-    title: 'Drafting a resolution',
-    body: 'Blocs combine preambulatory and operative clauses. Once the chairs approve format and mandate, the text gets a draft resolution code and is introduced to the room. Tip: two or three active authors amend faster than a long sponsor list.',
-  },
-  {
-    title: 'Voting',
-    body: 'A two-thirds motion closes debate and the doors close. Amendments are voted first, then draft resolutions in the order they were tabled. Tip: in a roll-call vote you may pass once; on the second call you must vote.',
-  },
-];
-
-const YIELDS = [
-  { title: 'to the chair', body: 'Your remaining seconds return to the chairs. The floor reopens for motions or the next speaker, and no questions may be put to you.', quote: 'The delegate of France yields the remaining time to the chair.' },
-  { title: 'to another delegate', body: 'Your time passes to an ally, who may accept or decline. If they accept, they speak for the remainder but cannot yield again.', quote: 'I yield my remaining time to the distinguished delegate of Japan.' },
-  { title: 'to points of information', body: 'The floor may question you. The chairs recognize non-argumentative questions, and answers come out of your remaining time.', quote: 'I yield my remaining time to points of information.' },
-];
-
 export default async function GimunRulesPage() {
-  const rules = (await getDocuments()).find((d) => d.track === 'gimun' && d.type === 'rules');
+  const [documents, copy] = await Promise.all([getDocuments(), getCopy('gimun-rules')]);
+  const rules = documents.find((d) => d.track === 'gimun' && d.type === 'rules');
+  const hero = copy('gimun-rules-hero');
+  const stages = copy('gimun-rules-stages');
+  const motions = copy('gimun-rules-motions');
+  const yields = copy('gimun-rules-yields');
+  const help = copy('gimun-rules-help');
+  const chapter = chapterNumbers(copy, ['gimun-rules-stages', 'gimun-rules-motions', 'gimun-rules-yields']);
+  const steps = (stages.items ?? []).map((item) => ({ title: fill(item.title), body: fill(item.body) }));
 
   return (
     <>
@@ -56,10 +37,10 @@ export default async function GimunRulesPage() {
       <PageHero
         variant="gimun"
         breadcrumbs={[{ label: 'GIMUN', href: '/gimun' }, { label: 'Rules of procedure' }]}
-        meta={['Parliamentary procedure', `${STAGES.length} stages`, 'Motions in order of precedence']}
-        title="Rules of procedure."
-        accentPhrase="procedure."
-        description="GIMUN follows standard Model UN parliamentary rules, built to keep debate moving and open to first-time and experienced delegates alike."
+        meta={['Parliamentary procedure', `${steps.length} stages`, 'Motions in order of precedence']}
+        title={fill(hero.title)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead)}
         actionsSlot={
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             {rules && (
@@ -72,45 +53,52 @@ export default async function GimunRulesPage() {
             </a>
           </div>
         }
-        art={<GlobeArt className="mx-auto hidden w-full max-w-[20rem] text-accent-gimun opacity-40 lg:block" />}
+        art={
+          <LiveArt className="mx-auto hidden w-full max-w-[20rem] text-accent-gimun opacity-40 lg:block">
+            <GlobeArt live className="w-full" />
+          </LiveArt>
+        }
       />
 
       <section className="handoff__sheet tone-deep chapter" aria-labelledby="stages-title">
         <div className="wrap steps-split">
           <div className="steps-split__head">
-            <ChapterHead id="stages-title" chapter={1} act="The debate" split={false} title="How a debate runs." lead="Five stages, the same in every committee, from roll call to the final vote." />
+            <ChapterHead id="stages-title" chapter={chapter['gimun-rules-stages']} act={stages.kicker} split={false} title={fill(stages.title)} lead={fill(stages.lead)} />
           </div>
-          <Steps steps={STAGES} accent="gimun" />
+          <Steps steps={steps} accent="gimun" />
         </div>
       </section>
 
       <section id="motions" className="chapter scroll-mt-28" aria-labelledby="motions-title">
         <div className="wrap">
-          <ChapterHead id="motions-title" chapter={2} act="Motions" title="Motions and points, in order." lead="When several motions are raised at once, the chairs take them in this order of precedence." />
+          <ChapterHead id="motions-title" chapter={chapter['gimun-rules-motions']} act={motions.kicker} title={fill(motions.title)} lead={fill(motions.lead)} />
           <GimunRulesClient />
         </div>
       </section>
 
+      {!yields.hidden && (
       <section className="sheet tone-inverse" aria-labelledby="yield-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
-          <ChapterHead id="yield-title" chapter={3} act="Yields" title="Three ways to yield." lead="Finish a speech before your time runs out and you must give the floor back in one of these ways." />
+          <ChapterHead id="yield-title" chapter={chapter['gimun-rules-yields']} act={yields.kicker} title={fill(yields.title)} lead={fill(yields.lead)} />
           <ol className="grid gap-4 md:grid-cols-3">
-            {YIELDS.map((y) => (
+            {(yields.items ?? []).map((y) => (
               <li key={y.title} className="glance">
-                <h3 className="font-display text-[1.375rem] font-medium text-text">Yield {y.title}</h3>
-                <p className="mt-3 text-small text-text-2">{y.body}</p>
-                <p className="mt-5 border-t border-line pt-4 font-mono text-[0.8125rem] text-text-3">“{y.quote}”</p>
+                <h3 className="font-display text-[1.375rem] font-medium text-text">Yield {fill(y.title)}</h3>
+                <p className="mt-3 text-small text-text-2">{fill(y.body)}</p>
+                {y.meta && <p className="mt-5 border-t border-line pt-4 font-mono text-[0.8125rem] text-text-3">“{fill(y.meta)}”</p>}
               </li>
             ))}
           </ol>
         </div>
       </section>
+      )}
 
+      {!help.hidden && (
       <section className="chapter" aria-label="More help">
         <div className="wrap">
           <HelpCallout
-            question="A procedure question the rules do not answer?"
+            question={fill(help.title)}
             actions={[
               { label: 'Committees', href: '/gimun/committees' },
               { label: 'FAQ', href: '/about/faq' },
@@ -118,6 +106,7 @@ export default async function GimunRulesPage() {
           />
         </div>
       </section>
+      )}
     </>
   );
 }

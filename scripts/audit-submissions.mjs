@@ -30,7 +30,10 @@ const checks = [
   ['migration bounds retry window', /retry_until timestamptz/.test(migrationSource) && /retry_until > now\(\)/.test(migrationSource)],
   ['worker uses an outbox-derived idempotency key', /Idempotency-Key['"]:\s*`gimun-outbox\//.test(serviceSource)],
   ['cron route requires bearer secret', /authorization.*Bearer \$\{secret\}/s.test(cronSource)],
-  ['rate limiting uses the trusted forwarded hop', /forwarded\?\.at\(-1\)/.test(serviceSource)],
+  // X-Forwarded-For is read from the right (TRUSTED_PROXY_HOPS, default 1), so prepended entries are ignored.
+  ['rate limiting uses the trusted forwarded hop', /forwarded\?\.at\(-hops\)/.test(serviceSource) && /configuredHops > 0 \? configuredHops : 1/.test(serviceSource)],
+  // x-real-ip can be sent by anyone; only Vercel's edge overwrites it.
+  ['x-real-ip is trusted only on Vercel', /if \(process\.env\.VERCEL === '1'\) \{[^}]*x-real-ip/s.test(serviceSource) && (serviceSource.match(/headers\.get\('x-real-ip'\)/g) || []).length === 1],
 ];
 
 let failures = 0;

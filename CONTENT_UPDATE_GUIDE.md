@@ -8,7 +8,7 @@ Open a content section, choose an entry or create a draft, edit its fields, choo
 
 IDs identify records; keep existing IDs stable. Committee slugs determine public URLs. If another editor saved first, reload before retrying. Revision restore creates a new change rather than deleting history. Only one published announcement can be pinned; unpin the previous one before publishing another, or use the emergency schedule flow.
 
-Resources can be picked by name from committee/category forms. Media users can upload JPEG, PNG, WebP or PDF files and pick library assets. Resource uploads fill size, format and upload date; review titles and version dates before publication. Images are limited to 5 MB and PDFs to 25 MB. Uploading is not editorial approval. The media page shows references in content sections you can access.
+Resources can be picked by name from committee/category forms. Media users can upload JPEG, PNG, WebP or PDF files from the content editor or Media page. A verified upload started from an editor is attached automatically; existing files can be selected from the verified library, previewed, replaced, or removed before saving. Resource uploads fill size, format and upload date; review titles and version dates before publication. Images are limited to 5 MB and PDFs to 25 MB. Uploading is not editorial approval. The media page shows references in content sections you can access. If the admin header says **Website needs attention**, confirm the CMS connection before assuming a successful save is public.
 
 ## Settings and facts
 

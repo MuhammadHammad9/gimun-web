@@ -1,4 +1,5 @@
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6';
+import { FooterMolten } from '@/components/art/Backdrops';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { SponsorStrip } from '@/components/ui/SponsorStrip';
 import { publishedFooterColumns } from '@/lib/navigation';
@@ -29,85 +30,91 @@ export function SiteFooter({ site, sponsors }: { site: SiteConfig; sponsors: Spo
 
   return (
     <footer className="site-footer" aria-labelledby="site-footer-title">
-      <div className="site-footer__inner">
-        <div className="site-footer__top">
-          <div>
-            <BrandMark className="size-11" />
-            <h2 id="site-footer-title" className="site-footer__statement mt-6">
-              Two rooms, one campus, four days in Topi.
-            </h2>
-            <div className="site-footer__facts">
-              <span>{formatDateRange(site.eventDates.start, site.eventDates.end)}</span>
-              <span>{site.venue}</span>
-              {general && (
-                <a href={`mailto:${general}`} className="w-fit underline decoration-line-2 underline-offset-4 hover:text-text">
-                  {general}
-                </a>
-              )}
-            </div>
-          </div>
-
-          <nav aria-label="Footer navigation" className="site-footer__cols">
-            {footerColumns.map((column) => (
-              <div key={column.title}>
-                <h3 className="site-footer__col-title">{column.title}</h3>
-                <ul>
-                  {column.links.map((link) => (
-                    <li key={link.href}>
-                      <Link href={link.href} className="site-footer__link">
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </nav>
-        </div>
-
-        {sponsors.length > 0 && (
-          <HideOnPaths paths={['/', '/about/sponsors']}>
-            <div className="mt-16 border-t border-line pt-10">
-              <SponsorStrip sponsors={sponsors} title="Partners" />
-            </div>
-          </HideOnPaths>
-        )}
-
-        <div className="site-footer__bottom">
-          <p>
-            &copy; {year} GIMUN &amp; GMC Organizing Committee, GIKI. No online payment is collected at any stage.
-          </p>
-          <div className="site-footer__legal">
-            <Link href="/about/faq#fees" className="hover:text-text">
-              Fees and payment
-            </Link>
-            <Link href="/contact" className="hover:text-text">
-              Contact
-            </Link>
-            <Link href="/privacy" className="hover:text-text">
-              Privacy
-            </Link>
-          </div>
-          {socials.length > 0 && (
-            <ul className="flex gap-2" aria-label="Social media">
-              {socials.map(({ Icon, label, href }) => (
-                <li key={label}>
-                  <a href={href} target="_blank" rel="noopener noreferrer" className="site-footer__social" aria-label={`${label} (opens in a new tab)`}>
-                    <Icon aria-hidden="true" className="size-4" />
+      <FooterMolten />
+      {/* The stage recedes under the page as the reader arrives, like the
+          home hero under its first chapter (backdrops.css). */}
+      <div className="site-footer__stage">
+        <div className="site-footer__inner">
+          <div className="site-footer__top">
+            <div>
+              <BrandMark className="size-11" />
+              <h2 id="site-footer-title" className="site-footer__statement mt-6">
+                {site.footerBlurb?.trim() || 'Two rooms, one campus, four days in Topi.'}
+              </h2>
+              <div className="site-footer__facts">
+                <span>{formatDateRange(site.eventDates.start, site.eventDates.end)}</span>
+                <span>{site.venue}</span>
+                {general && (
+                  <a href={`mailto:${general}`} className="w-fit underline decoration-line-2 underline-offset-4 hover:text-text">
+                    {general}
                   </a>
-                </li>
+                )}
+              </div>
+            </div>
+
+            <nav aria-label="Footer navigation" className="site-footer__cols">
+              {footerColumns.map((column) => (
+                <div key={column.title}>
+                  <h3 className="site-footer__col-title">{column.title}</h3>
+                  <ul>
+                    {column.links.map((link) => (
+                      <li key={link.href}>
+                        <Link href={link.href} className="site-footer__link">
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
+            </nav>
+          </div>
+
+          {sponsors.length > 0 && (
+            <HideOnPaths paths={['/', '/about/sponsors']}>
+              <div className="mt-16 border-t border-line pt-10">
+                <SponsorStrip sponsors={sponsors} title="Partners" />
+              </div>
+            </HideOnPaths>
           )}
-          <div className="flex flex-wrap items-center gap-3">
-            <ThemeSwitch variant="segmented" />
-            <BackToTop />
+
+          <div className="site-footer__bottom">
+            <p>
+              &copy; {year} GIMUN &amp; GMC Organizing Committee, GIKI. No online payment is collected at any stage.
+            </p>
+            <div className="site-footer__legal">
+              <Link href="/about/faq#fees" className="hover:text-text">
+                Fees and payment
+              </Link>
+              <Link href="/contact" className="hover:text-text">
+                Contact
+              </Link>
+              <Link href="/privacy" className="hover:text-text">
+                Privacy
+              </Link>
+            </div>
+            {socials.length > 0 && (
+              <ul className="flex gap-2" aria-label="Social media">
+                {socials.map(({ Icon, label, href }) => (
+                  <li key={label}>
+                    <a href={href} target="_blank" rel="noopener noreferrer" className="site-footer__social" aria-label={`${label} (opens in a new tab)`} data-tip={label}>
+                      <Icon aria-hidden="true" className="size-4" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="flex flex-wrap items-center gap-3">
+              <ThemeSwitch variant="segmented" />
+              <BackToTop />
+            </div>
           </div>
         </div>
+        <span className="site-footer__wordmark" aria-hidden="true">
+          GIMUN &amp; GMC
+        </span>
       </div>
-      <span className="site-footer__wordmark" aria-hidden="true">
-        GIMUN &amp; GMC
-      </span>
+      <div className="site-footer__dim" aria-hidden="true" />
     </footer>
   );
 }

@@ -1,4 +1,6 @@
 import React from 'react';
+import { LacquerLight } from '@/components/art/LacquerLight';
+import ClickSpark from '@/components/reactbits/ClickSpark';
 import { cn } from '@/lib/utils';
 import { Button } from './Button';
 import { Breadcrumbs, type Crumb } from './Breadcrumbs';
@@ -32,6 +34,9 @@ export interface PageHeroProps {
   aside?: React.ReactNode;
   /** Right-hand decorative art (used when there is no aside). */
   art?: React.ReactNode;
+  /** A decorative layer behind the whole hero. Defaults to the lacquer light in
+   *  the page's colour on every hero but the home one; pass null for none. */
+  backdrop?: React.ReactNode;
   /** Short affirmative points under the description. */
   bullets?: string[];
   /** Accepted for compatibility; the placard mosaic is retired. */
@@ -67,6 +72,7 @@ export function PageHero({
   actionsSlot,
   aside,
   art,
+  backdrop,
   bullets,
   breadcrumbs,
   variant = 'utility',
@@ -156,15 +162,16 @@ export function PageHero({
       {!actionsSlot && actions && actions.length > 0 && (
         <div className={cn('page-hero__actions', centered && 'justify-center')} data-entrance="3">
           {actions.map((action, i) => (
-            <Button
-              key={action.href + action.label}
-              href={action.href}
-              size="lg"
-              variant={action.variant ?? (i === 0 ? 'primary' : 'secondary')}
-              withArrow={i === 0}
-            >
-              {action.label}
-            </Button>
+            <ClickSpark key={action.href + action.label}>
+              <Button
+                href={action.href}
+                size="lg"
+                variant={action.variant ?? (i === 0 ? 'primary' : 'secondary')}
+                withArrow={i === 0}
+              >
+                {action.label}
+              </Button>
+            </ClickSpark>
           ))}
         </div>
       )}
@@ -180,6 +187,7 @@ export function PageHero({
   if (home) {
     return (
       <section className={cn('home-hero wrap', className)}>
+        {backdrop}
         <div className="home-hero__grid">
           {body}
           {side && (
@@ -194,6 +202,7 @@ export function PageHero({
 
   return (
     <section className={cn('page-hero', className)}>
+      {backdrop === undefined ? <LacquerLight tint={variant === 'gimun' ? 'gimun' : variant === 'moot' ? 'gmc' : 'house'} /> : backdrop}
       <div className="wrap">
         {breadcrumbs && breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} className="mb-10" />}
         <div className="page-hero__grid" data-aside={side ? '' : undefined}>

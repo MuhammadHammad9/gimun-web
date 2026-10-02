@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { GlobeArt } from '@/components/art/LineArt';
+import { LiveArt } from '@/components/art/LiveArt';
 import { HandoffStage } from '@/components/motion/HandoffStage';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
@@ -12,7 +13,8 @@ import { CommitteePlacard, seatsOpen } from '@/components/sections/Placards';
 import { Steps } from '@/components/sections/Steps';
 import { FactList } from '@/components/ui/Editorial';
 import { PageHero } from '@/components/ui/PageHero';
-import { getCommittees, getDocuments, getSiteConfig } from '@/lib/content';
+import { getCommittees, getCopy, getDocuments, getSiteConfig } from '@/lib/content';
+import { chapterNumbers, fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister, serverRenderTime } from '@/lib/phase';
 import { formatEventDate, getEventYear } from '@/lib/site-config';
@@ -27,32 +29,23 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-const HOW_IT_WORKS = [
-  {
-    title: 'Receive a country',
-    body: 'The secretariat assigns you a country and a committee. You research its foreign policy and represent it, whatever your own view.',
-  },
-  {
-    title: 'Speak and caucus',
-    body: 'Formal speeches from the speakers’ list, then moderated caucuses on specific sub-issues under tight time limits.',
-  },
-  {
-    title: 'Build a bloc',
-    body: 'In unmoderated time you negotiate with allies and rivals to assemble the votes a resolution needs.',
-  },
-  {
-    title: 'Pass a resolution',
-    body: 'Sponsor a draft, defend its operative clauses through amendments, and carry it to a final vote.',
-  },
-];
-
 export default async function GimunOverviewPage() {
-  const [committees, site, documents] = await Promise.all([getCommittees(), getSiteConfig(), getDocuments()]);
+  const [committees, site, documents, copy] = await Promise.all([getCommittees(), getSiteConfig(), getDocuments(), getCopy('gimun')]);
   const now = serverRenderTime();
   const open = canRegister(site, 'gimun', now);
   const guides = documents.filter((d) => d.track === 'gimun' && d.type === 'background-guide');
   const seats = committees.reduce((sum, c) => sum + (c.countryList?.length ?? 0), 0);
   const openSeats = committees.reduce((sum, c) => sum + seatsOpen(c), 0);
+  const hero = copy('gimun-hero');
+  const how = copy('gimun-how');
+  const chambers = copy('gimun-chambers');
+  const entry = copy('gimun-entry');
+  const dates = copy('gimun-dates');
+  const closing = copy('gimun-closing');
+  // "How a committee works" carries the hero hand-off, so it is always shown.
+  const chapter = chapterNumbers(copy, ['gimun-how', 'gimun-chambers', 'gimun-entry', 'gimun-dates', 'gimun-closing']);
+  const vars = { committees: committees.length, year: getEventYear(site) };
+  const [individual, delegation] = entry.items ?? [];
   const register = { label: open ? 'Register for GIMUN' : 'Registration status', href: '/register?track=gimun' };
 
   return (
@@ -64,16 +57,18 @@ export default async function GimunOverviewPage() {
             <PageHero
               variant="gimun"
               meta={['Model United Nations', formatDateRange(site.eventDates.start, site.eventDates.end), 'GIKI, Topi']}
-              title="Represent a nation. Win the room."
-              accentPhrase="Win the room."
-              description={`GIKI Model United Nations brings student delegates to Topi for ${committees.length} committees of debate, negotiation and crisis.`}
+              title={fill(hero.title, vars)}
+              accentPhrase={hero.accentPhrase}
+              description={fill(hero.lead, vars)}
               actions={[
                 { ...register, variant: 'track-gimun' },
                 { label: 'Browse committees', href: '/gimun/committees', variant: 'secondary' },
               ]}
               aside={
                 <div className="glance">
-                  <GlobeArt className="glance__art" />
+                  <LiveArt className="glance__art">
+                    <GlobeArt live className="w-full" />
+                  </LiveArt>
                   <p className="glance__title">At a glance</p>
                   <FactList
                     items={[
@@ -98,37 +93,38 @@ export default async function GimunOverviewPage() {
             <div className="steps-split__head">
               <ChapterHead
                 id="how-title"
-                chapter={1}
-                act="How a committee works"
+                chapter={chapter['gimun-how']}
+                act={how.kicker}
                 split={false}
                 reveal
-                title="Four days, one resolution."
-                lead="First conference or fifteenth, the format is the same: represent your country, find allies, and get your text passed."
+                title={fill(how.title, vars)}
+                lead={fill(how.lead, vars)}
               >
                 <Link href="/gimun/rules" className="text-link w-fit">
                   Rules of procedure
                 </Link>
               </ChapterHead>
             </div>
-            <Steps steps={HOW_IT_WORKS} accent="gimun" />
+            <Steps steps={(how.items ?? []).map((item) => ({ title: fill(item.title, vars), body: fill(item.body, vars) }))} accent="gimun" />
           </div>
           <div className="wrap">
-            <Bridge to="committees-title">Every resolution starts in a chamber. These are this year&apos;s.</Bridge>
+            {how.bridge && !chambers.hidden && <Bridge to="committees-title">{fill(how.bridge, vars)}</Bridge>}
           </div>
         </section>
       </div>
 
       {/* The committees */}
+      {!chambers.hidden && (
       <section className="chapter" aria-labelledby="committees-title">
         <div className="wrap">
           <ChapterHead
             id="committees-title"
-            chapter={2}
-            act="The chambers"
-            title={`${committees.length} chambers for ${getEventYear(site)}.`}
+            chapter={chapter['gimun-chambers']}
+            act={chambers.kicker}
+            title={fill(chambers.title, vars)}
             lead={
               <>
-                Each committee page has its agenda, background guide and the countries still open for allocation.
+                {fill(chambers.lead, vars)}
                 {guides.length > 0 && ` ${guides.length} background guides are in the resource library.`}
               </>
             }
@@ -149,27 +145,29 @@ export default async function GimunOverviewPage() {
               <CommitteePlacard key={committee.id} committee={committee} />
             ))}
           </div>
-          <Bridge to="entry-title">Found your chamber? Here is how to take a seat in it.</Bridge>
+          {chambers.bridge && !entry.hidden && <Bridge to="entry-title">{fill(chambers.bridge, vars)}</Bridge>}
         </div>
       </section>
+      )}
 
       {/* Two ways in, each priced where it is read */}
+      {!entry.hidden && (
       <section className="chapter" aria-labelledby="entry-title">
         <div className="wrap">
           <ChapterHead
             id="entry-title"
-            chapter={3}
-            act="Two ways in"
-            title="On your own, or with your institution."
-            lead="Nothing is charged when you apply. If your application is accepted, the organizing team emails an invoice with bank transfer details."
+            chapter={chapter['gimun-entry']}
+            act={entry.kicker}
+            title={fill(entry.title, vars)}
+            lead={fill(entry.lead, vars)}
           />
           <div className="doors">
             <Door
               id="door-individual"
               accent="gimun"
-              label="Individual delegate"
-              title="Apply on your own"
-              copy="For students applying on their own. Rank three committees; the secretariat allocates your country."
+              label={individual?.meta ?? 'Individual delegate'}
+              title={fill(individual?.title, vars)}
+              copy={fill(individual?.body, vars)}
               facts={[
                 { term: 'Fee', value: `${site.fees.gimunIndividual} per delegate` },
                 { term: 'Preferences', value: 'Three committees' },
@@ -181,9 +179,9 @@ export default async function GimunOverviewPage() {
             <Door
               id="door-delegation"
               accent="gimun"
-              label="Institutional delegation"
-              title="Bring a delegation"
-              copy="A head delegate or faculty advisor registers the whole team, 2 to 20 delegates, in one form."
+              label={delegation?.meta ?? 'Institutional delegation'}
+              title={fill(delegation?.title, vars)}
+              copy={fill(delegation?.body, vars)}
               facts={[
                 { term: 'Fee', value: `${site.fees.gimunDelegationPerDelegate} per delegate` },
                 { term: 'Roster', value: '2 to 20 delegates' },
@@ -194,19 +192,21 @@ export default async function GimunOverviewPage() {
             />
           </div>
           <p className="mt-8 max-w-3xl text-small text-text-3">
-            On-campus accommodation is available on request.{' '}
+            {entry.note && <>{fill(entry.note, vars)} </>}
             <Link href="/about/faq#fees" className="text-link">
               Fees and refunds
             </Link>
           </p>
         </div>
       </section>
+      )}
 
       {/* Key dates, on the paper sheet */}
+      {!dates.hidden && (
       <section className="sheet tone-inverse" aria-labelledby="dates-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
-          <ChapterHead id="dates-title" chapter={4} act="The clock" title="GIMUN key dates." lead="Deadlines are 23:59 Pakistan time." />
+          <ChapterHead id="dates-title" chapter={chapter['gimun-dates']} act={dates.kicker} title={fill(dates.title, vars)} lead={fill(dates.lead, vars)} />
           <DateLedger
             now={now}
             className="dates--flush"
@@ -219,13 +219,14 @@ export default async function GimunOverviewPage() {
           />
         </div>
       </section>
+      )}
 
       <Closing
         id="closing-title"
-        chapter={5}
-        act="Take a seat"
-        title="Ready to take a seat?"
-        lead="Rank three committees when you apply. Countries are allocated after the secretariat reviews your application."
+        chapter={chapter['gimun-closing']}
+        act={closing.kicker}
+        title={fill(closing.title, vars)}
+        lead={fill(closing.lead, vars)}
         actions={[
           { ...register, variant: 'track-gimun' },
           { label: 'Rules of procedure', href: '/gimun/rules', variant: 'secondary' },

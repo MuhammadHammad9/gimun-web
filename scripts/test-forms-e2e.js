@@ -8,9 +8,10 @@
  * 3. GMC Team registration -> 201 Created, 3-member team accepted
  * 4. Contact form submission -> 201 Created
  * 5. Anti-bot honeypot trap -> blocked (201 decoy success)
- * 6. Fast fill-time velocity trap (< 2000ms) -> blocked (201 decoy success)
+ * 6. Fast fill-time velocity trap (< 2000ms) -> refused visibly (422, nothing stored)
  * 7. Rate limit burst -> 429 Too Many Requests
- * 8. Memory backend leaves no disk records behind
+ * 8. One receipt address used six times from different IPs -> 6th refused (429)
+ * 9. Memory backend leaves no disk records behind
  */
 
 const { spawn } = require('child_process');
@@ -336,9 +337,10 @@ async function runE2ETests() {
 
       const res = await postJson('/api/register', speedPayload);
 
-      if (res.status === 201 && res.data.success) {
+      // A person can trip the timing check (autofill), so it must never fake a success.
+      if (res.status === 422 && res.data.success === false) {
         passedCount++;
-        console.log('  [PASS] Test 6: Velocity Trap (< 2000ms) -> 201 decoy success');
+        console.log('  [PASS] Test 6: Velocity Trap (< 2000ms) -> 422 visible resubmit request');
       } else {
         failedCount++;
         console.error('  [FAIL] Test 6: Velocity trap failed to block:', res);
@@ -386,6 +388,52 @@ async function runE2ETests() {
     } catch (err) {
       failedCount++;
       console.error('  [FAIL] Test 7 Exception:', err.message);
+    }
+
+    // Test 8: Receipt recipient cap. Receipts go to the typed address, so one
+    // address must not be usable to email a stranger again and again, even
+    // from many different IPs (RATE_LIMIT_MAX=5 applies to this bucket too).
+    testCount++;
+    try {
+      const statuses = [];
+      for (let i = 0; i < 6; i++) {
+        const res = await postJson(
+          '/api/register',
+          {
+            track: 'gimun',
+            applicantType: 'individual',
+            formData: {
+              fullName: `Repeat Applicant ${String.fromCharCode(65 + i)}`,
+              email: 'Repeat.Recipient@example.org',
+              phone: '03001234567',
+              institution: 'GIKI Faculty of Computer Science',
+              yearOfStudy: 'senior',
+              hasExperience: false,
+              experienceDetails: '',
+              committeePreference1: 'unsc',
+              committeePreference2: 'disec',
+              committeePreference3: 'unhrc',
+              countryPreference: 'Pakistan',
+              dietaryAccessibility: 'None',
+              referralSource: 'social-media',
+            },
+            _hp: '',
+            _ts: Date.now() - 3500,
+          },
+          { 'x-forwarded-for': `10.251.0.${i + 1}` }
+        );
+        statuses.push(res.status);
+      }
+      if (statuses.slice(0, 5).every((s) => s === 201) && statuses[5] === 429) {
+        passedCount++;
+        console.log('  [PASS] Test 8: Receipt Recipient Cap -> 6th application to one address refused (429)');
+      } else {
+        failedCount++;
+        console.error('  [FAIL] Test 8: Recipient cap statuses were', statuses.join(', '));
+      }
+    } catch (err) {
+      failedCount++;
+      console.error('  [FAIL] Test 8 Exception:', err.message);
     }
 
   } finally {

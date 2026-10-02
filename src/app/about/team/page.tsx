@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { PageHero } from '@/components/ui/PageHero';
-import { getSiteConfig, getTeamMembers } from '@/lib/content';
+import { getCopy, getSiteConfig, getTeamMembers } from '@/lib/content';
+import { fill, nextSteps } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
 import { TeamClient } from './TeamClient';
@@ -17,6 +18,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function TeamPage() {
+  const copy = await getCopy('team');
+  const hero = copy('team-hero');
+  const next = copy('team-next');
   const [members, site] = await Promise.all([getTeamMembers(), getSiteConfig()]);
 
   return (
@@ -25,9 +29,9 @@ export default async function TeamPage() {
         variant="utility"
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'Team' }]}
         meta={[`${getEventYear(site)} edition`, 'Run by GIKI students']}
-        title="The organizing team."
-        accentPhrase="organizing team."
-        description="GIMUN and GMC are run by GIKI students: the secretariat and committee chairs, the moot convening committee, and the organizers who look after logistics."
+        title={fill(hero.title)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead)}
         actionsSlot={
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link href="/contact" className="text-link">
@@ -44,13 +48,7 @@ export default async function TeamPage() {
           <TeamClient initialMembers={members} />
         </div>
       </section>
-      <NextSteps
-        steps={[
-          { href: '/contact', title: 'Contact', body: 'Write to the desk that owns your question.' },
-          { href: '/about', title: 'The event', body: 'What GIMUN and GMC are, and how the week runs.' },
-          { href: '/about/venue', title: 'Venue and travel', body: 'Where the team will meet you in Topi.' },
-        ]}
-      />
+      {!next.hidden && <NextSteps steps={nextSteps(next)} />}
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { globe } from './geometry';
 import { ScalesShape } from './LineArt';
+import { SealMotion } from './SealMotion';
 
 const C = 200;
 const RING_R = 164;
@@ -28,12 +29,16 @@ const SCALES_TRANSFORM = `translate(${C + 66 - 120 * SCALES_SCALE} ${C - 126 * S
  * The turning ring is its own <svg> inside an HTML wrapper so the rotation
  * runs on the compositor (an animated SVG group would repaint every frame).
  * Decorative: hidden from assistive tech. `id` must be unique on the page.
+ * `motion` adds the hero signature (see SealMotion); use it once per page.
  */
-export function Seal({ id, className, spin = true }: { id: string; className?: string; spin?: boolean }) {
+export function Seal({ id, className, spin = true, motion = false }: { id: string; className?: string; spin?: boolean; motion?: boolean }) {
   const ticks = Array.from({ length: 72 }, (_, i) => i * 5);
 
   return (
     <div className={cn('seal', className)} aria-hidden="true">
+      {/* A solid face in the ground's colour: the seal sits above any moving
+          background (clouds, scanner) instead of letting it show through. */}
+      <span className="seal__face" />
       <div className={cn('seal__ring', spin && 'seal__ring--spin')}>
         <svg viewBox="0 0 400 400" focusable="false">
           <defs>
@@ -59,22 +64,27 @@ export function Seal({ id, className, spin = true }: { id: string; className?: s
           </clipPath>
         </defs>
         <circle cx={C} cy={C} r="194" className="seal__rule" />
-        <circle cx={C} cy={C} r="140" className="seal__rule" />
-        <circle cx={C} cy={C} r="132" className="seal__rule seal__rule--faint" />
-        <line x1={C} y1={C - 132} x2={C} y2={C + 132} className="seal__rule" />
+        <circle cx={C} cy={C} r="140" className="seal__rule seal__inner" />
+        <circle cx={C} cy={C} r="132" className="seal__rule seal__rule--faint seal__inner" />
+        <line x1={C} y1={C - 132} x2={C} y2={C + 132} className="seal__rule seal__divide" />
 
         {/* GIMUN: the globe, left half */}
-        <g className="seal__gimun" clipPath={`url(#${id}-left)`} data-draw="">
-          <circle cx={C} cy={C} r={GLOBE_R} pathLength={1} />
-          <path d={GLOBE_LINES.meridians + GLOBE_LINES.parallels} className="seal__detail" pathLength={1} />
-          <path d={GLOBE_LINES.equator} pathLength={1} />
+        <g data-half="gimun">
+          <g className="seal__gimun" clipPath={`url(#${id}-left)`} data-draw="">
+            <circle cx={C} cy={C} r={GLOBE_R} pathLength={1} />
+            <path d={GLOBE_LINES.meridians + GLOBE_LINES.parallels} className="seal__detail" pathLength={1} />
+            <path d={GLOBE_LINES.equator} pathLength={1} />
+          </g>
         </g>
 
         {/* GMC: the scales, right half */}
-        <g className="seal__gmc" transform={SCALES_TRANSFORM} data-draw="">
-          <ScalesShape />
+        <g data-half="gmc">
+          <g className="seal__gmc" transform={SCALES_TRANSFORM} data-draw="">
+            <ScalesShape />
+          </g>
         </g>
       </svg>
+      {motion && <SealMotion />}
     </div>
   );
 }

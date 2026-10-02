@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
+import { SeatScanner } from '@/components/art/Backdrops';
 import { Seal } from '@/components/art/Seal';
 import { Magnetic } from '@/components/motion/Magnetic';
+import ClickSpark from '@/components/reactbits/ClickSpark';
 import { Button } from '@/components/ui/Button';
 import { ChapterKicker } from './Chapter';
 
@@ -23,6 +25,7 @@ export function Closing({
   art,
   chapter,
   act,
+  backdrop,
 }: {
   id: string;
   title: string;
@@ -33,9 +36,13 @@ export function Closing({
   /** The closing chapter's number and name in the page's story. */
   chapter?: number;
   act?: string;
+  /** A decorative layer behind the chapter. Defaults to the seat's scanner on
+   *  every page that ends on the seat; pass null for none. */
+  backdrop?: ReactNode;
 }) {
   return (
     <section className="chapter closing tone-crest" aria-labelledby={id}>
+      {backdrop === undefined ? <SeatScanner /> : backdrop}
       <div className="wrap closing__grid">
         <div>
           {chapter !== undefined && act && <ChapterKicker chapter={chapter} act={act} target={id} />}
@@ -46,9 +53,11 @@ export function Closing({
           <div className="mt-10 flex flex-wrap gap-3">
             {actions.map((action) => (
               <Magnetic key={action.href + action.label}>
-                <Button href={action.href} variant={action.variant} size="lg" withArrow>
-                  {action.label}
-                </Button>
+                <ClickSpark>
+                  <Button href={action.href} variant={action.variant} size="lg" withArrow>
+                    {action.label}
+                  </Button>
+                </ClickSpark>
               </Magnetic>
             ))}
           </div>

@@ -12,6 +12,11 @@ import { database } from '@/lib/server/supabase';
 import { getServerConfig } from '@/lib/server/config';
 import { drainEmailOutbox } from '@/lib/server/submissions';
 import { validateEntry } from '@/lib/content/registry';
+/**
+ * Messages that are safe and useful to show staff. Server actions return them
+ * rather than throwing: production replaces a thrown message with a generic one.
+ */
+function actionMessage(error:unknown,fallback:string){if(error instanceof z.ZodError)return error.issues.map(i=>`${i.path.join('.')||'input'}: ${i.message}`).join('; ');const message=error instanceof Error?error.message:'';return /Unknown template variable|permission|require|changed|Choose|already|valid|Invalid/i.test(message)?message:fallback;}
 const id = z.uuid(); const text = z.string().max(20000);
 const schemas = {
   // expected_updated_at makes a stale form fail instead of overwriting a colleague's edit.
@@ -46,7 +51,7 @@ export async function runOperation(operation: string, input: unknown): Promise<{
       parsed.html=emailHtml(`Reference: ${parsed.reference}\nApplication status: ${parsed.status}\nPayment status: ${parsed.payment_status}`);
     }
     const result=await operate(sections[key],key,parsed);
-    if(['allocation','reserve','unassign'].includes(key)) updateTag('content:committees');
+    if(['allocation','reserve','unassign'].includes(key)){updateTag('content:committees');updateTag('content:allocations');}
     if(key==='archive') updateTag('content:site');
     revalidatePath('/admin','layout');
     if(key==='outbox' || key==='resend-ticket' || parsed.notify) after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Dispatch deferred');}});
@@ -64,12 +69,16 @@ export async function emergencyChange(session: unknown,announcement: unknown) {
     updateTag('content:schedule');updateTag('content:announcements');revalidatePath('/admin','layout');return {result:'Saved'};
   }catch(error){unstable_rethrow(error);return {error:error instanceof Error?error.message:'Unable to publish emergency change'};}
 }
-export async function promoteClarification(contactId:string,entry:unknown) {
-  await requirePermission('inbox',true); const parsed=validateEntry(entry);
-  if(parsed.collection!=='clarifications') throw new Error('Invalid clarification');
-  await operate('clarifications','promote',{contact_id:contactId,entry:parsed});updateTag('content:clarifications');revalidatePath('/admin/inbox');
+export async function promoteClarification(contactId:string,entry:unknown):Promise<{error?:string;result?:string}> {
+  try{
+    await requirePermission('inbox',true); const parsed=validateEntry(entry);
+    if(parsed.collection!=='clarifications') return {error:'Invalid clarification.'};
+    await operate('clarifications','promote',{contact_id:contactId,entry:parsed});updateTag('content:clarifications');revalidatePath('/admin/inbox');
+    return {result:'Clarification published.'};
+  }catch(error){unstable_rethrow(error);return {error:actionMessage(error,'Unable to publish the clarification. Check the number, question and answer.')};}
 }
-export async function queueEmail(input:unknown) {
+export async function queueEmail(input:unknown):Promise<{error?:string;result?:string}> {
+ try{
   const user=await requirePermission('email',true);
   const parsed=z.object({subject:text.min(1),body:text.min(1),audience:z.enum(['test','gimun','moot-cup','accepted','all']),test_email:z.email().optional(),confirm:z.boolean()}).parse(input);
   const site=await getSiteConfig();
@@ -91,6 +100,7 @@ export async function queueEmail(input:unknown) {
   await operate('email','email',{from,messages});
   after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Dispatch deferred');}});
   revalidatePath('/admin/email');return {result:`Queued ${messages.length} messages.`};
+ }catch(error){unstable_rethrow(error);return {error:actionMessage(error,'Unable to queue. Check permissions and template variables.')};}
 }
 export async function lookupAttendees(value:string) {
   await requirePermission('event-day');
@@ -100,13 +110,15 @@ export async function lookupAttendees(value:string) {
   const {data,error}=await database().from('registrations').select('reference_id,applicant_name,status,payment_status,participants(id,name,role,checked_in_at)').eq(column,normalized).maybeSingle();
   return error || !data ? {error:'No matching registration.'} : {result:data};
 }
-export async function replyInquiry(id:string,body:string) {
-  await requirePermission('inbox',true);await requirePermission('email',true);
-  const parsed=z.string().min(1).max(20000).parse(body);
-  const from=getServerConfig().emailFrom;if(!from)throw new Error('Email is not configured');
-  await operate('inbox','reply',{id,body:parsed,html:emailHtml(parsed),from});
-  after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Reply deferred');}});
-  revalidatePath('/admin/inbox');
+export async function replyInquiry(id:string,body:string):Promise<{error?:string;result?:string}> {
+  try{
+    await requirePermission('inbox',true);await requirePermission('email',true);
+    const parsed=z.string().min(1).max(20000).safeParse(body);if(!parsed.success)return {error:'Write a reply of up to 20,000 characters.'};
+    const from=getServerConfig().emailFrom;if(!from)return {error:'EMAIL_FROM must be configured before replying.'};
+    await operate('inbox','reply',{id,body:parsed.data,html:emailHtml(parsed.data),from});
+    after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Reply deferred');}});
+    revalidatePath('/admin/inbox');return {result:'Reply queued.'};
+  }catch(error){unstable_rethrow(error);return {error:actionMessage(error,'Reply could not be queued.')};}
 }
 
 export async function processOutbox() {
@@ -143,11 +155,13 @@ export async function sendInvoice(reference:string){
   }catch(error){unstable_rethrow(error);return {error:error instanceof Error?error.message:'Unable to send the invoice.'};}
 }
 
-export async function previewEmail(input:unknown){
+export async function previewEmail(input:unknown):Promise<{error:string}|{subject:string;body:string;count:number}>{
+ try{
  const user=await requirePermission('email',true);
  const p=z.object({subject:text.min(1),body:text.min(1),audience:z.enum(['test','gimun','moot-cup','accepted','all'])}).parse(input);
  let count=1;
  if(p.audience!=='test'){let q=database().from('registrations').select('*',{count:'exact',head:true}).not('status','in','(rejected,withdrawn)').neq('contact_email','anonymized@invalid.example');if(p.audience==='accepted')q=q.eq('status','accepted');else if(p.audience!=='all')q=q.eq('track',p.audience);const result=await q;if(result.error)throw new Error('Audience unavailable');count=result.count||0;}
  const site=await getSiteConfig();const values={name:user.display_name,reference:'REG-GIMUN-2027-0001',status:'accepted',payment_status:'paid',event_name:site.eventNames.combined,amount_due:site.fees.gimunIndividual,fee:site.fees.gimunIndividual};
  return {subject:renderTemplate(p.subject,values),body:renderTemplate(p.body,values),count};
+ }catch(error){unstable_rethrow(error);return {error:actionMessage(error,'Unable to preview. Check the template variables.')};}
 }

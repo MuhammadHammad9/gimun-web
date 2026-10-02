@@ -12,16 +12,23 @@ import { ShieldCheck } from 'lucide-react';
 import type { ResultAward, Track } from '@/lib/types';
 import { getEventYear } from '@/lib/site-config';
 import { HelpCallout } from '@/components/ui/HelpCallout';
+import { fill, type Copy } from '@/lib/copy';
 
 interface ResultsClientProps {
   initialResults: ResultAward[];
   resultsPublished?: boolean;
   eventEndDate: string;
+  /** The main award definitions (track in `meta`). */
+  awards: Copy;
+  /** How winners are chosen; items are the GIMUN and GMC explanations. */
+  criteria: Copy;
 }
 
 export function ResultsClient({
   initialResults,
   resultsPublished = false,
+  awards,
+  criteria,
 }: ResultsClientProps) {
   const site = useSiteConfig();
   const eventYear = getEventYear(site);
@@ -53,23 +60,17 @@ export function ResultsClient({
     return matchesTrack && matchesSearch;
   });
 
-  const mainAwards = [
-    {
-      title: 'Best delegation',
-      track: 'GIMUN',
-      body: 'For the institution whose delegates score highest across all committees combined.',
-    },
-    {
-      title: 'Best delegate',
-      track: 'GIMUN',
-      body: 'One per committee, chosen by its chairs for research, drafting, debate and diplomacy.',
-    },
-    {
-      title: 'Winning team',
-      track: 'GMC',
-      body: 'The team that wins the Grand Final, decided by the bench after the final oral round.',
-    },
-  ];
+  const vars = { year: eventYear };
+  const mainAwards = (awards.items ?? []).map((item) => ({ title: fill(item.title, vars), track: fill(item.meta, vars), body: fill(item.body, vars) }));
+  const [gimunCriteria, mootCriteria] = criteria.items ?? [];
+
+  // Once published, the winners of the main awards stand on a podium: the
+  // first main award in the centre, raised, the next two beside it.
+  const headline = mainAwards
+    .map((award) => ({ award, result: initialResults.find((r) => r.awardName.toLowerCase().includes(award.title.toLowerCase())) }))
+    .filter((entry): entry is { award: (typeof mainAwards)[number]; result: ResultAward } => Boolean(entry.result))
+    .slice(0, 3);
+  const podium = headline.length >= 2 ? [headline[1], headline[0], headline[2]].filter(Boolean) : [];
 
   return (
     <div className="space-y-16">
@@ -82,9 +83,10 @@ export function ResultsClient({
         </p>
       )}
 
+      {!awards.hidden && (
       <section className="space-y-6" aria-labelledby="main-awards-title">
         <h2 id="main-awards-title" className="font-display text-2xl font-medium text-text sm:text-3xl">
-          The {eventYear} main awards
+          {fill(awards.title, vars)}
         </h2>
         <ol className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-3">
           {mainAwards.map((award, index) => (
@@ -99,17 +101,16 @@ export function ResultsClient({
           ))}
         </ol>
       </section>
+      )}
 
       {!isDisplayingResults ? (
         <section className="space-y-12">
           <section className="space-y-6" aria-labelledby="criteria-title">
             <div className="max-w-2xl space-y-2">
               <h2 id="criteria-title" className="font-display text-2xl font-medium text-text sm:text-3xl">
-                How winners are chosen
+                {fill(criteria.title, vars)}
               </h2>
-              <p className="text-base leading-relaxed text-text-2">
-                Scores are totalled after the final sessions and checked by the organizing team. Winners are announced at the awards gala and published here afterwards. Certificates carry a link to check them.
-              </p>
+              <p className="text-base leading-relaxed text-text-2">{fill(criteria.lead, vars)}</p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
@@ -118,9 +119,7 @@ export function ResultsClient({
                   <h3 className="font-display text-xl font-medium text-text">GIMUN</h3>
                   <TrackBadge track="gimun" size="sm" />
                 </div>
-                <p className="text-sm leading-relaxed text-text-2">
-                  Committee chairs score every session against the published rubric.
-                </p>
+                <p className="text-sm leading-relaxed text-text-2">{fill(gimunCriteria?.body, vars)}</p>
                 {site.gimunRubric?.length ? (
                   <dl className="divide-y divide-line border-t border-line text-sm">
                     {site.gimunRubric.map((r) => (
@@ -140,9 +139,7 @@ export function ResultsClient({
                   <h3 className="font-display text-xl font-medium text-text">GIKI Moot Court</h3>
                   <TrackBadge track="moot-cup" size="sm" />
                 </div>
-                <p className="text-sm leading-relaxed text-text-2">
-                  Judges score the written memorials and each oral round. Memorials are marked without team names.
-                </p>
+                <p className="text-sm leading-relaxed text-text-2">{fill(mootCriteria?.body, vars)}</p>
                 {site.mootScoring ? (
                   <dl className="divide-y divide-line border-t border-line text-sm">
                     <div className="flex justify-between gap-4 py-2.5">
@@ -168,6 +165,18 @@ export function ResultsClient({
       ) : (
         /* CONDITIONAL RENDERING: POST-EVENT / PUBLISHED STATE */
         <section className="space-y-8">
+          {podium.length > 0 && selectedTrack === 'all' && !searchQuery && (
+            <ol className="podium" aria-label="Main award winners">
+              {podium.map(({ award, result }) => (
+                <li key={result.id} className="podium__step" data-place={award === headline[0].award ? 'first' : undefined}>
+                  <span className="podium__award">{award.title}</span>
+                  <span className="podium__winner">{result.winnerName}</span>
+                  <span className="podium__institution">{result.institution}</span>
+                  <span className="podium__track">{award.track}</span>
+                </li>
+              ))}
+            </ol>
+          )}
           {/* Filter & Search Bar */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-line">
             <FilterBar
@@ -193,7 +202,7 @@ export function ResultsClient({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((item, idx) => (
                 <ScrollReveal key={item.id} delay={idx * 0.05}>
-                  <div className="double-bezel h-full">
+                  <div className="double-bezel h-full" data-live-key={`result-${item.id}`}>
                     <div className="double-bezel-inner p-6 sm:p-7 flex flex-col justify-between h-full space-y-4">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">

@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { ScalesArt } from '@/components/art/LineArt';
+import { LiveArt } from '@/components/art/LiveArt';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead } from '@/components/sections/Chapter';
 import { HelpCallout } from '@/components/ui/HelpCallout';
 import { PageHero } from '@/components/ui/PageHero';
-import { getDocuments, getMootCategories, getSiteConfig } from '@/lib/content';
+import { getCopy, getDocuments, getMootCategories, getSiteConfig } from '@/lib/content';
+import { fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister } from '@/lib/phase';
 import { formatEventDate, formatPublishedDate, getEventYear } from '@/lib/site-config';
@@ -18,7 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MootCategoriesPage() {
-  const [categories, documents, site] = await Promise.all([getMootCategories(), getDocuments(), getSiteConfig()]);
+  const [categories, documents, site, copy] = await Promise.all([getMootCategories(), getDocuments(), getSiteConfig(), getCopy('categories')]);
+  const hero = copy('categories-hero');
+  const list = copy('categories-list');
+  const help = copy('categories-help');
+  const vars = { cases: categories.length };
   const open = canRegister(site, 'mootCup');
   const problem = documents.find((d) => d.track === 'moot-cup' && d.type === 'proposition');
 
@@ -28,9 +34,9 @@ export default async function MootCategoriesPage() {
         variant="moot"
         breadcrumbs={[{ label: 'GMC', href: '/moot-cup' }, { label: 'Problem categories' }]}
         meta={[`${categories.length} categories`, `GMC ${getEventYear(site)}`]}
-        title="The case categories."
-        accentPhrase="categories."
-        description="Choose the area of law your team prefers when you register. Every team argues from the same compromis, and is bound by its facts."
+        title={fill(hero.title, vars)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead, vars)}
         actionsSlot={
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             {problem && (
@@ -43,15 +49,19 @@ export default async function MootCategoriesPage() {
             </Link>
           </div>
         }
-        art={<ScalesArt className="mx-auto hidden w-full max-w-[18rem] text-accent-gmc opacity-50 lg:block" />}
+        art={
+          <LiveArt className="mx-auto hidden w-full max-w-[18rem] text-accent-gmc opacity-50 lg:block">
+            <ScalesArt live className="w-full" />
+          </LiveArt>
+        }
       />
 
       <section className="handoff__sheet tone-deep chapter" aria-labelledby="categories-title">
         <div className="wrap">
           <ChapterHead
             id="categories-title"
-            title="Areas of law."
-            lead="Questions about an unclear paragraph of the compromis go through the clarifications log, where the answer is published for every team at once."
+            title={fill(list.title, vars)}
+            lead={fill(list.lead, vars)}
           />
           <ol className="motions">
             {categories.map((category, index) => (
@@ -87,10 +97,11 @@ export default async function MootCategoriesPage() {
         </div>
       </section>
 
+      {!help.hidden && (
       <section className="chapter" aria-label="More help">
         <div className="wrap">
           <HelpCallout
-            question="Unsure which category suits your team?"
+            question={fill(help.title, vars)}
             actions={[
               { label: 'Rules & memorials', href: '/moot-cup/rules' },
               { label: 'Clarifications', href: '/moot-cup/clarifications' },
@@ -98,6 +109,7 @@ export default async function MootCategoriesPage() {
           />
         </div>
       </section>
+      )}
     </>
   );
 }

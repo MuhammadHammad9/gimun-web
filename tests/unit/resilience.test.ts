@@ -22,7 +22,7 @@ vi.mock('@/lib/server/supabase', () => {
   };
 });
 
-import { looksAutomated } from '../../src/lib/server/request';
+import { botSignal, looksAutomated } from '../../src/lib/server/request';
 import { enforceRateLimit } from '../../src/lib/server/submissions';
 import { readCollection } from '../../src/lib/content/repository';
 
@@ -45,6 +45,13 @@ describe('bot check', () => {
   it('still catches the honeypot and missing timing data', () => {
     expect(looksAutomated({ _hp: 'filled', _elapsed: 60_000 })).toBe(true);
     expect(looksAutomated({})).toBe(true);
+  });
+  it('says which check fired, so only the honeypot earns a silent decoy', () => {
+    expect(botSignal({ _hp: 'filled', _elapsed: 60_000 })).toBe('honeypot');
+    expect(botSignal({ _elapsed: 300 })).toBe('too-fast');
+    expect(botSignal({})).toBe('no-timing');
+    expect(botSignal({ _ts: 'not-a-number' })).toBe('no-timing');
+    expect(botSignal({ _elapsed: 45_000 })).toBeNull();
   });
 });
 

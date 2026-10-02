@@ -14,7 +14,12 @@ import { globe, orbit, smoothPath } from './geometry';
  * pathLength="1" so .draw-on-scroll can draw them in; at rest they are whole.
  */
 
-type ArtProps = { className?: string };
+/**
+ * `live` adds the moving parts of a drawing's idle loop (a traveller on the
+ * road, the scales' swing, the gavel's tap...). They only move inside a
+ * LiveArt wrapper once it sets data-live; at rest they read as the drawing.
+ */
+type ArtProps = { className?: string; live?: boolean };
 
 const common = {
   viewBox: '0 0 240 240',
@@ -39,7 +44,7 @@ const GLOBE_LINES = globe(GLOBE.cx, GLOBE.cy, GLOBE.r);
 const GLOBE_ORBIT = orbit(GLOBE.cx, GLOBE.cy, 104, 26, -12);
 
 /** GIMUN: a globe on a tilted axis, its graticule seen from above, and one orbit. */
-export function GlobeArt({ className }: ArtProps) {
+export function GlobeArt({ className, live }: ArtProps) {
   return (
     <svg {...common} className={className}>
       <g {...stroke} data-draw="">
@@ -51,6 +56,7 @@ export function GlobeArt({ className }: ArtProps) {
           <path d={`M${GLOBE.cx} ${GLOBE.cy - GLOBE.r - 12}V${GLOBE.cy - GLOBE.r}M${GLOBE.cx} ${GLOBE.cy + GLOBE.r}v12`} pathLength={1} />
         </g>
         <path d={GLOBE_ORBIT.front} pathLength={1} />
+        {live && <circle r="4" fill="currentColor" stroke="none" className="art-orbiter" style={{ offsetPath: `path('${GLOBE_ORBIT.front}')` }} />}
       </g>
     </svg>
   );
@@ -58,38 +64,40 @@ export function GlobeArt({ className }: ArtProps) {
 
 /* --- Scales --------------------------------------------------------------- */
 /** A pan hanging from a beam end at (x, 74), its rim at y = 146. */
-function pan(x: number) {
+function pan(x: number, live?: boolean) {
   return (
-    <>
+    <g className={live ? `art-pan art-pan--${x < 120 ? 'left' : 'right'}` : undefined}>
       <path d={`M${x} 76L${x - 24} 146M${x} 76L${x + 24} 146`} {...detail} pathLength={1} />
       <path d={`M${x - 28} 146h56a28 14 0 0 1-56 0Z`} {...ground} pathLength={1} />
-    </>
+    </g>
   );
 }
 
 /** The balance itself, in the 240-unit box; shared with the seal. */
-export function ScalesShape() {
+export function ScalesShape({ live }: { live?: boolean } = {}) {
   return (
     <>
       <path d="M120 56v140" pathLength={1} />
       <circle cx="120" cy="46" r="7" {...ground} pathLength={1} />
       <path d="M112 74l8-10 8 10" pathLength={1} />
-      <path d="M44 74h152" pathLength={1} />
-      <circle cx="44" cy="74" r="3" {...ground} pathLength={1} />
-      <circle cx="196" cy="74" r="3" {...ground} pathLength={1} />
-      {pan(44)}
-      {pan(196)}
+      <g className={live ? 'art-beam' : undefined}>
+        <path d="M44 74h152" pathLength={1} />
+        <circle cx="44" cy="74" r="3" {...ground} pathLength={1} />
+        <circle cx="196" cy="74" r="3" {...ground} pathLength={1} />
+      </g>
+      {pan(44, live)}
+      {pan(196, live)}
       <path d="M96 196h48v10H96zM80 206h80v10H80z" {...ground} pathLength={1} />
     </>
   );
 }
 
 /** GMC: the balance, level, with its hangers, pans and a stepped base. */
-export function ScalesArt({ className }: ArtProps) {
+export function ScalesArt({ className, live }: ArtProps) {
   return (
     <svg {...common} className={className}>
       <g {...stroke} data-draw="">
-        <ScalesShape />
+        <ScalesShape live={live} />
       </g>
     </svg>
   );
@@ -99,14 +107,17 @@ export function ScalesArt({ className }: ArtProps) {
 const SHEET = 'M72 48h72l28 28v120H72Z';
 
 /** Resources: two sheets, the back one set askew and hidden where they overlap. */
-export function DocumentsArt({ className }: ArtProps) {
+export function DocumentsArt({ className, live }: ArtProps) {
   return (
     <svg {...common} className={className}>
       <g {...stroke} data-draw="">
-        <path d={SHEET} transform="rotate(-9 122 122) translate(-18 6)" {...ground} pathLength={1} />
+        <g className={live ? 'art-sheet-back' : undefined}>
+          <path d={SHEET} transform="rotate(-9 122 122) translate(-18 6)" {...ground} pathLength={1} />
+        </g>
         <path d={SHEET} {...ground} pathLength={1} />
         <path d="M144 48v28h28" pathLength={1} />
-        <path d="M90 100h64M90 118h64M90 136h64M90 154h40" {...detail} pathLength={1} />
+        <path d="M90 100h64M90 118h64M90 136h64" {...detail} pathLength={1} />
+        <path d="M90 154h40" {...detail} pathLength={1} className={live ? 'art-writing' : undefined} />
         <path d="M90 76h36" pathLength={1} />
       </g>
     </svg>
@@ -115,7 +126,7 @@ export function DocumentsArt({ className }: ArtProps) {
 
 /* --- Days ----------------------------------------------------------------- */
 /** Schedule: a four-day calendar, its binding rings and a few sessions per day. */
-export function DaysArt({ className }: ArtProps) {
+export function DaysArt({ className, live }: ArtProps) {
   const sessions: [number, number, number][] = [
     [0, 102, 28], [0, 124, 20], [0, 150, 28],
     [1, 102, 20], [1, 128, 28],
@@ -130,12 +141,24 @@ export function DaysArt({ className }: ArtProps) {
         <path d="M74 86v118M120 86v118M166 86v118" {...detail} pathLength={1} />
         <rect x="68" y="38" width="12" height="28" rx="6" {...ground} pathLength={1} />
         <rect x="160" y="38" width="12" height="28" rx="6" {...ground} pathLength={1} />
-        <path
-          d={sessions.map(([day, y, w]) => `M${38 + day * 46} ${y}h${w}`).join('')}
-          strokeWidth={5}
-          strokeOpacity={0.4}
-          pathLength={1}
-        />
+        {live ? (
+          sessions.map(([day, y, w], index) => (
+            <path
+              key={index}
+              d={`M${38 + day * 46} ${y}h${w}`}
+              strokeWidth={5}
+              className="art-session"
+              style={{ '--i': index } as React.CSSProperties}
+            />
+          ))
+        ) : (
+          <path
+            d={sessions.map(([day, y, w]) => `M${38 + day * 46} ${y}h${w}`).join('')}
+            strokeWidth={5}
+            strokeOpacity={0.4}
+            pathLength={1}
+          />
+        )}
       </g>
     </svg>
   );
@@ -146,9 +169,11 @@ export function DaysArt({ className }: ArtProps) {
 // the Swabi interchange between them, and the road south to Topi and GIKI.
 const M1 = smoothPath([[28, 76], [70, 70], [118, 84], [168, 72], [212, 58]]);
 const TOPI_ROAD = smoothPath([[118, 84], [116, 108], [124, 134], [124, 160]]);
+// The traveller's way: in from Peshawar along the M-1, off at Swabi, south to campus.
+const JOURNEY = smoothPath([[28, 76], [70, 70], [118, 84], [116, 108], [124, 134], [124, 160]]);
 
 /** Venue: the M-1 between the two cities, the interchange, and the road to campus. */
-export function RouteArt({ className }: ArtProps) {
+export function RouteArt({ className, live }: ArtProps) {
   return (
     <svg {...common} className={className}>
       <g {...stroke} data-draw="">
@@ -165,6 +190,7 @@ export function RouteArt({ className }: ArtProps) {
           className="route__stop"
         />
         <circle cx="124" cy="170" r="7" pathLength={1} />
+        {live && <circle r="4.5" fill="currentColor" stroke="none" className="art-traveller" style={{ offsetPath: `path('${JOURNEY}')` }} />}
       </g>
     </svg>
   );
@@ -218,16 +244,19 @@ export function PorticoArt({ className }: ArtProps) {
 
 /* --- Gavel ---------------------------------------------------------------- */
 /** Results: a gavel at rest on its block. */
-export function GavelArt({ className }: ArtProps) {
+export function GavelArt({ className, live }: ArtProps) {
   return (
     <svg {...common} className={className}>
       <g {...stroke} data-draw="">
         <path d="M44 196h152v12H44zM64 184h112v12H64z" {...ground} pathLength={1} />
-        <g transform="rotate(-38 120 112)">
-          <path d="M120 116v92" strokeWidth={4} pathLength={1} />
-          <rect x="84" y="80" width="72" height="36" rx="8" {...ground} pathLength={1} />
-          <path d="M96 80v36M144 80v36" {...detail} pathLength={1} />
+        <g className={live ? 'art-gavel' : undefined}>
+          <g transform="rotate(-38 120 112)">
+            <path d="M120 116v92" strokeWidth={4} pathLength={1} />
+            <rect x="84" y="80" width="72" height="36" rx="8" {...ground} pathLength={1} />
+            <path d="M96 80v36M144 80v36" {...detail} pathLength={1} />
+          </g>
         </g>
+        {live && <path d="M52 176q68-14 136 0" {...detail} className="art-ring" />}
       </g>
     </svg>
   );

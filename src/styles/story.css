@@ -70,8 +70,30 @@
     z-index: 30;
     display: block;
     transform: translateY(-50%);
-    animation: chapter-index-in var(--dur-surface) var(--ease-out-expo) both;
+    /* backwards, not both: a held end state would override the slide below. */
+    animation: chapter-index-in var(--dur-surface) var(--ease-out-expo) backwards;
   }
+}
+
+/* The rail slides out past the left edge over the hero and the footer, and
+   while the chambers corridor holds the middle of the screen (its panels
+   pass under it); it slides back in as the chapters return. */
+.chapter-index {
+  transition:
+    transform 0.7s var(--ease-out-expo),
+    opacity 0.5s var(--ease-out-expo),
+    visibility 0s linear 0s;
+}
+
+[data-corridor] .chapter-index,
+.chapter-index[data-aside] {
+  visibility: hidden;
+  opacity: 0;
+  transform: translate(calc(-100% - 2.5rem), -50%);
+  transition:
+    transform 0.6s cubic-bezier(0.55, 0, 1, 0.45),
+    opacity 0.45s cubic-bezier(0.55, 0, 1, 0.45),
+    visibility 0s linear 0.6s;
 }
 
 @keyframes chapter-index-in {

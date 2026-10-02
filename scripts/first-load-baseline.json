@@ -1,42 +1,42 @@
 {
   "/": {
-    "jsGzip": 208612,
-    "cssGzip": 18598,
-    "fontBytes": 80720
+    "jsGzip": 219782,
+    "cssGzip": 29624,
+    "fontBytes": 69464
   },
   "/register": {
-    "jsGzip": 238123,
-    "cssGzip": 18598,
-    "fontBytes": 80720
+    "jsGzip": 247794,
+    "cssGzip": 29624,
+    "fontBytes": 69464
   },
   "/resources": {
-    "jsGzip": 211462,
-    "cssGzip": 18598,
-    "fontBytes": 80720
+    "jsGzip": 218514,
+    "cssGzip": 30363,
+    "fontBytes": 69464
   },
   "/gimun": {
-    "jsGzip": 206905,
-    "cssGzip": 18598,
-    "fontBytes": 80720
+    "jsGzip": 217121,
+    "cssGzip": 29624,
+    "fontBytes": 69464
   },
   "/moot-cup": {
-    "jsGzip": 206905,
-    "cssGzip": 18598,
-    "fontBytes": 80720
+    "jsGzip": 217121,
+    "cssGzip": 29624,
+    "fontBytes": 69464
   },
   "/about": {
-    "jsGzip": 206905,
-    "cssGzip": 18598,
-    "fontBytes": 80720
+    "jsGzip": 217245,
+    "cssGzip": 29624,
+    "fontBytes": 69464
   },
   "/schedule": {
-    "jsGzip": 211614,
-    "cssGzip": 18598,
-    "fontBytes": 80720
+    "jsGzip": 218165,
+    "cssGzip": 30705,
+    "fontBytes": 69464
   },
   "/contact": {
-    "jsGzip": 213149,
-    "cssGzip": 18598,
-    "fontBytes": 80720
+    "jsGzip": 221230,
+    "cssGzip": 29624,
+    "fontBytes": 69464
   }
 }

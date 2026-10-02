@@ -24,9 +24,12 @@ import { ProcessOutbox } from '../ProcessOutbox';
 import { UsersForm } from '../UsersForm';
 const string:Schema={type:'string'};const boolean:Schema={type:'boolean'};
 function schema(properties:Record<string,Schema>):Schema{return {type:'object',properties};}
-export default async function OpsPage({params,searchParams}:{params:Promise<{section:string}>;searchParams:Promise<{q?:string;page?:string;track?:string;status?:string;payment?:string;sort?:string}>}) {
+type Query={q?:string;page?:string;track?:string;status?:string;payment?:string;sort?:string};
+// A repeated parameter (?q=a&q=b) arrives as an array; string methods on it crashed the page.
+function firstValues(raw:Record<string,string|string[]|undefined>):Query{return Object.fromEntries(Object.entries(raw).map(([k,v])=>[k,Array.isArray(v)?v[0]:v]));}
+export default async function OpsPage({params,searchParams}:{params:Promise<{section:string}>;searchParams:Promise<Record<string,string|string[]|undefined>>}) {
   const {section}=await params;if(!sections.includes(section as typeof sections[number]))notFound();
-  const user=await requirePermission(section);const write=can(user,section,true);const query=await searchParams;const page=Math.min(100000,Math.max(0,Math.floor(Number(query.page)||0)));
+  const user=await requirePermission(section);const write=can(user,section,true);const query=firstValues(await searchParams);const page=Math.min(100000,Math.max(0,Math.floor(Number(query.page)||0)));
   const table:Record<string,string>={registrations:'registrations',inbox:'contact_messages',email:'email_outbox','event-day':'participants',allocations:'allocations',certificates:'certificates',feedback:'survey_questions','close-out':'event_archives',users:'admin_users',media:'media_assets',audit:'audit_log'};
   if(!table[section])notFound();
   let request=database().from(table[section]).select(recordColumns[section].join(','),{count:'exact'});

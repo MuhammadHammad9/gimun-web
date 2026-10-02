@@ -2,17 +2,18 @@ import type { Metadata } from 'next';
 import type { CSSProperties, ReactNode } from 'react';
 import { ArrowRight } from 'lucide-react';
 
+import { HeroClouds } from '@/components/art/HeroClouds';
 import { DaysArt, DocumentsArt, GlobeArt, RouteArt, ScalesArt } from '@/components/art/LineArt';
 import { Seal } from '@/components/art/Seal';
-import { Counter } from '@/components/motion/Counter';
 import { HandoffStage } from '@/components/motion/HandoffStage';
 import { HorizontalPan } from '@/components/motion/HorizontalPan';
+import { Marquee } from '@/components/motion/Marquee';
 import { ScrubText } from '@/components/motion/ScrubText';
 import { StickyStack } from '@/components/motion/StickyStack';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { ChapterHead, ChapterKicker } from '@/components/sections/Chapter';
 import { Closing } from '@/components/sections/Closing';
-import { DateLedger } from '@/components/sections/DateLedger';
+import { DeadlineClock } from '@/components/sections/DeadlineClock';
 import { Door } from '@/components/sections/Door';
 import { CasePlacard, CommitteePlacard, seatsOpen } from '@/components/sections/Placards';
 import { TrackKey, trackDot } from '@/components/sections/TrackKey';
@@ -23,8 +24,10 @@ import { SponsorStrip } from '@/components/ui/SponsorStrip';
 import { Bridge } from '@/components/story/Bridge';
 import { ChapterRail } from '@/components/story/ChapterRail';
 
-import { getCommittees, getProblemCategories, getSchedule, getSiteConfig, getSponsors } from '@/lib/content';
+import { getCommittees, getCopy, getProblemCategories, getSchedule, getSiteConfig, getSponsors } from '@/lib/content';
+import { accentWords, chapterNumbers, fill } from '@/lib/copy';
 import { feeAmount } from '@/lib/fees';
+import { centroidOf } from '@/lib/geo/centroids';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister as canTrackRegister, eventPhase, serverRenderTime } from '@/lib/phase';
 import { formatEventDate, getEventYear, getSiteUrl } from '@/lib/site-config';
@@ -40,12 +43,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [site, committees, categories, sponsors, schedule] = await Promise.all([
+  const [site, committees, categories, sponsors, schedule, copy] = await Promise.all([
     getSiteConfig(),
     getCommittees(),
     getProblemCategories(),
     getSponsors(),
     getSchedule(),
+    getCopy('home'),
   ]);
 
   const now = serverRenderTime();
@@ -54,6 +58,29 @@ export default async function Home() {
   const mootOpen = canTrackRegister(site, 'mootCup', now);
   const shortDate = (iso: string) => formatEventDate(iso, { month: 'short' });
   const dateRange = formatDateRange(site.eventDates.start, site.eventDates.end);
+
+  const hero = copy('home-hero');
+  const choice = copy('home-choice');
+  const inside = copy('home-inside');
+  const asks = copy('home-asks');
+  const week = copy('home-week');
+  const clock = copy('home-clock');
+  const prepare = copy('home-prepare');
+  const closing = copy('home-closing');
+  // "The choice" carries the hero hand-off, so it is always shown.
+  const chapter = chapterNumbers(copy, ['home-choice', 'home-inside', 'home-asks', 'home-week', 'home-clock', 'home-prepare', 'home-closing']);
+  const vars = {
+    committees: committees.length,
+    cases: categories.length,
+    dates: dateRange,
+    checkin: site.checkinDesk ?? 'Check-in opens on Day 1',
+    entry: site.entryRequirement ?? 'Bring a photo ID and your QR ticket.',
+  };
+  const lines = (text?: string) => fill(text, vars).split('\n').map((line) => line.trim()).filter(Boolean);
+  const stackArt = [<DocumentsArt key="docs" />, <DaysArt key="days" />, <RouteArt key="route" />];
+  const stackIds = ['stack-library', 'stack-schedule', 'stack-venue'];
+  // Delegations in session: countries only (crisis roles are not nations).
+  const delegations = [...new Set(committees.flatMap((c) => (c.countryList ?? []).map((entry) => entry.country)))].filter((country) => centroidOf(country));
 
   const seats = committees.reduce((sum, committee) => sum + (committee.countryList?.length ?? 0), 0);
   const openSeats = committees.reduce((sum, committee) => sum + seatsOpen(committee), 0);
@@ -123,14 +150,15 @@ export default async function Home() {
       {/* Hero, then the first chapter slides over it like a sheet. */}
       <div className="handoff">
         <div className="handoff__stage">
+          <HeroClouds />
           <div className="handoff__scene">
             <PageHero
               variant="home"
-              title="Where diplomacy meets the courtroom."
+              title={fill(hero.title, vars)}
               gimunWords={['diplomacy']}
-              accentWords={['courtroom.']}
+              accentWords={accentWords(hero)}
               meta={[dateRange, 'GIKI, Topi', <DaysToGo key="days" start={site.eventDates.start} end={site.eventDates.end} />]}
-              description="Two student competitions on one campus. Represent a country in committee, or argue a case before a bench of judges, over the same four days in March."
+              description={fill(hero.lead, vars)}
               actions={[
                 { ...gimunAction, variant: 'track-gimun' },
                 { ...mootAction, variant: 'track-moot' },
@@ -140,7 +168,7 @@ export default async function Home() {
                   ? `Applications close ${shortDate(site.registrationDeadlines.gimun)} (GIMUN) and ${shortDate(site.registrationDeadlines.mootCup)} (GMC).`
                   : undefined
               }
-              art={<Seal id="hero-seal" />}
+              art={<Seal id="hero-seal" motion />}
             />
           </div>
           <div className="handoff__dim" aria-hidden="true" />
@@ -156,22 +184,22 @@ export default async function Home() {
           <div className="wrap">
             <ChapterHead
               id="rooms-title"
-              chapter={1}
-              act="The choice"
+              chapter={chapter['home-choice']}
+              act={choice.kicker}
               reveal
-              title="Two rooms, the same four days."
-              lead="GIMUN and the GIKI Moot Court run side by side on one campus. The preparation, the rules and the judging are different, so pick the room you want to be tested in."
+              title={fill(choice.title, vars)}
+              lead={fill(choice.lead, vars)}
             />
             <div className="doors">
               <Door
                 id="door-gimun"
                 accent="gimun"
-                label="Model United Nations"
+                label={choice.items?.[0]?.title ?? 'Model United Nations'}
                 status={gimunOpen ? 'Applications open' : 'Registration closed'}
                 open={gimunOpen}
                 mark="GIMUN"
                 title={site.eventNames.gimun}
-                copy={`Represent a country in one of ${committees.length} committees, from the Security Council to a crisis session of the National Assembly.`}
+                copy={fill(choice.items?.[0]?.body, vars)}
                 facts={[
                   { term: 'Committees', value: committees.length },
                   { term: 'Seats open', value: `${openSeats} of ${seats}` },
@@ -185,12 +213,12 @@ export default async function Home() {
               <Door
                 id="door-gmc"
                 accent="gmc"
-                label="Moot court"
+                label={choice.items?.[1]?.title ?? 'Moot court'}
                 status={mootOpen ? 'Applications open' : 'Registration closed'}
                 open={mootOpen}
                 mark="GMC"
                 title={site.eventNames.mootCup}
-                copy="Draft memorials for both sides of one case problem, then argue them before a bench that questions you on the law."
+                copy={fill(choice.items?.[1]?.body, vars)}
                 facts={[
                   { term: 'Case categories', value: categories.length },
                   { term: 'Team', value: '2 to 4 members' },
@@ -202,23 +230,24 @@ export default async function Home() {
                 art={<ScalesArt />}
               />
             </div>
-            <Bridge to="chambers-title">Each room has its own chambers. Step inside, one at a time.</Bridge>
+            {choice.bridge && !inside.hidden && <Bridge to="chambers-title">{fill(choice.bridge, vars)}</Bridge>}
           </div>
         </section>
       </div>
 
       {/* 02 Inside the rooms: a corridor of placards */}
+      {!inside.hidden && (
       <section className="chapter" aria-labelledby="chambers-title">
         <HorizontalPan
           label="Committees and case categories"
           header={
             <ChapterHead
               id="chambers-title"
-              chapter={2}
-              act="Inside the rooms"
+              chapter={chapter['home-inside']}
+              act={inside.kicker}
               split={false}
-              title={`${committees.length} committees, ${categories.length} cases.`}
-              lead="Every chamber and every case category, with the seats still open. Countries are allocated after applications are reviewed."
+              title={fill(inside.title, vars)}
+              lead={fill(inside.lead, vars)}
             />
           }
         >
@@ -230,9 +259,9 @@ export default async function Home() {
           ))}
           <article className="placard placard--end" data-pan-panel="" aria-labelledby="pan-end">
             <h3 id="pan-end" className="placard__name">
-              Read the full briefs
+              {fill(inside.items?.[0]?.title, vars) || 'Read the full briefs'}
             </h3>
-            <p className="placard__copy">Topics, chairs, country lists and the case problems, each on its own page.</p>
+            <p className="placard__copy">{fill(inside.items?.[0]?.body, vars)}</p>
             <div className="flex flex-wrap gap-x-6 gap-y-3 pt-4">
               <Link href="/gimun/committees" className="text-link">
                 All committees
@@ -244,34 +273,36 @@ export default async function Home() {
           </article>
         </HorizontalPan>
       </section>
+      )}
+
+      {!inside.hidden && <Marquee items={delegations} label="Countries represented in committee" />}
 
       {/* 03 What it asks of you */}
+      {!asks.hidden && (
       <section className="sheet tone-crest" aria-labelledby="asks-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
-          <ChapterKicker chapter={3} act="What it asks of you" target="asks-title" />
+          <ChapterKicker chapter={chapter['home-asks']!} act={asks.kicker ?? ''} target="asks-title" />
           <h2 id="asks-title" className="sr-only">
-            What it asks of you
+            {asks.kicker}
           </h2>
-          <ScrubText className="manifesto mt-8">
-            Represent a country or argue a case, in front of chairs and judges who will question every point you make.
-            At the end of the four days, awards go to the best delegates and delegations, the best memorial, the best
-            oralist and the champions of the moot.
-          </ScrubText>
+          <ScrubText className="manifesto mt-8">{fill(asks.body, vars)}</ScrubText>
         </div>
       </section>
+      )}
 
       {/* 04 The week: a paper sheet in the dark theme, ink in the light */}
+      {!week.hidden && (
       <section className="sheet tone-inverse" aria-labelledby="days-title">
         <div className="sheet__ground" aria-hidden="true" />
         <div className="wrap">
           <ChapterHead
             id="days-title"
-            chapter={4}
-            act="The week"
+            chapter={chapter['home-week']}
+            act={week.kicker}
             reveal
-            title="Four days in Topi."
-            lead={`Both tracks share the opening, the meals, the evenings and the awards. ${dateRange}.`}
+            title={fill(week.title, vars)}
+            lead={fill(week.lead, vars)}
           />
           <ol className="days">
             {days.map(({ day, date, items }) => (
@@ -299,82 +330,54 @@ export default async function Home() {
             </Link>
             <TrackKey />
           </div>
-          <Bridge to="dates-title">Before that week, a few dates decide whether you are in the room.</Bridge>
+          {week.bridge && !clock.hidden && <Bridge to="dates-title">{fill(week.bridge, vars)}</Bridge>}
         </div>
       </section>
+      )}
 
       {/* 05 The clock */}
+      {!clock.hidden && (
       <section className="chapter" aria-labelledby="dates-title">
         <div className="wrap">
-          <ChapterHead id="dates-title" chapter={5} act="The clock" title="The dates that matter." lead="Every deadline in one list. Times are Pakistan time." />
-          <div className="figures">
-            <div className="figure">
-              <Counter value={committees.length} className="figure__value" />
-              <span className="figure__label">committees</span>
-            </div>
-            <div className="figure">
-              <Counter value={seats} className="figure__value" />
-              <span className="figure__label">country seats</span>
-            </div>
-            <div className="figure">
-              <Counter value={openSeats} className="figure__value" />
-              <span className="figure__label">seats still open</span>
-            </div>
-            <div className="figure">
-              <Counter value={categories.length} className="figure__value" />
-              <span className="figure__label">case categories</span>
-            </div>
-          </div>
-          <DateLedger
+          <ChapterHead id="dates-title" chapter={chapter['home-clock']} act={clock.kicker} title={fill(clock.title, vars)} lead={fill(clock.lead, vars)} />
+          <DeadlineClock
             now={now}
             dates={[
-              { iso: site.registrationDeadlines.gimun, what: 'GIMUN applications close', note: 'Individuals and delegations' },
-              ...(site.memorialDeadline ? [{ iso: site.memorialDeadline, what: 'GMC memorials due', note: '23:59 PKT, by email to the moot court address' }] : []),
-              { iso: site.registrationDeadlines.mootCup, what: 'GMC applications close', note: 'Teams of two to four' },
-              { iso: addDays(site.eventDates.start, -7), what: 'GIMUN position papers due', note: 'At least 7 days before Day 1' },
+              { iso: site.registrationDeadlines.gimun, what: 'GIMUN applications close', deadline: true, note: 'Individuals and delegations' },
+              ...(site.memorialDeadline ? [{ iso: site.memorialDeadline, what: 'GMC memorials due', deadline: true, note: '23:59 PKT, by email to the moot court address' }] : []),
+              { iso: site.registrationDeadlines.mootCup, what: 'GMC applications close', deadline: true, note: 'Teams of two to four' },
+              { iso: addDays(site.eventDates.start, -7), what: 'GIMUN position papers due', deadline: true, note: 'At least 7 days before Day 1' },
               { iso: site.eventDates.start, what: 'Conference opens', note: site.checkinDesk ?? 'Check-in on Day 1' },
               ...(site.galaDate ? [{ iso: site.galaDate, what: 'Grand Final and awards gala', note: 'Awards for both tracks' }] : []),
             ]}
           />
-          <Bridge to="prepare-title">Once you are in, here is what to read and how to get to Topi.</Bridge>
+          {clock.bridge && !prepare.hidden && <Bridge to="prepare-title">{fill(clock.bridge, vars)}</Bridge>}
         </div>
       </section>
+      )}
 
       {/* 06 Before you arrive */}
-      <section className="chapter" aria-labelledby="prepare-title">
-        <div className="wrap">
-          <ChapterHead id="prepare-title" chapter={6} act="Before you arrive" title="Before you arrive." lead="What to read, when to be where, and how to get to Topi." />
-          <StickyStack>
-            <StackCard
-              index={0}
-              id="stack-library"
-              title="The resource library"
-              copy="Background guides, the case problems, the rules and every form, each marked with its revision date."
-              points={['Committee background guides', 'Rules of procedure and moot rules', 'Forms and templates']}
-              action={{ label: 'Open the library', href: '/resources' }}
-              art={<DocumentsArt />}
-            />
-            <StackCard
-              index={1}
-              id="stack-schedule"
-              title="The schedule"
-              copy="Session times and rooms for all four days, with any change marked the moment it is made."
-              points={[site.checkinDesk ?? 'Check-in opens on Day 1', 'Filter by track, print a copy']}
-              action={{ label: 'See the schedule', href: '/schedule' }}
-              art={<DaysArt />}
-            />
-            <StackCard
-              index={2}
-              id="stack-venue"
-              title="Getting to GIKI"
-              copy="The route to Topi from Islamabad and Peshawar, where to stay, and what to bring."
-              points={[site.entryRequirement ?? 'Bring a photo ID and your QR ticket.', 'On-campus accommodation on request']}
-              action={{ label: 'Venue and travel', href: '/about/venue' }}
-              art={<RouteArt />}
-            />
-          </StickyStack>
-        </div>
-      </section>
+      {!prepare.hidden && (
+        <section className="chapter" aria-labelledby="prepare-title">
+          <div className="wrap">
+            <ChapterHead id="prepare-title" chapter={chapter['home-prepare']} act={prepare.kicker} title={fill(prepare.title, vars)} lead={fill(prepare.lead, vars)} />
+            <StickyStack>
+              {(prepare.items ?? []).slice(0, 3).map((item, index) => (
+                <StackCard
+                  key={stackIds[index]}
+                  index={index}
+                  id={stackIds[index]}
+                  title={fill(item.title, vars)}
+                  copy={fill(item.body, vars)}
+                  points={lines(item.meta)}
+                  action={prepare.actions?.[index]}
+                  art={stackArt[index]}
+                />
+              ))}
+            </StickyStack>
+          </div>
+        </section>
+      )}
 
       {/* Partners, only once there are approved ones */}
       {sponsors.length > 0 && (
@@ -393,10 +396,10 @@ export default async function Home() {
       {/* 07 Your seat */}
       <Closing
         id="closing-title"
-        chapter={7}
-        act="Your seat"
-        title="Reserve your place."
-        lead="Applying reserves a delegate or team place for review. Accepted participants receive an invoice with bank transfer details."
+        chapter={chapter['home-closing']}
+        act={closing.kicker}
+        title={fill(closing.title, vars)}
+        lead={fill(closing.lead, vars)}
         actions={[
           { ...gimunAction, variant: 'track-gimun' },
           { ...mootAction, variant: 'track-moot' },
@@ -420,7 +423,7 @@ function StackCard({
   title: string;
   copy: string;
   points: string[];
-  action: { label: string; href: string };
+  action?: { label: string; href: string };
   art: ReactNode;
 }) {
   return (
@@ -435,11 +438,13 @@ function StackCard({
             <li key={point}>{point}</li>
           ))}
         </ul>
-        <div className="stack__foot">
-          <Button href={action.href} variant="secondary" withArrow>
-            {action.label}
-          </Button>
-        </div>
+        {action && (
+          <div className="stack__foot">
+            <Button href={action.href} variant="secondary" withArrow>
+              {action.label}
+            </Button>
+          </div>
+        )}
       </div>
       <div className="stack__art tone-crest" aria-hidden="true">
         {art}

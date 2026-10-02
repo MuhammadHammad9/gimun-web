@@ -162,15 +162,63 @@ function buildRegistrationReference(track: Track, year: string) {
 
 /**
  * IPv6 clients usually control a whole /64, so limiting single addresses lets
- * one host rotate freely. Keys use the /64 prefix; IPv4 is used as-is.
+ * one host rotate freely. Keys use the /64 prefix; IPv4 and non-address keys
+ * (an email, an "account|network" pair) are used as-is.
  */
 export function rateLimitSubject(ip: string) {
-  if (!ip.includes(':')) return ip;
+  if (!ip.includes(':') || !/^[0-9a-f:.]+$/i.test(ip)) return ip;
   const [head, tail = ''] = ip.toLowerCase().split('::');
   const left = head ? head.split(':') : [];
   const right = tail ? tail.split(':') : [];
   const groups = ip.includes('::') ? [...left, ...Array(Math.max(0, 8 - left.length - right.length)).fill('0'), ...right] : left;
   return `${groups.slice(0, 4).map((g) => g.replace(/^0+(?=.)/, '')).join(':')}::/64`;
+}
+
+/**
+ * The per-instance fallback limiter only runs while Upstash is unavailable,
+ * but its entries were never removed, so a long outage grew the map with
+ * every new visitor address for the life of the instance. Expired windows
+ * are dropped once the map is large; past the hard cap the oldest entries go
+ * (a Map iterates in insertion order), which at worst lets a few long-idle
+ * addresses start a fresh window early.
+ */
+const MEMORY_RATE_LIMIT_PRUNE_AT = 5_000;
+const MEMORY_RATE_LIMIT_MAX = 20_000;
+function pruneMemoryRateLimits(now: number) {
+  if (memoryRateLimits.size < MEMORY_RATE_LIMIT_PRUNE_AT) return;
+  for (const [key, entry] of memoryRateLimits) if (now >= entry.resetAt) memoryRateLimits.delete(key);
+  for (const key of memoryRateLimits.keys()) {
+    if (memoryRateLimits.size < MEMORY_RATE_LIMIT_MAX) break;
+    memoryRateLimits.delete(key);
+  }
+}
+
+/**
+ * When this instance last had to use its own memory instead of the shared
+ * limiter in production. Serverless runs many instances, so per-instance
+ * limits barely limit anything; /api/health reports it so it gets fixed.
+ */
+let limiterFallbackAt = 0;
+const LIMITER_HEALTH_WINDOW_MS = 5 * 60 * 1000;
+export async function rateLimiterHealth(): Promise<'ok' | 'degraded'> {
+  if (Date.now() - limiterFallbackAt < LIMITER_HEALTH_WINDOW_MS) return 'degraded';
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  // Not configured: production builds refuse this (check-env) and health
+  // already reports it as incomplete configuration.
+  if (!url || !token) return 'ok';
+  try {
+    const response = await fetch(url.replace(/\/$/, ''), {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(['PING']),
+      cache: 'no-store',
+      signal: AbortSignal.timeout(3000),
+    });
+    return response.ok ? 'ok' : 'degraded';
+  } catch {
+    return 'degraded';
+  }
 }
 
 // Deliberately independent of the submission/email configuration: admin
@@ -226,6 +274,8 @@ export async function enforceRateLimit(bucket: RateLimitBucket, ip: string) {
   }
 
   const now = Date.now();
+  if (production) limiterFallbackAt = now;
+  pruneMemoryRateLimits(now);
   const current = memoryRateLimits.get(key);
   if (!current || now >= current.resetAt) {
     memoryRateLimits.set(key, { count: 1, resetAt: now + RATE_LIMIT.windowMs });
@@ -239,18 +289,28 @@ export async function enforceRateLimit(bucket: RateLimitBucket, ip: string) {
   };
 }
 
+/**
+ * The visitor's address for rate limiting. Every header here can be sent by
+ * the visitor too, so only the ones the hosting platform overwrites count:
+ * - On Vercel (VERCEL=1) its edge sets x-vercel-forwarded-for and x-real-ip.
+ * - Elsewhere only X-Forwarded-For is used, read from the right: each trusted
+ *   reverse proxy appends the address it saw, so the entry TRUSTED_PROXY_HOPS
+ *   from the end (default 1: one proxy) is the client, and anything a caller
+ *   prepends is ignored. x-real-ip is not trusted off Vercel: a proxy that
+ *   does not overwrite it would let every request claim a new address.
+ */
 export function clientIp(request: Request) {
-  const trustedVercelIp = request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim();
-  const realIp = request.headers.get('x-real-ip')?.trim();
+  if (process.env.VERCEL === '1') {
+    const vercelIp = request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip')?.trim();
+    if (vercelIp) return vercelIp;
+  }
   const forwarded = request.headers.get('x-forwarded-for')
     ?.split(',')
     .map((value) => value.trim())
     .filter(Boolean);
-
-  // Vercel's edge header is authoritative in production. For generic reverse
-  // proxies, use the last appended X-Forwarded-For hop so a caller cannot
-  // bypass the limiter by prepending a forged address.
-  return trustedVercelIp || realIp || forwarded?.at(-1) || 'unknown';
+  const configuredHops = Number.parseInt(process.env.TRUSTED_PROXY_HOPS || '', 10);
+  const hops = Number.isInteger(configuredHops) && configuredHops > 0 ? configuredHops : 1;
+  return forwarded?.at(-hops) || forwarded?.[0] || 'unknown';
 }
 
 /**
@@ -722,13 +782,23 @@ export async function dispatchEmailOutbox(limit = 4) {
         : 0;
       const exhausted = message.attempts >= 20 || !Number.isFinite(retryUntil) || Date.now() >= retryUntil;
       const status = !exhausted && (dispatchError.retryable || dispatchError.uncertain) ? 'retry' : dispatchError.uncertain ? 'needs_review' : 'failed';
-      await updateOutbox(message.id, workerId, {
-        status,
-        next_attempt_at: new Date(Date.now() + Math.min(60 * 60 * 1000, 2 ** Math.min(message.attempts, 10) * 60_000)).toISOString(),
-        locked_at: null,
-        locked_by: null,
-        last_error: dispatchError.message.slice(0, 240),
-      });
+      try {
+        await updateOutbox(message.id, workerId, {
+          status,
+          next_attempt_at: new Date(Date.now() + Math.min(60 * 60 * 1000, 2 ** Math.min(message.attempts, 10) * 60_000)).toISOString(),
+          locked_at: null,
+          locked_by: null,
+          last_error: dispatchError.message.slice(0, 240),
+        });
+      } catch {
+        // Recording the failure failed too (a database blip). The lease
+        // expires in ten minutes and the message is claimed again then, so
+        // count it as a retry and carry on with the rest of this batch
+        // instead of abandoning every message claimed after it.
+        console.error('[Outbox] Could not record a delivery failure; the lease will expire and retry.');
+        retried += 1;
+        continue;
+      }
       if (status === 'needs_review') needsReview += 1;
       else if (status === 'failed') failed += 1;
       else retried += 1;

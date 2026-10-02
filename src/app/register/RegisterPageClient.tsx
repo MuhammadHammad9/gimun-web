@@ -150,6 +150,11 @@ function RegisterContent({ committees, categories, siteConfig, initialTrack }: R
 
           {openedTracks.has('gimun') && (
             <div hidden={selectedTrack !== 'gimun'}>
+              {!isGimunOpen() && <ClosedRegistrationBanner
+                  track="gimun"
+                  deadline={siteConfig.registrationDeadlines.gimun}
+                  onSwitchTrack={() => setOverrideTrack('moot-cup')}
+                />}
               <fieldset disabled={!isGimunOpen()}>
                 <GimunRegisterForm
                   committees={committees}
@@ -166,16 +171,16 @@ function RegisterContent({ committees, categories, siteConfig, initialTrack }: R
                   }}
                 />
               </fieldset>
-              {!isGimunOpen() && <ClosedRegistrationBanner
-                  track="gimun"
-                  deadline={siteConfig.registrationDeadlines.gimun}
-                  onSwitchTrack={() => setOverrideTrack('moot-cup')}
-                />}
             </div>
           )}
 
           {openedTracks.has('moot-cup') && (
             <div hidden={selectedTrack !== 'moot-cup'}>
+              {!isMootOpen() && <ClosedRegistrationBanner
+                  track="moot-cup"
+                  deadline={siteConfig.registrationDeadlines.mootCup}
+                  onSwitchTrack={() => setOverrideTrack('gimun')}
+                />}
               <fieldset disabled={!isMootOpen()}>
                 <MootRegisterForm
                   categories={categories}
@@ -192,11 +197,6 @@ function RegisterContent({ committees, categories, siteConfig, initialTrack }: R
                   }}
                 />
               </fieldset>
-              {!isMootOpen() && <ClosedRegistrationBanner
-                  track="moot-cup"
-                  deadline={siteConfig.registrationDeadlines.mootCup}
-                  onSwitchTrack={() => setOverrideTrack('gimun')}
-                />}
             </div>
           )}
         </>

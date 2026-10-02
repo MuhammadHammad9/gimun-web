@@ -29,6 +29,14 @@ describe('curtain routing', () => {
   });
 });
 
+describe('curtain labels for malformed links', () => {
+  it('never throws on a broken percent escape (it froze the page mid-transition)', () => {
+    expect(() => routeLabel('/gimun/committees/%E0%A4')).not.toThrow();
+    expect(routeLabel('/gimun/committees/50%off').title).toBe('50%OFF');
+    expect(routeLabel('/gimun/committees/un%20sc').title).toBe('UN SC');
+  });
+});
+
 describe('navigation state', () => {
   it('marks a section current on its own pages only', () => {
     expect(isCurrentPath('/gimun', '/gimun/committees/unsc')).toBe(true);

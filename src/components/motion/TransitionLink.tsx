@@ -3,10 +3,22 @@
 import { forwardRef, useContext, type AnchorHTMLAttributes, type MouseEvent } from 'react';
 import Link, { type LinkProps } from 'next/link';
 import { TransitionContext } from './TransitionProvider';
+import { motionTier } from '@/lib/motion/policy';
 import { isTransitionable } from '@/lib/motion/routes';
 
 type TransitionLinkProps = LinkProps &
-  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps | 'href'>;
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps | 'href'> & {
+    /**
+     * Skip the curtain and let a shared element morph into the next page
+     * (React <ViewTransition> pairs by name). Falls back to the curtain where
+     * the browser has no view transitions.
+     */
+    morph?: boolean;
+  };
+
+function canMorph(): boolean {
+  return typeof document !== 'undefined' && 'startViewTransition' in document && motionTier() !== 'none';
+}
 
 function hrefString(href: LinkProps['href']): string {
   if (typeof href === 'string') return href;
@@ -16,7 +28,7 @@ function hrefString(href: LinkProps['href']): string {
 
 /** Next Link with the same API, enhanced only for ordinary internal page clicks. */
 export const TransitionLink = forwardRef<HTMLAnchorElement, TransitionLinkProps>(function TransitionLink(
-  { href, onClick, replace, scroll, target, download, ...props },
+  { href, onClick, replace, scroll, target, download, morph = false, ...props },
   ref,
 ) {
   const transition = useContext(TransitionContext);
@@ -31,6 +43,10 @@ export const TransitionLink = forwardRef<HTMLAnchorElement, TransitionLinkProps>
       target === '_blank' ||
       download
     ) return;
+
+    // Next's own navigation runs as a transition, which is what lets the
+    // named elements on both pages morph. The provider still moves focus.
+    if (morph && canMorph()) return;
 
     const value = hrefString(href);
     if (!isTransitionable(value, new URL(window.location.href))) return;

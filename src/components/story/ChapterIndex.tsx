@@ -47,6 +47,9 @@ function goTo(id: string) {
 export function ChapterIndex() {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [active, setActive] = useState<string | null>(null);
+  // The rail slides out to the left over the hero (before the first chapter
+  // arrives) and over the footer; the story rail belongs to the chapters.
+  const [aside, setAside] = useState(true);
 
   // Bridge links: smooth, focus-moving chapter jumps.
   useEffect(() => {
@@ -96,7 +99,27 @@ export function ChapterIndex() {
         { rootMargin: '-35% 0px -60% 0px' },
       );
       sections.forEach((_, section) => observer?.observe(section));
+      first = markers[0]?.closest('section') ?? null;
+      place();
     };
+
+    let first: Element | null = null;
+    let frame = 0;
+    const place = () => {
+      frame = 0;
+      // Arrived once the first chapter covers half the screen (the hero has
+      // mostly gone); ending once the page's content is lifting off the
+      // footer (its bottom edge is above the lower part of the screen).
+      const main = document.getElementById('main-content');
+      const arrived = first ? first.getBoundingClientRect().top < window.innerHeight * 0.5 : false;
+      const ending = main ? main.getBoundingClientRect().bottom < window.innerHeight * 0.9 : false;
+      setAside(!arrived || ending);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(place);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
 
     firstIntent().then(start);
     wide.addEventListener('change', start);
@@ -104,13 +127,16 @@ export function ChapterIndex() {
       cancelled = true;
       observer?.disconnect();
       wide.removeEventListener('change', start);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(frame);
     };
   }, []);
 
   if (chapters.length < 2) return null;
 
   return (
-    <nav className="chapter-index" aria-label="Chapters on this page">
+    <nav className="chapter-index" aria-label="Chapters on this page" data-aside={aside ? '' : undefined}>
       <span className="chapter-index__thread" aria-hidden="true" />
       <ol>
         {chapters.map((chapter) => (

@@ -39,7 +39,7 @@ export function QuickJumpButton() {
         aria-label="Jump to a page"
         aria-keyshortcuts="Control+K Meta+K"
         aria-haspopup="dialog"
-        title="Jump to a page (Ctrl+K)"
+        data-tip="Search pages · Ctrl K"
         onClick={(event) => {
           opener.current = event.currentTarget;
           setOpen(true);

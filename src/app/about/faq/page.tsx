@@ -1,4 +1,5 @@
-import { getSiteConfig } from '@/lib/content';
+import { getCopy, getSiteConfig } from '@/lib/content';
+import { fill } from '@/lib/copy';
 import type { Metadata } from "next";
 import { constructMetadata } from "@/lib/metadata";
 import { getFAQ } from "@/lib/content";
@@ -15,6 +16,8 @@ export async function generateMetadata(): Promise<Metadata> { return await const
 }); }
 
 export default async function FaqPage() {
+  const copy = await getCopy('faq');
+  const hero = copy('faq-hero');
   const faqs = (await getFAQ());
 
   return (
@@ -23,9 +26,9 @@ export default async function FaqPage() {
         variant="utility"
         breadcrumbs={[{ label: 'About', href: '/about' }, { label: 'FAQ' }]}
         meta={[`${faqs.length} answers`, 'Search or browse by topic']}
-        title="Questions, answered."
-        accentPhrase="answered."
-        description="Fees and refunds, committee procedure, the moot rounds, accommodation at GIKI and getting to Topi."
+        title={fill(hero.title)}
+        accentPhrase={hero.accentPhrase}
+        description={fill(hero.lead)}
         actionsSlot={
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link href="/contact" className="text-link">

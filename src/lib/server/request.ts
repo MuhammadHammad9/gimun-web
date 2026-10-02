@@ -79,18 +79,34 @@ function safeHost(value: string | undefined) {
  * a plausible recent timestamp. Previously a phone clock running a few
  * seconds fast made a real application look instantaneous: the visitor got a
  * decoy success and nothing was stored.
+ *
+ * Only a filled honeypot earns the silent decoy: the field is hidden and
+ * unreachable by keyboard, so a person never fills it. The timing checks can
+ * misfire on a real person (autofill, an out-of-date page), so the handlers
+ * answer those with a visible "submit again" instead of a fake success.
  */
-export function looksAutomated(body: Record<string, unknown>) {
-  if (body._hp && String(body._hp).trim()) return true;
+export type BotSignal = 'honeypot' | 'too-fast' | 'no-timing' | null;
+export function botSignal(body: Record<string, unknown>): BotSignal {
+  if (body._hp && String(body._hp).trim()) return 'honeypot';
   if (body._elapsed !== undefined && body._elapsed !== null) {
     const elapsed = Number(body._elapsed);
-    return !Number.isFinite(elapsed) || elapsed < MIN_FILL_TIME_MS;
+    return !Number.isFinite(elapsed) || elapsed < MIN_FILL_TIME_MS ? 'too-fast' : null;
   }
   if (body._ts === undefined || body._ts === null || body._ts === '') {
-    return process.env.NODE_ENV === 'production';
+    return process.env.NODE_ENV === 'production' ? 'no-timing' : null;
   }
   const loadedAt = Number(body._ts);
-  if (!Number.isFinite(loadedAt)) return true;
+  if (!Number.isFinite(loadedAt)) return 'no-timing';
   const sinceLoad = Date.now() - loadedAt;
-  return sinceLoad >= 0 && sinceLoad < MIN_FILL_TIME_MS;
+  return sinceLoad >= 0 && sinceLoad < MIN_FILL_TIME_MS ? 'too-fast' : null;
+}
+export function looksAutomated(body: Record<string, unknown>) {
+  return botSignal(body) !== null;
+}
+
+/** The visible answer for a timing check that may have caught a person. */
+export function botCheckResponse(signal: Exclude<BotSignal, 'honeypot' | null>) {
+  return signal === 'too-fast'
+    ? { status: 422, message: 'That was quicker than expected. Check your details, then submit again.' }
+    : { status: 400, message: 'This page is out of date. Reload it and submit again (nothing was saved yet).' };
 }

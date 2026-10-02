@@ -1,0 +1,1213 @@
+[
+  {
+    "id": "home-hero",
+    "page": "home",
+    "label": "Home · Hero",
+    "title": "Where diplomacy meets the courtroom.",
+    "accentPhrase": "courtroom.",
+    "lead": "Two student competitions on one campus. Represent a country in committee, or argue a case before a bench of judges, over the same four days in March."
+  },
+  {
+    "id": "home-choice",
+    "page": "home",
+    "label": "Home · The choice (always shown)",
+    "kicker": "The choice",
+    "title": "Two rooms, the same four days.",
+    "lead": "GIMUN and the GIKI Moot Court run side by side on one campus. The preparation, the rules and the judging are different, so pick the room you want to be tested in.",
+    "bridge": "Each room has its own chambers. Step inside, one at a time.",
+    "items": [
+      {
+        "title": "Model United Nations",
+        "body": "Represent a country in one of {committees} committees, from the Security Council to a crisis session of the National Assembly."
+      },
+      {
+        "title": "Moot court",
+        "body": "Draft memorials for both sides of one case problem, then argue them before a bench that questions you on the law."
+      }
+    ]
+  },
+  {
+    "id": "home-inside",
+    "page": "home",
+    "label": "Home · Inside the rooms",
+    "kicker": "Inside the rooms",
+    "title": "{committees} committees, {cases} cases.",
+    "lead": "Every chamber and every case category, with the seats still open. Countries are allocated after applications are reviewed.",
+    "items": [
+      {
+        "title": "Read the full briefs",
+        "body": "Topics, chairs, country lists and the case problems, each on its own page."
+      }
+    ]
+  },
+  {
+    "id": "home-asks",
+    "page": "home",
+    "label": "Home · What it asks of you",
+    "kicker": "What it asks of you",
+    "body": "Represent a country or argue a case, in front of chairs and judges who will question every point you make. At the end of the four days, awards go to the best delegates and delegations, the best memorial, the best oralist and the champions of the moot."
+  },
+  {
+    "id": "home-week",
+    "page": "home",
+    "label": "Home · The week",
+    "kicker": "The week",
+    "title": "Four days in Topi.",
+    "lead": "Both tracks share the opening, the meals, the evenings and the awards. {dates}.",
+    "bridge": "Before that week, a few dates decide whether you are in the room."
+  },
+  {
+    "id": "home-clock",
+    "page": "home",
+    "label": "Home · The clock",
+    "kicker": "The clock",
+    "title": "The dates that matter.",
+    "lead": "Every deadline in one list. Times are Pakistan time.",
+    "bridge": "Once you are in, here is what to read and how to get to Topi."
+  },
+  {
+    "id": "home-prepare",
+    "page": "home",
+    "label": "Home · Before you arrive",
+    "kicker": "Before you arrive",
+    "title": "Before you arrive.",
+    "lead": "What to read, when to be where, and how to get to Topi.",
+    "items": [
+      {
+        "title": "The resource library",
+        "body": "Background guides, the case problems, the rules and every form, each marked with its revision date.",
+        "meta": "Committee background guides\nRules of procedure and moot rules\nForms and templates"
+      },
+      {
+        "title": "The schedule",
+        "body": "Session times and rooms for all four days, with any change marked the moment it is made.",
+        "meta": "{checkin}\nFilter by track, print a copy"
+      },
+      {
+        "title": "Getting to GIKI",
+        "body": "The route to Topi from Islamabad and Peshawar, where to stay, and what to bring.",
+        "meta": "{entry}\nOn-campus accommodation on request"
+      }
+    ],
+    "actions": [
+      {
+        "label": "Open the library",
+        "href": "/resources"
+      },
+      {
+        "label": "See the schedule",
+        "href": "/schedule"
+      },
+      {
+        "label": "Venue and travel",
+        "href": "/about/venue"
+      }
+    ]
+  },
+  {
+    "id": "home-closing",
+    "page": "home",
+    "label": "Home · Your seat",
+    "kicker": "Your seat",
+    "title": "Reserve your place.",
+    "lead": "Applying reserves a delegate or team place for review. Accepted participants receive an invoice with bank transfer details."
+  },
+  {
+    "id": "gimun-hero",
+    "page": "gimun",
+    "label": "GIMUN · Hero",
+    "title": "Represent a nation. Win the room.",
+    "accentPhrase": "Win the room.",
+    "lead": "GIKI Model United Nations brings student delegates to Topi for {committees} committees of debate, negotiation and crisis."
+  },
+  {
+    "id": "gimun-how",
+    "page": "gimun",
+    "label": "GIMUN · How a committee works (always shown)",
+    "kicker": "How a committee works",
+    "title": "Four days, one resolution.",
+    "lead": "First conference or fifteenth, the format is the same: represent your country, find allies, and get your text passed.",
+    "bridge": "Every resolution starts in a chamber. These are this year's.",
+    "items": [
+      {
+        "title": "Receive a country",
+        "body": "The secretariat assigns you a country and a committee. You research its foreign policy and represent it, whatever your own view."
+      },
+      {
+        "title": "Speak and caucus",
+        "body": "Formal speeches from the speakers’ list, then moderated caucuses on specific sub-issues under tight time limits."
+      },
+      {
+        "title": "Build a bloc",
+        "body": "In unmoderated time you negotiate with allies and rivals to assemble the votes a resolution needs."
+      },
+      {
+        "title": "Pass a resolution",
+        "body": "Sponsor a draft, defend its operative clauses through amendments, and carry it to a final vote."
+      }
+    ]
+  },
+  {
+    "id": "gimun-chambers",
+    "page": "gimun",
+    "label": "GIMUN · The chambers",
+    "kicker": "The chambers",
+    "title": "{committees} chambers for {year}.",
+    "lead": "Each committee page has its agenda, background guide and the countries still open for allocation.",
+    "bridge": "Found your chamber? Here is how to take a seat in it."
+  },
+  {
+    "id": "gimun-entry",
+    "page": "gimun",
+    "label": "GIMUN · Two ways in",
+    "kicker": "Two ways in",
+    "title": "On your own, or with your institution.",
+    "lead": "Nothing is charged when you apply. If your application is accepted, the organizing team emails an invoice with bank transfer details.",
+    "note": "On-campus accommodation is available on request.",
+    "items": [
+      {
+        "meta": "Individual delegate",
+        "title": "Apply on your own",
+        "body": "For students applying on their own. Rank three committees; the secretariat allocates your country."
+      },
+      {
+        "meta": "Institutional delegation",
+        "title": "Bring a delegation",
+        "body": "A head delegate or faculty advisor registers the whole team, 2 to 20 delegates, in one form."
+      }
+    ]
+  },
+  {
+    "id": "gimun-dates",
+    "page": "gimun",
+    "label": "GIMUN · The clock",
+    "kicker": "The clock",
+    "title": "GIMUN key dates.",
+    "lead": "Deadlines are 23:59 Pakistan time."
+  },
+  {
+    "id": "gimun-closing",
+    "page": "gimun",
+    "label": "GIMUN · Take a seat (always shown)",
+    "kicker": "Take a seat",
+    "title": "Ready to take a seat?",
+    "lead": "Rank three committees when you apply. Countries are allocated after the secretariat reviews your application."
+  },
+  {
+    "id": "moot-hero",
+    "page": "moot-cup",
+    "label": "Moot Court · Hero",
+    "title": "Read the problem. Argue the law.",
+    "accentPhrase": "Argue the law.",
+    "lead": "An appellate advocacy competition for law students: written memorials for both sides, then oral rounds before benches of legal practitioners."
+  },
+  {
+    "id": "moot-how",
+    "page": "moot-cup",
+    "label": "Moot Court · From problem to final (always shown)",
+    "kicker": "From problem to final",
+    "title": "From problem to Grand Final.",
+    "lead": "Moot court is an appeal hearing, not a trial. You argue points of law directly to the judges, who will interrupt you.",
+    "bridge": "It all starts with one problem. These are the areas of law it can come from.",
+    "items": [
+      {
+        "title": "Take the problem",
+        "body": "Every team receives the same moot problem (the compromis): a dispute on a point of law, with no witnesses and no new facts."
+      },
+      {
+        "title": "Write both sides",
+        "body": "Draft a memorial for the Applicant and one for the Respondent, cited in OSCOLA and submitted anonymously under a team code."
+      },
+      {
+        "title": "Argue before the bench",
+        "body": "Two oralists share 30 minutes per side and answer the judges’ questions as they come, then reserve time for rebuttal."
+      },
+      {
+        "title": "Advance to the final",
+        "body": "After two guaranteed preliminary rounds the strongest teams go through the quarter-finals and semi-finals to the Grand Final."
+      }
+    ]
+  },
+  {
+    "id": "moot-cases",
+    "page": "moot-cup",
+    "label": "Moot Court · The cases",
+    "kicker": "The cases",
+    "title": "{cases} areas of law.",
+    "lead": "Choose the category your team prefers when you register. Questions about the problem go through the clarifications log, answered for every team at once.",
+    "bridge": "Picked your area? Now the people who will argue it."
+  },
+  {
+    "id": "moot-team",
+    "page": "moot-cup",
+    "label": "Moot Court · Your team",
+    "kicker": "Your team",
+    "title": "A team of law students.",
+    "items": [
+      {
+        "title": "Eligibility",
+        "body": "Students enrolled in an LL.B. or equivalent law programme, or a member of a university moot court society."
+      },
+      {
+        "title": "Team size",
+        "body": "Two oralists and up to two researchers. Several teams from one institution are welcome."
+      },
+      {
+        "title": "Anonymity",
+        "body": "Memorials and rounds use a team code only. Names or institutions in a memorial are penalised."
+      }
+    ],
+    "body": "All rounds, lunch and tea on conference days, evening socials\nAccommodation on request, confirmed on acceptance",
+    "note": "Nothing is charged when you apply. Accepted teams receive an invoice with bank transfer details."
+  },
+  {
+    "id": "moot-dates",
+    "page": "moot-cup",
+    "label": "Moot Court · The clock",
+    "kicker": "The clock",
+    "title": "GMC key dates.",
+    "lead": "Deadlines are 23:59 Pakistan time."
+  },
+  {
+    "id": "moot-closing",
+    "page": "moot-cup",
+    "label": "Moot Court · Your bench (always shown)",
+    "kicker": "Your bench",
+    "title": "Bring your best advocates.",
+    "lead": "Register the team now and add the final roster details before the deadline. Clarification questions are open to every registered team."
+  },
+  {
+    "id": "committees-hero",
+    "page": "committees",
+    "label": "Committees · Hero",
+    "title": "The committees.",
+    "accentPhrase": "committees.",
+    "lead": "From the Security Council to a crisis session of the National Assembly. Open a committee for its agenda, background guide and the countries still available."
+  },
+  {
+    "id": "gimun-rules-hero",
+    "page": "gimun-rules",
+    "label": "GIMUN rules · Hero",
+    "title": "Rules of procedure.",
+    "accentPhrase": "procedure.",
+    "lead": "GIMUN follows standard Model UN parliamentary rules, built to keep debate moving and open to first-time and experienced delegates alike."
+  },
+  {
+    "id": "gimun-rules-stages",
+    "page": "gimun-rules",
+    "label": "GIMUN rules · The debate (always shown)",
+    "kicker": "The debate",
+    "title": "How a debate runs.",
+    "lead": "Five stages, the same in every committee, from roll call to the final vote.",
+    "items": [
+      {
+        "title": "Roll call and quorum",
+        "body": "The chairs read the country roster. Answer 'Present' to keep the right to abstain on resolutions, or 'Present and voting' to give it up and vote Yes or No. Quorum is one third of assigned countries. Tip: say 'Present' if you may need to stay neutral."
+      },
+      {
+        "title": "General speakers list",
+        "body": "Speeches of 90 seconds by default; the list stays open across sessions. Finish early and you must yield your remaining time. Tip: yielding to points of information shows command of your position."
+      },
+      {
+        "title": "Caucuses",
+        "body": "Between speeches, move a moderated caucus to debate one sub-issue, or an unmoderated caucus to negotiate, draft clauses and merge blocs. Tip: keep a moderated caucus topic narrow so speeches stay concrete."
+      },
+      {
+        "title": "Drafting a resolution",
+        "body": "Blocs combine preambulatory and operative clauses. Once the chairs approve format and mandate, the text gets a draft resolution code and is introduced to the room. Tip: two or three active authors amend faster than a long sponsor list."
+      },
+      {
+        "title": "Voting",
+        "body": "A two-thirds motion closes debate and the doors close. Amendments are voted first, then draft resolutions in the order they were tabled. Tip: in a roll-call vote you may pass once; on the second call you must vote."
+      }
+    ]
+  },
+  {
+    "id": "gimun-rules-motions",
+    "page": "gimun-rules",
+    "label": "GIMUN rules · Motions (always shown)",
+    "kicker": "Motions",
+    "title": "Motions and points, in order.",
+    "lead": "When several motions are raised at once, the chairs take them in this order of precedence."
+  },
+  {
+    "id": "gimun-rules-yields",
+    "page": "gimun-rules",
+    "label": "GIMUN rules · Yields",
+    "kicker": "Yields",
+    "title": "Three ways to yield.",
+    "lead": "Finish a speech before your time runs out and you must give the floor back in one of these ways.",
+    "items": [
+      {
+        "title": "to the chair",
+        "body": "Your remaining seconds return to the chairs. The floor reopens for motions or the next speaker, and no questions may be put to you.",
+        "meta": "The delegate of France yields the remaining time to the chair."
+      },
+      {
+        "title": "to another delegate",
+        "body": "Your time passes to an ally, who may accept or decline. If they accept, they speak for the remainder but cannot yield again.",
+        "meta": "I yield my remaining time to the distinguished delegate of Japan."
+      },
+      {
+        "title": "to points of information",
+        "body": "The floor may question you. The chairs recognize non-argumentative questions, and answers come out of your remaining time.",
+        "meta": "I yield my remaining time to points of information."
+      }
+    ]
+  },
+  {
+    "id": "gimun-rules-help",
+    "page": "gimun-rules",
+    "label": "GIMUN rules · Help",
+    "title": "A procedure question the rules do not answer?"
+  },
+  {
+    "id": "committee-agenda",
+    "page": "committee",
+    "label": "Each committee page · The agenda (always shown)",
+    "kicker": "The agenda",
+    "title": "The agenda.",
+    "lead": "The topics debated in this committee, in the order the chairs will open them.",
+    "note": "The background guide sets out the questions a resolution should answer."
+  },
+  {
+    "id": "committee-chairs",
+    "page": "committee",
+    "label": "Each committee page · The chairs",
+    "kicker": "The chairs",
+    "title": "The chairs.",
+    "note": "The chairs for this committee will be announced with country allocations."
+  },
+  {
+    "id": "committee-seats",
+    "page": "committee",
+    "label": "Each committee page · The seats",
+    "kicker": "The seats",
+    "title": "Country allocation.",
+    "lead": "Seats marked available can be requested in your registration preferences. The secretariat confirms every allocation after review."
+  },
+  {
+    "id": "committee-closing",
+    "page": "committee",
+    "label": "Each committee page · Take a seat (always shown)",
+    "kicker": "Take a seat",
+    "title": "Take a seat in {committee}.",
+    "lead": "Rank this committee among your three preferences when you apply. The secretariat allocates countries after reviewing every application."
+  },
+  {
+    "id": "categories-hero",
+    "page": "categories",
+    "label": "Case categories · Hero",
+    "title": "The case categories.",
+    "accentPhrase": "categories.",
+    "lead": "Choose the area of law your team prefers when you register. Every team argues from the same compromis, and is bound by its facts."
+  },
+  {
+    "id": "categories-list",
+    "page": "categories",
+    "label": "Case categories · Areas of law (always shown)",
+    "title": "Areas of law.",
+    "lead": "Questions about an unclear paragraph of the compromis go through the clarifications log, where the answer is published for every team at once."
+  },
+  {
+    "id": "categories-help",
+    "page": "categories",
+    "label": "Case categories · Help",
+    "title": "Unsure which category suits your team?"
+  },
+  {
+    "id": "moot-rules-hero",
+    "page": "moot-rules",
+    "label": "Moot rules · Hero",
+    "title": "Rules and memorials.",
+    "accentPhrase": "memorials.",
+    "lead": "Memorial length and format, courtroom timing, citation and scoring for the GIKI Moot Court."
+  },
+  {
+    "id": "moot-rules-submission",
+    "page": "moot-rules",
+    "label": "Moot rules · The memorials (always shown)",
+    "kicker": "The memorials",
+    "title": "Submitting memorials.",
+    "lead": "Late memorials are not scored.",
+    "items": [
+      {
+        "title": "Two PDFs",
+        "body": "One memorial for the Applicant and one for the Respondent."
+      },
+      {
+        "title": "Team code only",
+        "body": "Identify your team only by the code in your acceptance email; names or institutions in the file are penalised."
+      },
+      {
+        "title": "Name and send",
+        "body": "Name the files TEAMCODE_Applicant.pdf and TEAMCODE_Respondent.pdf and email both to {email}."
+      },
+      {
+        "title": "Confirmation",
+        "body": "You receive a reply within one working day. If you do not, email again before the deadline."
+      }
+    ]
+  },
+  {
+    "id": "moot-rules-rounds",
+    "page": "moot-rules",
+    "label": "Moot rules · The rounds (always shown)",
+    "kicker": "The rounds",
+    "title": "How the rounds work.",
+    "items": [
+      {
+        "title": "Preliminary rounds",
+        "body": "Every team argues twice, once for each side. These two rounds are guaranteed."
+      },
+      {
+        "title": "Quarter-finals",
+        "body": "The top eight teams by combined memorial and oral scores advance."
+      },
+      {
+        "title": "Semi-finals",
+        "body": "Knockout; winners of each quarter-final advance."
+      },
+      {
+        "title": "Grand Final",
+        "body": "The two finalists argue before an expanded bench in the AHA Auditorium."
+      }
+    ]
+  },
+  {
+    "id": "moot-rules-format",
+    "page": "moot-rules",
+    "label": "Moot rules · The format",
+    "kicker": "The format",
+    "title": "What a memorial must look like.",
+    "lead": "Citations follow {citation}. A team code is the only identity a memorial may carry: a name, crest or institution in the file is penalised.",
+    "items": [
+      {
+        "title": "Length",
+        "meta": "8,000 words at most",
+        "body": "Counts the pleadings and prayer for relief only. The contents, index of authorities and statement of facts do not count."
+      },
+      {
+        "title": "Type",
+        "meta": "Times New Roman",
+        "body": "Body 12pt at 1.5 spacing, footnotes 10pt single-spaced, 1-inch (2.54 cm) margins on every side."
+      }
+    ]
+  },
+  {
+    "id": "moot-rules-court",
+    "page": "moot-rules",
+    "label": "Moot rules · In the courtroom",
+    "kicker": "In the courtroom",
+    "title": "Thirty minutes a side.",
+    "lead": "The judges may interrupt at any point, and the clock keeps running while they do. Address the bench as “Your Honour”, answer, then return to your roadmap.",
+    "items": [
+      {
+        "meta": "30 min",
+        "title": "per side",
+        "body": "Applicant and Respondent each have thirty minutes, kept by the clerk."
+      },
+      {
+        "meta": "12 to 18",
+        "title": "minutes per oralist",
+        "body": "Both registered oralists speak; neither for less than 12 or more than 18 minutes."
+      },
+      {
+        "meta": "3 min",
+        "title": "rebuttal",
+        "body": "Reserved at the start. The Applicant may rebut and the Respondent may reply."
+      }
+    ]
+  },
+  {
+    "id": "moot-rules-scoring",
+    "page": "moot-rules",
+    "label": "Moot rules · The scoring (written memorial criteria; points in Meta)",
+    "kicker": "The scoring",
+    "title": "How you are scored, out of 100.",
+    "lead": "The memorial counts for {memorial}% and the oral rounds for {oral}%.",
+    "items": [
+      {
+        "meta": "12",
+        "title": "Knowledge of the law",
+        "body": "Command of the case law, treaties and customary rules that decide the problem."
+      },
+      {
+        "meta": "10",
+        "title": "Structure and persuasion",
+        "body": "A clear roadmap, sound reasoning and facts applied to law."
+      },
+      {
+        "meta": "10",
+        "title": "Research and sources",
+        "body": "Primary sources, state practice, scholarship and arbitral awards."
+      },
+      {
+        "meta": "8",
+        "title": "Style and citation",
+        "body": "Consistent footnotes, accurate cross-references, clean grammar and layout."
+      }
+    ]
+  },
+  {
+    "id": "moot-rules-scoring-oral",
+    "page": "moot-rules",
+    "label": "Moot rules · The scoring (oral round criteria; points in Meta)",
+    "items": [
+      {
+        "meta": "20",
+        "title": "Answering the bench",
+        "body": "Direct, concise answers to the judges’ questions, without evasion."
+      },
+      {
+        "meta": "18",
+        "title": "Legal argument",
+        "body": "Command of the facts, the burden of proof and the law in issue."
+      },
+      {
+        "meta": "12",
+        "title": "Courtroom manner",
+        "body": "Formal address, clear delivery and composure under questioning."
+      },
+      {
+        "meta": "10",
+        "title": "Time and rebuttal",
+        "body": "Keeping to time, a clean prayer and a rebuttal aimed at what was said."
+      }
+    ]
+  },
+  {
+    "id": "moot-rules-next",
+    "page": "moot-rules",
+    "label": "Moot rules · Where to next",
+    "actions": [
+      {
+        "label": "Case categories",
+        "href": "/moot-cup/categories"
+      },
+      {
+        "label": "Clarifications",
+        "href": "/moot-cup/clarifications"
+      },
+      {
+        "label": "Register a team",
+        "href": "/register?track=moot-cup"
+      }
+    ],
+    "items": [
+      {
+        "title": "Case categories",
+        "body": "The areas of law the problem can come from."
+      },
+      {
+        "title": "Clarifications",
+        "body": "The bench’s answers on the problem, binding on every team."
+      },
+      {
+        "title": "Register a team",
+        "body": "Two oralists and up to two researchers."
+      }
+    ]
+  },
+  {
+    "id": "clarifications-hero",
+    "page": "clarifications",
+    "label": "Clarifications · Hero",
+    "title": "The clarifications log.",
+    "accentPhrase": "clarifications log.",
+    "lead": "Questions from registered teams and the bench's answers. Every clarification published here forms part of the case problem, for every team at once."
+  },
+  {
+    "id": "clarifications-next",
+    "page": "clarifications",
+    "label": "Clarifications · Where to next",
+    "actions": [
+      {
+        "label": "Rules and memorials",
+        "href": "/moot-cup/rules"
+      },
+      {
+        "label": "Case categories",
+        "href": "/moot-cup/categories"
+      },
+      {
+        "label": "Resources",
+        "href": "/resources"
+      }
+    ],
+    "items": [
+      {
+        "title": "Rules and memorials",
+        "body": "Formatting, word limits and how the rounds are scored."
+      },
+      {
+        "title": "Case categories",
+        "body": "The areas of law in this year’s problem."
+      },
+      {
+        "title": "Resources",
+        "body": "The compromis and the competition rules as PDFs."
+      }
+    ]
+  },
+  {
+    "id": "schedule-hero",
+    "page": "schedule",
+    "label": "Schedule · Hero",
+    "title": "The schedule.",
+    "accentPhrase": "schedule.",
+    "lead": "All four days for both tracks: GIMUN committee sessions, GMC rounds, the ceremonies, meals and evenings. Filter by track or day, or print a copy."
+  },
+  {
+    "id": "schedule-next",
+    "page": "schedule",
+    "label": "Schedule · Where to next",
+    "actions": [
+      {
+        "label": "Venue and travel",
+        "href": "/about/venue"
+      },
+      {
+        "label": "Announcements",
+        "href": "/announcements"
+      },
+      {
+        "label": "Resources",
+        "href": "/resources"
+      }
+    ],
+    "items": [
+      {
+        "title": "Venue and travel",
+        "body": "Where each room is on campus, and how to get to Topi."
+      },
+      {
+        "title": "Announcements",
+        "body": "Room changes and notices, newest first."
+      },
+      {
+        "title": "Resources",
+        "body": "The guides and rules to read before Day 1."
+      }
+    ]
+  },
+  {
+    "id": "resources-hero",
+    "page": "resources",
+    "label": "Resources · Hero",
+    "title": "The resource library.",
+    "accentPhrase": "resource library.",
+    "lead": "Background guides, the case problem, both rulebooks, citation guides and travel information for both tracks."
+  },
+  {
+    "id": "announcements-hero",
+    "page": "announcements",
+    "label": "Announcements · Hero",
+    "title": "Announcements.",
+    "accentPhrase": "Announcements.",
+    "lead": "Notices from the GIMUN secretariat and the GMC organizers: schedule changes, releases and logistics. Check here before you travel and each morning of the event."
+  },
+  {
+    "id": "announcements-next",
+    "page": "announcements",
+    "label": "Announcements · Where to next",
+    "actions": [
+      {
+        "label": "The schedule",
+        "href": "/schedule"
+      },
+      {
+        "label": "Venue and travel",
+        "href": "/about/venue"
+      },
+      {
+        "label": "FAQ",
+        "href": "/about/faq"
+      }
+    ],
+    "items": [
+      {
+        "title": "The schedule",
+        "body": "Every session, hour by hour, for all four days."
+      },
+      {
+        "title": "Venue and travel",
+        "body": "Getting to GIKI and what to bring."
+      },
+      {
+        "title": "FAQ",
+        "body": "Fees, refunds, accommodation and more."
+      }
+    ]
+  },
+  {
+    "id": "results-hero",
+    "page": "results",
+    "label": "Results · Hero before results are published",
+    "title": "Awards, and how they are decided.",
+    "lead": "The awards for each track and the criteria behind them. Winners are published here after the awards gala, not before."
+  },
+  {
+    "id": "results-hero-published",
+    "page": "results",
+    "label": "Results · Hero once results are published",
+    "title": "Results and awards.",
+    "lead": "The award winners of GIMUN and the GIKI Moot Court, as announced at the awards gala."
+  },
+  {
+    "id": "results-awards",
+    "page": "results",
+    "label": "Results · Main awards (track in Meta)",
+    "title": "The {year} main awards",
+    "items": [
+      {
+        "title": "Best delegation",
+        "meta": "GIMUN",
+        "body": "For the institution whose delegates score highest across all committees combined."
+      },
+      {
+        "title": "Best delegate",
+        "meta": "GIMUN",
+        "body": "One per committee, chosen by its chairs for research, drafting, debate and diplomacy."
+      },
+      {
+        "title": "Winning team",
+        "meta": "GMC",
+        "body": "The team that wins the Grand Final, decided by the bench after the final oral round."
+      }
+    ]
+  },
+  {
+    "id": "results-criteria",
+    "page": "results",
+    "label": "Results · How winners are chosen (before publication)",
+    "title": "How winners are chosen",
+    "lead": "Scores are totalled after the final sessions and checked by the organizing team. Winners are announced at the awards gala and published here afterwards. Certificates carry a link to check them.",
+    "items": [
+      {
+        "title": "GIMUN",
+        "body": "Committee chairs score every session against the published rubric."
+      },
+      {
+        "title": "GIKI Moot Court",
+        "body": "Judges score the written memorials and each oral round. Memorials are marked without team names."
+      }
+    ]
+  },
+  {
+    "id": "register-hero",
+    "page": "register",
+    "label": "Register · Hero",
+    "title": "Apply for GIMUN or the GIKI Moot Court",
+    "accentPhrase": "GIKI Moot Court",
+    "lead": "The organizing team reviews every application. You pay only if you are accepted, by bank transfer against an invoice.",
+    "items": [
+      {
+        "title": "Apply",
+        "body": "Submit the form. You get a reference number and QR ticket by email straight away."
+      },
+      {
+        "title": "Review",
+        "body": "The organizing team reviews applications and allocates committees or categories."
+      },
+      {
+        "title": "Pay",
+        "body": "If accepted, you receive an invoice with bank details. Nothing is charged here."
+      }
+    ]
+  },
+  {
+    "id": "about-hero",
+    "page": "about",
+    "label": "About · Hero",
+    "title": "Two competitions, one campus, four days.",
+    "accentPhrase": "one campus,",
+    "lead": "GIMUN and the GIKI Moot Court run side by side at {campus}. Delegates debate in committee; law students argue before a bench. Both share the ceremonies, meals and evenings."
+  },
+  {
+    "id": "about-tracks",
+    "page": "about",
+    "label": "About · Two rooms (always shown; GIMUN then GMC)",
+    "kicker": "Two rooms",
+    "title": "Pick the one you want to be tested in.",
+    "lead": "They share dates and a campus, but the preparation, the rules and the judging are entirely different.",
+    "bridge": "Both rooms share one week. This is how it runs.",
+    "items": [
+      {
+        "title": "GIMUN",
+        "body": "Represent a country in one of {committees} committees, on your own or with your institution."
+      },
+      {
+        "title": "GMC",
+        "body": "Argue one problem as a team of law students, across {cases} areas of law, before a bench."
+      }
+    ]
+  },
+  {
+    "id": "about-week",
+    "page": "about",
+    "label": "About · The week",
+    "kicker": "The week",
+    "title": "How the week fits together.",
+    "lead": "Committees and courtrooms run in parallel; ceremonies, meals and evenings are shared."
+  },
+  {
+    "id": "about-who",
+    "page": "about",
+    "label": "About · Who runs it",
+    "kicker": "Who runs it",
+    "body": "The secretariat, the moot convening committee and the logistics team are GIKI students. Applying is free; accepted participants pay by bank transfer, never on this site."
+  },
+  {
+    "id": "about-more",
+    "page": "about",
+    "label": "About · Everything else (rows link to Team, Venue, FAQ, Sponsors, Contact in this order; label in Meta)",
+    "kicker": "Everything else",
+    "title": "Organized at GIKI.",
+    "lead": "The people, the place and the answers to the questions most participants ask.",
+    "items": [
+      {
+        "title": "Organizing team",
+        "body": "Who runs each track, and how to reach them.",
+        "meta": "People"
+      },
+      {
+        "title": "Venue and travel",
+        "body": "Getting to Topi, where each session happens, and what to bring.",
+        "meta": "Logistics"
+      },
+      {
+        "title": "Frequently asked questions",
+        "body": "Fees, refunds, accommodation, dress code and more.",
+        "meta": "Help"
+      },
+      {
+        "title": "Sponsors and partners",
+        "body": "Supporting organizations and the sponsorship deck.",
+        "meta": "Partners"
+      },
+      {
+        "title": "Contact",
+        "body": "{reply}",
+        "meta": "Support"
+      }
+    ]
+  },
+  {
+    "id": "about-closing",
+    "page": "about",
+    "label": "About · Your application (always shown)",
+    "kicker": "Your application",
+    "title": "Represent your institution at GIKI.",
+    "lead": "Choose a track to see its fees, format and deadlines. Applying is free; you pay only once accepted."
+  },
+  {
+    "id": "faq-hero",
+    "page": "faq",
+    "label": "FAQ · Hero",
+    "title": "Questions, answered.",
+    "accentPhrase": "answered.",
+    "lead": "Fees and refunds, committee procedure, the moot rounds, accommodation at GIKI and getting to Topi."
+  },
+  {
+    "id": "team-hero",
+    "page": "team",
+    "label": "Team · Hero",
+    "title": "The organizing team.",
+    "accentPhrase": "organizing team.",
+    "lead": "GIMUN and GMC are run by GIKI students: the secretariat and committee chairs, the moot convening committee, and the organizers who look after logistics."
+  },
+  {
+    "id": "team-next",
+    "page": "team",
+    "label": "Team · Where to next",
+    "actions": [
+      {
+        "label": "Contact",
+        "href": "/contact"
+      },
+      {
+        "label": "The event",
+        "href": "/about"
+      },
+      {
+        "label": "Venue and travel",
+        "href": "/about/venue"
+      }
+    ],
+    "items": [
+      {
+        "title": "Contact",
+        "body": "Write to the desk that owns your question."
+      },
+      {
+        "title": "The event",
+        "body": "What GIMUN and GMC are, and how the week runs."
+      },
+      {
+        "title": "Venue and travel",
+        "body": "Where the team will meet you in Topi."
+      }
+    ]
+  },
+  {
+    "id": "sponsors-hero",
+    "page": "sponsors",
+    "label": "Sponsors · Hero",
+    "title": "Sponsors and partners.",
+    "accentPhrase": "partners.",
+    "lead": "Partner with a student conference that brings delegates and law students from across Pakistan to GIKI. The sponsorship deck sets out the tiers and what each includes."
+  },
+  {
+    "id": "sponsors-next",
+    "page": "sponsors",
+    "label": "Sponsors · Where to next",
+    "actions": [
+      {
+        "label": "Talk to us",
+        "href": "/contact?type=sponsorship"
+      },
+      {
+        "label": "The event",
+        "href": "/about"
+      },
+      {
+        "label": "Resources",
+        "href": "/resources"
+      }
+    ],
+    "items": [
+      {
+        "title": "Talk to us",
+        "body": "Ask about the tiers, or a partnership that fits."
+      },
+      {
+        "title": "The event",
+        "body": "Who takes part and how the four days run."
+      },
+      {
+        "title": "Resources",
+        "body": "Every published document, including the deck."
+      }
+    ]
+  },
+  {
+    "id": "gallery-hero",
+    "page": "gallery",
+    "label": "Gallery · Hero",
+    "title": "The gallery.",
+    "accentPhrase": "gallery.",
+    "lead": "Photographs from committee sessions, courtroom rounds, ceremonies and campus life at GIKI, published after each edition."
+  },
+  {
+    "id": "gallery-next",
+    "page": "gallery",
+    "label": "Gallery · Where to next",
+    "actions": [
+      {
+        "label": "Results",
+        "href": "/results"
+      },
+      {
+        "label": "The event",
+        "href": "/about"
+      },
+      {
+        "label": "Venue",
+        "href": "/about/venue"
+      }
+    ],
+    "items": [
+      {
+        "title": "Results",
+        "body": "The awards, and how they are decided."
+      },
+      {
+        "title": "The event",
+        "body": "The two competitions behind the photographs."
+      },
+      {
+        "title": "Venue",
+        "body": "The campus in Topi where it all happens."
+      }
+    ]
+  },
+  {
+    "id": "venue-hero",
+    "page": "venue",
+    "label": "Venue · Hero",
+    "title": "Getting to Topi.",
+    "accentPhrase": "Topi.",
+    "lead": "The event is held at {host}. How to get there, where each session happens and what to bring."
+  },
+  {
+    "id": "venue-travel",
+    "page": "venue",
+    "label": "Venue · The road (always shown)",
+    "kicker": "The road",
+    "title": "Three ways in.",
+    "lead": "GIKI sits just off the M-1 between Islamabad and Peshawar. Most participants arrive by road.",
+    "items": [
+      {
+        "title": "By road",
+        "body": "From Islamabad or Peshawar take the M-1 Motorway to the Swabi interchange, then follow signs to Topi and GIKI. Allow about 90 minutes from Islamabad."
+      },
+      {
+        "title": "By air",
+        "body": "Islamabad International Airport is the nearest airport, roughly 110 km away. Continue by road via the M-1."
+      },
+      {
+        "title": "By coach",
+        "body": "Intercity coaches run to Swabi from Islamabad, Rawalpindi, Peshawar and Lahore. Any group transport arranged by the organizers is announced on the Announcements page."
+      }
+    ]
+  },
+  {
+    "id": "venue-places",
+    "page": "venue",
+    "label": "Venue · The places (the lead is the venue setting)",
+    "kicker": "The places",
+    "title": "Where everything happens.",
+    "items": [
+      {
+        "title": "AHA Auditorium",
+        "body": "Check-in, opening ceremony, GMC Grand Final, closing ceremony and awards gala"
+      },
+      {
+        "title": "Academic Block, Rooms 201–208",
+        "body": "GIMUN committee sessions"
+      },
+      {
+        "title": "Academic Block moot courtrooms",
+        "body": "GMC preliminary rounds, quarter-finals and semi-finals"
+      },
+      {
+        "title": "Central dining hall",
+        "body": "Lunch and tea on conference days"
+      },
+      {
+        "title": "Student hostels",
+        "body": "On-campus accommodation for outstation participants, on request"
+      }
+    ]
+  },
+  {
+    "id": "venue-practical",
+    "page": "venue",
+    "label": "Venue · Before you travel (packing list in Body, one per line)",
+    "kicker": "Before you travel",
+    "title": "Before you travel.",
+    "lead": "Accommodation, getting through the gate, the weather, and a list to pack against.",
+    "items": [
+      {
+        "title": "Accommodation",
+        "body": "On-campus hostel places, with separate wings for male and female participants, are available on request. Ask for accommodation in your application; places and any charge are confirmed when you are accepted."
+      },
+      {
+        "title": "Campus entry",
+        "body": "{entry} Delegations arriving by bus should send the vehicle number to the organizing team in advance."
+      },
+      {
+        "title": "Weather in March",
+        "body": "Topi is usually mild in the day and cool at night in March, roughly 10–25°C. Pack a warm layer for evening events."
+      }
+    ],
+    "note": "What to bring",
+    "body": "Photo ID (CNIC, B-Form or student card)\nQR ticket from your confirmation email\nFormal clothing for sessions and ceremonies\nLaptop or notebook, and a charger\nPosition paper or memorial materials\nA warm layer for the evenings"
+  },
+  {
+    "id": "venue-help",
+    "page": "venue",
+    "label": "Venue · On the day",
+    "kicker": "On the day",
+    "title": "Help during the conference.",
+    "lead": "{desk} For anything urgent, contact the organizing team."
+  },
+  {
+    "id": "venue-next",
+    "page": "venue",
+    "label": "Venue · Where to next",
+    "actions": [
+      {
+        "label": "The schedule",
+        "href": "/schedule"
+      },
+      {
+        "label": "FAQ",
+        "href": "/about/faq"
+      },
+      {
+        "label": "Register",
+        "href": "/register"
+      }
+    ],
+    "items": [
+      {
+        "title": "The schedule",
+        "body": "Which room, at what time, on each day."
+      },
+      {
+        "title": "FAQ",
+        "body": "Accommodation, dress code and refunds."
+      },
+      {
+        "title": "Register",
+        "body": "Apply for GIMUN or the GIKI Moot Court."
+      }
+    ]
+  },
+  {
+    "id": "contact-hero",
+    "page": "contact",
+    "label": "Contact · Hero",
+    "title": "Write to the organizing team.",
+    "accentPhrase": "organizing team.",
+    "lead": "A question about eligibility, committee selection, the GMC case problem, sponsorship or getting to campus? Send it below, or email the team that owns it."
+  },
+  {
+    "id": "privacy-hero",
+    "page": "privacy",
+    "label": "Privacy · Hero",
+    "title": "Privacy and data handling.",
+    "accentPhrase": "data handling.",
+    "lead": "Registration, contact and clarification information is collected only to review applications, coordinate event logistics, answer questions and send official updates."
+  },
+  {
+    "id": "privacy-collect",
+    "page": "privacy",
+    "label": "Privacy · What we collect",
+    "title": "What we collect",
+    "body": "Depending on the form, this may include names, institutional details, contact information, delegate or team rosters, preferences, accessibility requirements, and the submitted message."
+  },
+  {
+    "id": "privacy-use",
+    "page": "privacy",
+    "label": "Privacy · How it is used",
+    "title": "How it is used",
+    "body": "The organizing committee uses this information for application review, allocation, venue and accommodation planning, official notices, and responses to questions. We do not publish rosters or sell participant information. Published award results and certificate verification links can show participant names; clarification answers may be published after editorial review."
+  },
+  {
+    "id": "privacy-services",
+    "page": "privacy",
+    "label": "Privacy · Services that process your data",
+    "title": "Services that process your data",
+    "items": [
+      {
+        "title": "Supabase",
+        "body": "Stores registrations, messages and admin records."
+      },
+      {
+        "title": "Resend",
+        "body": "Delivers receipts, invoices, certificates and replies by email."
+      },
+      {
+        "title": "Upstash",
+        "body": "Counts requests to stop form abuse. It stores a one-way hash of your IP address, not the address itself, for a few minutes."
+      },
+      {
+        "title": "Vercel",
+        "body": "Hosts the website and keeps short-lived server logs."
+      }
+    ]
+  }
+]

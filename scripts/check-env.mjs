@@ -50,6 +50,10 @@ require('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'admin sign-in');
 if (!has('SUPABASE_SECRET_KEY') && !has('SUPABASE_SERVICE_ROLE_KEY')) {
   errors.push('SUPABASE_SECRET_KEY is not set (server database access).');
 }
+for (const name of ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_URL']) {
+  const parsed = has(name) ? url(name) : null;
+  if (has(name) && (!parsed || parsed.protocol !== 'https:')) errors.push(`${name} must be an https:// URL (for example https://<project>.supabase.co).`);
+}
 const serverDb = url(has('SUPABASE_URL') ? 'SUPABASE_URL' : 'NEXT_PUBLIC_SUPABASE_URL');
 const browserDb = url('NEXT_PUBLIC_SUPABASE_URL');
 if (serverDb && browserDb && serverDb.host !== browserDb.host) {
@@ -83,7 +87,15 @@ if (has('RATE_LIMIT_HMAC_SECRET') && env.RATE_LIMIT_HMAC_SECRET === env.CRON_SEC
   errors.push('RATE_LIMIT_HMAC_SECRET and CRON_SECRET must be different values.');
 }
 
-if (env.ADMIN_REQUIRE_MFA !== '1') warnings.push('ADMIN_REQUIRE_MFA is not 1: admin two-factor sign-in is optional.');
+// Human check on the public forms: without it, scripts can make the site email strangers.
+if (has('NEXT_PUBLIC_TURNSTILE_SITE_KEY') !== has('TURNSTILE_SECRET_KEY')) {
+  errors.push('Set both NEXT_PUBLIC_TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY, or neither; with only one the human check is off.');
+} else if (!has('TURNSTILE_SECRET_KEY')) {
+  warnings.push('Cloudflare Turnstile is not configured: public forms have no human check (rate limits still apply).');
+}
+
+// Admin accounts can read every applicant's personal data; a password alone is not enough.
+if (env.ADMIN_REQUIRE_MFA !== '1') errors.push('ADMIN_REQUIRE_MFA must be 1: admin accounts need two-factor sign-in.');
 
 const label = strict ? 'production' : `non-production (${env.VERCEL_ENV || 'local'})`;
 for (const w of warnings) console.warn(`[check-env] warning: ${w}`);

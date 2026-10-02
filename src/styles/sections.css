@@ -292,6 +292,12 @@
   overflow: visible;
 }
 
+.seal__face {
+  border-radius: 50%;
+  background: var(--art-fill, var(--color-canvas));
+  box-shadow: 0 1.5rem 3.5rem -2rem rgb(11 2 1 / 0.55);
+}
+
 .seal__ring--spin {
   animation: seal-spin 96s linear infinite;
 }
@@ -413,6 +419,8 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  /* clip, not a scroll container, so scroll timelines inside see the page */
+  overflow: clip;
   display: flex;
   flex-direction: column;
   min-height: 36rem;
@@ -479,6 +487,48 @@
   font-weight: 600;
   line-height: 0.85;
   letter-spacing: -0.045em;
+}
+
+/* Light across the mark: as a door scrolls into view a band of light crosses
+   its large word, the lacquer catching it once. A copy of the word (data-text)
+   painted with a moving highlight clipped to the letters; the mark itself never
+   changes, so without scroll timelines, or under reduced motion (the global
+   rule stops every animation), it is simply the mark. */
+.door__mark[data-text] {
+  position: relative;
+}
+
+@keyframes mark-glint {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -20% 0;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .door__mark[data-text]::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(105deg, transparent 38%, color-mix(in oklab, var(--color-text) 85%, transparent) 50%, transparent 62%);
+    background-size: 250% 100%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    pointer-events: none;
+    animation: mark-glint linear both;
+    animation-timeline: view();
+    animation-range: entry 60% cover 55%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .door__mark[data-text]::after {
+    content: none;
+  }
 }
 
 .door__name {
@@ -601,16 +651,21 @@
 }
 
 /* --- Horizontal pan (the chambers) ------------------------------------------
-   Natively a scroll-snapped track anyone can swipe or tab through. On the
-   full motion tier PanMotion pins the section and moves the track with the
-   page scroll instead. */
+   Natively a scroll-snapped track anyone can swipe or tab through; the
+   page's vertical scroll always passes through it. On the full motion tier
+   HorizontalPan adds dragging with momentum (data-pan="drag"). */
 .pan {
   position: relative;
 }
 
 .pan__viewport {
+  /* Sideways it scrolls; up and down it never does, and never holds on to
+     the wheel, so the page's vertical scroll always passes through. Both
+     axes are spelled out: a lone -x longhand was compiled into a shorthand
+     that also contained vertical overscroll, trapping the wheel here. */
   overflow-x: auto;
-  overscroll-behavior-x: contain;
+  overflow-y: hidden;
+  overscroll-behavior: contain auto;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
   scrollbar-width: none;
@@ -632,12 +687,12 @@
   padding-bottom: 0.25rem;
 }
 
-.pan[data-pan="pinned"] .pan__viewport {
-  overflow: hidden;
+/* While a drag or its throw runs, the throw does the snapping. */
+.pan[data-pan-dragging] .pan__viewport {
   scroll-snap-type: none;
 }
 
-.pan[data-pan="pinned"] .pan__track {
+.pan[data-pan="drag"] .pan__track {
   will-change: transform;
 }
 
@@ -659,23 +714,10 @@
   }
 }
 
-/* Pinned, the heading and the corridor fill one screen together. */
-.pan[data-pan="pinned"] .pan__pin {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 100svh;
-  padding-block: 1.5rem;
-}
-
 .pan__controls {
   display: flex;
   justify-self: end;
   gap: 0.5rem;
-}
-
-.pan[data-pan="pinned"] .pan__controls {
-  visibility: hidden;
 }
 
 .pan__button {
@@ -1554,6 +1596,7 @@
 /* --- Closing call to action --------------------------------------------- */
 .closing {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
 }
@@ -1599,5 +1642,625 @@
   .seal__ring--spin,
   .scroll-cue__line::after {
     animation: none;
+  }
+}
+
+/* --- Live globe (committees hero) --------------------------------------- */
+/* The SVG fallback holds the space; the canvas fades in over it once the
+   globe is running (data-live), so nothing shifts and reduced motion keeps
+   the drawing. */
+.live-globe {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.live-globe__fallback,
+.live-globe__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 700ms var(--ease-brand);
+}
+
+.live-globe__fallback > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.live-globe__canvas {
+  opacity: 0;
+  touch-action: pan-y;
+}
+
+.live-globe[data-live] .live-globe__canvas {
+  opacity: 1;
+}
+
+.live-globe[data-live] .live-globe__fallback {
+  opacity: 0;
+}
+
+.live-globe__legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.live-globe__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.live-globe__legend span::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--legend-dot);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-globe__canvas {
+    display: none;
+  }
+}
+
+/* --- Corridor extras (drag mode only) ------------------------------------ */
+.pan__viewport {
+  position: relative;
+}
+
+.pan[data-pan="drag"] .pan__track {
+  /* Room for a tilted panel inside the clipped viewport. */
+  padding-block: 1.25rem;
+}
+
+.pan__progress {
+  display: none;
+}
+
+.pan[data-pan="drag"] .pan__progress {
+  position: relative;
+  display: block;
+  height: 1px;
+  margin-top: 1.75rem;
+  overflow: hidden;
+  background: var(--color-line);
+}
+
+.pan[data-pan="drag"] .pan__progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-champagne);
+  transform: scaleX(var(--pan-progress, 0));
+  transform-origin: left;
+}
+
+.pan__chip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  background: var(--color-text);
+  color: var(--color-canvas);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity var(--dur-ui) var(--ease-brand),
+    scale var(--dur-ui) var(--ease-brand);
+}
+
+.pan[data-pan="drag"] .pan__chip {
+  display: block;
+}
+
+.pan[data-pan-hover] .pan__chip {
+  opacity: 1;
+  scale: 1;
+}
+
+.pan[data-pan-clickable] .pan__chip {
+  opacity: 0;
+}
+
+/* Panels tilt in 3D under the pointer; a layer of their own keeps their
+   edges and text smooth while they turn. */
+.pan[data-pan="drag"] [data-pan-panel] {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* --- Marquee (delegations in session) ------------------------------------ */
+.marquee {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-block: clamp(1.5rem, 4vw, 2.75rem);
+  border-block: 1px solid var(--color-line);
+}
+
+.marquee__viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 60s) linear infinite;
+}
+
+.marquee[data-paused] .marquee__track {
+  animation-play-state: paused;
+}
+
+.marquee__list {
+  display: flex;
+  flex: none;
+  gap: 0;
+}
+
+.marquee__list li {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-2);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.4vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.marquee__list li::after {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-inline: clamp(1rem, 2.4vw, 2rem);
+  border-radius: 999px;
+  background: var(--color-accent-gimun);
+}
+
+.marquee__toggle {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-inline-end: var(--gutter);
+  border: 1px solid var(--color-line-2);
+  border-radius: 999px;
+  color: var(--color-text-2);
+  transition: border-color var(--dur-ui) var(--ease-brand), color var(--dur-ui) var(--ease-brand);
+}
+
+.marquee__toggle:hover {
+  border-color: var(--color-line-3);
+  color: var(--color-text);
+}
+
+.marquee__toggle:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track {
+    flex-wrap: wrap;
+    width: auto;
+    animation: none;
+  }
+
+  .marquee__list[aria-hidden="true"],
+  .marquee__toggle {
+    display: none;
+  }
+
+  .marquee__viewport {
+    mask-image: none;
+    padding-inline: var(--gutter);
+  }
+
+  .marquee__list {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+}
+
+/* --- Results podium (published results) ---------------------------------- */
+/* Three steps rising from one baseline, the first main award raised in the
+   centre. Each step rises in once, staggered; names are plain text. */
+.podium {
+  display: grid;
+  gap: 0.75rem;
+  align-items: end;
+  padding-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .podium {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.podium__step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-height: 13rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: 1.5rem 1.5rem 0.5rem 0.5rem;
+  background: var(--color-raised);
+  animation: podium-rise var(--dur-entrance) var(--ease-out-expo) both;
+}
+
+.podium__step:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.podium__step:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.podium__step[data-place="first"] {
+  min-height: 16rem;
+  border-color: var(--color-champagne);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-champagne) 10%, var(--color-raised)), var(--color-raised));
+}
+
+.podium__award {
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.podium__winner {
+  margin-top: auto;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 2.4vw, 1.875rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.podium__step[data-place="first"] .podium__winner {
+  color: var(--color-champagne);
+}
+
+.podium__institution {
+  color: var(--color-text-2);
+  font-size: 0.875rem;
+}
+
+.podium__track {
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+
+@keyframes podium-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .podium__step {
+    animation: none;
+  }
+}
+
+/* --- The clock (home): countdown and deadline rail ----------------------- */
+.clock {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.countdown {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.countdown__what {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.875rem;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(1.125rem, 2vw, 1.375rem);
+  font-weight: 500;
+}
+
+.countdown__next {
+  color: var(--color-champagne);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.countdown__what time {
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.countdown__digits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.countdown__unit {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.625rem;
+}
+
+.countdown__label {
+  padding-bottom: 0.55em;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+/* Each digit is a slot one line tall; a strip of 0-9 rolls inside it. The
+   soft mask makes a turning digit read as a wheel, not a jump. */
+.odo {
+  display: inline-flex;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  /* Sized so days, hours and minutes hold one line on a 360px phone. */
+  font-size: clamp(2.625rem, 11vw, 7rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.odo__slot {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+}
+
+.odo__strip {
+  display: grid;
+  grid-auto-rows: 1em;
+  transform: translateY(calc(var(--d) * -1em));
+}
+
+.clock[data-rolling] .odo__strip {
+  transition: transform 720ms var(--ease-out-expo);
+}
+
+.clock__done {
+  color: var(--color-text-2);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+/* The rail: spaced by step, today placed in proportion, the stretch from
+   today to the next deadline highlighted. */
+.rail {
+  position: relative;
+  height: 6rem;
+  margin: clamp(2.5rem, 5vw, 3.5rem) 1.25rem 0;
+}
+
+.rail__track,
+.rail__stretch {
+  position: absolute;
+  top: 50%;
+  height: 1px;
+}
+
+.rail__track {
+  inset-inline: 0;
+  background: linear-gradient(to right, var(--color-text-3) calc(var(--today) * 100%), var(--color-line-2) 0);
+}
+
+.rail__stretch {
+  left: calc(var(--today) * 100%);
+  width: calc((var(--stretch-end) - var(--today)) * 100%);
+  height: 3px;
+  margin-top: -1px;
+  border-radius: 999px;
+  background: var(--color-champagne);
+  transform-origin: left center;
+}
+
+.rail[data-state="armed"] .rail__stretch {
+  transform: scaleX(0);
+}
+
+.rail[data-state="drawn"] .rail__stretch {
+  transform: scaleX(1);
+  transition: transform 1100ms var(--ease-out-expo) 200ms;
+}
+
+.rail__tick {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--at) * 100%);
+  width: 0.75rem;
+  height: 0.75rem;
+  translate: -50% -50%;
+  border: 1px solid var(--color-line-3);
+  border-radius: 999px;
+  background: var(--color-canvas);
+  transition:
+    scale var(--dur-ui) var(--ease-brand),
+    opacity var(--dur-surface) var(--ease-out-expo),
+    background-color var(--dur-ui) var(--ease-brand);
+}
+
+.rail__tick[data-kind="event"] {
+  border-radius: 2px;
+  rotate: 45deg;
+}
+
+.rail__tick[data-state="past"] {
+  border-color: var(--color-text-3);
+  background: var(--color-text-3);
+}
+
+.rail__tick[data-state="next"] {
+  border-color: var(--color-champagne);
+  background: var(--color-champagne);
+}
+
+.rail__tick[data-active] {
+  scale: 1.6;
+  border-color: var(--color-champagne);
+}
+
+.rail[data-state="armed"] .rail__tick {
+  scale: 0.4;
+  opacity: 0.2;
+}
+
+.rail[data-state="drawn"] .rail__tick {
+  transition-delay: calc(300ms + var(--i) * 70ms);
+}
+
+.rail__date {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+
+/* Diamonds carry their label upright. */
+.rail__tick[data-kind="event"] .rail__date {
+  rotate: -45deg;
+}
+
+.rail__tick[data-side="above"] .rail__date {
+  bottom: 1.25rem;
+}
+
+.rail__tick[data-side="below"] .rail__date {
+  top: 1.25rem;
+}
+
+.rail__tick[data-state="next"] .rail__date,
+.rail__tick[data-active] .rail__date {
+  color: var(--color-champagne);
+}
+
+.rail__lead {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--at) * 100%);
+  /* Below the track: the first date label sits above it. */
+  translate: -50% 60%;
+  color: var(--color-text-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.rail__today {
+  position: absolute;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  left: calc(var(--today) * 100%);
+  width: 1px;
+  background: var(--color-champagne);
+}
+
+.rail__today-label {
+  position: absolute;
+  top: -0.875rem;
+  left: 50%;
+  translate: -50% -50%;
+  color: var(--color-champagne);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* The next deadline breathes, once the visitor is here (compositor only). */
+@media (prefers-reduced-motion: no-preference) {
+  .clock[data-rolling] .rail__tick[data-state="next"]::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 1px solid var(--color-champagne);
+    animation: rail-pulse 2.4s var(--ease-out-expo) infinite;
+  }
+}
+
+@keyframes rail-pulse {
+  to {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+
+@media (max-width: 639px) {
+  .rail {
+    margin-inline: 1rem;
+  }
+
+  .countdown__digits {
+    flex-wrap: nowrap;
+    gap: 0.875rem;
+  }
+
+  .countdown__unit {
+    gap: 0.375rem;
+  }
+
+  .countdown__label {
+    font-size: 0.75rem;
+  }
+
+  .rail__date {
+    font-size: 0.625rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .odo__strip,
+  .rail__stretch,
+  .rail__tick {
+    transition: none !important;
   }
 }

@@ -29,10 +29,19 @@ import sponsorsData from '../../content/sponsors.json';
 import clarificationsData from '../../content/clarifications.json';
 import resultsData from '../../content/results.json';
 import galleryData from '../../content/gallery.json';
+import copyData from '../../content/copy.json';
+import { copyReader, type Copy, type CopyPage, type CopyReader } from './copy';
 
 export async function getSiteConfig(): Promise<SiteConfig > {
   const [site,navigation] = await Promise.all([readSite(siteConfigData),readCollection('navigation',defaultNavigation)]);
-  return {...site,navigation};
+  // An empty published menu would leave the site with no navigation at all.
+  return {...site,navigation:navigation.length?navigation:defaultNavigation};
+}
+
+/** The editable words of one page; see src/lib/copy.ts. */
+export async function getCopy(page: CopyPage): Promise<CopyReader> {
+  const seed = copyData as Copy[];
+  return copyReader(page, seed, await readCollection<Copy>('copy', seed));
 }
 
 function resolveCanonicalTokens(value: string, site: SiteConfig) {

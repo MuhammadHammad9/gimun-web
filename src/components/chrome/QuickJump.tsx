@@ -56,12 +56,22 @@ export default function QuickJump({ onClose, navigate }: { onClose: () => void; 
 
   useEffect(() => {
     const node = dialog.current;
-    if (node && !node.open) node.showModal();
+    if (!node || node.open) return;
+    // Safari before 15.4 has no showModal. Throwing inside this effect sent
+    // the whole page to the error screen when a visitor pressed search.
+    if (typeof node.showModal === 'function') node.showModal();
+    else node.setAttribute('open', '');
   }, []);
+
+  const close = () => {
+    const node = dialog.current;
+    if (node && typeof node.close === 'function') node.close();
+    else onClose();
+  };
 
   const go = (destination: Destination | undefined) => {
     if (!destination) return;
-    dialog.current?.close();
+    close();
     navigate(destination.href);
   };
 
@@ -86,7 +96,7 @@ export default function QuickJump({ onClose, navigate }: { onClose: () => void; 
       aria-labelledby={`${id}-title`}
       onClose={onClose}
       onClick={(event) => {
-        if (event.target === dialog.current) dialog.current?.close();
+        if (event.target === dialog.current) close();
       }}
     >
       <h2 id={`${id}-title`} className="sr-only">

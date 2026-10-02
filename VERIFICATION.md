@@ -1,3 +1,19 @@
+# Verification record: 30 September 2026 (live editing, page copy and motion pass, branch feat/live-editable)
+
+Run against the final source of this pass, local fixtures only:
+
+- `tsc`, ESLint and `next build`: pass. Unit tests 82/82 (new: footer grouping, page copy seed coverage and rules). Content schema 13/13. Migrations including `0013_page_copy.sql`: pass.
+- Admin end-to-end (connected fixture): 8/8, including live publishing, scheduled release and expiry, the form hold, change marking, draft preview on the real page (and that it cannot be switched on signed out), and an edited home headline reaching an open page immediately and on schedule.
+- A live-update race was found and fixed during this run: after a scheduled release, the first refresh could return the static page one version behind and the update waited a whole poll interval (seen as 25 to 30 s on the home page). `LiveUpdates` now compares the revision the page rendered from with the one the server reported and retries the refresh after 1 s and 2 s. The scheduled copy test went from failing past 30 s to 16.7 s for both halves.
+- Browser suite: all six viewport shards pass (335 tests), including new motion checks (committee morph without the curtain with focus on `<main>`, the globe coming alive and turning, pausing the marquee, and the reduced-motion fallbacks). Rendered axe in the suite: 0 violations.
+- HTTP form scenarios, static accessibility audit, SEO audit (62/62) and submission contract audit (15/15): pass.
+- Link audit: fails on 5 admin references that are valid (`/admin/walk-in` exists; the four registration anchors have matching ids). The audit does not index admin routes; unchanged files from the earlier admin commit. Public routes: 1,020 links and 95 anchors verified.
+- Bundle guard: no motion library in any first load. First-load JS grew 6.4 to 10.9 KB against the old baseline, mostly shared live-update code (form hold, update chip, change marking, revision verification); the baseline was re-recorded deliberately (`scripts/first-load-baseline.json`).
+- Lighthouse (mobile, simulated throttling, median of 3): `/` perf 87, `/register` 86, `/resources` 88; accessibility, SEO and best practices 100; TBT 70 to 140 ms; CLS 0; console errors, bf-cache, heading order, contrast and non-composited animations pass. LCP 3.7 to 4.0 s, as in earlier records. The 88 target is still missed on `/` (unchanged) and `/register` (2 points lower than the last record).
+- Motion behaviour verified in headless Chromium: the seal tilts and opens with the scroll and closes on the way back; the corridor pins, leans up to about 4 degrees and settles to 0, drags 200 px with momentum, tilts the hovered panel; the marquee boosts to about 4x with scroll and settles; submit buttons keep their size while sending; the validity tick appears only after valid input.
+
+---
+
 # Verification record: 29 September 2026 (storyline, art and interaction pass)
 
 Run against the final source of this pass, local fixtures only:

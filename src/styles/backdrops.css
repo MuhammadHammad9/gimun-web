@@ -1,0 +1,164 @@
+/* ==============================================================================
+   BACKDROPS
+   The shader backgrounds: clouds behind the home hero, the scanner behind the
+   seat, molten light under the footer. Each is decorative, fades in on its
+   first frame, never takes pointer events, and is absent under reduced motion
+   and in print.
+   ============================================================================== */
+/* --- Hero clouds -------------------------------------------------------------
+   The home hero's sky (HeroClouds). Full strength behind the seal and along
+   the bottom, thinned behind the headline so the words keep their contrast;
+   it fades in on its first frame and never takes pointer events. */
+.hero-clouds {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2.4s var(--ease-out-expo);
+  -webkit-mask-image: linear-gradient(100deg, rgb(0 0 0 / 0.28) 0%, rgb(0 0 0 / 0.42) 38%, #000 62%);
+  mask-image: linear-gradient(100deg, rgb(0 0 0 / 0.28) 0%, rgb(0 0 0 / 0.42) 38%, #000 62%);
+}
+
+.hero-clouds[data-lit] {
+  opacity: 1;
+}
+
+.hero-clouds canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .hero-clouds {
+    display: none;
+  }
+}
+
+/* --- Seat and footer backdrops ------------------------------------------------
+   Containers for the ogl canvases (SeatScanner, FooterMolten). */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s var(--ease-out-expo);
+}
+
+.backdrop[data-lit] {
+  opacity: 1;
+}
+
+/* The seat: the scan fills the side of the seal and thins under the words. */
+.backdrop--seat {
+  z-index: -1;
+  -webkit-mask-image: linear-gradient(100deg, rgb(0 0 0 / 0.3) 0%, rgb(0 0 0 / 0.45) 40%, #000 70%);
+  mask-image: linear-gradient(100deg, rgb(0 0 0 / 0.3) 0%, rgb(0 0 0 / 0.45) 40%, #000 70%);
+}
+
+/* The footer: molten light pools under the wordmark and fades up behind the
+   links, which sit above it. */
+.site-footer {
+  isolation: isolate;
+}
+
+.site-footer > :not(.backdrop, .site-footer__dim) {
+  position: relative;
+  z-index: 1;
+}
+
+.backdrop--footer {
+  z-index: 0;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgb(0 0 0 / 0.75) 35%, rgb(0 0 0 / 0.25) 100%);
+  mask-image: linear-gradient(to top, #000 0%, rgb(0 0 0 / 0.75) 35%, rgb(0 0 0 / 0.25) 100%);
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .backdrop {
+    display: none;
+  }
+}
+
+/* --- The seat lifts off the footer --------------------------------------------
+   The home hand-off, in reverse at the end of the page: the last chapter is
+   a sheet with a rounded foot and a shadow, lying over the top of the footer,
+   and as it slides away the footer beneath comes forward: its content rises
+   from behind the sheet, grows from 94% to full size and its dim clears.
+   Driven by the footer's own scroll timeline, so it needs no script; it ends
+   exactly at the bottom of the page whatever the footer's height, and without
+   scroll timelines (or with reduced motion) the footer is simply there. */
+.site-footer {
+  view-timeline-name: --footer;
+}
+
+.site-footer__stage {
+  transform-origin: 50% 100%;
+}
+
+.site-footer__dim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--color-void);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes footer-recede {
+  from {
+    transform: translate3d(0, -22vh, 0) scale(0.94);
+  }
+}
+
+@keyframes footer-undim {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .site-footer__stage {
+    animation: footer-recede linear both;
+    animation-timeline: --footer;
+    animation-range: entry 0% entry 100%;
+  }
+
+  .site-footer__dim {
+    animation: footer-undim linear both;
+    animation-timeline: --footer;
+    animation-range: entry 0% entry 100%;
+  }
+}
+
+/* Where a page ends on the seat (the story pages), the seat is the sheet. */
+body:has(.closing) main {
+  position: relative;
+  z-index: 1;
+}
+
+.closing {
+  border-radius: var(--radius-sheet);
+  box-shadow: 0 2.5rem 5rem -3rem rgb(11 2 1 / 0.6);
+}
+
+body:has(.closing) .site-footer {
+  margin-top: calc(-1 * var(--radius-sheet));
+  padding-top: calc(clamp(4rem, 8vw, 7rem) + var(--radius-sheet));
+  border-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer__stage,
+  .site-footer__dim {
+    animation: none;
+  }
+
+  .site-footer__dim {
+    opacity: 0;
+  }
+}

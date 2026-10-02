@@ -10,8 +10,11 @@ test.beforeEach(async ({}, testInfo) => {
 test('the chapter rail lists the chapters and jumps to one', async ({ page }) => {
   await page.goto('/');
   await page.waitForSelector('html[data-transitions="ready"]');
-  // The rail appears after the first scroll.
+  // The rail stays out over the hero and slides in once the first chapter
+  // has covered it.
   await page.mouse.wheel(0, 400);
+  await expect(page.getByRole('navigation', { name: 'Chapters on this page' })).toBeHidden();
+  await page.mouse.wheel(0, 600);
   const rail = page.getByRole('navigation', { name: 'Chapters on this page' });
   await expect(rail).toBeVisible();
   await expect(rail.getByRole('link')).toHaveCount(7);

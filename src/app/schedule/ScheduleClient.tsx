@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type KeyboardEvent } from 'react';
+import { Fragment, useEffect, useState, type KeyboardEvent } from 'react';
 import { MapPin, Printer } from 'lucide-react';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { useSiteConfig } from '@/components/SiteConfigProvider';
@@ -72,6 +72,15 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
   const currentDayLabel = currentDaySessions[0]?.dayLabel || `Day ${selectedDay}`;
   const live = initialSchedule.filter((s) => liveSessionIds.has(s.id));
 
+  // On today's tab, a "now" line sits before the first session still to come.
+  const dayStart = sessionInstant(site.eventDates.start, selectedDay, '00:00');
+  const showingToday = now !== null && now >= dayStart && now < dayStart + 86_400_000;
+  const nextIndex = showingToday
+    ? filteredSessions.findIndex((s) => sessionInstant(site.eventDates.start, s.day, s.startTime) > (now ?? 0))
+    : -1;
+  const nowLabel =
+    now === null ? '' : new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Karachi' }).format(now);
+
   // Arrow keys move between day tabs, as a tab list should.
   const onTabKey = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
@@ -112,7 +121,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
       <div className="space-y-6">
         <div role="tablist" aria-label="Conference days" className="day-tabs">
           {days.map((dayNum, index) => {
-            const label = initialSchedule.find((s) => s.day === dayNum)?.dayLabel.split('—')[1]?.trim() || `Day ${dayNum}`;
+            const label = initialSchedule.find((s) => s.day === dayNum)?.dayLabel?.split('—')[1]?.trim() || `Day ${dayNum}`;
             const selected = selectedDay === dayNum;
             return (
               <button
@@ -145,10 +154,17 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
       <div id="day-panel" role="tabpanel" aria-labelledby={`day-tab-${selectedDay}`}>
         <h2 className="sr-only">Day-by-day schedule</h2>
         <ol className="session-list" key={`${selectedDay}-${trackFilter}`}>
-          {filteredSessions.map((session) => {
+          {filteredSessions.map((session, index) => {
             const isLive = liveSessionIds.has(session.id);
             return (
-              <li key={session.id} className={cn('session', isLive && 'session--live')}>
+              <Fragment key={session.id}>
+              {index === nextIndex && (
+                <li className="now-line" aria-hidden="true">
+                  <span className="live-dot" />
+                  <span className="now-line__label">Now · {nowLabel}</span>
+                </li>
+              )}
+              <li className={cn('session', isLive && 'session--live')} data-live-key={`session-${session.id}`}>
                 <p className="session__time">
                   <time>{session.startTime}</time>
                   <span aria-hidden="true">–</span>
@@ -172,6 +188,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
                   {session.location}
                 </p>
               </li>
+              </Fragment>
             );
           })}
         </ol>

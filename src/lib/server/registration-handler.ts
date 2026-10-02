@@ -1,4 +1,4 @@
-import { requirePermission } from '@/lib/server/admin/auth';
+import type { AdminUser } from '@/lib/server/admin/permissions';
 import { randomUUID } from 'node:crypto';
 import { after, NextRequest, NextResponse } from 'next/server';
 import {
@@ -25,7 +25,9 @@ import { getCanonicalEventDateRange } from '@/lib/site-config';
 import { canRegister } from '@/lib/phase';
 import { feeAmount as numericFee, formatFee } from '@/lib/fees';
 import { pickGimunDelegation, pickGimunIndividual, pickMootTeam } from '@/lib/registration-data';
-import { JsonBodyError, looksAutomated, readJsonBody } from '@/lib/server/request';
+import { botCheckResponse, botSignal, JsonBodyError, readJsonBody } from '@/lib/server/request';
+import { TURNSTILE_FAILED_MESSAGE, verifyTurnstile } from '@/lib/server/turnstile';
+import { getServerConfig } from '@/lib/server/config';
 
 // Same rule the pages use to show or hide the register buttons.
 async function isTrackOpen(track: 'gimun' | 'moot-cup') {
@@ -34,9 +36,10 @@ async function isTrackOpen(track: 'gimun' | 'moot-cup') {
 
 
 
-export async function handleRegistration(req: NextRequest, walkIn = false) {
-  const actor=walkIn?await requirePermission('registrations',true):null;
-  if(walkIn&&process.env.SUBMISSIONS_BACKEND==='memory')return NextResponse.json({success:false,message:'Connect the persistent submission backend before recording walk-ins.'},{status:503});
+/** `actor` is the signed-in staff member recording a walk-in; its route checks the permission first. */
+export async function handleRegistration(req: NextRequest, actor: AdminUser | null = null) {
+  const walkIn = actor !== null;
+  if(walkIn&&getServerConfig().backend==='memory')return NextResponse.json({success:false,message:'Connect the persistent submission backend before recording walk-ins.'},{status:503});
   try {
     let body: unknown;
     try {
@@ -55,8 +58,16 @@ export async function handleRegistration(req: NextRequest, walkIn = false) {
     const payload = body as Record<string, unknown>;
     const { track: trackValue, applicantType: applicantTypeValue, formData } = payload;
 
-    if (!walkIn && looksAutomated(payload)) {
+    const signal = walkIn ? null : botSignal(payload);
+    if (signal === 'honeypot') {
+      // Only a script fills the hidden field; it gets a believable answer and nothing is stored.
+      console.warn('[BotCheck] Registration honeypot triggered; submission discarded.');
       return NextResponse.json({ success: true, referenceId: `REG-${trackValue === 'moot-cup' ? 'MOOT' : 'GIMUN'}-${new Date().getFullYear()}-0000`, message: 'Application received successfully.' }, { status: 201 });
+    }
+    if (signal) {
+      console.warn(`[BotCheck] Registration refused (${signal}); the visitor was asked to resubmit.`);
+      const { status, message } = botCheckResponse(signal);
+      return NextResponse.json({ success: false, message }, { status });
     }
 
     if (trackValue !== 'gimun' && trackValue !== 'moot-cup') {
@@ -107,7 +118,11 @@ export async function handleRegistration(req: NextRequest, walkIn = false) {
 
     // Counted only for valid submissions, so correcting a form never locks
     // anyone out; validation itself is cheap and writes nothing.
-    const rateLimit = await enforceRateLimit('registration', clientIp(req));
+    const ip = clientIp(req);
+    if (!walkIn && !(await verifyTurnstile(payload.turnstile_token, ip))) {
+      return NextResponse.json({ success: false, message: TURNSTILE_FAILED_MESSAGE, turnstile: true }, { status: 403 });
+    }
+    const rateLimit = await enforceRateLimit('registration', ip);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { success: false, message: 'Too many requests. Please wait before submitting again.' },
@@ -168,6 +183,17 @@ export async function handleRegistration(req: NextRequest, walkIn = false) {
       summary = `${cat} (${participantCount} Advocates)`;
       feeAmount = site.fees.mootCupTeam;
       amountDue = numericFee(site, 'mootCupTeam');
+    }
+
+    // The receipt goes to this address; cap how often any one address is sent one.
+    if (!walkIn) {
+      const recipient = await enforceRateLimit('receipt-recipient', email.trim().toLowerCase());
+      if (!recipient.allowed) {
+        return NextResponse.json(
+          { success: false, message: 'Several applications have already been sent with this email address today. To change an application, email the Secretariat instead of submitting again.' },
+          { status: 429, headers: { 'Retry-After': String(recipient.retryAfterSeconds) } },
+        );
+      }
     }
 
     const submittedAt = new Date().toISOString();

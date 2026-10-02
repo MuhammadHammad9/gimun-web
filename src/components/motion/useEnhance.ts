@@ -44,7 +44,11 @@ export function useEnhance<T extends Element>(
       const result = await runRef.current(element, signal, tier);
       if (signal.aborted) result?.();
       else cleanup = result;
-    })();
+    })().catch(() => {
+      // Motion is optional. A chunk that fails to load (a tab opened before a
+      // new deploy asks for files that no longer exist) leaves the static
+      // page as it is instead of raising an unhandled rejection.
+    });
     return () => {
       controller.abort();
       cleanup?.();

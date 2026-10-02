@@ -1,13 +1,62 @@
 /* --- Schedule: day tabs and the session timeline -------------------------- */
+/* Phones: one swipeable strip of days that snaps tab by tab, with the next
+   day peeking in at the edge. Wider screens: all four in a row. */
 .day-tabs {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
   gap: 0.5rem;
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Both axes spelled out, so the page's vertical scroll passes through. */
+  overscroll-behavior: contain auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+
+.day-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.day-tabs > .day-tab {
+  flex: 0 0 min(42vw, 11rem);
+  scroll-snap-align: start;
 }
 
 @media (min-width: 768px) {
   .day-tabs {
+    display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow: visible;
+  }
+}
+
+/* The present moment, between the sessions of today's tab. */
+.now-line {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-block: 0.75rem;
+  color: var(--color-champagne);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--text-meta--letter-spacing);
+  text-transform: uppercase;
+}
+
+.now-line::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--color-champagne), transparent);
+}
+
+@media print {
+  .now-line {
+    display: none;
   }
 }
 
@@ -150,34 +199,8 @@
   color: var(--color-champagne);
 }
 
-.live-dot {
-  position: relative;
-  width: 0.625rem;
-  height: 0.625rem;
-  flex: none;
-  border-radius: 9999px;
-  background: var(--color-champagne);
-}
-
-.live-dot::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: inherit;
-  animation: live-ping 1.8s var(--ease-out-expo) infinite;
-}
-
-@keyframes live-ping {
-  to {
-    opacity: 0;
-    transform: scale(2.6);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .session,
-  .live-dot::after {
+  .session {
     animation: none;
   }
 }
