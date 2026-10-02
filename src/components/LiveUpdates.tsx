@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { syncLiveContent } from '@/app/live-actions';
+import { markUnreachable, waitingOn, type Unreachable } from '@/lib/live-retry';
 
 /** Pages where minutes matter: checked every 4 s. Everywhere else every 15 s. */
 const FAST_PATHS = ['/schedule', '/announcements', '/register', '/results'];
@@ -96,9 +97,10 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
   const rendered = useRef(initial);
   const retries = useRef(0);
   // A revision that refreshing could not bring this page to (its cached copy
-  // did not regenerate). Ignored until something newer arrives, so a stuck
-  // page never refreshes itself every few seconds for an hour.
-  const unreachable = useRef<string | null>(null);
+  // did not regenerate yet). Left alone for a growing while, then tried again
+  // (src/lib/live-retry.ts), so a stuck page neither refreshes every few
+  // seconds nor misses the update once the server can deliver it.
+  const unreachable = useRef<Unreachable | null>(null);
 
   const sync = async () => {
     const live = await syncLiveContent(baseline.current).catch(() => null);
@@ -151,7 +153,7 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
         if (cancelled) return;
         failures = 0;
         setTime(new Date().toLocaleTimeString());
-        if (result.revision !== baseline.current && result.revision !== unreachable.current) {
+        if (result.revision !== baseline.current && !waitingOn(unreachable.current, result.revision, Date.now())) {
           if (admin) {
             if (document.querySelector('[data-admin-dirty="true"]')) setStatus('Changes available · your unsaved work is preserved');
             else if (!refreshing.current) {
@@ -206,8 +208,9 @@ export function LiveUpdates({ initial, admin = false, eventStart, eventEnd }: { 
       return () => clearTimeout(retry);
     }
     if (previous && target.current && rendered.current !== target.current) {
-      // Still behind after the retries: stop chasing this revision, and do not claim an update.
-      unreachable.current = target.current;
+      // Still behind after the retries: pause on this revision for a while (the
+      // server may be inside its purge throttle), and do not claim an update.
+      unreachable.current = markUnreachable(unreachable.current, target.current, Date.now());
       refreshing.current = false;
       target.current = null;
       before.current = null;
