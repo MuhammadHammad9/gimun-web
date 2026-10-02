@@ -24,7 +24,7 @@ Registration pages offer **Send invoice** (PDF built from amount due, amount pai
 
 ## Admin security
 
-- Enable TOTP MFA in Supabase Auth. Admins enrol from **Two-factor** in the admin header; `ADMIN_REQUIRE_MFA=1` makes enrolment mandatory before any admin page loads; production builds fail without it.
+- Enable TOTP MFA in Supabase Auth. Admins enrol from **Two-factor** in the admin header; `ADMIN_REQUIRE_MFA=1` makes enrolment mandatory before any admin page loads. It is currently off by decision (2026-10-02): enrolment is optional and builds only warn. Turn it on once every admin has enrolled; before that, confirm TOTP is enabled under Authentication → Multi-Factor, or admins without an authenticator are locked out.
 - Supabase Auth settings the code cannot enforce (Dashboard → Authentication): turn **off** "Allow new users to sign up" (admins are created from **Users**), turn **on** leaked-password protection, set the minimum password length to 12, and set a session time-box (for example 12 hours) and an inactivity timeout (for example 1 hour).
 - Google Analytics: in the GA4 data stream's enhanced measurement, turn **off** "Page changes based on browser history events". The site sends its own page views and never for `/admin`, `/survey/…` or `/verify/…`, whose addresses carry private tokens; the automatic setting would report them.
 - Hosting outside Vercel: rate limits read the visitor's address from `X-Forwarded-For`, counting `TRUSTED_PROXY_HOPS` entries from the right (default 1, for one reverse proxy that appends the address it saw). `X-Real-IP` is trusted only on Vercel.
