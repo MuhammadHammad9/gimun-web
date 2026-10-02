@@ -676,9 +676,9 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateX(var(--seg-x, 0px));
   border-radius: var(--radius-pill);
   background: var(--color-champagne);
-  transition:
-    transform 0.4s var(--ease-out-expo),
-    width 0.4s var(--ease-out-expo);
+  /* Only the slide animates: a width transition runs on the main thread
+     (non-composited), which fails the Lighthouse release gate. */
+  transition: transform 0.4s var(--ease-out-expo);
   pointer-events: none;
 }
 
