@@ -124,7 +124,8 @@ for (const file of allComponentFiles) {
     totalImages++;
     const attrs = match[1];
     const hasAlt = /alt=(?:["'][^"']*["']|{[^}]+})/.test(attrs);
-    const hasEmptyAlt = /alt=["']\s*["']/.test(attrs);
+    // alt="" is correct for a decorative image, but only when marked aria-hidden, which states the intent.
+    const hasEmptyAlt = /alt=["']\s*["']/.test(attrs) && !/aria-hidden=["']true["']/.test(attrs);
 
     if (!hasAlt || hasEmptyAlt) {
       missingAltImages.push({

@@ -85,7 +85,7 @@ export default async function CollectionPage({ params, searchParams }: { params:
           const title = collection === 'copy' && typeof row.data.label === 'string' ? row.data.label : entryTitle(row.data, row.id);
           return <li key={row.id}>
             <Link className="admin-row" href={`/admin/content/${collection}/${row.id}`}>
-              {info.media && <span className="admin-row__thumb">{looksLikeImage(picture) ? <Image src={String(picture)} alt="" fill sizes="64px" unoptimized /> : <FileText size={20} aria-hidden="true" />}</span>}
+              {info.media && <span className="admin-row__thumb">{looksLikeImage(picture) ? <Image src={String(picture)} alt="" aria-hidden="true" fill sizes="64px" unoptimized /> : <FileText size={20} aria-hidden="true" />}</span>}
               <span className="admin-row__text"><strong>{title}</strong><small>{entrySummary(collection, row.data)}</small></span>
               <span className={`admin-pill admin-pill--${state.tone}`}>{state.text}</span>
             </Link>

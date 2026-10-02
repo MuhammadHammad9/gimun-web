@@ -45,7 +45,7 @@ export async function MediaLibrary({ search = '' }: { search?: string }) {
           const image = String(asset.mime).startsWith('image/');
           return <li key={String(asset.id)} className="media-card">
             <a className="media-card__thumb" href={url} target="_blank" rel="noreferrer" aria-label={`Open ${asset.alt}`}>
-              {image ? <Image src={url} alt="" fill sizes="(max-width: 700px) 50vw, 240px" unoptimized /> : <FileText size={34} aria-hidden="true" />}
+              {image ? <Image src={url} alt="" aria-hidden="true" fill sizes="(max-width: 700px) 50vw, 240px" unoptimized /> : <FileText size={34} aria-hidden="true" />}
             </a>
             <div className="media-card__body">
               <strong>{String(asset.alt)}</strong>

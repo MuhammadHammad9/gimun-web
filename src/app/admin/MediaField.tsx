@@ -214,7 +214,7 @@ export function MediaField({
                   }}
                 >
                   <span className="media-picker__thumb">
-                    {asset.mime.startsWith('image/') ? <Image src={asset.url} alt="" fill sizes="180px" unoptimized /> : <FileText size={30} aria-hidden="true" />}
+                    {asset.mime.startsWith('image/') ? <Image src={asset.url} alt="" aria-hidden="true" fill sizes="180px" unoptimized /> : <FileText size={30} aria-hidden="true" />}
                   </span>
                   <span className="media-picker__name">{asset.alt}</span>
                   <small>{kb(asset.size)}</small>
