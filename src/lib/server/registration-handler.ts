@@ -1,5 +1,5 @@
 import type { AdminUser } from '@/lib/server/admin/permissions';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { after, NextRequest, NextResponse } from 'next/server';
 import {
   validateGimunIndividual,
@@ -28,6 +28,12 @@ import { pickGimunDelegation, pickGimunIndividual, pickMootTeam } from '@/lib/re
 import { botCheckResponse, botSignal, JsonBodyError, readJsonBody } from '@/lib/server/request';
 import { TURNSTILE_FAILED_MESSAGE, verifyTurnstile } from '@/lib/server/turnstile';
 import { getServerConfig } from '@/lib/server/config';
+import {
+  DEVICE_COOKIE,
+  deviceLimitMessage,
+  deviceSubject,
+  recordDeviceAttempt,
+} from '@/lib/server/device-limit';
 
 // Same rule the pages use to show or hide the register buttons.
 async function isTrackOpen(track: 'gimun' | 'moot-cup') {
@@ -192,6 +198,31 @@ export async function handleRegistration(req: NextRequest, actor: AdminUser | nu
         return NextResponse.json(
           { success: false, message: 'Several applications have already been sent with this email address today. To change an application, email the Secretariat instead of submitting again.' },
           { status: 429, headers: { 'Retry-After': String(recipient.retryAfterSeconds) } },
+        );
+      }
+    }
+
+    // Per-device registration limit (see src/lib/server/device-limit.ts). A
+    // browser gets a limited number of distinct applications, then a 30-minute
+    // cooling-off period, so one machine cannot flood the form; a retry of the
+    // same submission (same key and details) is a replay and is never blocked.
+    // Walk-ins are staff-driven and skip it. Keyed to the signed device cookie
+    // when present, else the network address.
+    if (!walkIn) {
+      const fingerprint = `${submissionKey}:${createHash('sha256')
+        .update(JSON.stringify({ track, applicantType, formData: storedFormData }))
+        .digest('hex')}`;
+      const subject = deviceSubject(req.cookies.get(DEVICE_COOKIE)?.value, ip);
+      const device = await recordDeviceAttempt(subject, fingerprint);
+      if (!device.allowed) {
+        return NextResponse.json(
+          {
+            success: false,
+            deviceLimited: true,
+            retryAfterSeconds: device.retryAfterSeconds,
+            message: deviceLimitMessage(device.retryAfterSeconds),
+          },
+          { status: 429, headers: { 'Retry-After': String(device.retryAfterSeconds) } },
         );
       }
     }

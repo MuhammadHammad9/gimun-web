@@ -12,16 +12,18 @@ export function SubmitButton({
   children,
   pendingLabel = 'Sending…',
   className,
+  disabled = false,
 }: {
   pending: boolean;
   children: ReactNode;
   pendingLabel?: string;
   className?: string;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || disabled}
       aria-busy={pending || undefined}
       data-state={pending ? 'pending' : 'idle'}
       className={cn('submit-morph', className)}

@@ -33,6 +33,10 @@ export const RATE_LIMITS = {
   // could make the site email a stranger over and over. Keyed by address, not
   // IP, so rotating addresses does not help. A real applicant needs one or two.
   'receipt-recipient': { maxRequests: override ?? 5, windowMs: 24 * 60 * 60 * 1000 },
+  // New registration device cookies per network (src/lib/server/device-limit.ts).
+  // A browser keeps its cookie for a year, so this is reached only by a script
+  // collecting a fresh allowance per request; a campus NAT stays well inside it.
+  'device-mint': { maxRequests: override ?? 60, windowMs: TEN_MINUTES },
   // One shared key: at most one visitor-triggered content purge per ten
   // seconds across every server instance (src/app/live-actions.ts). Not
   // affected by RATE_LIMIT_MAX, which would let tests purge on every call.

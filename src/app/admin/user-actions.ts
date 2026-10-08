@@ -19,6 +19,10 @@ export async function manageUser(input:unknown){
   }
   const values={user_id:userId,email:p.email,display_name:p.display_name,role:p.role,sections:p.sections,active:p.active,...(!p.id||p.password?{must_change_password:true}:{})};
   const {error}=await db.from('admin_users').upsert(values);if(error){if(!p.id){const rollback=await db.auth.admin.deleteUser(userId);if(!rollback.error)return {error:'Account setup could not finish. No account was retained; try again.'};}return {error:`Account changes partially completed. Recovery account: ${userId}. Contact the owner before retrying.`};}
+  // A deactivated admin must not be able to sign in again (admin_users.active only gates pages and the
+  // database); ban the Auth account while inactive, which also stops refresh tokens. Reactivation lifts it.
+  const {error:banError}=await db.auth.admin.updateUserById(userId,{ban_duration:p.active?'none':'876000h'});
+  if(banError)return {error:p.active?'Profile saved, but the sign-in ban could not be lifted. Try again.':'Profile deactivated, but the sign-in ban could not be applied. Try again.'};
   const {error:auditError}=await db.from('audit_log').insert({actor:owner.user_id,action:'manage-user',section:'users',entity_id:userId});
   if(auditError)return {error:'Profile saved; actor attribution could not be recorded. Review the database audit trigger.'};
   revalidatePath('/admin/users');return {result:`Account ${userId} saved. Give the temporary password to the user through your approved channel.`};
