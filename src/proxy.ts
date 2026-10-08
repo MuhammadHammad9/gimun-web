@@ -50,7 +50,15 @@ export async function proxy(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   let response = forward();
-  if (!url || !key) return withPolicy(response);
+  // Fail closed: if auth is not configured the session cannot be verified, so
+  // never render an admin page — send everything except the sign-in page there.
+  // In production scripts/check-env.mjs guarantees these are set, so this only
+  // matters for a misconfigured preview or self-host.
+  if (!url || !key) {
+    if (request.nextUrl.pathname === '/admin/login') return withPolicy(response);
+    const target = request.nextUrl.clone(); target.pathname = '/admin/login'; target.search = '';
+    return withPolicy(NextResponse.redirect(target));
+  }
   const client = createServerClient(url, key, { cookies: {
     getAll: () => request.cookies.getAll(),
     setAll: values => { values.forEach(({ name, value }) => request.cookies.set(name, value)); response = forward(); values.forEach(({ name, value, options }) => response.cookies.set(name, value, options)); },

@@ -21,6 +21,8 @@ import { getEventYear } from '@/lib/site-config';
 import { SubmitButton } from './SubmitButton';
 import { newSubmissionKey, readSubmissionResponse } from '@/lib/uuid';
 import { TURNSTILE_PENDING_MESSAGE, useTurnstile } from './Turnstile';
+import { useDeviceLimit } from './useDeviceLimit';
+import { DeviceLimitNotice } from './DeviceLimitNotice';
 
 interface MootRegisterFormProps {
   endpoint?: string;
@@ -71,6 +73,7 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
   const formLoadedAt = useRef(0);
   // Staff walk-ins post to their own signed-in endpoint and skip the human check.
   const turnstile = useTurnstile(endpoint === '/api/register');
+  const deviceLimit = useDeviceLimit(endpoint === '/api/register');
 
   useEffect(() => {
     formLoadedAt.current = Date.now();
@@ -141,6 +144,11 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
     e.preventDefault();
     setServerError(null);
 
+    if (deviceLimit.locked) {
+      setServerError('This device has reached its registration limit. Please wait for the timer above, then try again.');
+      return;
+    }
+
     const validationResult = validateMootCupTeam(formData, categoryIds);
 
     if (Object.keys(validationResult).length > 0) {
@@ -181,6 +189,10 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
 
       if (!res.ok || !data.success) {
         setStatus('error');
+        const limited = data as { deviceLimited?: boolean; retryAfterSeconds?: number };
+        if (res.status === 429 && limited.deviceLimited) {
+          deviceLimit.applyLockout(limited.retryAfterSeconds ?? deviceLimit.secondsLeft, deviceLimit.maxAttempts ?? undefined);
+        }
         if (data.errors) {
           setErrors(data.errors);
           focusFirstError(data.errors);
@@ -233,6 +245,9 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
       noValidate
       className="double-bezel-inner space-y-10 p-6 text-text-2 sm:p-10"
     >
+      {deviceLimit.locked && (
+        <DeviceLimitNotice secondsLeft={deviceLimit.secondsLeft} maxAttempts={deviceLimit.maxAttempts} />
+      )}
       {/* Header */}
       <div className="space-y-2 pb-3 border-b border-line">
         <span className="text-[11px] font-mono uppercase tracking-wider text-champagne font-bold">
@@ -604,6 +619,7 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
         <FormErrorSummary errors={errors} />
         <SubmitButton
           pending={status === 'submitting'}
+          disabled={deviceLimit.locked === true}
           pendingLabel="Sending your team registration…"
           className="btn-shimmer-gold w-full py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-on-accent transition-all hover:brightness-110 active:scale-[0.99]"
         >

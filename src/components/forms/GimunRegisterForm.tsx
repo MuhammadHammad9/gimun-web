@@ -22,6 +22,8 @@ import { getEventYear } from '@/lib/site-config';
 import { SubmitButton } from './SubmitButton';
 import { newSubmissionKey, readSubmissionResponse } from '@/lib/uuid';
 import { TURNSTILE_PENDING_MESSAGE, useTurnstile } from './Turnstile';
+import { useDeviceLimit } from './useDeviceLimit';
+import { DeviceLimitNotice } from './DeviceLimitNotice';
 
 interface GimunRegisterFormProps {
   endpoint?: string;
@@ -93,6 +95,8 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
   const formLoadedAt = useRef(0);
   // Staff walk-ins post to their own signed-in endpoint and skip the human check.
   const turnstile = useTurnstile(endpoint === '/api/register');
+  // Per-device registration allowance (public portal only).
+  const deviceLimit = useDeviceLimit(endpoint === '/api/register');
 
   useEffect(() => {
     formLoadedAt.current = Date.now();
@@ -217,6 +221,11 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
     e.preventDefault();
     setServerError(null);
 
+    if (deviceLimit.locked) {
+      setServerError('This device has reached its registration limit. Please wait for the timer above, then try again.');
+      return;
+    }
+
     let validationResult: ValidationErrors = {};
     if (applicantType === 'individual') {
       validationResult = validateGimunIndividual(individualData, committeeIds);
@@ -262,6 +271,10 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
 
       if (!res.ok || !data.success) {
         setStatus('error');
+        const limited = data as { deviceLimited?: boolean; retryAfterSeconds?: number };
+        if (res.status === 429 && limited.deviceLimited) {
+          deviceLimit.applyLockout(limited.retryAfterSeconds ?? deviceLimit.secondsLeft, deviceLimit.maxAttempts ?? undefined);
+        }
         if (data.errors) {
           setErrors(data.errors);
           focusFirstError(data.errors);
@@ -324,6 +337,9 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
       noValidate
       className="double-bezel-inner space-y-10 p-6 text-text-2 sm:p-10"
     >
+      {deviceLimit.locked && (
+        <DeviceLimitNotice secondsLeft={deviceLimit.secondsLeft} maxAttempts={deviceLimit.maxAttempts} />
+      )}
       {/* Track Brand Bar & Switcher */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-line">
@@ -1045,6 +1061,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
         <FormErrorSummary errors={errors} />
         <SubmitButton
           pending={status === 'submitting'}
+          disabled={deviceLimit.locked === true}
           pendingLabel="Sending your application…"
           className="btn-shimmer-gold w-full py-4 px-6 rounded-xl font-bold text-xs uppercase tracking-wider text-on-accent transition-all hover:brightness-110 active:scale-[0.99]"
         >
