@@ -83,6 +83,8 @@ for (const name of ['RATE_LIMIT_HMAC_SECRET', 'CRON_SECRET']) {
   require(name);
   if (has(name) && env[name].length < 32) errors.push(`${name} must be at least 32 characters (use: openssl rand -hex 32).`);
 }
+// RATE_LIMIT_MAX is a test switch that overrides every limit, admin sign-in included.
+if (has('RATE_LIMIT_MAX')) errors.push('RATE_LIMIT_MAX is for automated tests only; unset it (it overrides every rate limit, including admin sign-in).');
 if (has('RATE_LIMIT_HMAC_SECRET') && env.RATE_LIMIT_HMAC_SECRET === env.CRON_SECRET) {
   errors.push('RATE_LIMIT_HMAC_SECRET and CRON_SECRET must be different values.');
 }

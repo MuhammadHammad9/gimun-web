@@ -106,3 +106,32 @@ migration tests ✓ · content validate ✓ · secret scan ✓ · production bui
 real-server form & anti-bot E2E 8/8 ✓ · forms browser spec (Chromium) 4/4 ✓ ·
 manual attack battery ✓. The full Playwright matrix (admin/motion/story suites) was not run here —
 this environment has only Chromium build 1194 while the suite pins 1243; CI runs the full matrix.
+
+## Round 2 — independent re-run of the security-audit skill
+
+A second run used the skill's standard profile with independent agents: four reconnaissance agents
+(264 file:line-referenced facts) and a 57-unit coverage ledger (validated by the skill's own validator).
+An OS-level sandbox was built for running the app (per-call network/PID/IPC namespaces, unique uid per
+agent, cgroup memory/process/CPU caps, root-enforced wall clock, read-only source). Two independent
+reviewers found real gaps in it and those were fixed. The final fix was blocked by Claude Code's safety
+controls, so — as the skill prescribes when execution controls can't be guaranteed — no agent ran app code
+in round 2; the remaining leads were reviewed from source.
+
+### Fixed in round 2
+1. **Device cookies never use a public key in production.** If `RATE_LIMIT_HMAC_SECRET` is missing, the
+   device limit no longer signs or trusts cookies with the hardcoded development key (anyone could forge
+   those); every request is counted by network address instead. Regression test added.
+2. **`RATE_LIMIT_MAX` is rejected by the production build check.** It is a test switch that overrides every
+   limit, including admin sign-in throttling.
+3. **Deactivated admins can no longer sign in.** Deactivating an admin now also bans the Supabase Auth
+   account (stopping new sign-ins and token refresh); reactivating lifts the ban. Previously only the
+   `active` flag changed, so the account could still authenticate (pages were still blocked).
+
+### Reviewed, left as documented risk or owner decisions
+- Turnstile and the rate limiter fail open / degrade to per-instance when Cloudflare or Upstash are down
+  (deliberate: an outage must not close registration). Alert on `/api/health` `rateLimit: degraded`.
+- Two-factor sign-in is optional (`ADMIN_REQUIRE_MFA` off by organizer decision); turn it on once admins enrol.
+- The account-wide admin sign-in ceiling (50/hour) can be used to delay an admin's new sign-ins if their
+  email is known; existing sessions are unaffected. MFA plus a less public admin email is the mitigation.
+- Client-IP trust off Vercel depends on `TRUSTED_PROXY_HOPS` (closed on Vercel).
+- Supabase dashboard settings (disable public sign-ups, leaked-password protection) must be set by an owner.

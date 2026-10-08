@@ -25,11 +25,11 @@ afterEach(() => {
 
 describe('device cookie signing', () => {
   it('round-trips a freshly minted cookie', () => {
-    const { id, value } = mintDeviceCookie();
+    const { id, value } = mintDeviceCookie()!;
     expect(verifyDeviceCookie(value)).toBe(id);
   });
   it('rejects tampered, foreign, or malformed cookies', () => {
-    const { id, value } = mintDeviceCookie();
+    const { id, value } = mintDeviceCookie()!;
     expect(verifyDeviceCookie(value.replace(/.$/, 'X'))).toBeNull(); // bad signature
     expect(verifyDeviceCookie(`${id}.deadbeefdeadbeefdeadbeefdeadbeef`)).toBeNull();
     expect(verifyDeviceCookie('not-a-cookie')).toBeNull();
@@ -37,15 +37,26 @@ describe('device cookie signing', () => {
     expect(verifyDeviceCookie(null)).toBeNull();
   });
   it('a different secret cannot verify a cookie (forgery needs the secret)', () => {
-    const { value } = mintDeviceCookie();
+    const { value } = mintDeviceCookie()!;
     vi.stubEnv('RATE_LIMIT_HMAC_SECRET', 'a-different-secret');
     expect(verifyDeviceCookie(value)).toBeNull();
   });
 });
 
+describe('production without a signing secret', () => {
+  it('neither mints nor trusts device cookies (the fallback key is public)', () => {
+    const { value } = mintDeviceCookie()!; // signed with the dev fallback
+    vi.stubEnv('RATE_LIMIT_HMAC_SECRET', '');
+    vi.stubEnv('NODE_ENV', 'production');
+    expect(mintDeviceCookie()).toBeNull();
+    expect(verifyDeviceCookie(value)).toBeNull();
+    expect(deviceSubject(value, '203.0.113.9')).toBe('network:203.0.113.9');
+  });
+});
+
 describe('deviceSubject', () => {
   it('keys on the signed device id when the cookie is valid', () => {
-    const { id, value } = mintDeviceCookie();
+    const { id, value } = mintDeviceCookie()!;
     expect(deviceSubject(value, '203.0.113.9')).toBe(`device:${id}`);
   });
   it('falls back to the /64 network when there is no valid cookie', () => {

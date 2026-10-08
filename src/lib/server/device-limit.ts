@@ -39,27 +39,42 @@ export function deviceLimitConfig() {
   };
 }
 
+/**
+ * Signing key for device cookies. The development fallback is public, so a
+ * production server without RATE_LIMIT_HMAC_SECRET signs and trusts no device
+ * cookie at all; every request is then counted by network address instead.
+ */
+function signingSecret(): string | null {
+  if (process.env.RATE_LIMIT_HMAC_SECRET) return process.env.RATE_LIMIT_HMAC_SECRET;
+  return process.env.NODE_ENV === 'production' && !isExplicitMemoryTestBackend() ? null : 'development-rate-limit-secret';
+}
+
+/** Key for hashing store keys only (never trusted for authenticity). */
 function secret() {
   return process.env.RATE_LIMIT_HMAC_SECRET || 'development-rate-limit-secret';
 }
 
-function sign(id: string) {
-  return createHmac('sha256', secret()).update(`gimun-device:v1:${id}`).digest('base64url').slice(0, 32);
+function sign(id: string, key: string) {
+  return createHmac('sha256', key).update(`gimun-device:v1:${id}`).digest('base64url').slice(0, 32);
 }
 
 /** The device id inside a cookie value, or null when it is absent, malformed or not signed by this server. */
 export function verifyDeviceCookie(value: string | undefined | null): string | null {
   if (!value || value.length > 128) return null;
   const match = /^([A-Za-z0-9_-]{22})\.([A-Za-z0-9_-]{32})$/.exec(value);
-  if (!match) return null;
-  const expected = Buffer.from(sign(match[1]));
+  const key = signingSecret();
+  if (!match || !key) return null;
+  const expected = Buffer.from(sign(match[1], key));
   const given = Buffer.from(match[2]);
   return expected.length === given.length && timingSafeEqual(expected, given) ? match[1] : null;
 }
 
+/** A new signed device cookie, or null when no trustworthy signing key is configured. */
 export function mintDeviceCookie() {
+  const key = signingSecret();
+  if (!key) return null;
   const id = randomBytes(ID_BYTES).toString('base64url');
-  return { id, value: `${id}.${sign(id)}` };
+  return { id, value: `${id}.${sign(id, key)}` };
 }
 
 export function deviceCookieOptions() {
