@@ -10,10 +10,9 @@ type Tint = 'house' | 'gimun' | 'gmc';
 /**
  * Ambient light behind a hero: silk folds in the room's colour with a
  * champagne sheen, and a lamp that drifts toward the pointer. Purely
- * decorative. It starts after the visitor's first intent on the full motion
- * tier only (fine pointer, wide screen, motion allowed); everywhere else the
- * hero keeps its plain ground. The shader module loads only then, so it is
- * never part of a page's first load.
+ * decorative. It starts after the visitor's first intent on the lite and full
+ * motion tiers; the shader module loads lazily, stays half-resolution, and is
+ * visibility-gated so mobile gets the same atmosphere without pointer work.
  */
 export function LacquerLight({ tint = 'house', className }: { tint?: Tint; className?: string }) {
   const root = useRef<HTMLDivElement>(null);
@@ -51,7 +50,7 @@ export function LacquerLight({ tint = 'house', className }: { tint?: Tint; class
         element.removeAttribute('data-lit');
       };
     },
-    { tiers: ['full'], near: '0px' },
+    { tiers: ['lite', 'full'], near: '0px' },
   );
 
   return (

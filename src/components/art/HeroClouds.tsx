@@ -11,9 +11,9 @@ import { isLight, mixRGB, onThemeChange, token } from '@/lib/motion/colors';
  * with champagne shade on the light theme; maroon night cloud with
  * champagne-lit edges on the dark one. Decorative.
  *
- * Starts after the visitor's first intent on the full motion tier; the shader
- * loads in its own chunk. Reduced motion, print and phones keep the plain
- * ground.
+ * Starts after the visitor's first intent on the lite and full motion tiers;
+ * the shader loads in its own chunk and renders at low power. Reduced motion,
+ * Save-Data and print keep the plain ground.
  */
 export function HeroClouds() {
   const root = useRef<HTMLDivElement>(null);
@@ -46,7 +46,7 @@ export function HeroClouds() {
         element.removeAttribute('data-lit');
       };
     },
-    { tiers: ['full'], near: '0px' },
+    { tiers: ['lite', 'full'], near: '0px' },
   );
 
   return (

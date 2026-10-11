@@ -89,7 +89,9 @@ export default async function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: HEAD_BOOT_SCRIPT }} />
       </head>
-      <body className="min-h-screen flex flex-col bg-canvas text-text antialiased">
+      {/* Browser writing assistants may add attributes to <body> before React
+          hydrates. They are external DOM metadata, not app state. */}
+      <body suppressHydrationWarning className="min-h-screen flex flex-col bg-canvas text-text antialiased">
         <GoogleAnalytics measurementId={getAnalyticsMeasurementId()} />
         <SiteConfigProvider value={siteConfig} renderedAt={renderedAt}>
           {previewing && <PreviewBar />}

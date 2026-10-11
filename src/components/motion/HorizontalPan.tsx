@@ -30,10 +30,27 @@ export function HorizontalPan({ label, header, children }: { label: string; head
 
   useEnhance(
     root,
-    async (section, signal) => {
+    async (section, signal, tier) => {
       const trackEl = track.current;
       const viewportEl = viewport.current;
       if (!trackEl || !viewportEl) return;
+
+      // Touch devices already have native momentum and scroll snapping. Keep
+      // the desktop enhancement off the gesture, but expose the same progress
+      // feedback so the corridor still feels intentional on a phone.
+      if (tier === 'lite') {
+        section.dataset.pan = 'touch';
+        const progress = section.querySelector<HTMLElement>('.pan__progress');
+        const max = () => Math.max(0, viewportEl.scrollWidth - viewportEl.clientWidth);
+        const onScroll = () => progress?.style.setProperty('--pan-progress', (max() ? viewportEl.scrollLeft / max() : 0).toFixed(4));
+        viewportEl.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+        return () => {
+          viewportEl.removeEventListener('scroll', onScroll);
+          delete section.dataset.pan;
+        };
+      }
+
       const motion = await import('@/lib/motion/gsap');
       const Draggable = await motion.draggable();
       if (signal.aborted) return;

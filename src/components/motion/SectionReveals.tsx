@@ -9,15 +9,15 @@ import { motionTier } from '@/lib/motion/policy';
  * Section hand-offs for the whole public site: each paper or crest sheet
  * (`.sheet`) unfolds from an inset, rounded card to full bleed as it scrolls
  * in, so a change of ground reads as a new chapter arriving rather than a
- * hard cut. Scrubbed with the scroll; full tier only (clip-path repaints, so
- * phones keep the plain edge) and never before the first intent. Re-runs for
- * each page.
+ * hard cut. Scrubbed with the scroll; both lite and full tiers get the same
+ * narrative transition, while reduced motion and Save-Data keep the plain
+ * edge. Re-runs for each page.
  */
 export function SectionReveals() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (motionTier() !== 'full') return;
+    if (motionTier() === 'none') return;
     const controller = new AbortController();
     let cleanup: (() => void) | undefined;
     (async () => {

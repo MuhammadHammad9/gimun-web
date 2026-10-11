@@ -10,9 +10,9 @@ import { cn } from '@/lib/utils';
 /**
  * Shader backdrops for two sections, in the design system's colours: the
  * seat (the home closing) gets the scanner, the footer gets molten light.
- * Both start after the visitor's first intent on the full motion tier, load
- * ogl and their shader in their own chunk, and fade in on their first frame;
- * elsewhere the section keeps its plain ground. Decorative.
+ * Both start after the visitor's first intent on the lite and full motion
+ * tiers, load their shader in their own chunk, and fade in on their first
+ * frame. Reduced motion and Save-Data keep the plain ground. Decorative.
  */
 export function SeatScanner({ className }: { className?: string }) {
   const root = useRef<HTMLDivElement>(null);
@@ -30,7 +30,7 @@ export function SeatScanner({ className }: { className?: string }) {
         element.removeAttribute('data-lit');
       };
     },
-    { tiers: ['full'], near: '25% 0px' },
+    { tiers: ['lite', 'full'], near: '25% 0px' },
   );
   return <div ref={root} className={cn('backdrop backdrop--seat', className)} aria-hidden="true" />;
 }
@@ -51,7 +51,7 @@ export function FooterMolten({ className }: { className?: string }) {
         element.removeAttribute('data-lit');
       };
     },
-    { tiers: ['full'], near: '25% 0px' },
+    { tiers: ['lite', 'full'], near: '25% 0px' },
   );
   return <div ref={root} className={cn('backdrop backdrop--footer', className)} aria-hidden="true" />;
 }
