@@ -11,9 +11,20 @@
  * - without a photo, the person's initials sit on the maroon ground.
  */
 import { memo, useEffect, useRef, type CSSProperties } from 'react';
+import { getImageProps } from 'next/image';
 import { Phone } from 'lucide-react';
 import { telHref } from '@/components/registration/ContactDirectory';
 import './ProfileCard.css';
+
+// Team portraits are 800×1000 cutouts; the card is at most 340px wide.
+const PORTRAIT = { width: 800, height: 1000, sizes: '(max-width: 640px) 92vw, 340px' };
+
+/** Resized WebP from the image optimizer for site files; other URLs as given. */
+function portraitSources(src: string) {
+  if (!src.startsWith('/')) return { src };
+  const { props } = getImageProps({ src, alt: '', ...PORTRAIT });
+  return { src: props.src, srcSet: props.srcSet, sizes: props.sizes };
+}
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -220,7 +231,7 @@ function ProfileCard({
           <span className="profile-card__holo" />
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- the portrait moves with the tilt (parallax), which next/image's fill layout would fight
-            <img className="profile-card__photo" src={avatarUrl} alt={`Portrait of ${name}`} loading="lazy" draggable={false} />
+            <img className="profile-card__photo" {...portraitSources(avatarUrl)} alt={`Portrait of ${name}`} loading="lazy" decoding="async" draggable={false} />
           ) : (
             <span className="profile-card__monogram" aria-hidden="true">{initials(name)}</span>
           )}

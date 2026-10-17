@@ -102,6 +102,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
 
       {/* Regular Dispatches Feed */}
       <section className="space-y-4">
+        <h2 className="sr-only">All notices</h2>
         <p className="pb-2 font-mono text-xs text-text-3">
           {regularItems.length} {regularItems.length === 1 ? 'notice' : 'notices'}, newest first
         </p>

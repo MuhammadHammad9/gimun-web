@@ -8,7 +8,7 @@ import {
   type RefObject,
 } from "react";
 import { usePathname } from "next/navigation";
-import gsap from "gsap";
+import type { gsap as Gsap } from "gsap";
 import { ArrowRight, X } from "lucide-react";
 import { TransitionLink as Link } from "@/components/motion/TransitionLink";
 import { useRenderedAt, useSiteConfig } from "@/components/SiteConfigProvider";
@@ -19,6 +19,11 @@ import { eventPhase } from "@/lib/phase";
 import { BrandMark } from "./BrandMark";
 import { isCurrentPath } from "./nav-utils";
 import { ThemeSwitch } from "./ThemeSwitch";
+
+// GSAP stays out of every page's first load (scripts/report-first-load.js):
+// it is fetched while the browser is idle, before anyone opens the menu.
+let gsapLoad: Promise<typeof Gsap> | undefined;
+const loadGsap = () => (gsapLoad ??= import("gsap").then((m) => m.gsap));
 
 type MenuState = "closed" | "open" | "closing";
 
@@ -51,6 +56,15 @@ export function MobileMenu({
   if (open && state !== "open") setState("open");
   if (!open && state === "open") setState("closing");
 
+  // Only where the menu button shows (phones, tablets) is GSAP worth fetching.
+  useEffect(() => {
+    const prefetch = () => {
+      if (triggerRef.current?.offsetParent) void loadGsap();
+    };
+    const timer = window.setTimeout(prefetch, 1500);
+    return () => window.clearTimeout(timer);
+  }, [triggerRef]);
+
   useEffect(() => {
     const menu = menuRef.current;
     if (!menu || state === "closed") return;
@@ -64,60 +78,65 @@ export function MobileMenu({
     );
     if (!surface || !backdrop) return;
 
-    if (prefersReducedMotion()) {
-      gsap.set([...panels, surface], { xPercent: state === "open" ? 0 : 110, visibility: "visible" });
-      gsap.set(backdrop, { opacity: state === "open" ? 1 : 0 });
-      gsap.set(rows, { y: 0, opacity: 1 });
-      if (state === "closing") {
-        const timer = window.setTimeout(() => setState("closed"), 0);
-        return () => window.clearTimeout(timer);
+    let cancelled = false;
+    let timeline: ReturnType<typeof Gsap.timeline> | undefined;
+    let timer: number | undefined;
+    loadGsap().then((gsap) => {
+      if (cancelled) return;
+      if (prefersReducedMotion()) {
+        gsap.set([...panels, surface], { xPercent: state === "open" ? 0 : 110, visibility: "visible" });
+        gsap.set(backdrop, { opacity: state === "open" ? 1 : 0 });
+        gsap.set(rows, { y: 0, opacity: 1 });
+        if (state === "closing") timer = window.setTimeout(() => setState("closed"), 0);
+        return;
       }
-      return undefined;
-    }
 
-    const timeline = gsap.timeline({
-      onComplete: state === "closing" ? () => setState("closed") : undefined,
+      timeline = gsap.timeline({
+        onComplete: state === "closing" ? () => setState("closed") : undefined,
+      });
+      if (state === "open") {
+        gsap.set([...panels, surface], { xPercent: 110, visibility: "visible" });
+        gsap.set(backdrop, { opacity: 0 });
+        gsap.set(rows, { y: 22, opacity: 0.35 });
+        timeline
+          .to(backdrop, { opacity: 1, duration: 0.32, ease: "power2.out" }, 0)
+          .to(panels, { xPercent: 0, duration: 0.5, ease: "power4.out", stagger: 0.07 }, 0)
+          .to(surface, { xPercent: 0, duration: 0.56, ease: "power4.out" }, 0.16)
+          .to(
+            rows,
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.42,
+              ease: "power3.out",
+              stagger: 0.035,
+            },
+            0.3,
+          );
+      } else {
+        timeline
+          .to(
+            surface,
+            { xPercent: 110, duration: 0.36, ease: "power3.inOut" },
+            0,
+          )
+          .to(
+            [...panels].reverse(),
+            {
+              xPercent: 110,
+              duration: 0.36,
+              ease: "power3.inOut",
+              stagger: 0.045,
+            },
+            0.04,
+          )
+          .to(backdrop, { opacity: 0, duration: 0.28, ease: "power2.out" }, 0.12);
+      }
     });
-    if (state === "open") {
-      gsap.set([...panels, surface], { xPercent: 110, visibility: "visible" });
-      gsap.set(backdrop, { opacity: 0 });
-      gsap.set(rows, { y: 22, opacity: 0.35 });
-      timeline
-        .to(backdrop, { opacity: 1, duration: 0.32, ease: "power2.out" }, 0)
-        .to(panels, { xPercent: 0, duration: 0.5, ease: "power4.out", stagger: 0.07 }, 0)
-        .to(surface, { xPercent: 0, duration: 0.56, ease: "power4.out" }, 0.16)
-        .to(
-          rows,
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.42,
-            ease: "power3.out",
-            stagger: 0.035,
-          },
-          0.3,
-        );
-    } else {
-      timeline
-        .to(
-          surface,
-          { xPercent: 110, duration: 0.36, ease: "power3.inOut" },
-          0,
-        )
-        .to(
-          [...panels].reverse(),
-          {
-            xPercent: 110,
-            duration: 0.36,
-            ease: "power3.inOut",
-            stagger: 0.045,
-          },
-          0.04,
-        )
-        .to(backdrop, { opacity: 0, duration: 0.28, ease: "power2.out" }, 0.12);
-    }
     return () => {
-      timeline.kill();
+      cancelled = true;
+      timeline?.kill();
+      window.clearTimeout(timer);
     };
   }, [state]);
 

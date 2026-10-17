@@ -56,10 +56,10 @@ test('Back and Forward stay instant', async ({ page }) => {
 });
 
 test('a link to another part of the same page never runs the curtain', async ({ page }) => {
-  await page.goto('/about/faq');
+  await page.goto('/register');
   await recordCurtain(page);
   await page.getByRole('contentinfo').getByRole('link', { name: 'Fees and payment' }).click();
-  await expect(page).toHaveURL(/\/about\/faq#fees$/);
+  await expect(page).toHaveURL(/\/register#pricing$/);
   expect(await curtainLog(page)).toEqual([]);
 });
 
@@ -67,10 +67,10 @@ test('a link into another page lands on its anchor', async ({ page }) => {
   await page.goto('/');
   await recordCurtain(page);
   await page.getByRole('contentinfo').getByRole('link', { name: 'Fees and payment' }).click();
-  await expect(page).toHaveURL(/\/about\/faq#fees$/);
+  await expect(page).toHaveURL(/\/register#pricing$/);
   await curtainIdle(page);
   expect(await curtainLog(page)).toContain('covered');
-  await expect(page.locator('#fees')).toBeInViewport();
+  await expect(page.locator('#pricing')).toBeInViewport();
 });
 
 test('document links load directly, without the curtain', async ({ page }) => {

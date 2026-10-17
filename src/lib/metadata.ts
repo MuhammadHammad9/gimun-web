@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getSiteConfig } from '@/lib/content';
 import { SHARE_IMAGES, type ShareImage } from '@/lib/share-images';
-import { getSiteUrl } from '@/lib/site-config';
+import { getGoogleSiteVerification, getSiteUrl } from '@/lib/site-config';
 
 export interface MetadataProps {
   title?: string;
@@ -22,6 +22,7 @@ export async function constructMetadata({
   const defaultTitle = `${siteConfig?.eventNames?.combined || 'GIMUN & GMC'} | Official Website`;
   const resolvedTitle = title || defaultTitle;
   const url = `${siteUrl}${path}`;
+  const googleVerification = getGoogleSiteVerification();
 
   return {
     // Page titles already carry the event name and year, so they are used as
@@ -62,6 +63,7 @@ export async function constructMetadata({
       description,
       images: [{ url: image.url, alt: image.alt }],
     },
+    ...(googleVerification && { verification: { google: googleVerification } }),
     icons: {
       icon: [
         { url: '/icon.svg', type: 'image/svg+xml' },

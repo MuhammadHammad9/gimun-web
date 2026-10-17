@@ -43,6 +43,12 @@ export function getAnalyticsMeasurementId() {
   return value && /^G-[A-Z0-9]+$/i.test(value) ? value : undefined;
 }
 
+/** Search Console's HTML-tag token (the content="…" value), when set. */
+export function getGoogleSiteVerification() {
+  const value = process.env.GOOGLE_SITE_VERIFICATION?.trim();
+  return value && /^[\w-]+$/.test(value) ? value : undefined;
+}
+
 export function getEventYear(siteConfig: SiteConfig) {
   const value = (siteConfig as Partial<SiteConfig>).eventDates?.start;
   return typeof value === 'string' && /^\d{4}-/.test(value) ? value.slice(0, 4) : 'unknown';

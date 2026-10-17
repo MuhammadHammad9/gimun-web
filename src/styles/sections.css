@@ -2239,8 +2239,10 @@
 }
 
 @media (max-width: 639px) {
+  /* Room for the last date: its diamond's rotated box otherwise reaches
+     past the screen edge and lets the whole page scroll sideways. */
   .rail {
-    margin-inline: 1rem;
+    margin-inline: 1.5rem;
   }
 
   .countdown__digits {
