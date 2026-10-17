@@ -2,6 +2,7 @@ import { ViewTransition } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ScalesArt } from '@/components/art/LineArt';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
+import { CommitteeEmblem } from '@/components/ui/CommitteeEmblem';
 import { formatPublishedDate } from '@/lib/site-config';
 import type { Committee, ProblemCategory } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -49,12 +50,15 @@ export function CommitteePlacard({
           </span>
         )}
       </div>
-      {/* Morphs into the committee page's mark (see TransitionLink morph). */}
-      <ViewTransition name={`committee-mark-${committee.slug}`} share="morph" default="none">
-        <p className="placard__mark" aria-hidden="true">
-          {committee.slug.toUpperCase()}
-        </p>
-      </ViewTransition>
+      <div className="placard__mark-row">
+        {/* Morphs into the committee page's mark (see TransitionLink morph). */}
+        <ViewTransition name={`committee-mark-${committee.slug}`} share="morph" default="none">
+          <p className="placard__mark" aria-hidden="true">
+            {committee.slug.toUpperCase()}
+          </p>
+        </ViewTransition>
+        <CommitteeEmblem slug={committee.slug} className="placard__emblem" />
+      </div>
       <h3 id={headingId} className="placard__name">
         {committee.name}
       </h3>

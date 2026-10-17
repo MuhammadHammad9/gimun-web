@@ -74,6 +74,7 @@ html[data-theme="light"] {
 
   --color-brand: #7a1709;
   --color-logo: #5e1205;
+  --color-emblem: #8c6a32;
   --color-brand-hi: #a53d2a;
   --color-brand-deep: #5f1108;
   --color-brand-lit: #922611;
@@ -156,6 +157,7 @@ html[data-theme="light"] .tone-inverse {
   --color-line-2: rgba(236, 216, 183, 0.38);
   --color-line-3: rgba(236, 216, 183, 0.6);
   --color-logo: #ecd8b7;
+  --color-emblem: #cdb68c;
   --color-champagne: #ecd8b7;
   --color-champagne-hi: #fff5e6;
   --color-champagne-lo: #cca876;
@@ -181,6 +183,7 @@ html[data-theme="light"] .tone-inverse {
 html:not([data-theme="light"]) .tone-inverse {
   color-scheme: light;
   --color-logo: #5e1205;
+  --color-emblem: #8c6a32;
   --color-raised: #faf3e6;
   --color-elevated: #e9dcc4;
   --color-overlay: #dfcfb2;

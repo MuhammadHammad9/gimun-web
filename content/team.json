@@ -13,6 +13,7 @@
   { "id": "team-ahmed-ali", "name": "Ahmed Ali", "role": "Press Secretary", "group": "executive-council", "photo": "/images/team/ahmed-ali.png", "bio": "" },
   { "id": "team-anas-faizan", "name": "Anas Faizan", "role": "Secretary General", "group": "executive-council", "photo": "/images/team/anas-faizan.png", "bio": "" },
   { "id": "team-ahmed-arsalan", "name": "Ahmed Arsalan", "role": "Event Coordinator, GIKI Moot Cup", "group": "executive-council", "photo": "/images/team/ahmed-arsalan.png", "bio": "" },
-  { "id": "team-taha-shafique", "name": "Taha Shafique", "role": "Director General", "group": "executive-council", "photo": "", "bio": "" },
-  { "id": "team-ahmed-abbasi", "name": "Ahmed Abbasi", "role": "Event Coordinator, GIMUN", "group": "executive-council", "photo": "/images/team/ahmed-abbasi.webp", "bio": "" }
+  { "id": "team-taha-shafique", "name": "Taha Shafique", "role": "Director General", "group": "executive-council", "photo": "/images/team/taha-shafique.png", "bio": "" },
+  { "id": "team-ahmed-abbasi", "name": "Ahmed Abbasi", "role": "Event Coordinator, GIMUN", "group": "executive-council", "photo": "/images/team/ahmed-abbasi.webp", "bio": "" },
+  { "id": "team-saad-hassan", "name": "Saad Hassan", "role": "Chief Logistics Officer", "group": "executive-council", "photo": "/images/team/saad-hassan.png", "bio": "" }
 ]

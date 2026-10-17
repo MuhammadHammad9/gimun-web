@@ -40,6 +40,9 @@
   /* The official GIMUN and GMC logos: the cream of the liaison-package covers
      on dark grounds, the packages' exact maroon (#5e1205) on light ones. */
   --color-logo: #ecd8b7;
+  /* Committee emblems: warm gold from the artwork on dark grounds (5.5:1 or
+     more), a deeper gold on light ones (4.2:1 or more). */
+  --color-emblem: #cdb68c;
 
   --color-crimson: #e11d48;
   --color-crimson-hi: #f43f5e;

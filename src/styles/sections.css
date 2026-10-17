@@ -766,8 +766,50 @@
   font-size: 0.8125rem;
 }
 
-.placard__mark {
+/* The abbreviation and the committee's emblem share one row. */
+.placard__mark-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
   margin-top: 2.5rem;
+}
+
+.placard__emblem {
+  height: 4.75rem;
+  flex: none;
+}
+
+/* Committee emblems (CommitteeEmblem): masks coloured by --color-emblem. */
+.committee-emblem {
+  display: block;
+  background-color: var(--color-emblem);
+  -webkit-mask: var(--emblem) center / contain no-repeat;
+  mask: var(--emblem) center / contain no-repeat;
+}
+
+.committee-hero-art {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.committee-hero-art__emblem {
+  height: 9.5rem;
+}
+
+@media (min-width: 1024px) {
+  .committee-hero-art {
+    align-items: flex-end;
+  }
+
+  .committee-hero-art__emblem {
+    height: 13rem;
+  }
+}
+
+.placard__mark {
   color: var(--placard-accent, var(--color-accent-gimun));
   font-family: var(--font-display);
   font-size: clamp(3.75rem, 7vw, 5.25rem);

@@ -330,9 +330,16 @@ body {
     border-radius: 1.25rem;
   }
 
-  .placard__mark {
+  .placard__mark-row {
     margin-top: 2rem;
+  }
+
+  .placard__mark {
     font-size: clamp(3.25rem, 15vw, 4.75rem);
+  }
+
+  .placard__emblem {
+    height: 3.75rem;
   }
 
   .placard__name {

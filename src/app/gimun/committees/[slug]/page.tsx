@@ -9,6 +9,7 @@ import { ChapterRail } from '@/components/story/ChapterRail';
 import { COMMITTEE_TYPE, seatsOpen } from '@/components/sections/Placards';
 import { Steps } from '@/components/sections/Steps';
 import { Button } from '@/components/ui/Button';
+import { CommitteeEmblem } from '@/components/ui/CommitteeEmblem';
 import { CountryMatrix } from '@/components/ui/CountryMatrix';
 import { PageHero } from '@/components/ui/PageHero';
 import { getCommitteeBySlug, getCommittees, getCopy, getDocuments, getSiteConfig } from '@/lib/content';
@@ -89,11 +90,14 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           </div>
         }
         art={
-          <ViewTransition name={`committee-mark-${committee.slug}`} share="morph" default="none">
-            <p className="committee-mark" aria-hidden="true">
-              {committee.slug.toUpperCase()}
-            </p>
-          </ViewTransition>
+          <div className="committee-hero-art">
+            <CommitteeEmblem slug={committee.slug} className="committee-hero-art__emblem" />
+            <ViewTransition name={`committee-mark-${committee.slug}`} share="morph" default="none">
+              <p className="committee-mark" aria-hidden="true">
+                {committee.slug.toUpperCase()}
+              </p>
+            </ViewTransition>
+          </div>
         }
       />
 

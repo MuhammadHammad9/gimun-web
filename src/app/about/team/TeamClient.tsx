@@ -29,6 +29,9 @@ const PHOTO_FRAMING: Record<string, { scale: number; origin?: string }> = {
   "team-ahmed-ali": { scale: 1.02 },
   "team-anas-faizan": { scale: 1.35 },
   "team-ahmed-arsalan": { scale: 1 },
+  "team-taha-shafique": { scale: 1.1 },
+  // A full-length cut-out: zoom toward the head to match the half-length portraits.
+  "team-saad-hassan": { scale: 1.75 },
 };
 
 export function TeamClient({ initialMembers, phones }: TeamClientProps) {
