@@ -16,6 +16,7 @@ import { PageHero } from '@/components/ui/PageHero';
 import { getCopy, getMootCategories, getSiteConfig } from '@/lib/content';
 import { chapterNumbers, fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
+import { SHARE_IMAGES } from '@/lib/share-images';
 import { canRegister, serverRenderTime } from '@/lib/phase';
 import { formatEventDate, getEventYear } from '@/lib/site-config';
 import { addDays, formatDateRange } from '@/lib/utils';
@@ -26,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `GMC VII | GIKI Moot Cup ${getEventYear(await getSiteConfig())}`,
     description: `Format, rounds, team rules, fees and key dates for GMC VII, the seventh GIKI Moot Cup, hosted by SOPHEP at GIK Institute from 4 to 6 December ${getEventYear(await getSiteConfig())}.`,
     path: '/moot-cup',
-    image: '/images/og/moot-cup.jpg',
+    image: SHARE_IMAGES.mootCup,
   });
 }
 

@@ -1,18 +1,20 @@
 import type { Metadata } from 'next';
 import { getSiteConfig } from '@/lib/content';
+import { SHARE_IMAGES, type ShareImage } from '@/lib/share-images';
 import { getSiteUrl } from '@/lib/site-config';
 
 export interface MetadataProps {
   title?: string;
   description?: string;
-  image?: string;
+  /** The link-preview image; see src/lib/share-images.ts. */
+  image?: ShareImage;
   path?: string;
 }
 
 export async function constructMetadata({
   title,
   description = 'GIMUN 26 and GMC VII: GIKI Model United Nations and the GIKI Moot Cup, hosted by SOPHEP at Ghulam Ishaq Khan Institute (GIKI), Topi, from 4 to 6 December 2026.',
-  image = '/images/og/default.jpg',
+  image = SHARE_IMAGES.site,
   path = '',
 }: MetadataProps = {}): Promise<Metadata> {
   const siteConfig = (await getSiteConfig());
@@ -43,10 +45,12 @@ export async function constructMetadata({
       siteName: siteConfig?.eventNames?.combined || 'GIMUN & GMC',
       images: [
         {
-          url: image,
+          url: image.url,
+          secureUrl: new URL(image.url, siteUrl).href,
+          type: 'image/jpeg',
           width: 1200,
           height: 630,
-          alt: 'GIMUN & GMC — Where Diplomacy Meets the Courtroom',
+          alt: image.alt,
         },
       ],
       locale: 'en_US',
@@ -56,7 +60,7 @@ export async function constructMetadata({
       card: 'summary_large_image',
       title: resolvedTitle,
       description,
-      images: [image],
+      images: [{ url: image.url, alt: image.alt }],
     },
     icons: {
       icon: [

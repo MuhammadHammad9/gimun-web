@@ -362,9 +362,9 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
 
   const contentAssetReferences = assetReferences.map((reference) => reference.value);
   const staticReleaseAssets = [
-    '/images/og/default.jpg',
-    '/images/og/gimun.jpg',
-    '/images/og/moot-cup.jpg',
+    '/images/og/share-2026.jpg',
+    '/images/og/share-gimun-2026.jpg',
+    '/images/og/share-gmc-2026.jpg',
     '/favicon.ico',
     '/favicon-16x16.png',
     '/favicon-32x32.png',

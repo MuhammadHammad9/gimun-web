@@ -8,7 +8,7 @@
  * 3. Open Graph tags (og:title, og:description, og:url, og:image, og:site_name)
  * 4. Twitter Card metadata (summary_large_image, twitter:title, twitter:description, twitter:image)
  * 5. Full XML validation of sitemap.xml against Sitemaps schema (checking <loc>, <lastmod>, <changefreq>, <priority>)
- * 6. Social preview image asset verification (public/images/og/default.jpg)
+ * 6. Social preview image asset verification (public/images/og/share-2026.jpg)
  * 7. Exits with code 0 on 100% compliance
  */
 
@@ -357,19 +357,19 @@ if (sitemapValid && sitemapIssues.length === 0) {
 console.log('\n[Step 5/5] Checking social preview and browser icon assets...');
 totalAudited += 5;
 
-const ogImagePath = path.join(rootDir, 'public', 'images', 'og', 'default.jpg');
+const ogImagePath = path.join(rootDir, 'public', 'images', 'og', 'share-2026.jpg');
 if (fs.existsSync(ogImagePath)) {
   const stats = fs.statSync(ogImagePath);
   if (stats.size > 1000) {
     passedAudited++;
-    console.log(`  [PASS] Open Graph preview image verified at public/images/og/default.jpg (${stats.size} bytes).`);
+    console.log(`  [PASS] Open Graph preview image verified at public/images/og/share-2026.jpg (${stats.size} bytes).`);
   } else {
     failedAudited++;
     console.error(`  [FAIL] Open Graph preview image file is suspiciously small (${stats.size} bytes).`);
   }
 } else {
   failedAudited++;
-  console.error('  [FAIL] Missing social preview image at public/images/og/default.jpg.');
+  console.error('  [FAIL] Missing social preview image at public/images/og/share-2026.jpg.');
 }
 
 for (const icon of ['favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-icon.png']) {

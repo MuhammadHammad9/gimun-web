@@ -16,6 +16,7 @@ import { PageHero } from '@/components/ui/PageHero';
 import { getCommittees, getCopy, getDocuments, getSiteConfig } from '@/lib/content';
 import { chapterNumbers, fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
+import { SHARE_IMAGES } from '@/lib/share-images';
 import { canRegister, serverRenderTime } from '@/lib/phase';
 import { formatEventDate, getEventYear } from '@/lib/site-config';
 import { currentFeeTier, gimunFees, rupees, tierEndDates } from '@/lib/fee-tiers';
@@ -26,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `GIMUN ${getEventYear(await getSiteConfig())} | GIKI Model United Nations`,
     description: `Committees, format, fees and key dates for GIKI Model United Nations ${getEventYear(await getSiteConfig())}. Five committees, hosted by SOPHEP at GIK Institute, 4 to 6 December 2026. Register as a delegate, a delegation or an observer.`,
     path: '/gimun',
-    image: '/images/og/gimun.jpg',
+    image: SHARE_IMAGES.gimun,
   });
 }
 
