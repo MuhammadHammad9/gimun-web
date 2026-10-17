@@ -94,7 +94,7 @@ export default async function PrivacyPage() {
               <h2 className="font-display text-2xl font-medium text-text">Analytics and browser storage</h2>
               <p>
                 Google Analytics runs only if you choose Allow in the analytics prompt; it then sets cookies to count
-                visits, with IP anonymisation. Without your consent no analytics script is loaded. The site also keeps a
+                visits, with IP anonymization. Without your consent no analytics script is loaded. The site also keeps a
                 few small preferences in your browser: whether you dismissed the announcement bar, your light or dark
                 theme, and your analytics choice. <AnalyticsChoiceButton />.
               </p>

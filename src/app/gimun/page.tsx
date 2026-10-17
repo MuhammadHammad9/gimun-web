@@ -190,7 +190,7 @@ export default async function GimunOverviewPage() {
               copy={fill(delegation?.body, vars)}
               facts={[
                 ...(fees && tier ? [{ term: `Fee (${tier.label})`, value: `${rupees(fees.delegationMember)} per member${fees.delegationFee ? `, plus ${rupees(fees.delegationFee)} per delegation` : ''}` }] : []),
-                { term: 'Teams', value: 'Up to 5 per institution, of 3 members' },
+                { term: 'Teams', value: 'Up to 5 per institution, 3 members each' },
                 { term: 'Head delegate', value: 'One per institution, for all correspondence' },
                 ...(fees ? [{ term: 'Chaperone', value: rupees(fees.chaperone) }] : []),
               ]}
