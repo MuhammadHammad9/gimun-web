@@ -7,8 +7,8 @@ import { cn } from '@/lib/utils';
  * ones. Size it by height; the width follows. Decorative: the committee's
  * name is always beside it.
  *
- * Served as alpha-only WebP copies (scripts/optimize-mask-images.mjs): 256px
- * tall for the placards (at most 76 CSS px), full size for a committee page's
+ * Served as alpha-only WebP copies (scripts/optimize-mask-images.mjs): 320px
+ * tall for the placards (at most 136 CSS px), full size for a committee page's
  * hero (`large`, up to 208 CSS px).
  */
 const EMBLEMS: Record<string, { base: string; ratio: string }> = {
@@ -30,7 +30,7 @@ export function CommitteeEmblem({ slug, className, large = false }: { slug: stri
     <span
       aria-hidden="true"
       className={cn('committee-emblem', className)}
-      style={{ aspectRatio: emblem.ratio, ['--emblem' as string]: `url('${emblem.base}${large ? '' : '-256'}.webp')` }}
+      style={{ aspectRatio: emblem.ratio, ['--emblem' as string]: `url('${emblem.base}${large ? '' : '-320'}.webp')` }}
     />
   );
 }

@@ -14,7 +14,8 @@
  * - logos: the seal's, about 88 CSS px on desktop (176 at 2x) and 49 on
  *   phones (148 at 3x), so 192px tall. The header loads them on every page
  *   at high priority, so every kilobyte sits on the path to the first paint;
- * - emblems on placards: 76 CSS px (228 at 3x), so 256px tall;
+ * - emblems on placards: 136 CSS px on desktop (272 at 2x) and 108 on phones
+ *   (324 at 3x), so 320px tall;
  * - emblems in a committee page's hero: up to 208 CSS px, so full size.
  */
 import sharp from 'sharp';
@@ -22,7 +23,7 @@ import sharp from 'sharp';
 const jobs = [
   ...['gimun-logo', 'gmc-logo'].map((name) => ({ source: `public/images/brand/${name}.png`, target: `public/images/brand/${name}-192.webp`, height: 192 })),
   ...['unsc', 'unhrc', 'disec', 'unw', 'pna'].flatMap((slug) => [
-    { source: `public/images/committees/${slug}.png`, target: `public/images/committees/${slug}-256.webp`, height: 256 },
+    { source: `public/images/committees/${slug}.png`, target: `public/images/committees/${slug}-320.webp`, height: 320 },
     { source: `public/images/committees/${slug}.png`, target: `public/images/committees/${slug}.webp` },
   ]),
 ];

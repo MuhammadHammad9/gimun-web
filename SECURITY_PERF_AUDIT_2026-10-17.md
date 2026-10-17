@@ -1,6 +1,6 @@
 # Security audit and performance pass — 2026-10-17
 
-Branch `claude/security-perf-audit`, started from `main` at c635281, with `main` up to 00d180b merged in
+Branch `claude/security-perf-audit`, started from `main` at c635281, with `main` up to 9a34627 merged in
 (conflicts resolved as described under Performance). Builds on the 2026-10-08 review
 (`SECURITY_REVIEW_2026-10-08.md`) rather than repeating it. Nothing was written to the live database;
 the live site was only read (headers, public files, and the Supabase API with the public key).
@@ -108,7 +108,10 @@ Treat the interleaved table as the reliable comparison.
   WebP:
   - logos 192 px tall: 217 KB → 32 KB. They load on every page at high priority, so they sit on the
     path to the first paint.
-  - committee emblems 256 px for the home placards: 428 KB → 107 KB;
+  - committee emblems 320 px for the home placards: 428 KB → 158 KB. The interleaved table was
+    measured with 256 px copies (107 KB); `main`'s 9a34627 then doubled the placard emblems
+    (136 CSS px on desktop, 108 on phones), so they moved to 320 px to stay sharp. That adds about
+    51 KB to the branch's `/` and `/gimun` weights in the table, which are still the lowest.
   - committee emblems at full size for a committee page's hero: up to 125 KB → 33–92 KB.
 - **JetBrains Mono** limited to the `wght 400..600` range `layout.tsx` declares (38 → 28 KB). The
   OFL permits modification and the family has no Reserved Font Name; nothing on screen changes.
