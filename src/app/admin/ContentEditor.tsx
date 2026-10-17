@@ -13,10 +13,12 @@ import { useDirtyGuard } from './useDirtyGuard';
 
 const groups: Record<string, string[]> = {
   'Event details': ['eventNames', 'hostInstitution', 'venue', 'eventDates', 'galaDate', 'phaseOverride'],
-  'Registration & fees': ['registrationDeadlines', 'registrationStatus', 'fees', 'feeAmounts', 'paymentInstructions', 'memorialDeadline'],
-  'Contact & arrival': ['contactEmails', 'contactPhone', 'checkinDesk', 'entryRequirement', 'replyTime'],
+  'Registration forms': ['registrationStatus', 'registrationDeadlines', 'registrationForms', 'memorialDeadline'],
+  'Fee tiers & payment': ['feeTiers', 'paymentInstructions'],
+  'Contact & arrival': ['contacts', 'contactPhone', 'contactEmails', 'checkinDesk', 'entryRequirement', 'replyTime'],
   'Scoring & results': ['mootScoring', 'gimunRubric', 'resultsPublished'],
   'Website text & links': ['socialLinks', 'footerBlurb', 'privacyNotice', 'stats'],
+  'Staff invoices (walk-in only)': ['fees', 'feeAmounts'],
 };
 const pkt = (value: string) => new Date(value).toLocaleString('en-GB', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'short' });
 function localTime(value: string | null) { return value ? new Date(new Date(value).getTime() + 5 * 3600000).toISOString().slice(0, 16) : ''; }

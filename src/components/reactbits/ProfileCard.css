@@ -1,0 +1,276 @@
+/* React Bits ProfileCard, on the brand tokens. Every colour is a theme token,
+   so the card follows the light and dark themes; the track accent decides the
+   status dot and the foil's tint (crimson GIMUN, champagne GMC). */
+.profile-card {
+  --pc-light-x: 50%;
+  --pc-light-y: 50%;
+  --pc-pointer-x: 50%;
+  --pc-pointer-y: 50%;
+  --pc-band-x: 50%;
+  --pc-band-y: 50%;
+  --pc-rotate-x: 0deg;
+  --pc-rotate-y: 0deg;
+  --pc-shift-x: 0px;
+  --pc-shift-y: 0px;
+  --pc-photo-position: 50% 20%;
+  --pc-photo-scale: 1;
+  --pc-photo-origin: 50% 0%;
+  --pc-tilt: 0;
+  --pc-active: 0;
+  --pc-frame: var(--color-raised);
+  --pc-edge: var(--color-line);
+  --pc-ink: var(--color-text);
+  --pc-muted: var(--color-text-3);
+  --pc-backdrop: linear-gradient(180deg, var(--color-elevated) 0%, var(--color-raised) 100%);
+  --pc-accent: var(--color-champagne);
+  --pc-foil-a: #ecd8b7;
+  --pc-foil-b: #cca876;
+  --pc-foil-c: #fda4af;
+  --pc-blend: color-dodge;
+  --pc-shade: rgba(0, 0, 0, 0.38);
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  perspective: 1000px;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+.profile-card--gimun { --pc-accent: var(--color-crimson); --pc-foil-a: #fda4af; --pc-foil-c: #ecd8b7; }
+.profile-card--gmc { --pc-accent: var(--color-champagne); }
+.profile-card--shared { --pc-accent: var(--color-champagne); }
+
+html[data-theme='light'] .profile-card {
+  --pc-backdrop: linear-gradient(180deg, #f8ead4 0%, #efdcbf 100%);
+  --pc-foil-a: #c99668;
+  --pc-foil-b: #8a5a1f;
+  --pc-foil-c: #bd123c;
+  --pc-blend: multiply;
+  --pc-shade: rgba(36, 20, 14, 0.14);
+}
+
+.profile-card__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border-radius: calc(var(--pc-radius) + 10px);
+  background: var(--pc-frame);
+  transform: rotateX(var(--pc-rotate-x)) rotateY(var(--pc-rotate-y));
+  will-change: transform;
+}
+
+.profile-card__tile {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--pc-radius);
+  background: var(--pc-backdrop);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.profile-card__sheen,
+.profile-card__holo,
+.profile-card__scrim,
+.profile-card__tile-rim,
+.profile-card__glare,
+.profile-card__shade,
+.profile-card__rim {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.profile-card__sheen {
+  background: radial-gradient(farthest-corner circle at calc(var(--pc-light-x) - 10px) calc(var(--pc-light-y) - 10px), rgba(255, 245, 230, 0.18) 0%, transparent 55%);
+  opacity: calc(var(--pc-holo) * var(--pc-active));
+  z-index: 2;
+}
+
+/* The foil: champagne, gold and rose bands, seen only through the shield pattern. */
+.profile-card__holo {
+  z-index: 2;
+  background-image:
+    repeating-linear-gradient(0deg, var(--pc-foil-a) 5%, var(--pc-foil-b) 12%, var(--pc-foil-c) 19%, var(--pc-foil-a) 26%),
+    repeating-linear-gradient(-45deg, #140302 0%, rgba(236, 216, 183, 0.6) 4.5%, #140302 10%, #140302 12%),
+    radial-gradient(farthest-corner circle at var(--pc-pointer-x) var(--pc-pointer-y), rgba(0, 0, 0, 0.1) 12%, rgba(0, 0, 0, 0.25) 120%);
+  background-position: 0 var(--pc-band-y), var(--pc-band-x) var(--pc-band-y), center;
+  background-size: 500% 500%, 300% 300%, 200% 200%;
+  background-blend-mode: color, hard-light;
+  mix-blend-mode: var(--pc-blend);
+  opacity: calc(var(--pc-holo) * (0.35 + 0.65 * var(--pc-active)));
+  -webkit-mask-image: var(--pc-pattern);
+  -webkit-mask-size: var(--pc-pattern-size);
+  -webkit-mask-position: calc(50% - var(--pc-shift-x) * 1.5) calc(65% - var(--pc-shift-y) * 1.5);
+  mask-image: var(--pc-pattern);
+  mask-size: var(--pc-pattern-size);
+  mask-position: calc(50% - var(--pc-shift-x) * 1.5) calc(65% - var(--pc-shift-y) * 1.5);
+}
+
+.profile-card__photo {
+  position: absolute;
+  inset: calc(var(--pc-parallax) * -1);
+  z-index: 1;
+  width: calc(100% + var(--pc-parallax) * 2);
+  height: calc(100% + var(--pc-parallax) * 2);
+  object-fit: cover;
+  object-position: var(--pc-photo-position);
+  transform: translate3d(var(--pc-shift-x), var(--pc-shift-y), 0) scale(var(--pc-photo-scale));
+  transform-origin: var(--pc-photo-origin);
+  pointer-events: none;
+  user-select: none;
+}
+
+.profile-card__monogram {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding-bottom: 22%;
+  color: var(--pc-accent);
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 9vw, 5.5rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  opacity: 0.85;
+  transform: translate3d(var(--pc-shift-x), var(--pc-shift-y), 0);
+}
+
+.profile-card__scrim {
+  z-index: 3;
+  background: linear-gradient(to top, rgba(20, 3, 2, 0.82) 0%, rgba(20, 3, 2, 0.62) 14%, rgba(20, 3, 2, 0.3) 30%, rgba(20, 3, 2, 0) 50%);
+}
+
+.profile-card__info {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
+  z-index: 4;
+  color: #fffdf9;
+}
+
+.profile-card__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: inherit;
+}
+
+.profile-card__title {
+  margin: 6px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(236, 216, 183, 0.92);
+}
+
+.profile-card__tile-rim {
+  z-index: 5;
+  box-shadow: inset 0 0 0 1px var(--pc-edge);
+}
+
+.profile-card__footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 4px 8px 6px 12px;
+}
+
+.profile-card__meta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.profile-card__handle {
+  overflow: hidden;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--pc-ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.profile-card__status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  color: var(--pc-muted);
+  white-space: nowrap;
+}
+
+.profile-card__status::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pc-accent);
+}
+.profile-card--shared .profile-card__status::before {
+  background: linear-gradient(90deg, var(--color-crimson) 50%, var(--color-champagne) 50%);
+}
+
+.profile-card__contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--color-line-2);
+  border-radius: 9999px;
+  color: var(--pc-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+}
+.profile-card__contact:hover { border-color: var(--pc-accent); background: color-mix(in srgb, var(--pc-accent) 10%, transparent); }
+.profile-card__contact:active { transform: scale(0.98); }
+.profile-card__contact:focus-visible { outline: 2px solid var(--color-focus, var(--color-champagne)); outline-offset: 2px; }
+
+.profile-card__glare {
+  z-index: 6;
+  background: radial-gradient(farthest-corner circle at var(--pc-light-x) var(--pc-light-y), rgba(255, 245, 230, 0.6) 0%, rgba(255, 245, 230, 0.22) 20%, rgba(255, 245, 230, 0) 60%);
+  mix-blend-mode: overlay;
+  opacity: calc(var(--pc-glare) * var(--pc-active));
+}
+
+.profile-card__shade {
+  z-index: 6;
+  background: radial-gradient(farthest-corner circle at var(--pc-light-x) var(--pc-light-y), transparent 30%, var(--pc-shade) 100%);
+  opacity: calc(var(--pc-glare) * var(--pc-tilt));
+}
+
+.profile-card__rim {
+  z-index: 7;
+  box-shadow: inset 0 0 0 1px var(--pc-edge);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-card__body, .profile-card__monogram { transform: none; }
+  .profile-card__photo { transform: scale(var(--pc-photo-scale)); }
+}
+
+@media print {
+  .profile-card__holo, .profile-card__glare, .profile-card__shade, .profile-card__sheen { display: none; }
+}

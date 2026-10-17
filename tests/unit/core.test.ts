@@ -14,7 +14,7 @@ describe('shared content schemas',()=>{
 describe('dates and phases',()=>{
   it('rejects impossible dates',()=>{expect(isValidIsoDate('2027-02-29')).toBe(false);expect(isValidIsoDate('2028-02-29')).toBe(true);});
   it('closes registration at the end of the date in Pakistan',()=>{expect(isRegistrationDeadlinePassed('2027-02-15',Date.parse('2027-02-15T18:59:58Z'))).toBe(false);expect(isRegistrationDeadlinePassed('2027-02-15',Date.parse('2027-02-15T19:00:00Z'))).toBe(true);});
-  it('derives event-live and honors override',()=>{expect(eventPhase(site,Date.parse('2027-03-18T00:00:00Z'))).toBe('event-live');expect(eventPhase({...site,phaseOverride:'archived'},0)).toBe('archived');});
+  it('derives event-live and honors override',()=>{expect(eventPhase({...site,eventDates:{start:'2027-03-18',end:'2027-03-21'}},Date.parse('2027-03-18T00:00:00Z'))).toBe('event-live');expect(eventPhase({...site,phaseOverride:'archived'},0)).toBe('archived');});
 });
 describe('permissions',()=>{
   const user:AdminUser={user_id:'x',email:'a@example.test',display_name:'Test',role:'viewer',active:true,sections:[],must_change_password:false};

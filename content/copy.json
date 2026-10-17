@@ -5,24 +5,24 @@
     "label": "Home · Hero",
     "title": "Where diplomacy meets the courtroom.",
     "accentPhrase": "courtroom.",
-    "lead": "Two student competitions on one campus. Represent a country in committee, or argue a case before a bench of judges, over the same four days in March."
+    "lead": "Two student competitions on one campus, hosted by SOPHEP. Represent a country in committee, or argue a case before a bench of judges, over the same three days in December."
   },
   {
     "id": "home-choice",
     "page": "home",
     "label": "Home · The choice (always shown)",
     "kicker": "The choice",
-    "title": "Two rooms, the same four days.",
-    "lead": "GIMUN and the GIKI Moot Court run side by side on one campus. The preparation, the rules and the judging are different, so pick the room you want to be tested in.",
+    "title": "Two rooms, the same three days.",
+    "lead": "GIMUN 26 and GMC VII run side by side at GIK Institute. The preparation, the rules and the judging are different, so pick the room you want to be tested in.",
     "bridge": "Each room has its own chambers. Step inside, one at a time.",
     "items": [
       {
         "title": "Model United Nations",
-        "body": "Represent a country in one of {committees} committees, from the Security Council to a crisis session of the National Assembly."
+        "body": "Represent a country in one of {committees} committees: UNSC, UNHRC, DISEC, UN Women and the Pakistan National Assembly."
       },
       {
         "title": "Moot court",
-        "body": "Draft memorials for both sides of one case problem, then argue them before a bench that questions you on the law."
+        "body": "Draft memorials for both sides of the moot problem, then argue them in oral rounds from the preliminaries to the final."
       }
     ]
   },
@@ -31,12 +31,12 @@
     "page": "home",
     "label": "Home · Inside the rooms",
     "kicker": "Inside the rooms",
-    "title": "{committees} committees, {cases} cases.",
-    "lead": "Every chamber and every case category, with the seats still open. Countries are allocated after applications are reviewed.",
+    "title": "{committees} committees, one courtroom.",
+    "lead": "Every chamber and what it debates. Countries are allocated by the secretariat once registrations are confirmed.",
     "items": [
       {
         "title": "Read the full briefs",
-        "body": "Topics, chairs, country lists and the case problems, each on its own page."
+        "body": "Committee descriptions and the moot rules, each on its own page."
       }
     ]
   },
@@ -45,15 +45,15 @@
     "page": "home",
     "label": "Home · What it asks of you",
     "kicker": "What it asks of you",
-    "body": "Represent a country or argue a case, in front of chairs and judges who will question every point you make. At the end of the four days, awards go to the best delegates and delegations, the best memorial, the best oralist and the champions of the moot."
+    "body": "Represent a country or argue a case, in front of chairs and judges who will question every point you make. Between sessions come some of the best social events in Pakistan: guest speaker sessions, a concert and a formal dinner."
   },
   {
     "id": "home-week",
     "page": "home",
     "label": "Home · The week",
     "kicker": "The week",
-    "title": "Four days in Topi.",
-    "lead": "Both tracks share the opening, the meals, the evenings and the awards. {dates}.",
+    "title": "Three days in Topi.",
+    "lead": "Both tracks share the campus and the evenings. {dates}.",
     "bridge": "Before that week, a few dates decide whether you are in the room."
   },
   {
@@ -75,18 +75,18 @@
     "items": [
       {
         "title": "The resource library",
-        "body": "Background guides, the case problems, the rules and every form, each marked with its revision date.",
-        "meta": "Committee background guides\nRules of procedure and moot rules\nForms and templates"
+        "body": "The official liaison packages for both tracks: fees, rules, instructions and contacts.",
+        "meta": "GIMUN 26 liaison package\nGMC VII liaison package\nMemorial rules and scoring"
       },
       {
         "title": "The schedule",
-        "body": "Session times and rooms for all four days, with any change marked the moment it is made.",
+        "body": "The programme for all three days, with any change marked the moment it is made.",
         "meta": "{checkin}\nFilter by track, print a copy"
       },
       {
         "title": "Getting to GIKI",
-        "body": "The route to Topi from Islamabad and Peshawar, where to stay, and what to bring.",
-        "meta": "{entry}\nOn-campus accommodation on request"
+        "body": "Free host transport from Islamabad/Rawalpindi and Peshawar, the route to Topi, and what to bring.",
+        "meta": "{entry}\nFree shared accommodation in student hostels"
       }
     ],
     "actions": [
@@ -110,23 +110,23 @@
     "label": "Home · Your seat",
     "kicker": "Your seat",
     "title": "Reserve your place.",
-    "lead": "Applying reserves a delegate or team place for review. Accepted participants receive an invoice with bank transfer details."
+    "lead": "Register through the official forms, pay by bank transfer and send the payment and documents by mail. Your place is confirmed once the host team receives them."
   },
   {
     "id": "gimun-hero",
     "page": "gimun",
     "label": "GIMUN · Hero",
-    "title": "Represent a nation. Win the room.",
-    "accentPhrase": "Win the room.",
-    "lead": "GIKI Model United Nations brings student delegates to Topi for {committees} committees of debate, negotiation and crisis."
+    "title": "Debate. Diplomacy. Destiny.",
+    "accentPhrase": "Destiny.",
+    "lead": "GIKI Model United Nations, hosted by SOPHEP, brings student delegates from all over Pakistan to Topi for {committees} committees of debate, negotiation and diplomacy."
   },
   {
     "id": "gimun-how",
     "page": "gimun",
     "label": "GIMUN · How a committee works (always shown)",
     "kicker": "How a committee works",
-    "title": "Four days, one resolution.",
-    "lead": "First conference or fifteenth, the format is the same: represent your country, find allies, and get your text passed.",
+    "title": "Three days, one resolution.",
+    "lead": "Small yet challenging committees, simulating not only the United Nations and state governments but historical and fictional committees as well.",
     "bridge": "Every resolution starts in a chamber. These are this year's.",
     "items": [
       {
@@ -153,7 +153,7 @@
     "label": "GIMUN · The chambers",
     "kicker": "The chambers",
     "title": "{committees} chambers for {year}.",
-    "lead": "Each committee page has its agenda, background guide and the countries still open for allocation.",
+    "lead": "Each committee page describes what its delegates debate.",
     "bridge": "Found your chamber? Here is how to take a seat in it."
   },
   {
@@ -162,18 +162,18 @@
     "label": "GIMUN · Two ways in",
     "kicker": "Two ways in",
     "title": "On your own, or with your institution.",
-    "lead": "Nothing is charged when you apply. If your application is accepted, the organizing team emails an invoice with bank transfer details.",
-    "note": "On-campus accommodation is available on request.",
+    "lead": "Register through the official form for your route. A registration is confirmed once the host team receives the payment and documents by mail.",
+    "note": "Free, shared accommodation in regular student hostels for all registered participants.",
     "items": [
       {
-        "meta": "Individual delegate",
         "title": "Apply on your own",
-        "body": "For students applying on their own. Rank three committees; the secretariat allocates your country."
+        "body": "For an individual attending without a delegation.",
+        "meta": "Individual delegate"
       },
       {
-        "meta": "Institutional delegation",
         "title": "Bring a delegation",
-        "body": "A head delegate or faculty advisor registers the whole team, 2 to 20 delegates, in one form."
+        "body": "Each institution registers through one head delegate, who handles all correspondence with the host team.",
+        "meta": "Institutional delegation"
       }
     ]
   },
@@ -191,40 +191,40 @@
     "label": "GIMUN · Take a seat (always shown)",
     "kicker": "Take a seat",
     "title": "Ready to take a seat?",
-    "lead": "Rank three committees when you apply. Countries are allocated after the secretariat reviews your application."
+    "lead": "Register through the official forms. The secretariat allocates committees and countries once your registration is confirmed."
   },
   {
     "id": "moot-hero",
     "page": "moot-cup",
     "label": "Moot Court · Hero",
-    "title": "Read the problem. Argue the law.",
-    "accentPhrase": "Argue the law.",
-    "lead": "An appellate advocacy competition for law students: written memorials for both sides, then oral rounds before benches of legal practitioners."
+    "title": "Where conviction commands the courtroom.",
+    "accentPhrase": "commands the courtroom.",
+    "lead": "The seventh GIKI Moot Cup: simulated court proceedings with written memorials for both sides, then oral arguments from the preliminary rounds to the final."
   },
   {
     "id": "moot-how",
     "page": "moot-cup",
     "label": "Moot Court · From problem to final (always shown)",
     "kicker": "From problem to final",
-    "title": "From problem to Grand Final.",
-    "lead": "Moot court is an appeal hearing, not a trial. You argue points of law directly to the judges, who will interrupt you.",
+    "title": "From memorial to final.",
+    "lead": "Moot court competitions tend to focus on municipal law, such as criminal or contract law. Every team writes for both sides and argues twice in the preliminaries.",
     "bridge": "It all starts with one problem. These are the areas of law it can come from.",
     "items": [
       {
         "title": "Take the problem",
-        "body": "Every team receives the same moot problem (the compromis): a dispute on a point of law, with no witnesses and no new facts."
+        "body": "Every team receives the same moot problem, and the oral arguments keep to the issues raised in the memorials."
       },
       {
         "title": "Write both sides",
-        "body": "Draft a memorial for the Applicant and one for the Respondent, cited in OSCOLA and submitted anonymously under a team code."
+        "body": "One memorial for the petitioner(s)/appellant(s) and one for the respondent(s), cited in the 20th edition of the Bluebook and identified only by team code."
       },
       {
         "title": "Argue before the bench",
-        "body": "Two oralists share 30 minutes per side and answer the judges’ questions as they come, then reserve time for rebuttal."
+        "body": "In the preliminary rounds each team has 15 minutes to present its case, rebuttal included, with at least 7 minutes per speaker."
       },
       {
         "title": "Advance to the final",
-        "body": "After two guaranteed preliminary rounds the strongest teams go through the quarter-finals and semi-finals to the Grand Final."
+        "body": "Winners go through the quarter-finals and semi-finals, paired by draw of lots, to the final, where each team has 45 minutes."
       }
     ]
   },
@@ -233,9 +233,10 @@
     "page": "moot-cup",
     "label": "Moot Court · The cases",
     "kicker": "The cases",
-    "title": "{cases} areas of law.",
-    "lead": "Choose the category your team prefers when you register. Questions about the problem go through the clarifications log, answered for every team at once.",
-    "bridge": "Picked your area? Now the people who will argue it."
+    "title": "The case categories.",
+    "lead": "Case categories are published with the moot problem.",
+    "bridge": "Picked your area? Now the people who will argue it.",
+    "hidden": true
   },
   {
     "id": "moot-team",
@@ -246,19 +247,19 @@
     "items": [
       {
         "title": "Eligibility",
-        "body": "Students enrolled in an LL.B. or equivalent law programme, or a member of a university moot court society."
+        "body": "Students pursuing a 3-year or 5-year undergraduate LL.B degree."
       },
       {
         "title": "Team size",
-        "body": "Two oralists and up to two researchers. Several teams from one institution are welcome."
+        "body": "Two members (both speakers), or three: two speakers and one researcher."
       },
       {
         "title": "Anonymity",
-        "body": "Memorials and rounds use a team code only. Names or institutions in a memorial are penalised."
+        "body": "Memorials carry the team code only. Any mark that identifies the team leads to instant disqualification."
       }
     ],
-    "body": "All rounds, lunch and tea on conference days, evening socials\nAccommodation on request, confirmed on acceptance",
-    "note": "Nothing is charged when you apply. Accepted teams receive an invoice with bank transfer details."
+    "body": "Free, shared accommodation in student hostels\nFree transport from Islamabad/Rawalpindi and Peshawar\nGuest speaker sessions, a concert and a formal dinner",
+    "note": "A registration is confirmed once the host team receives the payment and documents by mail. Registration fees are non-refundable."
   },
   {
     "id": "moot-dates",
@@ -274,7 +275,7 @@
     "label": "Moot Court · Your bench (always shown)",
     "kicker": "Your bench",
     "title": "Bring your best advocates.",
-    "lead": "Register the team now and add the final roster details before the deadline. Clarification questions are open to every registered team."
+    "lead": "Register your team through the official form. The memorial submission link is sent once your team is registered."
   },
   {
     "id": "committees-hero",
@@ -282,7 +283,7 @@
     "label": "Committees · Hero",
     "title": "The committees.",
     "accentPhrase": "committees.",
-    "lead": "From the Security Council to a crisis session of the National Assembly. Open a committee for its agenda, background guide and the countries still available."
+    "lead": "From the Security Council to the Pakistan National Assembly. Open a committee to read what its delegates debate."
   },
   {
     "id": "gimun-rules-hero",
@@ -367,8 +368,7 @@
     "label": "Each committee page · The agenda (always shown)",
     "kicker": "The agenda",
     "title": "The agenda.",
-    "lead": "The topics debated in this committee, in the order the chairs will open them.",
-    "note": "The background guide sets out the questions a resolution should answer."
+    "lead": "The agenda for this committee is announced by the secretariat."
   },
   {
     "id": "committee-chairs",
@@ -384,7 +384,7 @@
     "label": "Each committee page · The seats",
     "kicker": "The seats",
     "title": "Country allocation.",
-    "lead": "Seats marked available can be requested in your registration preferences. The secretariat confirms every allocation after review."
+    "lead": "The secretariat allocates countries once registrations are confirmed."
   },
   {
     "id": "committee-closing",
@@ -392,7 +392,7 @@
     "label": "Each committee page · Take a seat (always shown)",
     "kicker": "Take a seat",
     "title": "Take a seat in {committee}.",
-    "lead": "Rank this committee among your three preferences when you apply. The secretariat allocates countries after reviewing every application."
+    "lead": "Register through the official forms. The secretariat allocates committees and countries after reviewing every registration."
   },
   {
     "id": "categories-hero",
@@ -400,14 +400,14 @@
     "label": "Case categories · Hero",
     "title": "The case categories.",
     "accentPhrase": "categories.",
-    "lead": "Choose the area of law your team prefers when you register. Every team argues from the same compromis, and is bound by its facts."
+    "lead": "The case categories are published with the moot problem. Every team argues from the same problem and is bound by its facts."
   },
   {
     "id": "categories-list",
     "page": "categories",
     "label": "Case categories · Areas of law (always shown)",
     "title": "Areas of law.",
-    "lead": "Questions about an unclear paragraph of the compromis go through the clarifications log, where the answer is published for every team at once."
+    "lead": "Questions about the moot problem go to the host team through the contact page."
   },
   {
     "id": "categories-help",
@@ -421,7 +421,7 @@
     "label": "Moot rules · Hero",
     "title": "Rules and memorials.",
     "accentPhrase": "memorials.",
-    "lead": "Memorial length and format, courtroom timing, citation and scoring for the GIKI Moot Court."
+    "lead": "Memorial structure and format, the oral rounds and their timing, scoring and the general rules of GMC VII."
   },
   {
     "id": "moot-rules-submission",
@@ -429,23 +429,23 @@
     "label": "Moot rules · The memorials (always shown)",
     "kicker": "The memorials",
     "title": "Submitting memorials.",
-    "lead": "Late memorials are not scored.",
+    "lead": "Soft copies go through the memorial submission link; the hard copies come with you.",
     "items": [
       {
-        "title": "Two PDFs",
-        "body": "One memorial for the Applicant and one for the Respondent."
+        "title": "Both sides",
+        "body": "One memorial on behalf of the petitioner(s)/appellant(s) and one on behalf of the respondent(s)."
       },
       {
-        "title": "Team code only",
-        "body": "Identify your team only by the code in your acceptance email; names or institutions in the file are penalised."
+        "title": "Soft copy",
+        "body": "A .pdf of each memorial, sent once the memorial submission link is provided after your team registers. A memorial in any other format, or split across files, loses 1 mark."
       },
       {
-        "title": "Name and send",
-        "body": "Name the files TEAMCODE_Applicant.pdf and TEAMCODE_Respondent.pdf and email both to {email}."
+        "title": "Hard copies",
+        "body": "Three hard copies of each memorial, printed on one side only, handed in on arrival. Each missing copy costs 1 point; no hard copies means disqualification."
       },
       {
-        "title": "Confirmation",
-        "body": "You receive a reply within one working day. If you do not, email again before the deadline."
+        "title": "Covers and identity",
+        "body": "Petitioner memorials have a blue cover and respondent memorials a red one. Only the team code may identify the team, and the hard copy must match the soft copy exactly, or the team is disqualified."
       }
     ]
   },
@@ -458,19 +458,23 @@
     "items": [
       {
         "title": "Preliminary rounds",
-        "body": "Every team argues twice, once for each side. These two rounds are guaranteed."
+        "body": "5 December. Teams are matched by draw of lots on 4 December, after the inaugural ceremony. Each team argues twice, once as petitioner and once as respondent, and never meets the same team twice. Held if enough teams register."
       },
       {
         "title": "Quarter-finals",
-        "body": "The top eight teams by combined memorial and oral scores advance."
+        "body": "5 December. Qualification goes by rounds won, then winning difference, then memorial marks. 20 minutes per team; pairings by draw of lots."
       },
       {
         "title": "Semi-finals",
-        "body": "Knockout; winners of each quarter-final advance."
+        "body": "6 December. Quarter-final winners, paired by draw of lots. 35 minutes per team."
       },
       {
-        "title": "Grand Final",
-        "body": "The two finalists argue before an expanded bench in the AHA Auditorium."
+        "title": "Final",
+        "body": "6 December. The two semi-final winners, 45 minutes per team. The winner of the final wins the competition."
+      },
+      {
+        "title": "Ties and scouting",
+        "body": "A tie in the quarter-finals, semi-finals or final is decided on preliminary round marks, and memorial marks never decide a round. Teams may not watch another team’s oral rounds unless they have been knocked out; scouting means instant disqualification."
       }
     ]
   },
@@ -480,17 +484,22 @@
     "label": "Moot rules · The format",
     "kicker": "The format",
     "title": "What a memorial must look like.",
-    "lead": "Citations follow {citation}. A team code is the only identity a memorial may carry: a name, crest or institution in the file is penalised.",
+    "lead": "Citations follow {citation}. Speaking footnotes and endnotes are not allowed. Only the team code may identify the team.",
     "items": [
       {
-        "title": "Length",
-        "meta": "8,000 words at most",
-        "body": "Counts the pleadings and prayer for relief only. The contents, index of authorities and statement of facts do not count."
+        "title": "Pages",
+        "body": "Cover page, table of contents, list of abbreviations, index of authorities, statement of jurisdiction, statement of facts, issues raised, summary of arguments, pleadings/arguments advanced, prayer.",
+        "meta": "These pages only"
+      },
+      {
+        "title": "Cover",
+        "body": "The case line, side of the memorial, year of competition and name of the court, with the team code in the top right corner.",
+        "meta": "Team code top right"
       },
       {
         "title": "Type",
-        "meta": "Times New Roman",
-        "body": "Body 12pt at 1.5 spacing, footnotes 10pt single-spaced, 1-inch (2.54 cm) margins on every side."
+        "body": "Single-spaced footnotes, 1-inch margins on all sides, hard copies printed on one side only.",
+        "meta": "Times New Roman, 12pt"
       }
     ]
   },
@@ -499,23 +508,23 @@
     "page": "moot-rules",
     "label": "Moot rules · In the courtroom",
     "kicker": "In the courtroom",
-    "title": "Thirty minutes a side.",
-    "lead": "The judges may interrupt at any point, and the clock keeps running while they do. Address the bench as “Your Honour”, answer, then return to your roadmap.",
+    "title": "Fifteen minutes in the preliminaries.",
+    "lead": "Each team's time includes rebuttal and sur-rebuttal, if the judges permit. Arguments must keep to the issues in the memorial, and the judges' decision on each round is final.",
     "items": [
       {
-        "meta": "30 min",
-        "title": "per side",
-        "body": "Applicant and Respondent each have thirty minutes, kept by the clerk."
+        "title": "per team",
+        "body": "In the preliminaries, split between the speakers as the team decides, with at least 7 minutes each.",
+        "meta": "15 min"
       },
       {
-        "meta": "12 to 18",
-        "title": "minutes per oralist",
-        "body": "Both registered oralists speak; neither for less than 12 or more than 18 minutes."
-      },
-      {
-        "meta": "3 min",
         "title": "rebuttal",
-        "body": "Reserved at the start. The Applicant may rebut and the Respondent may reply."
+        "body": "A rebuttal may take no more than 2 minutes.",
+        "meta": "2 min"
+      },
+      {
+        "title": "points",
+        "body": "The maximum per speaker per judge. The researcher may sit with the speakers, and a compendium may be handed up only if the bench permits.",
+        "meta": "50"
       }
     ]
   },
@@ -524,28 +533,28 @@
     "page": "moot-rules",
     "label": "Moot rules · The scoring (written memorial criteria; points in Meta)",
     "kicker": "The scoring",
-    "title": "How you are scored, out of 100.",
-    "lead": "The memorial counts for {memorial}% and the oral rounds for {oral}%.",
+    "title": "How memorials are scored, out of 100.",
+    "lead": "Memorial marks do not decide the result of any round. They break a tie when teams qualify from the preliminaries to the quarter-finals.",
     "items": [
       {
-        "meta": "12",
-        "title": "Knowledge of the law",
-        "body": "Command of the case law, treaties and customary rules that decide the problem."
+        "title": "Evidence of original thought",
+        "meta": "20"
       },
       {
-        "meta": "10",
-        "title": "Structure and persuasion",
-        "body": "A clear roadmap, sound reasoning and facts applied to law."
+        "title": "Knowledge of law and facts",
+        "meta": "20"
       },
       {
-        "meta": "10",
-        "title": "Research and sources",
-        "body": "Primary sources, state practice, scholarship and arbitral awards."
+        "title": "Proper and articulate analysis",
+        "meta": "20"
       },
       {
-        "meta": "8",
-        "title": "Style and citation",
-        "body": "Consistent footnotes, accurate cross-references, clean grammar and layout."
+        "title": "Correct format and citation",
+        "meta": "20"
+      },
+      {
+        "title": "Extent and use of research",
+        "meta": "20"
       }
     ]
   },
@@ -555,24 +564,32 @@
     "label": "Moot rules · The scoring (oral round criteria; points in Meta)",
     "items": [
       {
-        "meta": "20",
-        "title": "Answering the bench",
-        "body": "Direct, concise answers to the judges’ questions, without evasion."
+        "title": "Preparation and familiarity with facts",
+        "meta": "10"
       },
       {
-        "meta": "18",
-        "title": "Legal argument",
-        "body": "Command of the facts, the burden of proof and the law in issue."
+        "title": "Structure of legal argument",
+        "meta": "10"
       },
       {
-        "meta": "12",
-        "title": "Courtroom manner",
-        "body": "Formal address, clear delivery and composure under questioning."
+        "title": "Knowledge and application of law",
+        "meta": "10"
       },
       {
-        "meta": "10",
-        "title": "Time and rebuttal",
-        "body": "Keeping to time, a clean prayer and a rebuttal aimed at what was said."
+        "title": "Organization, presentation and speaking ability",
+        "meta": "5"
+      },
+      {
+        "title": "Responsiveness to questions",
+        "meta": "5"
+      },
+      {
+        "title": "Persuasiveness and advocacy",
+        "meta": "5"
+      },
+      {
+        "title": "Courtroom etiquette",
+        "meta": "5"
       }
     ]
   },
@@ -582,71 +599,30 @@
     "label": "Moot rules · Where to next",
     "actions": [
       {
-        "label": "Case categories",
-        "href": "/moot-cup/categories"
-      },
-      {
-        "label": "Clarifications",
-        "href": "/moot-cup/clarifications"
-      },
-      {
-        "label": "Register a team",
-        "href": "/register?track=moot-cup"
-      }
-    ],
-    "items": [
-      {
-        "title": "Case categories",
-        "body": "The areas of law the problem can come from."
-      },
-      {
-        "title": "Clarifications",
-        "body": "The bench’s answers on the problem, binding on every team."
-      },
-      {
-        "title": "Register a team",
-        "body": "Two oralists and up to two researchers."
-      }
-    ]
-  },
-  {
-    "id": "clarifications-hero",
-    "page": "clarifications",
-    "label": "Clarifications · Hero",
-    "title": "The clarifications log.",
-    "accentPhrase": "clarifications log.",
-    "lead": "Questions from registered teams and the bench's answers. Every clarification published here forms part of the case problem, for every team at once."
-  },
-  {
-    "id": "clarifications-next",
-    "page": "clarifications",
-    "label": "Clarifications · Where to next",
-    "actions": [
-      {
-        "label": "Rules and memorials",
-        "href": "/moot-cup/rules"
-      },
-      {
-        "label": "Case categories",
-        "href": "/moot-cup/categories"
+        "label": "Venue and travel",
+        "href": "/about/venue"
       },
       {
         "label": "Resources",
         "href": "/resources"
+      },
+      {
+        "label": "Register a team",
+        "href": "/register#moot-cup"
       }
     ],
     "items": [
       {
-        "title": "Rules and memorials",
-        "body": "Formatting, word limits and how the rounds are scored."
-      },
-      {
-        "title": "Case categories",
-        "body": "The areas of law in this year’s problem."
+        "title": "Venue and travel",
+        "body": "Free transport, accommodation and what to bring."
       },
       {
         "title": "Resources",
-        "body": "The compromis and the competition rules as PDFs."
+        "body": "The GMC VII liaison package as a PDF."
+      },
+      {
+        "title": "Register a team",
+        "body": "Two speakers, or two speakers and a researcher."
       }
     ]
   },
@@ -656,7 +632,7 @@
     "label": "Schedule · Hero",
     "title": "The schedule.",
     "accentPhrase": "schedule.",
-    "lead": "All four days for both tracks: GIMUN committee sessions, GMC rounds, the ceremonies, meals and evenings. Filter by track or day, or print a copy."
+    "lead": "All three days for both tracks: the GMC rounds, the ceremonies and the evenings. Session times are announced closer to the event. Filter by track or day, or print a copy."
   },
   {
     "id": "schedule-next",
@@ -697,7 +673,7 @@
     "label": "Resources · Hero",
     "title": "The resource library.",
     "accentPhrase": "resource library.",
-    "lead": "Background guides, the case problem, both rulebooks, citation guides and travel information for both tracks."
+    "lead": "The official GIMUN 26 and GMC VII liaison packages: fees, rules, instructions and contacts."
   },
   {
     "id": "announcements-hero",
@@ -728,7 +704,7 @@
     "items": [
       {
         "title": "The schedule",
-        "body": "Every session, hour by hour, for all four days."
+        "body": "The programme for all three days."
       },
       {
         "title": "Venue and travel",
@@ -736,7 +712,7 @@
       },
       {
         "title": "FAQ",
-        "body": "Fees, refunds, accommodation and more."
+        "body": "Fees, transport, accommodation and more."
       }
     ]
   },
@@ -745,14 +721,14 @@
     "page": "results",
     "label": "Results · Hero before results are published",
     "title": "Awards, and how they are decided.",
-    "lead": "The awards for each track and the criteria behind them. Winners are published here after the awards gala, not before."
+    "lead": "The awards for each track and how they are decided. Winners are published here after the conference, not before."
   },
   {
     "id": "results-hero-published",
     "page": "results",
     "label": "Results · Hero once results are published",
     "title": "Results and awards.",
-    "lead": "The award winners of GIMUN and the GIKI Moot Court, as announced at the awards gala."
+    "lead": "The award winners of GIMUN 26 and GMC VII."
   },
   {
     "id": "results-awards",
@@ -761,19 +737,14 @@
     "title": "The {year} main awards",
     "items": [
       {
-        "title": "Best delegation",
-        "meta": "GIMUN",
-        "body": "For the institution whose delegates score highest across all committees combined."
+        "title": "Committee awards",
+        "body": "Decided by the chairs of each committee.",
+        "meta": "GIMUN"
       },
       {
-        "title": "Best delegate",
-        "meta": "GIMUN",
-        "body": "One per committee, chosen by its chairs for research, drafting, debate and diplomacy."
-      },
-      {
-        "title": "Winning team",
-        "meta": "GMC",
-        "body": "The team that wins the Grand Final, decided by the bench after the final oral round."
+        "title": "Winner of the competition",
+        "body": "The winner of the final round is declared the winner of GMC VII.",
+        "meta": "GMC"
       }
     ]
   },
@@ -782,15 +753,15 @@
     "page": "results",
     "label": "Results · How winners are chosen (before publication)",
     "title": "How winners are chosen",
-    "lead": "Scores are totalled after the final sessions and checked by the organizing team. Winners are announced at the awards gala and published here afterwards. Certificates carry a link to check them.",
+    "lead": "Scores are checked by the organizing team and published here after the conference. Certificates carry a link to check them.",
     "items": [
       {
         "title": "GIMUN",
-        "body": "Committee chairs score every session against the published rubric."
+        "body": "Committee chairs assess delegates across the sessions."
       },
       {
-        "title": "GIKI Moot Court",
-        "body": "Judges score the written memorials and each oral round. Memorials are marked without team names."
+        "title": "GIKI Moot Cup",
+        "body": "Judges score each oral round, up to 50 points per speaker per judge, and their decision is final. Memorial marks break ties in the preliminaries."
       }
     ]
   },
@@ -798,31 +769,125 @@
     "id": "register-hero",
     "page": "register",
     "label": "Register · Hero",
-    "title": "Apply for GIMUN or the GIKI Moot Court",
-    "accentPhrase": "GIKI Moot Court",
-    "lead": "The organizing team reviews every application. You pay only if you are accepted, by bank transfer against an invoice.",
+    "title": "Register for GIMUN 26 or GMC VII",
+    "accentPhrase": "GMC VII",
+    "lead": "Registration is on the official forms below. Pick the form for your track and role, fill it in and submit it, then wait for confirmation from the host team.",
     "items": [
       {
-        "title": "Apply",
-        "body": "Submit the form. You get a reference number and QR ticket by email straight away."
+        "title": "Choose your form",
+        "body": "Delegate, delegation or observer for GIMUN; team or observer for GMC."
       },
       {
-        "title": "Review",
-        "body": "The organizing team reviews applications and allocates committees or categories."
+        "title": "Fill and submit",
+        "body": "Complete the form and submit it."
       },
       {
-        "title": "Pay",
-        "body": "If accepted, you receive an invoice with bank details. Nothing is charged here."
+        "title": "Pay and send",
+        "body": "Transfer the fee to the account below, then send the payment and documents by mail."
+      },
+      {
+        "title": "Confirmation",
+        "body": "The host team confirms your registration. The fee is the one in force when it is confirmed."
       }
     ]
+  },
+  {
+    "id": "register-gimun",
+    "page": "register",
+    "label": "Register · GIMUN (instructions in Items, one per item title)",
+    "kicker": "GIMUN 26",
+    "title": "GIKI Model United Nations",
+    "lead": "Five committees: UNSC, UNHRC, DISEC, UN Women and the Pakistan National Assembly.",
+    "note": "Apply to join the team",
+    "items": [
+      {
+        "title": "Each institution can register a maximum of 5 teams, consisting of 3 members."
+      },
+      {
+        "title": "Each institution must have one head delegate, who gives the name and contact details for their institution."
+      },
+      {
+        "title": "All correspondence between the host team and an institution’s delegates goes through the head delegate."
+      },
+      {
+        "title": "No participants below the age of 18. Entry is on CNIC only, no smart card."
+      },
+      {
+        "title": "Information you give the host team is not disclosed to any unconcerned individual or third party."
+      }
+    ]
+  },
+  {
+    "id": "register-moot",
+    "page": "register",
+    "label": "Register · GMC (instructions in Items, one per item title)",
+    "kicker": "GMC VII",
+    "title": "GIKI Moot Cup",
+    "lead": "Simulated court proceedings: memorials for both sides, then oral rounds from the preliminaries to the final.",
+    "note": "Judges",
+    "items": [
+      {
+        "title": "Open to students pursuing a 3-year or 5-year undergraduate LL.B degree."
+      },
+      {
+        "title": "Teams of two speakers, or three members: two speakers and one researcher."
+      },
+      {
+        "title": "Memorials are due by 15 November 2026. The submission link is sent once your team is registered."
+      },
+      {
+        "title": "The language of the competition is English."
+      },
+      {
+        "title": "Every team signs a liability form at the event and submits an original CNIC with it."
+      }
+    ]
+  },
+  {
+    "id": "register-payment",
+    "page": "register",
+    "label": "Register · Payment (account details come from Settings)",
+    "title": "Payment",
+    "lead": "Pay by bank transfer to the account below, then send the payment and documents by mail. Your registration is confirmed once both are received."
+  },
+  {
+    "id": "register-before",
+    "page": "register",
+    "label": "Register · Before you register",
+    "title": "Before you register",
+    "items": [
+      {
+        "title": "Liability form",
+        "body": "All teams sign a liability form at the event. Submitting an original CNIC alongside it is mandatory."
+      },
+      {
+        "title": "Transport",
+        "body": "Free transport to and from GIK campus for Islamabad/Rawalpindi and Peshawar, at designated times and places.\nFrom Lahore it costs an extra Rs 6,000 per head. It depends on road conditions and the number of participants, may be unavailable if roads are blocked, and the host team may change it (duly communicated)."
+      },
+      {
+        "title": "Accommodation",
+        "body": "Free, shared accommodation in regular student hostels for all registered participants. Chaperones also get shared accommodation, unless a separate arrangement is requested and approved by the liaison head, for an extra fee."
+      },
+      {
+        "title": "Campus rules",
+        "body": "No driving on campus during the event, except when arriving or leaving. No illegal substances, alcohol, firearms or weapons. General institute security applies to participants, and the host team is not liable for damage to any person or belongings."
+      }
+    ]
+  },
+  {
+    "id": "register-contacts",
+    "page": "register",
+    "label": "Register · Directors of Registrations (people come from Settings › Contacts)",
+    "title": "Directors of Registrations",
+    "lead": "Questions about registering? Call or message a director for your track."
   },
   {
     "id": "about-hero",
     "page": "about",
     "label": "About · Hero",
-    "title": "Two competitions, one campus, four days.",
+    "title": "Two competitions, one campus, three days.",
     "accentPhrase": "one campus,",
-    "lead": "GIMUN and the GIKI Moot Court run side by side at {campus}. Delegates debate in committee; law students argue before a bench. Both share the ceremonies, meals and evenings."
+    "lead": "GIMUN 26 and GMC VII run side by side at {campus}, hosted by SOPHEP. Delegates debate in committee; law students argue before a bench. Both share the evenings."
   },
   {
     "id": "about-tracks",
@@ -839,7 +904,7 @@
       },
       {
         "title": "GMC",
-        "body": "Argue one problem as a team of law students, across {cases} areas of law, before a bench."
+        "body": "Argue one problem as a team of law students, before a bench, from the preliminaries to the final."
       }
     ]
   },
@@ -849,14 +914,14 @@
     "label": "About · The week",
     "kicker": "The week",
     "title": "How the week fits together.",
-    "lead": "Committees and courtrooms run in parallel; ceremonies, meals and evenings are shared."
+    "lead": "Committees and courtrooms run in parallel; the evenings are shared."
   },
   {
     "id": "about-who",
     "page": "about",
     "label": "About · Who runs it",
     "kicker": "Who runs it",
-    "body": "The secretariat, the moot convening committee and the logistics team are GIKI students. Applying is free; accepted participants pay by bank transfer, never on this site."
+    "body": "SOPHEP, the Society for the Promotion of Higher Education in Pakistan, is one of the fastest-growing student-run societies in Pakistan. It gives young people platforms to show their potential, and builds awareness of social and international relations and how to debate them."
   },
   {
     "id": "about-more",
@@ -873,22 +938,22 @@
       },
       {
         "title": "Venue and travel",
-        "body": "Getting to Topi, where each session happens, and what to bring.",
+        "body": "Free host transport, accommodation and what to bring.",
         "meta": "Logistics"
       },
       {
         "title": "Frequently asked questions",
-        "body": "Fees, refunds, accommodation, dress code and more.",
+        "body": "Fees, refunds, transport, accommodation and more.",
         "meta": "Help"
       },
       {
         "title": "Sponsors and partners",
-        "body": "Supporting organizations and the sponsorship deck.",
+        "body": "Supporting organizations.",
         "meta": "Partners"
       },
       {
         "title": "Contact",
-        "body": "{reply}",
+        "body": "Phone numbers for the host team and registrations.",
         "meta": "Support"
       }
     ]
@@ -896,10 +961,10 @@
   {
     "id": "about-closing",
     "page": "about",
-    "label": "About · Your application (always shown)",
-    "kicker": "Your application",
+    "label": "About · Your registration (always shown)",
+    "kicker": "Your registration",
     "title": "Represent your institution at GIKI.",
-    "lead": "Choose a track to see its fees, format and deadlines. Applying is free; you pay only once accepted."
+    "lead": "Choose a track to see its fees, format and deadlines. Registration is on the official forms."
   },
   {
     "id": "faq-hero",
@@ -907,7 +972,7 @@
     "label": "FAQ · Hero",
     "title": "Questions, answered.",
     "accentPhrase": "answered.",
-    "lead": "Fees and refunds, committee procedure, the moot rounds, accommodation at GIKI and getting to Topi."
+    "lead": "Fees, registration, the committees, the moot rounds, transport and accommodation at GIKI."
   },
   {
     "id": "team-hero",
@@ -915,7 +980,7 @@
     "label": "Team · Hero",
     "title": "The organizing team.",
     "accentPhrase": "organizing team.",
-    "lead": "GIMUN and GMC are run by GIKI students: the secretariat and committee chairs, the moot convening committee, and the organizers who look after logistics."
+    "lead": "GIMUN 26 and GMC VII are hosted by SOPHEP, the Society for the Promotion of Higher Education in Pakistan, at GIK Institute."
   },
   {
     "id": "team-next",
@@ -938,7 +1003,7 @@
     "items": [
       {
         "title": "Contact",
-        "body": "Write to the desk that owns your question."
+        "body": "Call or email the organizing team."
       },
       {
         "title": "The event",
@@ -956,7 +1021,7 @@
     "label": "Sponsors · Hero",
     "title": "Sponsors and partners.",
     "accentPhrase": "partners.",
-    "lead": "Partner with a student conference that brings delegates and law students from across Pakistan to GIKI. The sponsorship deck sets out the tiers and what each includes."
+    "lead": "Partner with a student conference that brings delegates and law students from across Pakistan to GIKI. Get in touch with the host team to discuss a partnership."
   },
   {
     "id": "sponsors-next",
@@ -979,15 +1044,15 @@
     "items": [
       {
         "title": "Talk to us",
-        "body": "Ask about the tiers, or a partnership that fits."
+        "body": "Ask about a partnership that fits."
       },
       {
         "title": "The event",
-        "body": "Who takes part and how the four days run."
+        "body": "Who takes part and how the three days run."
       },
       {
         "title": "Resources",
-        "body": "Every published document, including the deck."
+        "body": "Every published document."
       }
     ]
   },
@@ -1045,20 +1110,20 @@
     "page": "venue",
     "label": "Venue · The road (always shown)",
     "kicker": "The road",
-    "title": "Three ways in.",
-    "lead": "GIKI sits just off the M-1 between Islamabad and Peshawar. Most participants arrive by road.",
+    "title": "Getting here.",
+    "lead": "GIKI sits just off the M-1 between Islamabad and Peshawar. The host team runs free transport from Islamabad/Rawalpindi and Peshawar.",
     "items": [
       {
+        "title": "By host transport",
+        "body": "Free transport to and from GIK campus for Islamabad/Rawalpindi and Peshawar, at designated times and places. From Lahore it costs an extra Rs 6,000 per head, and depends on road conditions and the number of participants."
+      },
+      {
         "title": "By road",
-        "body": "From Islamabad or Peshawar take the M-1 Motorway to the Swabi interchange, then follow signs to Topi and GIKI. Allow about 90 minutes from Islamabad."
+        "body": "From Islamabad or Peshawar take the M-1 Motorway to the Swabi interchange, then follow signs to Topi and GIKI. Participants may drive in when arriving and out when leaving, but not around campus during the event."
       },
       {
         "title": "By air",
-        "body": "Islamabad International Airport is the nearest airport, roughly 110 km away. Continue by road via the M-1."
-      },
-      {
-        "title": "By coach",
-        "body": "Intercity coaches run to Swabi from Islamabad, Rawalpindi, Peshawar and Lahore. Any group transport arranged by the organizers is announced on the Announcements page."
+        "body": "Islamabad International Airport is the nearest airport. Continue by road via the M-1."
       }
     ]
   },
@@ -1089,7 +1154,8 @@
         "title": "Student hostels",
         "body": "On-campus accommodation for outstation participants, on request"
       }
-    ]
+    ],
+    "hidden": true
   },
   {
     "id": "venue-practical",
@@ -1097,23 +1163,23 @@
     "label": "Venue · Before you travel (packing list in Body, one per line)",
     "kicker": "Before you travel",
     "title": "Before you travel.",
-    "lead": "Accommodation, getting through the gate, the weather, and a list to pack against.",
+    "lead": "Accommodation, getting through the gate, the campus rules, and a list to pack against.",
     "items": [
       {
         "title": "Accommodation",
-        "body": "On-campus hostel places, with separate wings for male and female participants, are available on request. Ask for accommodation in your application; places and any charge are confirmed when you are accepted."
+        "body": "Free, shared accommodation in regular student hostels for all registered participants. Chaperones also get shared accommodation, unless a separate arrangement is requested and approved by the liaison head, for an extra fee."
       },
       {
         "title": "Campus entry",
-        "body": "{entry} Delegations arriving by bus should send the vehicle number to the organizing team in advance."
+        "body": "{entry} Carry your original CNIC: it is needed for security, at registration and with the liability form, and without it entry can be refused."
       },
       {
-        "title": "Weather in March",
-        "body": "Topi is usually mild in the day and cool at night in March, roughly 10–25°C. Pack a warm layer for evening events."
+        "title": "Campus rules",
+        "body": "No driving on campus during the event. No illegal substances, alcohol, firearms or weapons. Breaking the rules can lead to fines, disqualification or expulsion."
       }
     ],
     "note": "What to bring",
-    "body": "Photo ID (CNIC, B-Form or student card)\nQR ticket from your confirmation email\nFormal clothing for sessions and ceremonies\nLaptop or notebook, and a charger\nPosition paper or memorial materials\nA warm layer for the evenings"
+    "body": "Original CNIC\nFormal clothing for sessions\nLaptop or notebook, and a charger\nThree hard copies of each memorial (GMC)\nWarm layers for December evenings"
   },
   {
     "id": "venue-help",
@@ -1121,7 +1187,7 @@
     "label": "Venue · On the day",
     "kicker": "On the day",
     "title": "Help during the conference.",
-    "lead": "{desk} For anything urgent, contact the organizing team."
+    "lead": "{desk} For anything urgent, call the Chief Liaison."
   },
   {
     "id": "venue-next",
@@ -1144,15 +1210,15 @@
     "items": [
       {
         "title": "The schedule",
-        "body": "Which room, at what time, on each day."
+        "body": "What happens on each day."
       },
       {
         "title": "FAQ",
-        "body": "Accommodation, dress code and refunds."
+        "body": "Transport, accommodation and fees."
       },
       {
         "title": "Register",
-        "body": "Apply for GIMUN or the GIKI Moot Court."
+        "body": "The official forms for GIMUN and GMC."
       }
     ]
   },
@@ -1162,7 +1228,7 @@
     "label": "Contact · Hero",
     "title": "Write to the organizing team.",
     "accentPhrase": "organizing team.",
-    "lead": "A question about eligibility, committee selection, the GMC case problem, sponsorship or getting to campus? Send it below, or email the team that owns it."
+    "lead": "A question about registration, the committees, the moot or getting to campus? Call the host team, or send a message below."
   },
   {
     "id": "privacy-hero",
@@ -1170,21 +1236,21 @@
     "label": "Privacy · Hero",
     "title": "Privacy and data handling.",
     "accentPhrase": "data handling.",
-    "lead": "Registration, contact and clarification information is collected only to review applications, coordinate event logistics, answer questions and send official updates."
+    "lead": "Registration happens on the official forms hosted by Google. This website only collects what you send through its contact form, to answer questions and send official updates."
   },
   {
     "id": "privacy-collect",
     "page": "privacy",
     "label": "Privacy · What we collect",
     "title": "What we collect",
-    "body": "Depending on the form, this may include names, institutional details, contact information, delegate or team rosters, preferences, accessibility requirements, and the submitted message."
+    "body": "Through this website: your name, email, institution and message when you use the contact form. Registration details are collected by the host team on the official registration forms, not on this website."
   },
   {
     "id": "privacy-use",
     "page": "privacy",
     "label": "Privacy · How it is used",
     "title": "How it is used",
-    "body": "The organizing committee uses this information for application review, allocation, venue and accommodation planning, official notices, and responses to questions. We do not publish rosters or sell participant information. Published award results and certificate verification links can show participant names; clarification answers may be published after editorial review."
+    "body": "The host team uses this information to answer your question and send official updates. We do not sell participant information. Published results and certificate verification links can show participant names."
   },
   {
     "id": "privacy-services",
@@ -1193,12 +1259,16 @@
     "title": "Services that process your data",
     "items": [
       {
+        "title": "Google Forms",
+        "body": "Hosts the official registration and application forms, under Google’s privacy policy."
+      },
+      {
         "title": "Supabase",
-        "body": "Stores registrations, messages and admin records."
+        "body": "Stores contact messages and admin records."
       },
       {
         "title": "Resend",
-        "body": "Delivers receipts, invoices, certificates and replies by email."
+        "body": "Delivers replies and official emails."
       },
       {
         "title": "Upstash",

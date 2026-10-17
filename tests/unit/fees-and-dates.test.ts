@@ -6,7 +6,8 @@ import { canRegister } from '../../src/lib/phase';
 import { getCanonicalEventDateRange } from '../../src/lib/site-config';
 import { pickGimunDelegation } from '../../src/lib/registration-data';
 
-const site = siteSchema.parse(JSON.parse(readFileSync('content/site.json', 'utf8')));
+// Fixed dates and fees, independent of the seed.
+const site = { ...siteSchema.parse(JSON.parse(readFileSync('content/site.json', 'utf8'))), eventDates: { start: '2027-03-18', end: '2027-03-21' }, registrationDeadlines: { gimun: '2027-02-15', mootCup: '2027-03-05' }, fees: { gimunIndividual: 'PKR 4,500', gimunDelegationPerDelegate: 'PKR 4,000', mootCupTeam: 'PKR 12,000' } };
 
 describe('fees', () => {
   it('reads amounts from display text without mangling separators', () => {

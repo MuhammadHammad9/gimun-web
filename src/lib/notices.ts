@@ -21,8 +21,8 @@ export interface DeadlineReminder {
  */
 export function deadlineReminders(site: SiteConfig, now = Date.now()): DeadlineReminder[] {
   const tracks = [
-    { track: 'gimun' as const, name: 'GIMUN', deadline: site.registrationDeadlines.gimun, href: '/register?track=gimun' },
-    { track: 'mootCup' as const, name: 'GMC', deadline: site.registrationDeadlines.mootCup, href: '/register?track=moot-cup' },
+    { track: 'gimun' as const, name: 'GIMUN', deadline: site.registrationDeadlines.gimun, href: '/register#gimun' },
+    { track: 'mootCup' as const, name: 'GMC', deadline: site.registrationDeadlines.mootCup, href: '/register#moot-cup' },
   ];
   return tracks.flatMap(({ track, name, deadline, href }) => {
     if (!canRegister(site, track, now)) return [];
@@ -34,5 +34,5 @@ export function deadlineReminders(site: SiteConfig, now = Date.now()): DeadlineR
 
 /** The notice's headline for a reminder. */
 export function reminderTitle({ name, days }: DeadlineReminder): string {
-  return days <= 1 ? `${name} applications close today` : `${name} applications close in ${days} days`;
+  return days <= 1 ? `${name} registration closes today` : `${name} registration closes in ${days} days`;
 }

@@ -11,7 +11,7 @@ import { LiveArt } from '@/components/art/LiveArt';
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Official Results & Awardees | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
   description:
-    'Official hall of fame, winners, and commendations for diplomacy and moot court.',
+    'The awards of GIMUN 26 and GMC VII and how they are decided. Winners are published after the conference.',
   path: '/results',
 }); }
 
@@ -23,7 +23,7 @@ export default async function ResultsPage() {
     <>
       <PageHero
         variant="utility"
-        meta={[published ? 'Published' : `Announced at the awards gala${siteConfig.galaDate ? `, ${formatEventDate(siteConfig.galaDate, { month: 'short' })}` : ''}`]}
+        meta={[published ? 'Published' : `Published after the conference${siteConfig.galaDate ? `, ${formatEventDate(siteConfig.galaDate, { month: 'short' })}` : ''}`]}
         title={fill(hero.title)}
         description={fill(hero.lead)}
         art={

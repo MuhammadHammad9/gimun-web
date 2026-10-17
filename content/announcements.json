@@ -1,26 +1,29 @@
 [
   {
-    "id": "ann-01",
-    "title": "Early Bird Delegate Registrations Open",
-    "body": "Early bird registrations for GIMUN and GMC are officially open. Priority committee allocations will be awarded to delegations submitting before the published GIMUN deadline of {{GIMUN_DEADLINE}}.",
+    "id": "ann-registrations-open",
+    "title": "GIMUN 26 and GMC VII registrations are open",
+    "body": "Registrations for GIMUN 26 and GMC VII, held from 4 to 6 December 2026 at GIK Institute, Topi, are open on the official forms. See the Register page for the forms, the fee tiers and the payment details.",
     "track": "all",
-    "timestamp": "2026-09-01T10:00:00Z",
-    "pinnedFlag": true
+    "timestamp": "2026-10-16T10:00:00Z",
+    "pinnedFlag": true,
+    "actionUrl": "/register"
   },
   {
-    "id": "ann-02",
-    "title": "GMC 2027 Moot Problem Released",
-    "body": "The GMC 2027 moot problem (compromis) covering all three problem categories is now available in the Resource Hub. Submit clarification questions through the Clarifications page.",
+    "id": "ann-memorial-deadline",
+    "title": "GMC VII memorials due 15 November",
+    "body": "Memorials for both sides are due by 15 November 2026. The memorial submission link is sent to each team after it registers. Bring three hard copies of each memorial when you arrive.",
     "track": "moot-cup",
-    "timestamp": "2026-09-03T14:30:00Z",
-    "pinnedFlag": false
+    "timestamp": "2026-10-16T10:05:00Z",
+    "pinnedFlag": false,
+    "actionUrl": "/moot-cup/rules"
   },
   {
-    "id": "ann-03",
-    "title": "GIMUN Rules of Procedure Handbook Updated",
-    "body": "The 2027 revision of the GIMUN RoP document has been updated with clarified crisis committee flow and working paper submission formatting.",
-    "track": "gimun",
-    "timestamp": "2026-09-04T09:15:00Z",
-    "pinnedFlag": false
+    "id": "ann-liaison-packages",
+    "title": "Liaison packages published",
+    "body": "The GIMUN 26 and GMC VII liaison packages, with the fee structure, rules, instructions and contacts, are in the resource library.",
+    "track": "all",
+    "timestamp": "2026-10-16T10:10:00Z",
+    "pinnedFlag": false,
+    "actionUrl": "/resources"
   }
 ]

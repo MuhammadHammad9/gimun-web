@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `Sponsors & Partners | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
     path: '/about/sponsors',
     description:
-      'The organizations supporting GIMUN and the GIKI Moot Court, and how to partner with the event. The sponsorship deck sets out the tiers.',
+      'The organizations supporting GIMUN 26 and GMC VII, and how to partner with the event.',
   });
 }
 

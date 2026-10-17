@@ -17,14 +17,13 @@ export interface RouteLabel {
 }
 
 const LABELS: Record<string, RouteLabel> = {
-  '/': { section: 'GIMUN & GMC 2027', title: 'Home' },
+  '/': { section: 'GIMUN & GMC', title: 'Home' },
   '/gimun': { section: 'Model United Nations', title: 'GIMUN', accent: 'gimun' },
   '/gimun/committees': { section: 'GIMUN', title: 'Committees', accent: 'gimun' },
   '/gimun/rules': { section: 'GIMUN', title: 'Rules of procedure', accent: 'gimun' },
   '/moot-cup': { section: 'Moot court', title: 'GMC', accent: 'gmc' },
   '/moot-cup/categories': { section: 'GMC', title: 'Problem categories', accent: 'gmc' },
   '/moot-cup/rules': { section: 'GMC', title: 'Rules & memorials', accent: 'gmc' },
-  '/moot-cup/clarifications': { section: 'GMC', title: 'Clarifications', accent: 'gmc' },
   '/register': { section: 'Apply', title: 'Registration' },
   '/schedule': { section: 'The event', title: 'Schedule' },
   '/resources': { section: 'The event', title: 'Resources' },
@@ -46,7 +45,7 @@ export const REDIRECTS: Record<string, string> = {
   '/go': '/register',
 };
 
-const FALLBACK: RouteLabel = { section: 'GIMUN & GMC 2027', title: '' };
+const FALLBACK: RouteLabel = { section: 'GIMUN & GMC', title: '' };
 
 export function normalizePath(pathname: string): string {
   const path = pathname.split(/[?#]/)[0] || '/';

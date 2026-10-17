@@ -13,6 +13,7 @@ import { chapterNumbers, fill, nextSteps } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { formatDateRange } from '@/lib/utils';
 import { NextSteps } from '@/components/story/NextSteps';
+import { telHref } from '@/components/registration/ContactDirectory';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
@@ -36,7 +37,7 @@ export default async function VenuePage() {
   const chapter = chapterNumbers(copy, ['venue-travel', 'venue-places', 'venue-practical', 'venue-help']);
   const vars = {
     host: site.hostInstitution,
-    entry: site.entryRequirement || 'Bring a photo ID and your QR ticket to the main gate.',
+    entry: site.entryRequirement || 'Bring your original CNIC.',
     desk: site.checkinDesk || 'The registration desk is staffed throughout the conference.',
   };
   const packing = fill(practical.body, vars).split('\n').map((line) => line.trim()).filter(Boolean);
@@ -160,10 +161,13 @@ export default async function VenuePage() {
           >
             <div className="flex flex-col gap-2">
               {site.contactPhone && (
-                <a href={`tel:${site.contactPhone.replace(/[^\d+]/g, '')}`} className="font-mono text-lg text-text">
+                <a href={telHref(site.contactPhone)} className="font-mono text-lg text-text">
                   {site.contactPhone}
                 </a>
               )}
+              <Link href="/contact" className="text-link w-fit">
+                Every host team number
+              </Link>
               <a href={`mailto:${site.contactEmails.general}`} className="text-link w-fit">
                 {site.contactEmails.general}
               </a>

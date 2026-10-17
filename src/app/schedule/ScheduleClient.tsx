@@ -7,6 +7,7 @@ import { useSiteConfig } from '@/components/SiteConfigProvider';
 import { trackDot } from '@/components/sections/TrackKey';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FilterBar } from '@/components/ui/FilterBar';
+import { TbaStamp } from '@/components/ui/TbaStamp';
 import type { ScheduleItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import '@/styles/pages/schedule.css';
@@ -103,7 +104,7 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
               </span>
             </>
           ) : (
-            'Times are Pakistan time. Keep your confirmation email and QR ticket with you on campus.'
+            'Times are Pakistan time; times not yet announced are marked TBA. Carry your original CNIC on campus.'
           )}
         </p>
         <div className="flex shrink-0 items-center gap-6 print:hidden">
@@ -166,9 +167,15 @@ export function ScheduleClient({ initialSchedule }: ScheduleClientProps) {
               )}
               <li className={cn('session', isLive && 'session--live')} data-live-key={`session-${session.id}`}>
                 <p className="session__time">
-                  <time>{session.startTime}</time>
-                  <span aria-hidden="true">–</span>
-                  <time>{session.endTime}</time>
+                  {session.startTime ? (
+                    <>
+                      <time>{session.startTime}</time>
+                      <span aria-hidden="true">–</span>
+                      <time>{session.endTime}</time>
+                    </>
+                  ) : (
+                    <TbaStamp />
+                  )}
                 </p>
                 <div className="session__main">
                   <h3 className="session__title">

@@ -18,7 +18,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/moot-cup',
     '/moot-cup/categories',
     '/moot-cup/rules',
-    '/moot-cup/clarifications',
     '/schedule',
     '/resources',
     '/register',

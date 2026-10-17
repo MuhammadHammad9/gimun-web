@@ -26,6 +26,8 @@ export async function checkContentLinks(entry:ContentEntry){
  }
  if(entry.collection==='schedule'){
   const valid=(v:unknown)=>/^([01]\d|2[0-3]):[0-5]\d$/.test(String(v));
-  if(!valid(entry.data.startTime)||!valid(entry.data.endTime)||String(entry.data.endTime)<=String(entry.data.startTime))throw new Error('Session end time must follow its start time on the same day.');
+  // Both times blank means "time to be announced".
+  const tba=!entry.data.startTime&&!entry.data.endTime;
+  if(!tba&&(!valid(entry.data.startTime)||!valid(entry.data.endTime)||String(entry.data.endTime)<=String(entry.data.startTime)))throw new Error('Session end time must follow its start time on the same day. Leave both blank if the time is not announced yet.');
  }
 }

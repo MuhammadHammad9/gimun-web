@@ -58,9 +58,10 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
   const chairs = copy('committee-chairs');
   const seatsCopy = copy('committee-seats');
   const closing = copy('committee-closing');
-  const chapter = chapterNumbers(copy, ['committee-agenda', 'committee-chairs', 'committee-seats', 'committee-closing']);
+  // The seats chapter appears once the committee has a country list.
+  const chapter = chapterNumbers(copy, ['committee-agenda', 'committee-chairs', ...(total ? ['committee-seats'] : []), 'committee-closing']);
   const vars = { committee: committee.slug.toUpperCase(), name: committee.name };
-  const apply = { label: open ? `Apply for ${committee.slug.toUpperCase()}` : 'Registration status', href: `/register?track=gimun&committee=${committee.slug}` };
+  const apply = { label: open ? 'Register for GIMUN' : 'Registration status', href: '/register#gimun' };
 
   return (
     <>
@@ -72,7 +73,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
           { label: 'Committees', href: '/gimun/committees' },
           { label: committee.slug.toUpperCase() },
         ]}
-        meta={[COMMITTEE_TYPE[committee.type] ?? 'Committee', total ? `${seatsOpen(committee)} of ${total} seats open` : 'Open seating']}
+        meta={[COMMITTEE_TYPE[committee.type] ?? 'Committee', total ? `${seatsOpen(committee)} of ${total} seats open` : 'Countries allocated by the secretariat']}
         title={committee.name}
         description={committee.shortDescription}
         actionsSlot={
@@ -139,7 +140,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
       </section>
       )}
 
-      {!seatsCopy.hidden && (
+      {!seatsCopy.hidden && total > 0 && (
       <section className="chapter chapter--flush-top" aria-labelledby="seats-title">
         <div className="wrap">
           <ChapterHead

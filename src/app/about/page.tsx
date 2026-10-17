@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `About GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
     path: '/about',
     description:
-      'What GIMUN and the GIKI Moot Court are, how the four days fit together, and who runs them at GIK Institute in Topi.',
+      'What GIMUN 26 and GMC VII are, how the three days fit together, and who hosts them: SOPHEP, at GIK Institute in Topi.',
   });
 }
 
@@ -124,14 +124,14 @@ export default async function AboutOverviewPage() {
                   href: '/gimun',
                   title: site.eventNames.gimun,
                   description: fill(tracks.items?.[0]?.body, vars),
-                  meta: [gimunOpen ? 'Applications open' : 'Registration closed', `Closes ${formatEventDate(site.registrationDeadlines.gimun, { month: 'short' })}`],
+                  meta: [gimunOpen ? 'Registration open' : 'Registration closed', `Closes ${formatEventDate(site.registrationDeadlines.gimun, { month: 'short' })}`],
                 },
                 {
                   key: 'gmc',
                   href: '/moot-cup',
                   title: site.eventNames.mootCup,
                   description: fill(tracks.items?.[1]?.body, vars),
-                  meta: [mootOpen ? 'Applications open' : 'Registration closed', `Closes ${formatEventDate(site.registrationDeadlines.mootCup, { month: 'short' })}`],
+                  meta: [mootOpen ? 'Registration open' : 'Registration closed', `Closes ${formatEventDate(site.registrationDeadlines.mootCup, { month: 'short' })}`],
                 },
               ]}
             />
@@ -208,8 +208,8 @@ export default async function AboutOverviewPage() {
         title={fill(closing.title, vars)}
         lead={fill(closing.lead, vars)}
         actions={[
-          { label: gimunOpen ? 'Apply for GIMUN' : 'GIMUN registration status', href: '/register?track=gimun', variant: 'track-gimun' },
-          { label: mootOpen ? 'Register a GMC team' : 'GMC registration status', href: '/register?track=moot-cup', variant: 'track-moot' },
+          { label: gimunOpen ? 'Register for GIMUN' : 'GIMUN registration status', href: '/register#gimun', variant: 'track-gimun' },
+          { label: mootOpen ? 'Register a GMC team' : 'GMC registration status', href: '/register#moot-cup', variant: 'track-moot' },
         ]}
       />
     </>

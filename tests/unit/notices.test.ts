@@ -3,8 +3,8 @@ import seed from '../../content/site.json';
 import { deadlineReminders, reminderTitle } from '@/lib/notices';
 import type { SiteConfig } from '@/lib/types';
 
-// The seed: event Mar 18-21, 2027; GIMUN closes Feb 15, GMC Mar 5; both open.
-const site = seed as unknown as SiteConfig;
+// Fixed dates, independent of the seed: event Mar 18-21, 2027; GIMUN closes Feb 15, GMC Mar 5; both open.
+const site = { ...seed, eventDates: { start: '2027-03-18', end: '2027-03-21' }, registrationDeadlines: { gimun: '2027-02-15', mootCup: '2027-03-05' }, registrationStatus: { gimunOpen: true, mootCupOpen: true } } as unknown as SiteConfig;
 const at = (iso: string) => new Date(iso).getTime();
 
 describe('deadline reminders', () => {
@@ -15,13 +15,13 @@ describe('deadline reminders', () => {
   it('name the track and the days left once a deadline is within two weeks', () => {
     const reminders = deadlineReminders(site, at('2027-02-10T12:00:00+05:00'));
     expect(reminders.map((r) => [r.track, r.days])).toEqual([['gimun', 6]]);
-    expect(reminderTitle(reminders[0])).toBe('GIMUN applications close in 6 days');
-    expect(reminders[0].href).toBe('/register?track=gimun');
+    expect(reminderTitle(reminders[0])).toBe('GIMUN registration closes in 6 days');
+    expect(reminders[0].href).toBe('/register#gimun');
   });
 
   it('say "today" on the last day, and stop once the deadline has passed', () => {
     const lastDay = deadlineReminders(site, at('2027-02-15T20:00:00+05:00'));
-    expect(reminderTitle(lastDay[0])).toBe('GIMUN applications close today');
+    expect(reminderTitle(lastDay[0])).toBe('GIMUN registration closes today');
     const after = deadlineReminders(site, at('2027-02-16T00:30:00+05:00'));
     expect(after.map((r) => r.track)).toEqual([]);
   });

@@ -15,6 +15,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   fullWidth?: boolean;
   /** Swaps the icon for a spinner and blocks interaction. */
   loading?: boolean;
+  /** Link only: e.g. "_blank" for an external form. */
+  target?: string;
+  rel?: string;
 }
 
 /**
@@ -45,6 +48,8 @@ export function Button({
   fullWidth = false,
   loading = false,
   disabled,
+  target,
+  rel,
   ...props
 }: ButtonProps) {
   const isHighIntent = variant === 'primary' || variant === 'track-gimun' || variant === 'track-moot';
@@ -114,6 +119,8 @@ export function Button({
     <Link
       {...(props as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       href={href}
+      target={target}
+      rel={rel}
       className={classes}
       aria-disabled={isDisabled || undefined}
       onClick={

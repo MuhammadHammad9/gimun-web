@@ -1,17 +1,15 @@
 'use client';
 
-import { useId, useState, type CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { useSiteConfig } from '@/components/SiteConfigProvider';
 import { ChapterHead } from '@/components/sections/Chapter';
 import { FilterBar } from '@/components/ui/FilterBar';
 import { fill, type Copy } from '@/lib/copy';
 import '@/styles/pages/moot-rules.css';
 
-const WORD_LIMIT = 8000;
-
 /**
  * The detailed rules, as the page's later chapters: the memorial format with
- * a word-count check, the courtroom timings, and the scoring for each part.
+ * the cover colours, the courtroom timings, and the scoring for each part.
  */
 export function MootRulesClient({
   format,
@@ -28,7 +26,7 @@ export function MootRulesClient({
 }) {
   const scoring = useSiteConfig().mootScoring;
   const vars = {
-    citation: scoring?.citationStyle ?? 'the standard confirmed with the rules',
+    citation: scoring?.citationStyle ?? 'the 20th edition of the Bluebook',
     memorial: scoring?.memorialWeight ?? '',
     oral: scoring?.oralWeight ?? '',
   };
@@ -37,10 +35,8 @@ export function MootRulesClient({
     (copy.items ?? []).map((item) => ({ points: Number(item.meta) || 0, title: fill(item.title, vars), body: fill(item.body, vars) }));
   const SCORING = { memorial: criteria(scoringCopy), oral: criteria(oral) };
   const [part, setPart] = useState<'memorial' | 'oral'>('memorial');
-  const [words, setWords] = useState(7450);
-  const inputId = useId();
-  const over = Math.max(0, words - WORD_LIMIT);
-  const deduction = Math.ceil(over / 100);
+  const top = Math.max(1, ...SCORING[part].map((criterion) => criterion.points));
+  const total = SCORING[part].reduce((sum, criterion) => sum + criterion.points, 0);
 
   return (
     <>
@@ -67,32 +63,19 @@ export function MootRulesClient({
               ))}
             </dl>
 
-            <div className="word-check" data-over={over > 0 ? '' : undefined}>
-              <label htmlFor={inputId} className="font-display text-xl font-medium text-text">
-                Check a word count
-              </label>
-              <p className="mt-2 text-sm text-text-2">One point is deducted for every 100 words over the limit.</p>
-              <div className="mt-6 flex items-center gap-4">
-                <input
-                  id={inputId}
-                  type="range"
-                  min={5000}
-                  max={9500}
-                  step={50}
-                  value={words}
-                  onChange={(event) => setWords(Number(event.target.value))}
-                  className="word-check__range"
-                  aria-describedby={`${inputId}-result`}
-                />
-                <output htmlFor={inputId} className="w-20 text-right font-mono text-lg tabular-nums text-text">
-                  {words.toLocaleString('en-US')}
-                </output>
-              </div>
-              <p id={`${inputId}-result`} className="word-check__result" aria-live="polite">
-                {over === 0
-                  ? `Within the limit, ${(WORD_LIMIT - words).toLocaleString('en-US')} words to spare.`
-                  : `${over.toLocaleString('en-US')} words over: ${deduction} ${deduction === 1 ? 'point' : 'points'} deducted.`}
-              </p>
+            <div className="word-check self-start">
+              <p className="font-display text-xl font-medium text-text">Covers and copies</p>
+              <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+                <li className="flex items-center gap-3">
+                  <span aria-hidden="true" className="h-12 w-9 shrink-0 rounded-sm border border-line-2" style={{ background: '#1f4fa3' }} />
+                  <span className="text-sm text-text-2"><strong className="block font-medium text-text">Blue cover</strong>Petitioner memorial</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span aria-hidden="true" className="h-12 w-9 shrink-0 rounded-sm border border-line-2" style={{ background: '#a3221f' }} />
+                  <span className="text-sm text-text-2"><strong className="block font-medium text-text">Red cover</strong>Respondent memorial</span>
+                </li>
+              </ul>
+              <p className="word-check__result">Three hard copies of each side on arrival, matching the soft copy exactly.</p>
             </div>
           </div>
         </div>
@@ -132,7 +115,7 @@ export function MootRulesClient({
             chapter={chapters['moot-rules-scoring']}
             act={scoringCopy.kicker}
             title={fill(scoringCopy.title, vars)}
-            lead={scoring ? fill(scoringCopy.lead, vars) : 'The weight of each part is confirmed with the published rules.'}
+            lead={fill(scoringCopy.lead, vars)}
           />
           <FilterBar
             label="Scoring part"
@@ -143,6 +126,9 @@ export function MootRulesClient({
               { label: 'Oral rounds', value: 'oral' },
             ]}
           />
+          <p className="mt-4 text-small text-text-3">
+            {part === 'memorial' ? `Memorials are marked out of ${total}.` : `Each speaker is marked out of ${total} by each judge.`}
+          </p>
           <ol className="mt-8 divide-y divide-line border-y border-line" key={part}>
             {SCORING[part].map((criterion) => (
               <li key={criterion.title} className="score-row">
@@ -157,7 +143,7 @@ export function MootRulesClient({
                   <p className="font-display text-lg font-medium text-text">{criterion.title}</p>
                   <p className="mt-1 text-sm leading-relaxed text-text-2">{criterion.body}</p>
                 </div>
-                <span className="score-row__bar" aria-hidden="true" style={{ '--share': criterion.points / 20 } as CSSProperties} />
+                <span className="score-row__bar" aria-hidden="true" style={{ '--share': criterion.points / top } as CSSProperties} />
               </li>
             ))}
           </ol>

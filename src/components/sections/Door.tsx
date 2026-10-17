@@ -31,7 +31,7 @@ export function Door({
   id: string;
   accent: 'gimun' | 'gmc';
   label: string;
-  /** Short state line in the top corner, e.g. "Applications open". */
+  /** Short state line in the top corner, e.g. "Registration open". */
   status?: string;
   /** Highlights the status in the accent colour. */
   open?: boolean;

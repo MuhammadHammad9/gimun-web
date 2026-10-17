@@ -73,6 +73,7 @@ html[data-theme="light"] {
   --color-crest: #c99668;
 
   --color-brand: #7a1709;
+  --color-logo: #5e1205;
   --color-brand-hi: #a53d2a;
   --color-brand-deep: #5f1108;
   --color-brand-lit: #922611;
@@ -154,6 +155,7 @@ html[data-theme="light"] .tone-inverse {
   --color-line: rgba(236, 216, 183, 0.18);
   --color-line-2: rgba(236, 216, 183, 0.38);
   --color-line-3: rgba(236, 216, 183, 0.6);
+  --color-logo: #ecd8b7;
   --color-champagne: #ecd8b7;
   --color-champagne-hi: #fff5e6;
   --color-champagne-lo: #cca876;
@@ -178,6 +180,7 @@ html[data-theme="light"] .tone-inverse {
 /* Paper ink: the dark theme's inverse chapters read like the printed page. */
 html:not([data-theme="light"]) .tone-inverse {
   color-scheme: light;
+  --color-logo: #5e1205;
   --color-raised: #faf3e6;
   --color-elevated: #e9dcc4;
   --color-overlay: #dfcfb2;

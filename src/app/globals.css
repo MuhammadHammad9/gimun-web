@@ -37,6 +37,10 @@
   --color-champagne-hi: #fff5e6;
   --color-champagne-lo: #cca876;
 
+  /* The official GIMUN and GMC logos: the cream of the liaison-package covers
+     on dark grounds, the packages' exact maroon (#5e1205) on light ones. */
+  --color-logo: #ecd8b7;
+
   --color-crimson: #e11d48;
   --color-crimson-hi: #f43f5e;
   --color-crimson-lo: #991b1b;

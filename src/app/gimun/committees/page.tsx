@@ -47,7 +47,7 @@ export default async function CommitteesPage() {
         accentPhrase={hero.accentPhrase}
         description={fill(hero.lead, { committees: committees.length })}
         actions={[
-          { label: registrationOpen ? 'Register for GIMUN' : 'Registration status', href: '/register?track=gimun', variant: 'track-gimun' },
+          { label: registrationOpen ? 'Register for GIMUN' : 'Registration status', href: '/register#gimun', variant: 'track-gimun' },
           { label: 'Rules of procedure', href: '/gimun/rules', variant: 'secondary' },
         ]}
         art={

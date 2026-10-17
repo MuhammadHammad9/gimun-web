@@ -14,14 +14,14 @@ export interface ClosingAction {
 
 /**
  * The last chapter of a page: one large line, one short reason, the actions
- * (magnetic on desktop), the no-payment note, and the turning seal.
+ * (magnetic on desktop), an optional note, and the turning seal.
  */
 export function Closing({
   id,
   title,
   lead,
   actions,
-  note = 'No online payment is collected at any stage.',
+  note,
   art,
   chapter,
   act,

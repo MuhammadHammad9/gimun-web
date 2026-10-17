@@ -11,7 +11,7 @@ import { BookOpenText, CalendarDays, ChevronRight, Image, Images, Megaphone, Set
 /** The things organizers change most, one click from the dashboard. */
 const QUICK = [
   { section: 'announcements', href: '/admin/content/announcements/new', icon: Megaphone, title: 'Post an announcement', text: 'A notice on the Announcements page; pin it to show on every page.' },
-  { section: 'schedule', href: '/admin/content/schedule', icon: CalendarDays, title: 'Edit the schedule', text: 'Sessions, times and rooms for all four days.' },
+  { section: 'schedule', href: '/admin/content/schedule', icon: CalendarDays, title: 'Edit the schedule', text: 'Sessions, times and rooms for all three days.' },
   { section: 'copy', href: '/admin/content/copy', icon: Type, title: 'Change page text', text: 'Headings and paragraphs on any public page.' },
   { section: 'media', href: '/admin/media', icon: Image, title: 'Upload images or PDFs', text: 'Add files once and use them anywhere.' },
   { section: 'team', href: '/admin/content/team', icon: UserRound, title: 'Team members', text: 'Names, roles and photos on the Team page.' },

@@ -27,7 +27,7 @@ export function fieldLabel(key: string): string {
 /** One item of a list, for "Add chair" and "Chair 2". */
 const ITEM_LABELS: Record<string, string> = {
   topics: 'Topic', topicDescriptions: 'Topic description', chairs: 'Chair', countryList: 'Country', items: 'Item', actions: 'Button',
-  stats: 'Figure', gimunRubric: 'Criterion',
+  stats: 'Figure', gimunRubric: 'Criterion', registrationForms: 'Form', contacts: 'Contact',
 };
 const itemLabel = (key: string) => ITEM_LABELS[key] ?? fieldLabel(key).replace(/s$/, '');
 

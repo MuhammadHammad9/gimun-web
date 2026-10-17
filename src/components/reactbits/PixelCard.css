@@ -1,0 +1,62 @@
+.pixel-card {
+  --pixel-card-surface: linear-gradient(155deg, var(--color-elevated), var(--color-raised));
+  --pixel-card-edge: var(--color-line-2);
+  --pixel-card-edge-active: var(--color-line-3);
+  --pixel-card-highlight: color-mix(in srgb, var(--color-champagne) 14%, transparent);
+  --pixel-card-shadow: var(--shadow-raise);
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--pixel-card-radius, var(--radius-card));
+  background: var(--pixel-card-surface);
+  box-shadow: var(--pixel-card-shadow);
+  isolation: isolate;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fee-tier-card--current {
+  --pixel-card-edge: var(--color-champagne-lo);
+  --pixel-card-edge-active: var(--color-champagne);
+}
+
+.pixel-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--pixel-card-edge), inset 0 1px 0 var(--pixel-card-highlight);
+  pointer-events: none;
+  transition: box-shadow 260ms ease;
+}
+
+.pixel-card[data-active]::after {
+  box-shadow: inset 0 0 0 1px var(--pixel-card-edge-active), inset 0 1px 0 var(--pixel-card-highlight);
+}
+
+.pixel-card:focus-visible {
+  box-shadow: var(--pixel-card-shadow), 0 0 0 3px var(--color-focus);
+}
+
+.pixel-card-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.pixel-card > :not(.pixel-card-canvas) {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-card::after { transition: none; }
+}
+

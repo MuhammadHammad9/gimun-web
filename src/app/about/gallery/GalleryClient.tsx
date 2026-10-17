@@ -113,7 +113,7 @@ export function GalleryClient({ initialItems }: GalleryClientProps) {
     return (
       <ComingSoon
         title="Photos will appear after the conference"
-        description="The gallery is published with approved photographs from GIMUN and GMC 2027. Follow the announcements for press coverage and highlights."
+        description="The gallery is published with approved photographs from GIMUN 26 and GMC VII. Follow the announcements for press coverage and highlights."
         links={[{ label: 'Announcements', href: '/announcements' }]}
       />
     );

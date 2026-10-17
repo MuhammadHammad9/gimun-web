@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> { return await const
   title: `Unified Itinerary & Schedule | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
   path: '/schedule',
   description:
-    "Full four-day chronological agenda across GIMUN committee debates, GMC appellate advocacy rounds, and official institutional ceremonies at GIKI.",
+    "The three-day programme for GIMUN 26 and GMC VII at GIK Institute, Topi: committee sessions, the moot rounds and the ceremonies.",
 }); }
 
 export default async function SchedulePage() {

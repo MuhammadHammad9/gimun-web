@@ -38,7 +38,7 @@ export function ResultsClient({
     day: 'numeric',
     year: 'numeric',
     timeZone: 'Asia/Karachi',
-  }).format(new Date(`${site.galaDate}T12:00:00+05:00`)) : 'date to be confirmed';
+  }).format(new Date(`${site.galaDate}T12:00:00+05:00`)) : '';
   const [selectedTrack, setSelectedTrack] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -78,7 +78,7 @@ export function ResultsClient({
         <p className="flex items-center gap-2.5 rounded-2xl border border-line bg-raised px-5 py-4 text-sm text-text-2">
           <ShieldCheck className="h-4 w-4 shrink-0 text-champagne" aria-hidden="true" />
           <span>
-            <strong className="font-medium text-text">Not yet announced.</strong> Winners are announced at the awards gala on {galaDate}.
+            <strong className="font-medium text-text">Not yet announced.</strong> {galaDate ? `Winners are announced on ${galaDate}.` : 'Winners are published here after the conference.'}
           </span>
         </p>
       )}
@@ -130,13 +130,13 @@ export function ResultsClient({
                     ))}
                   </dl>
                 ) : (
-                  <p className="border-t border-line pt-4 text-sm text-text-3">Scoring weights will be published after organizer approval.</p>
+                  null
                 )}
               </div>
 
               <div className="space-y-4 rounded-2xl border border-line bg-raised p-6 sm:p-8">
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-display text-xl font-medium text-text">GIKI Moot Court</h3>
+                  <h3 className="font-display text-xl font-medium text-text">GIKI Moot Cup</h3>
                   <TrackBadge track="moot-cup" size="sm" />
                 </div>
                 <p className="text-sm leading-relaxed text-text-2">{fill(mootCriteria?.body, vars)}</p>
@@ -156,7 +156,7 @@ export function ResultsClient({
                     </div>
                   </dl>
                 ) : (
-                  <p className="border-t border-line pt-4 text-sm text-text-3">Scoring weights and citation standard will be published after organizer approval.</p>
+                  <p className="border-t border-line pt-4 text-sm text-text-3">Memorials are marked out of 100 and cited in the 20th edition of the Bluebook. <a href="/moot-cup/rules" className="text-link">The full scoring</a></p>
                 )}
               </div>
             </div>

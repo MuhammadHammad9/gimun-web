@@ -101,6 +101,7 @@ async function runE2ETests() {
         SUBMISSIONS_BACKEND: 'memory',
         ALLOW_IN_MEMORY_SUBMISSIONS: '1',
         SUBMISSIONS_TEST_MODE: '1',
+        REGISTRATION_API_ENABLED: '1',
         SITE_URL: `http://127.0.0.1:${port}`,
         // Force the in-memory rate limiter. SUBMISSIONS_BACKEND only isolates
         // the submission store; the limiter reads these two variables

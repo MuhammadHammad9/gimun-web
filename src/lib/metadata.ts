@@ -11,7 +11,7 @@ export interface MetadataProps {
 
 export async function constructMetadata({
   title,
-  description = 'Two flagship collegiate student competitions. One unified digital home at Ghulam Ishaq Khan Institute (GIKI), Topi. Model United Nations diplomacy meets appellate moot court advocacy.',
+  description = 'GIMUN 26 and GMC VII: GIKI Model United Nations and the GIKI Moot Cup, hosted by SOPHEP at Ghulam Ishaq Khan Institute (GIKI), Topi, from 4 to 6 December 2026.',
   image = '/images/og/default.jpg',
   path = '',
 }: MetadataProps = {}): Promise<Metadata> {

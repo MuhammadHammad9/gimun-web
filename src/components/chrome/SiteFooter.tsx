@@ -37,9 +37,9 @@ export function SiteFooter({ site, sponsors }: { site: SiteConfig; sponsors: Spo
         <div className="site-footer__inner">
           <div className="site-footer__top">
             <div>
-              <BrandMark className="size-11" />
+              <BrandMark className="site-footer__logos" />
               <h2 id="site-footer-title" className="site-footer__statement mt-6">
-                {site.footerBlurb?.trim() || 'Two rooms, one campus, four days in Topi.'}
+                {site.footerBlurb?.trim() || 'Two rooms, one campus, three days in Topi.'}
               </h2>
               <div className="site-footer__facts">
                 <span>{formatDateRange(site.eventDates.start, site.eventDates.end)}</span>
@@ -80,10 +80,10 @@ export function SiteFooter({ site, sponsors }: { site: SiteConfig; sponsors: Spo
 
           <div className="site-footer__bottom">
             <p>
-              &copy; {year} GIMUN &amp; GMC Organizing Committee, GIKI. No online payment is collected at any stage.
+              &copy; {year} GIMUN &amp; GMC Organizing Committee, GIKI.
             </p>
             <div className="site-footer__legal">
-              <Link href="/about/faq#fees" className="hover:text-text">
+              <Link href="/register#pricing" className="hover:text-text">
                 Fees and payment
               </Link>
               <Link href="/contact" className="hover:text-text">

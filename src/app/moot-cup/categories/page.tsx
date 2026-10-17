@@ -44,8 +44,8 @@ export default async function MootCategoriesPage() {
                 The compromis ({problem.fileSize}, revised {formatEventDate(problem.versionDate, { month: 'short' })})
               </a>
             )}
-            <Link href="/moot-cup/clarifications" className="text-link">
-              Clarifications log
+            <Link href="/moot-cup/rules" className="text-link">
+              Rules &amp; memorials
             </Link>
           </div>
         }
@@ -84,7 +84,7 @@ export default async function MootCategoriesPage() {
                     <div>
                       <dt>Enter</dt>
                       <dd>
-                        <Link href={`/register?track=moot-cup&category=${category.id}`} className="text-link">
+                        <Link href={'/register#moot-cup'} className="text-link">
                           Register in this category
                         </Link>
                       </dd>
@@ -104,7 +104,7 @@ export default async function MootCategoriesPage() {
             question={fill(help.title, vars)}
             actions={[
               { label: 'Rules & memorials', href: '/moot-cup/rules' },
-              { label: 'Clarifications', href: '/moot-cup/clarifications' },
+              { label: 'Contact the host team', href: '/contact' },
             ]}
           />
         </div>

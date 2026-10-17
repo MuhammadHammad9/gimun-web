@@ -59,8 +59,9 @@ const validationRules = [
       if (isValidIsoDate(eventStart) && isValidIsoDate(eventEnd) && eventEnd < eventStart) {
         errs.push('eventDates.end must not be before eventDates.start');
       }
-      if (eventYear && data.eventNames?.combined && !data.eventNames.combined.includes(eventYear)) {
-        errs.push(`eventNames.combined must include canonical event year ${eventYear}`);
+      // The edition name may use the short year, as in "GIMUN 26".
+      if (eventYear && data.eventNames?.combined && !data.eventNames.combined.includes(eventYear) && !data.eventNames.combined.split(/\W+/).includes(eventYear.slice(2))) {
+        errs.push(`eventNames.combined must include canonical event year ${eventYear} (or ${eventYear.slice(2)})`);
       }
       for (const [label, value] of Object.entries(data.registrationDeadlines || {})) {
         if (!isValidIsoDate(value)) {
@@ -89,7 +90,8 @@ const validationRules = [
         seenIds.add(item.id);
         if (!item.title) errs.push(`Schedule [${item.id || index}] missing title`);
         if (typeof item.day !== 'number') errs.push(`Schedule [${item.id || index}] missing day number`);
-        if (!item.startTime || !item.endTime) errs.push(`Schedule [${item.id || index}] missing time bounds`);
+        // Both blank means the time is not announced yet.
+        if (Boolean(item.startTime) !== Boolean(item.endTime)) errs.push(`Schedule [${item.id || index}] missing time bounds`);
         if (!VALID_TRACKS.has(item.track)) errs.push(`Schedule [${item.id || index}] invalid track: ${item.track}`);
       });
       return errs;
@@ -145,7 +147,8 @@ const validationRules = [
     file: 'moot-categories.json',
     validate: (data) => {
       const errs = [];
-      if (!Array.isArray(data) || data.length === 0) return ['Must be a non-empty array'];
+      // Empty until the categories are published with the moot problem.
+      if (!Array.isArray(data)) return ['Must be an array'];
       data.forEach((item, index) => {
         if (!item.id || !item.name || !item.areaOfLaw) errs.push(`Moot category [${index}] missing core identity`);
       });
@@ -336,8 +339,8 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
 
   if (!Number.isFinite(expectedStart.getTime()) || !Number.isFinite(expectedEnd.getTime())) {
     launchErrors.push('site.json event dates must be valid ISO dates');
-  } else if (eventDays !== 4) {
-    launchErrors.push(`site.json event range must cover four days, received ${eventDays}`);
+  } else if (eventDays < 1) {
+    launchErrors.push(`site.json event range must cover at least one day, received ${eventDays}`);
   }
 
   for (const [label, deadline] of Object.entries(site?.registrationDeadlines || {})) {

@@ -21,12 +21,13 @@ import { Button } from '@/components/ui/Button';
 import { DaysToGo } from '@/components/ui/DaysToGo';
 import { PageHero } from '@/components/ui/PageHero';
 import { SponsorStrip } from '@/components/ui/SponsorStrip';
+import { TbaStamp } from '@/components/ui/TbaStamp';
 import { Bridge } from '@/components/story/Bridge';
 import { ChapterRail } from '@/components/story/ChapterRail';
 
 import { getCommittees, getCopy, getProblemCategories, getSchedule, getSiteConfig, getSponsors } from '@/lib/content';
 import { accentWords, chapterNumbers, fill } from '@/lib/copy';
-import { feeAmount } from '@/lib/fees';
+import { headlineFee, rupees, tierEndDates } from '@/lib/fee-tiers';
 import { centroidOf } from '@/lib/geo/centroids';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister as canTrackRegister, eventPhase, serverRenderTime } from '@/lib/phase';
@@ -38,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `GIMUN & GMC ${getEventYear(await getSiteConfig())} | Where Diplomacy Meets the Courtroom`,
     path: '/',
     description:
-      'GIKI Model United Nations and the GIKI Moot Court: two student competitions on one campus in Topi, over the same four days. Committees, case categories, dates and registration.',
+      'GIMUN 26 and GMC VII: two student competitions hosted by SOPHEP at GIK Institute, Topi, from 4 to 6 December 2026. Committees, the moot, fees and registration.',
   });
 }
 
@@ -74,7 +75,7 @@ export default async function Home() {
     cases: categories.length,
     dates: dateRange,
     checkin: site.checkinDesk ?? 'Check-in opens on Day 1',
-    entry: site.entryRequirement ?? 'Bring a photo ID and your QR ticket.',
+    entry: site.entryRequirement ?? 'Bring your original CNIC.',
   };
   const lines = (text?: string) => fill(text, vars).split('\n').map((line) => line.trim()).filter(Boolean);
   const stackArt = [<DocumentsArt key="docs" />, <DaysArt key="days" />, <RouteArt key="route" />];
@@ -84,19 +85,22 @@ export default async function Home() {
 
   const seats = committees.reduce((sum, committee) => sum + (committee.countryList?.length ?? 0), 0);
   const openSeats = committees.reduce((sum, committee) => sum + seatsOpen(committee), 0);
+  const gimunFee = headlineFee(site, 'gimun', now);
+  const mootFee = headlineFee(site, 'mootCup', now);
+  const tierEnds = tierEndDates(site, 'gimun');
 
   const gimunAction = gimunOpen
-    ? { label: 'Register for GIMUN', href: '/register?track=gimun' }
+    ? { label: 'Register for GIMUN', href: '/register#gimun' }
     : phase === 'results'
       ? { label: 'View results', href: '/results' }
       : { label: 'Explore GIMUN', href: '/gimun' };
   const mootAction = mootOpen
-    ? { label: 'Register for GMC', href: '/register?track=moot-cup' }
+    ? { label: 'Register for GMC', href: '/register#moot-cup' }
     : phase === 'event-live'
       ? { label: 'View the schedule', href: '/schedule' }
       : { label: 'Explore GMC', href: '/moot-cup' };
 
-  // Four days, straight from the schedule. Meal breaks are left out of the
+  // The days, straight from the schedule. Meal breaks are left out of the
   // overview; the schedule page has every session.
   const days = [...new Set(schedule.map((item) => item.day))]
     .sort((a, b) => a - b)
@@ -130,9 +134,9 @@ export default async function Home() {
         url: `${siteUrl}${track === 'gimun' ? '/gimun' : '/moot-cup'}`,
         offers: {
           '@type': 'Offer',
-          price: feeAmount(site, track === 'gimun' ? 'gimunIndividual' : 'mootCupTeam') ?? undefined,
+          price: (track === 'gimun' ? gimunFee : mootFee)?.amount,
           priceCurrency: 'PKR',
-          url: `${siteUrl}/register?track=${track === 'gimun' ? 'gimun' : 'moot-cup'}`,
+          url: `${siteUrl}/register#${track === 'gimun' ? 'gimun' : 'moot-cup'}`,
           availability: canTrackRegister(site, track, now) ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
         },
       })),
@@ -164,8 +168,8 @@ export default async function Home() {
                 { ...mootAction, variant: 'track-moot' },
               ]}
               footnote={
-                gimunOpen || mootOpen
-                  ? `Applications close ${shortDate(site.registrationDeadlines.gimun)} (GIMUN) and ${shortDate(site.registrationDeadlines.mootCup)} (GMC).`
+                (gimunOpen || mootOpen) && gimunFee
+                  ? `${gimunFee.tier.label} registrations are open${gimunFee.tier.endsOn ? ` until ${shortDate(gimunFee.tier.endsOn)}` : ''}.`
                   : undefined
               }
               art={<Seal id="hero-seal" motion />}
@@ -195,16 +199,16 @@ export default async function Home() {
                 id="door-gimun"
                 accent="gimun"
                 label={choice.items?.[0]?.title ?? 'Model United Nations'}
-                status={gimunOpen ? 'Applications open' : 'Registration closed'}
+                status={gimunOpen ? 'Registration open' : 'Registration closed'}
                 open={gimunOpen}
                 mark="GIMUN"
                 title={site.eventNames.gimun}
                 copy={fill(choice.items?.[0]?.body, vars)}
                 facts={[
                   { term: 'Committees', value: committees.length },
-                  { term: 'Seats open', value: `${openSeats} of ${seats}` },
-                  { term: 'Enter as', value: 'Individual or delegation' },
-                  { term: 'Fee per delegate', value: site.fees.gimunIndividual },
+                  ...(seats > 0 ? [{ term: 'Seats open', value: `${openSeats} of ${seats}` }] : []),
+                  { term: 'Enter as', value: 'Delegate, delegation or observer' },
+                  ...(gimunFee ? [{ term: `Per delegate (${gimunFee.tier.label})`, value: rupees(gimunFee.amount) }] : []),
                 ]}
                 action={gimunAction}
                 secondary={{ label: 'How GIMUN works', href: '/gimun' }}
@@ -214,16 +218,16 @@ export default async function Home() {
                 id="door-gmc"
                 accent="gmc"
                 label={choice.items?.[1]?.title ?? 'Moot court'}
-                status={mootOpen ? 'Applications open' : 'Registration closed'}
+                status={mootOpen ? 'Registration open' : 'Registration closed'}
                 open={mootOpen}
                 mark="GMC"
                 title={site.eventNames.mootCup}
                 copy={fill(choice.items?.[1]?.body, vars)}
                 facts={[
-                  { term: 'Case categories', value: categories.length },
-                  { term: 'Team', value: '2 to 4 members' },
+                  { term: 'Team', value: '2 or 3 members' },
+                  { term: 'Eligibility', value: 'LL.B students' },
                   { term: 'Memorials due', value: site.memorialDeadline ? shortDate(site.memorialDeadline) : 'To be announced' },
-                  { term: 'Fee per team', value: site.fees.mootCupTeam },
+                  ...(mootFee ? [{ term: `Per member (${mootFee.tier.label})`, value: rupees(mootFee.amount) }] : []),
                 ]}
                 action={mootAction}
                 secondary={{ label: 'How the moot works', href: '/moot-cup' }}
@@ -239,7 +243,7 @@ export default async function Home() {
       {!inside.hidden && (
       <section className="chapter" aria-labelledby="chambers-title">
         <HorizontalPan
-          label="Committees and case categories"
+          label={categories.length > 0 ? 'Committees and case categories' : 'Committees'}
           header={
             <ChapterHead
               id="chambers-title"
@@ -266,8 +270,8 @@ export default async function Home() {
               <Link href="/gimun/committees" className="text-link">
                 All committees
               </Link>
-              <Link href="/moot-cup/categories" className="text-link">
-                All case categories
+              <Link href={categories.length > 0 ? '/moot-cup/categories' : '/moot-cup/rules'} className="text-link">
+                {categories.length > 0 ? 'All case categories' : 'The moot rules'}
               </Link>
             </div>
           </article>
@@ -275,7 +279,7 @@ export default async function Home() {
       </section>
       )}
 
-      {!inside.hidden && <Marquee items={delegations} label="Countries represented in committee" />}
+      {!inside.hidden && delegations.length > 0 && <Marquee items={delegations} label="Countries represented in committee" />}
 
       {/* 03 What it asks of you */}
       {!asks.hidden && (
@@ -312,7 +316,7 @@ export default async function Home() {
                 <ul className="day__list">
                   {items.map((item) => (
                     <li key={item.id}>
-                      <time>{item.startTime}</time>
+                      {item.startTime ? <time>{item.startTime}</time> : <TbaStamp size="sm" className="mt-0.5" />}
                       <span>
                         <span className="track-dot" aria-hidden="true" style={{ background: trackDot(item.track) }} />
                         {item.title}
@@ -343,12 +347,13 @@ export default async function Home() {
           <DeadlineClock
             now={now}
             dates={[
-              { iso: site.registrationDeadlines.gimun, what: 'GIMUN applications close', deadline: true, note: 'Individuals and delegations' },
-              ...(site.memorialDeadline ? [{ iso: site.memorialDeadline, what: 'GMC memorials due', deadline: true, note: '23:59 PKT, by email to the moot court address' }] : []),
-              { iso: site.registrationDeadlines.mootCup, what: 'GMC applications close', deadline: true, note: 'Teams of two to four' },
-              { iso: addDays(site.eventDates.start, -7), what: 'GIMUN position papers due', deadline: true, note: 'At least 7 days before Day 1' },
-              { iso: site.eventDates.start, what: 'Conference opens', note: site.checkinDesk ?? 'Check-in on Day 1' },
-              ...(site.galaDate ? [{ iso: site.galaDate, what: 'Grand Final and awards gala', note: 'Awards for both tracks' }] : []),
+              ...(tierEnds.earlyBird ? [{ iso: tierEnds.earlyBird, what: 'Early Bird registrations end', deadline: true, note: 'Normal fees apply from the next day' }] : []),
+              ...(tierEnds.normal ? [{ iso: tierEnds.normal, what: 'Normal registrations end', deadline: true, note: 'Late fees apply from the next day' }] : []),
+              ...(site.memorialDeadline ? [{ iso: site.memorialDeadline, what: 'GMC memorials due', deadline: true, note: 'Both sides, through the memorial submission link' }] : []),
+              { iso: site.registrationDeadlines.gimun, what: 'GIMUN registrations close', deadline: true, note: 'Delegates, delegations and observers' },
+              ...(site.registrationDeadlines.mootCup !== site.registrationDeadlines.gimun ? [{ iso: site.registrationDeadlines.mootCup, what: 'GMC registrations close', deadline: true, note: 'Teams and observers' }] : []),
+              { iso: site.eventDates.start, what: 'Inaugural ceremony', note: 'GMC draw of lots follows' },
+              { iso: addDays(site.eventDates.start, 2), what: 'GMC final round', note: 'The winner of the final wins GMC VII' },
             ]}
           />
           {clock.bridge && !prepare.hidden && <Bridge to="prepare-title">{fill(clock.bridge, vars)}</Bridge>}

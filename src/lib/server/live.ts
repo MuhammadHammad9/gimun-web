@@ -59,6 +59,11 @@ const stamp = unstable_cache(
 );
 
 export async function appliedRevision(): Promise<string> {
+  // Bundled content or an unseeded CMS has no revision to stamp. Skip the
+  // cached lookup there instead of letting it throw on every render (the
+  // throw is only meant to keep a passing outage out of the cache).
+  const health = await contentHealth();
+  if (health.fallback && !health.transient) return 'unavailable';
   try {
     return await stamp();
   } catch {

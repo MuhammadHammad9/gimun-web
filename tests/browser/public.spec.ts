@@ -12,7 +12,6 @@ const publicRoutes = [
   '/moot-cup',
   '/moot-cup/categories',
   '/moot-cup/rules',
-  '/moot-cup/clarifications',
   '/schedule',
   '/resources',
   '/register',
@@ -46,7 +45,7 @@ for (const route of publicRoutes) {
     await page.goto(route, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('h1')).toHaveCount(1);
     if (route === '/register') {
-      await expect(page.getByRole('heading', { name: 'Model United Nations' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'GIKI Model United Nations' })).toBeVisible();
     }
     await page.waitForTimeout(1_000);
     const results = await new AxeBuilder({ page }).analyze();

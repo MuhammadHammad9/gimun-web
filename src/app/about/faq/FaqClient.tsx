@@ -129,7 +129,7 @@ export function FaqClient({ initialFaqs }: FaqClientProps) {
             <SearchInput
               value={searchQuery}
               onChange={setSearchQuery}
-              placeholder="Search question keywords (e.g. OSCOLA, hostel, payment, ROP)..."
+              placeholder="Search question keywords (e.g. Bluebook, hostel, transport, CNIC)..."
             />
           </div>
 

@@ -2,145 +2,133 @@
   {
     "id": "faq-1",
     "category": "general",
-    "question": "What is the relationship between GIMUN and GMC?",
-    "answer": "GIMUN (Model United Nations) and GMC (GIKI Moot Court) are two concurrent flagship academic symposiums organized by the student leadership at Ghulam Ishaq Khan Institute (GIKI), Topi. They share event dates, campus facilities, evening socials, and opening/closing ceremonies, while maintaining separate, rigorous competitive frameworks and judicial/diplomatic evaluations."
+    "question": "What are GIMUN 26 and GMC VII?",
+    "answer": "GIMUN 26 (GIKI Model United Nations) and GMC VII (the seventh GIKI Moot Cup) are two competitions hosted by SOPHEP, the Society for the Promotion of Higher Education in Pakistan, at Ghulam Ishaq Khan Institute of Engineering Sciences and Technology in Topi, Swabi. Both run from 4 to 6 December 2026."
   },
   {
     "id": "faq-2",
     "category": "general",
-    "question": "Who is eligible to participate in the symposiums?",
-    "answer": "GIMUN welcomes delegates from secondary schools (A-Levels/F.Sc) through university undergraduate and postgraduate programs across Pakistan and abroad. GMC is open to enrolled students from university law faculties, law colleges, and authorized moot court societies (teams of 2 to 4 students)."
+    "question": "Who can take part?",
+    "answer": "GIMUN is open to participants aged 18 or older; no participants below 18 are admitted. GMC is open to students pursuing a 3-year or 5-year undergraduate LL.B degree."
   },
   {
     "id": "faq-3",
     "category": "general",
-    "question": "Will participants receive official certificates?",
-    "answer": "Yes. Every participant who attends the required committee sessions or pleading rounds receives a Certificate of Participation with an online verification link. Award winners (Best Delegate, Outstanding Delegate and Best Delegation for GIMUN; Best Memorial, Best Oralist and Champions for GMC) also receive certificates of distinction."
+    "question": "What happens besides the debates?",
+    "answer": "The conference plays host to several social events: guest speaker sessions, a concert, and a formal dinner for the moot cup participants."
   },
   {
     "id": "faq-4",
     "category": "registration-fees",
-    "question": "Does submitting the registration form charge my card or bank account?",
-    "answer": "No. Registration through this web platform is strictly non-payment. GIMUN & GMC does not collect credit cards or bank payments online. Once your application or delegation roster is approved, our Organizing Committee will issue a formal acceptance letter and invoice with official university bank transfer instructions."
+    "question": "How do I register?",
+    "answer": "Open the Register page and choose the official form for your track and role (delegate, delegation or observer for GIMUN; team or observer for GMC). Fill in the form, submit it and wait for confirmation from the host team."
   },
   {
     "id": "faq-5",
     "category": "registration-fees",
-    "question": "Can I apply as an individual delegate or only as part of an institutional delegation?",
-    "answer": "For GIMUN, applicants may register either as an independent Individual Delegate or as part of an Institutional Delegation (2 to 20 delegates managed by a Head Delegate or Faculty Advisor). For GMC, registrations must be submitted as teams of 2 to 4 advocates (strictly 2 oralists plus optional researchers)."
+    "question": "How much does it cost?",
+    "answer": "Fees come in three tiers: Early Bird, Normal and Late. The Register page shows the full fee structure for both tracks and marks the tier that applies now. Transport from Lahore costs an additional Rs 6,000 per head."
   },
   {
     "id": "faq-6",
     "category": "registration-fees",
-    "question": "What is included in the delegate and team registration fees?",
-    "answer": "Registration covers all committee and courtroom sessions, background guides or the moot problem, a delegate kit, lunch and tea on conference days, and entry to the evening social events. On-campus accommodation is available on request and is confirmed, with any charge, when your application is accepted."
+    "question": "When is my registration confirmed, and which fee do I pay?",
+    "answer": "A registration is confirmed once the host team receives the payment and the necessary documents by mail. The fee for each registration is the one in force at the time its status is confirmed."
   },
   {
     "id": "faq-7",
     "category": "registration-fees",
-    "question": "What are the registration deadlines?",
-    "answer": "GIMUN registrations close on {{GIMUN_DEADLINE}}, and GMC registrations close on {{GMC_DEADLINE}}. Because committee capacities and courtroom chambers are strictly capped to ensure competitive quality, registrations may close early once allocations are exhausted."
+    "question": "How do I pay?",
+    "answer": "By bank transfer to G.I.K Institute Topi, Habib Bank Limited GIKI Topi branch (branch code 1979), account PK70 HABB 0019 7900 0008 5901, SWIFT HABBPKKAXXX. The account details are also on the Register page."
   },
   {
     "id": "faq-8",
-    "category": "gimun-specific",
-    "question": "When and how are country and committee allocations released?",
-    "answer": "Allocations are evaluated on a rolling basis following submission. The Academic Secretariat evaluates candidate experience and preferences (1st, 2nd, and 3rd choices) to balance committee dynamics. Confirmed allocations are dispatched to delegate emails alongside background guides."
+    "category": "registration-fees",
+    "question": "Can I get a refund if I cannot attend?",
+    "answer": "No. Registration fees are non-refundable."
   },
   {
     "id": "faq-9",
-    "category": "gimun-specific",
-    "question": "What Rules of Procedure (ROP) govern GIMUN committees?",
-    "answer": "GIMUN committees operate under modern Harvard/THIMUN-adapted parliamentary procedure, emphasizing substantively moderated caucuses, unmoderated working paper formation, and structured draft resolution amendments. A comprehensive ROP handbook is downloadable from our Resource Hub."
+    "category": "registration-fees",
+    "question": "How do delegations register for GIMUN?",
+    "answer": "Each institution can register a maximum of 5 teams, consisting of 3 members, and must have one head delegate. The head delegate gives the name and contact details for their institution, and all correspondence between the host team and the institution’s delegates goes through them."
   },
   {
     "id": "faq-10",
     "category": "gimun-specific",
-    "question": "Are Position Papers mandatory for award eligibility?",
-    "answer": "Yes. To be eligible for Best Delegate or Outstanding Diplomat distinctions, delegates must submit a compliant Position Paper to their committee chair directorate at least 7 days before Day 1. Guidelines and submission portals are specified in each committee background guide."
+    "question": "Which committees are there?",
+    "answer": "Five: the UN Security Council (UNSC), the UN Human Rights Council (UNHRC), the Disarmament and International Security Committee (DISEC), UN Women (UNW) and the Pakistan National Assembly (PNA)."
   },
   {
     "id": "faq-11",
-    "category": "moot-cup-specific",
-    "question": "What citation format is required for GMC written memorials?",
-    "answer": "All written memorials must adhere strictly to the Oxford University Standard for the Citation of Legal Authorities (OSCOLA) 4th Edition. Memorials must include title pages, tables of authorities, statements of jurisdiction, and summary of pleadings. Strict word count limits and penal deductions are enforced per the GMC Rules."
+    "category": "gimun-specific",
+    "question": "Can I apply to chair or be an ambassador?",
+    "answer": "Yes. The Register page links the Chair Call, Assistant Chair Call and Ambassador application forms for GIMUN 26."
   },
   {
     "id": "faq-12",
     "category": "moot-cup-specific",
-    "question": "What is the team composition and oralist speaking order?",
-    "answer": "Each team has 2 to 4 members. Two are designated Lead Oralist and Second Oralist; any others serve as researchers. Each side has 30 minutes, normally 15 minutes per oralist (each must speak for 12 to 18 minutes), and may reserve up to 3 minutes for rebuttal or sur-rebuttal."
+    "question": "How big is a GMC team?",
+    "answer": "Either two members, both speakers, or three members: two speakers and one researcher. The researcher may sit with the speakers during the oral rounds."
   },
   {
     "id": "faq-13",
     "category": "moot-cup-specific",
-    "question": "How does the Bench Clarification process operate?",
-    "answer": "Registered teams may submit questions regarding factual ambiguity in the Compromis via the online Clarification Portal on this website. The Bench Drafting Committee reviews queries and publishes authoritative addenda publicly on the Clarifications board on equal footing for all teams."
+    "question": "When are memorials due, and how are they submitted?",
+    "answer": "By 15 November 2026. Each team prepares one memorial for the petitioner(s)/appellant(s) and one for the respondent(s), sends a .pdf soft copy of each once the submission link is provided after team registration, and hands in three hard copies of each side on arrival at the institute."
   },
   {
     "id": "faq-14",
-    "category": "logistics",
-    "question": "Is on-campus accommodation provided for outstation participants?",
-    "answer": "Yes, on request and subject to availability. GIKI can house outstation participants in on-campus hostels with separate wings for male and female participants. Request accommodation in your application; the organizing team confirms places and any charge when your application is accepted."
+    "category": "moot-cup-specific",
+    "question": "What citation style do memorials use?",
+    "answer": "The 20th edition of the Bluebook. Speaking footnotes and endnotes are not allowed. Use Times New Roman 12pt, single-spaced footnotes and 1-inch margins on all sides."
   },
   {
     "id": "faq-15",
-    "category": "logistics",
-    "question": "How do outstation delegations reach the GIKI campus in Topi?",
-    "answer": "GIKI is in Topi, Khyber Pakhtunkhwa, about 90 minutes from Islamabad via the M-1 Motorway (Swabi interchange). Any group transport arranged by the organizers will be announced on the Announcements page and emailed to accepted participants."
+    "category": "moot-cup-specific",
+    "question": "How long does each team speak?",
+    "answer": "15 minutes in the preliminary rounds (at least 7 minutes per speaker), 20 minutes in the quarter-finals, 35 in the semi-finals and 45 in the final. Each total includes rebuttal and sur-rebuttal, if the judges permit; a rebuttal may take no more than 2 minutes."
   },
   {
     "id": "faq-16",
-    "category": "logistics",
-    "question": "What are the campus security and entry protocols?",
-    "answer": "The campus has controlled entry. Bring a photo ID (CNIC, B-Form or student card) and your registration confirmation or QR ticket. Delegations arriving by institutional bus should send the vehicle number to the organizing team in advance."
+    "category": "moot-cup-specific",
+    "question": "Can we watch other teams argue?",
+    "answer": "No. Teams may not observe another team’s oral rounds unless they have been knocked out. Scouting is strictly prohibited and leads to instant disqualification."
   },
   {
     "id": "faq-17",
-    "category": "registration-fees",
-    "question": "Can I get a refund if I cannot attend?",
-    "answer": "Tell the organizing team as soon as possible. Requests received before the registration deadline are reviewed case by case; after the deadline, fees are generally not refundable because places and catering are already committed."
+    "category": "logistics",
+    "question": "Is transport provided?",
+    "answer": "Free transport is provided to and from GIK campus for Islamabad/Rawalpindi and Peshawar, at designated times and places. Transport from Lahore costs an additional Rs 6,000 per head; it depends on road conditions and the number of participants, may be unavailable if roads are blocked, and the host team may change it (duly communicated)."
   },
   {
     "id": "faq-18",
-    "category": "registration-fees",
-    "question": "Can someone else take my place?",
-    "answer": "Yes, with notice. Email the organizing team with your reference number and the substitute's details before the registration deadline so the roster and certificates show the right name."
+    "category": "logistics",
+    "question": "Is accommodation provided?",
+    "answer": "Yes. Free, shared accommodation in regular student hostels is provided to all registered participants. Chaperones also get shared accommodation, unless a separate arrangement is requested and approved by the liaison head, which carries an additional fee."
   },
   {
     "id": "faq-19",
-    "category": "registration-fees",
-    "question": "How soon will I hear back after applying?",
-    "answer": "You receive an automatic receipt with your reference number straight away. We reply to messages within 3 working days, and application decisions follow the review timeline announced on the Announcements page."
+    "category": "logistics",
+    "question": "What do I need to bring to get in?",
+    "answer": "Your original CNIC. Entry is on CNIC only, with no smart card. You need it on arrival, for security and registration, and every team signs a liability form at the event with an original CNIC alongside it."
   },
   {
     "id": "faq-20",
     "category": "logistics",
-    "question": "What is the dress code?",
-    "answer": "Business formal (Western or traditional) for all committee sessions, courtroom rounds and ceremonies. Smart casual is fine for evening socials unless an event says otherwise."
+    "question": "Can I drive on campus?",
+    "answer": "Only when arriving at or leaving GIK Institute. Driving on campus during the event is not allowed and counts as a violation of the rules."
   },
   {
     "id": "faq-21",
-    "category": "logistics",
-    "question": "What should I bring?",
-    "answer": "A photo ID, your QR ticket (on your phone or printed), a laptop or notebook, your position paper or memorial materials, formal clothing, and any medication you need."
+    "category": "general",
+    "question": "What are the rules of conduct?",
+    "answer": "No illegal substances, alcohol, firearms or weapons of any kind on campus, and respectful conduct towards fellow participants, event staff and campus authorities at all times. Violations can lead to fines, disqualification or expulsion, at the host team’s discretion. General institute security applies to participants, and the host team is not liable for damage to any person or belongings."
   },
   {
     "id": "faq-22",
-    "category": "logistics",
-    "question": "Can you provide an invitation letter for visa or institutional leave?",
-    "answer": "Yes. Accepted participants can request an official invitation letter from the organizing team; include your full name as on your passport or ID and your reference number."
-  },
-  {
-    "id": "faq-23",
-    "category": "logistics",
-    "question": "Can dietary or accessibility needs be accommodated?",
-    "answer": "Yes. Note them in the dietary and accessibility field of the registration form, or email the organizing team, and we will confirm the arrangements with you."
-  },
-  {
-    "id": "faq-24",
     "category": "general",
-    "question": "Is there a code of conduct?",
-    "answer": "Yes. All participants are expected to act with respect and academic integrity, follow campus rules and the instructions of chairs, judges and organizers. Harassment, discrimination and plagiarism lead to disqualification and may lead to removal from the event."
+    "question": "Who do I contact with a question?",
+    "answer": "The Chief Liaison, Toqeer Ahmed, on 0333 9200251, or a Director of Registrations for your track. Every number is on the Contact page."
   }
 ]

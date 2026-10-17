@@ -18,7 +18,7 @@ function destinations(): Destination[] {
   const seen = new Set<string>();
   const list: Destination[] = [
     { label: 'Home', href: '/', section: 'GIMUN & GMC', description: 'Where diplomacy meets the courtroom' },
-    { label: 'Register', href: '/register', section: 'Apply', description: 'Apply for GIMUN or the GIKI Moot Court' },
+    { label: 'Register', href: '/register', section: 'Apply', description: 'The official forms for GIMUN and GMC' },
   ];
   for (const item of defaultNavigation) {
     const section = item.parentId ? (parents.get(item.parentId) ?? '') : item.label;

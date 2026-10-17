@@ -1,53 +1,315 @@
 {
   "eventNames": {
     "gimun": "GIKI Model United Nations",
-    "mootCup": "GIKI Moot Court (GMC)",
-    "combined": "GIMUN & GMC 2027"
+    "mootCup": "GIKI Moot Cup",
+    "combined": "GIMUN 26 & GMC VII"
   },
-  "hostInstitution": "Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, Khyber Pakhtunkhwa, Pakistan",
+  "hostInstitution": "Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI), Topi, Swabi",
   "eventDates": {
-    "start": "2027-03-18",
-    "end": "2027-03-21"
+    "start": "2026-12-04",
+    "end": "2026-12-06"
   },
   "registrationDeadlines": {
-    "gimun": "2027-02-15",
-    "mootCup": "2027-03-05"
+    "gimun": "2026-12-03",
+    "mootCup": "2026-12-03"
   },
-  "venue": "GIKI Campus, Topi, Swabi District, KP, Pakistan",
+  "venue": "GIK Institute, Topi, Swabi, Khyber Pakhtunkhwa, Pakistan",
   "socialLinks": {
-    "instagram": "https://instagram.com/gimun_giki",
-    "facebook": "https://facebook.com/gimunofficial"
+    "instagram": "https://instagram.com/gimun.26",
+    "facebook": "https://facebook.com/GIMUN"
   },
   "contactEmails": {
-    "general": "info@gimungiki.org",
-    "gimun": "secretariat@gimungiki.org",
-    "mootCup": "mootcourt@gimungiki.org",
-    "sponsorship": "partnerships@gimungiki.org"
+    "general": "sophepsocialmedia@gmail.com"
   },
   "fees": {
-    "gimunIndividual": "PKR 4,500",
-    "gimunDelegationPerDelegate": "PKR 4,000",
-    "mootCupTeam": "PKR 12,000"
+    "gimunIndividual": "Rs 9,000",
+    "gimunDelegationPerDelegate": "Rs 8,500",
+    "mootCupTeam": "Rs 2,000"
   },
   "feeAmounts": {
-    "gimunIndividual": 4500,
-    "gimunDelegationPerDelegate": 4000,
-    "mootCupTeam": 12000
+    "gimunIndividual": 9000,
+    "gimunDelegationPerDelegate": 8500,
+    "mootCupTeam": 2000
   },
+  "paymentInstructions": "Account number (IBAN): PK70 HABB 0019 7900 0008 5901\nAccount name: G.I.K Institute Topi\nBeneficiary address: G.I.K Institute of Engineering Sciences and Technology, Topi\nBank: Habib Bank Limited, GIKI Topi branch\nBranch code: 1979\nSWIFT code: HABBPKKAXXX\nRegistration fees are non-refundable.",
   "registrationStatus": {
     "gimunOpen": true,
     "mootCupOpen": true
   },
   "resultsPublished": false,
-  "memorialDeadline": "2027-02-28",
-  "galaDate": "2027-03-20",
-  "replyTime": "We reply to messages within 3 working days.",
-  "checkinDesk": "Check-in opens at 09:00 on Day 1 in the AHA Auditorium foyer.",
-  "entryRequirement": "Bring a photo ID (CNIC, B-Form or student card) and your QR ticket.",
-  "mootScoring": {
-    "memorialWeight": 40,
-    "oralWeight": 60,
-    "citationStyle": "OSCOLA (4th edition)"
+  "contactPhone": "0333 9200251",
+  "memorialDeadline": "2026-11-15",
+  "checkinDesk": "On arrival, every team signs a liability form and hands in an original CNIC.",
+  "entryRequirement": "Entry is on CNIC only (no smart card).",
+  "footerBlurb": "GIMUN 26 and GMC VII. Three days at GIK Institute, Topi. Hosted by SOPHEP.",
+  "feeTiers": {
+    "active": "auto",
+    "earlyBirdEnds": "2026-10-19",
+    "gimun": {
+      "earlyBird": {
+        "delegate": 9000,
+        "observer": 10500,
+        "chaperone": 6500,
+        "delegationMember": 8500
+      },
+      "normal": {
+        "delegate": 11000,
+        "observer": 12500,
+        "chaperone": 8000,
+        "delegationMember": 9000,
+        "delegationFee": 2000
+      },
+      "late": {
+        "delegate": 13000,
+        "observer": 14500,
+        "chaperone": 9500,
+        "delegationMember": 11500,
+        "delegationFee": 2500
+      }
+    },
+    "mootCup": {
+      "earlyBird": {
+        "teamMember": 9000,
+        "observer": 9500,
+        "coach": 6500,
+        "teamFee": 2000
+      },
+      "normal": {
+        "teamMember": 10500,
+        "observer": 10000,
+        "coach": 7500,
+        "teamFee": 3000
+      },
+      "late": {
+        "teamMember": 11000,
+        "observer": 11500,
+        "coach": 8500,
+        "teamFee": 4000
+      }
+    }
   },
-  "footerBlurb": "Two rooms, one campus, four days in Topi."
+  "registrationForms": [
+    {
+      "label": "Delegate Registration Form",
+      "href": "https://docs.google.com/forms/d/1OZmbE6VV_srDreqDStTTCiIE2UNoeppGO1Jizg8NRPc",
+      "track": "gimun",
+      "kind": "registration",
+      "description": "For an individual attending without a delegation."
+    },
+    {
+      "label": "Delegation Registration Form",
+      "href": "https://docs.google.com/forms/d/1OSQfKYYsnwFHMvd7d5udtGn4ZHQA2A_9pMHzCYuax1w",
+      "track": "gimun",
+      "kind": "registration",
+      "description": "For an institution's delegation, registered by its head delegate."
+    },
+    {
+      "label": "Observer Registration Form",
+      "href": "https://docs.google.com/forms/d/1Z96ekNTT_l77wOi7Saou94JlvJ0XlovC83k7z36l8i4",
+      "track": "gimun",
+      "kind": "registration",
+      "description": "Watch committee sessions without speaking or voting rights."
+    },
+    {
+      "label": "Ambassador Application Form",
+      "href": "https://docs.google.com/forms/d/1RfWkohcPmGZyVmllgY0H9FRnbL-5X-7rL--PvCnQ2S8",
+      "track": "gimun",
+      "kind": "application"
+    },
+    {
+      "label": "Chair Call Application Form",
+      "href": "https://docs.google.com/forms/d/1CY7cXfCvhmQZLb9xiok2KNuvN7Zsz8iyjc1RDrCvZkM",
+      "track": "gimun",
+      "kind": "application"
+    },
+    {
+      "label": "Assistant Chair Call Application Form",
+      "href": "https://docs.google.com/forms/d/1UVrT2HCwwlpL3d-C5nvHvRIKQhR-ki0u9frURuzuI8M",
+      "track": "gimun",
+      "kind": "application"
+    },
+    {
+      "label": "Registration Form",
+      "href": "https://docs.google.com/forms/d/1DQiag8BrDOi2fSRVvzhHRJ204QlHCElALlqwRZ_E-9A",
+      "track": "moot-cup",
+      "kind": "registration",
+      "description": "Register your team: two speakers, or two speakers and a researcher."
+    },
+    {
+      "label": "Observer Registration Form",
+      "href": "https://docs.google.com/forms/d/1tMaqqunt2q2EtoUfdS79EADUSwGc-QfxJ18zqoy9sII",
+      "track": "moot-cup",
+      "kind": "registration",
+      "description": "Watch the rounds without competing."
+    },
+    {
+      "label": "Judge Registration Form",
+      "href": "https://docs.google.com/forms/d/1biSMRsSHLE_DjmMOEHXwx5EzMiuOD9qeOEaW6AQlNsI",
+      "track": "moot-cup",
+      "kind": "application"
+    }
+  ],
+  "contacts": [
+    {
+      "name": "Syed Mustajaab",
+      "role": "President, SOPHEP",
+      "phone": "0313 6725787",
+      "track": "shared",
+      "group": "host-team"
+    },
+    {
+      "name": "Malaika Shah",
+      "role": "Vice President, SOPHEP",
+      "phone": "0333 5286857",
+      "track": "shared",
+      "group": "host-team"
+    },
+    {
+      "name": "M. Hammad",
+      "role": "General Secretary",
+      "phone": "0306 6095558",
+      "track": "moot-cup",
+      "group": "host-team"
+    },
+    {
+      "name": "Toqeer Ahmed",
+      "role": "Chief Liaison",
+      "phone": "0333 9200251",
+      "track": "shared",
+      "group": "host-team"
+    },
+    {
+      "name": "Ahmed Abbasi",
+      "role": "Event Coordinator, GIMUN",
+      "phone": "0304 5954047",
+      "track": "gimun",
+      "group": "host-team"
+    },
+    {
+      "name": "Anas Faizan",
+      "role": "Secretary General, GIMUN",
+      "phone": "0328 7999000",
+      "track": "gimun",
+      "group": "host-team"
+    },
+    {
+      "name": "Rafay Akram",
+      "role": "Event Coordinator, SOPHEP",
+      "phone": "0305 8659311",
+      "track": "gimun",
+      "group": "host-team"
+    },
+    {
+      "name": "Ahmed Arsalan",
+      "role": "Event Coordinator, GMC",
+      "phone": "0333 8633811",
+      "track": "moot-cup",
+      "group": "host-team"
+    },
+    {
+      "name": "Taha Shafique",
+      "role": "Director General, GMC",
+      "phone": "0313 4688776",
+      "track": "moot-cup",
+      "group": "host-team"
+    },
+    {
+      "name": "Rohaan Jamshaid",
+      "role": "Director of Registrations, GIMUN",
+      "phone": "0323 9871708",
+      "track": "gimun",
+      "group": "registrations"
+    },
+    {
+      "name": "Areeba Rehman",
+      "role": "Director of Registrations, GIMUN",
+      "phone": "0324 9387992",
+      "track": "gimun",
+      "group": "registrations"
+    },
+    {
+      "name": "Farzeen Fatima",
+      "role": "Director of Registrations, GIMUN",
+      "phone": "0300 9689086",
+      "track": "gimun",
+      "group": "registrations"
+    },
+    {
+      "name": "Zoraiz Husnain",
+      "role": "Director of Registrations, GIMUN",
+      "phone": "0323 9395052",
+      "track": "gimun",
+      "group": "registrations"
+    },
+    {
+      "name": "Safia Malik",
+      "role": "Director of Registrations, GIMUN",
+      "phone": "0300 6866088",
+      "track": "gimun",
+      "group": "registrations"
+    },
+    {
+      "name": "Sara Faysal",
+      "role": "Director of Registrations, GIMUN",
+      "phone": "0300 8770849",
+      "track": "gimun",
+      "group": "registrations"
+    },
+    {
+      "name": "Dania Ali",
+      "role": "Director of Registrations, GIMUN",
+      "phone": "0309 8960205",
+      "track": "gimun",
+      "group": "registrations"
+    },
+    {
+      "name": "Sohaib Bin Tausif",
+      "role": "Director of Registrations, GIMUN",
+      "phone": "0332 0205825",
+      "track": "gimun",
+      "group": "registrations"
+    },
+    {
+      "name": "Zouhair Safdar",
+      "role": "Director of Registrations, GMC",
+      "phone": "0313 8552130",
+      "track": "moot-cup",
+      "group": "registrations"
+    },
+    {
+      "name": "Basim Aman",
+      "role": "Director of Registrations, GMC",
+      "phone": "0333 2577040",
+      "track": "moot-cup",
+      "group": "registrations"
+    },
+    {
+      "name": "M. Awab Abdullah",
+      "role": "Director of Registrations, GMC",
+      "phone": "0330 0272712",
+      "track": "moot-cup",
+      "group": "registrations"
+    },
+    {
+      "name": "Hina Pasha",
+      "role": "Director of Registrations, GMC",
+      "phone": "0302 6884499",
+      "track": "moot-cup",
+      "group": "registrations"
+    },
+    {
+      "name": "Atif Waheed",
+      "role": "Director of Registrations, GMC",
+      "phone": "0301 4667867",
+      "track": "moot-cup",
+      "group": "registrations"
+    },
+    {
+      "name": "Wardah",
+      "role": "Director of Registrations, GMC",
+      "phone": "0321 9089908",
+      "track": "moot-cup",
+      "group": "registrations"
+    }
+  ]
 }

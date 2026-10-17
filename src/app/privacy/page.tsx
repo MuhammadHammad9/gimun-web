@@ -11,7 +11,7 @@ import '@/styles/pages/privacy.css';
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
     title: `Privacy & Data Handling | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
-    description: 'How GIMUN & GMC handles registration, contact, accessibility, and event-operations data.',
+    description: 'How GIMUN & GMC handles contact messages and event-operations data, and where registration forms are hosted.',
     path: '/privacy',
   });
 }

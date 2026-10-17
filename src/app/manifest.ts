@@ -6,7 +6,7 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
   return {
     name: site.eventNames.combined,
     short_name: 'GIMUN & GMC',
-    description: 'Registration, schedule and resources for GIMUN and the GIKI Moot Court.',
+    description: 'Registration, schedule and resources for GIMUN 26 and GMC VII.',
     start_url: '/',
     display: 'standalone',
     background_color: '#140302',

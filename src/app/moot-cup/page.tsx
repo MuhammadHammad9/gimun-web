@@ -18,12 +18,13 @@ import { chapterNumbers, fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister, serverRenderTime } from '@/lib/phase';
 import { formatEventDate, getEventYear } from '@/lib/site-config';
-import { formatDateRange } from '@/lib/utils';
+import { addDays, formatDateRange } from '@/lib/utils';
+import { currentFeeTier, mootFees, rupees, tierEndDates } from '@/lib/fee-tiers';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
-    title: `GMC ${getEventYear(await getSiteConfig())} | GIKI Moot Court`,
-    description: `Problem categories, format, team rules, fees and key dates for the GIKI Moot Court ${getEventYear(await getSiteConfig())}.`,
+    title: `GMC VII | GIKI Moot Cup ${getEventYear(await getSiteConfig())}`,
+    description: `Format, rounds, team rules, fees and key dates for GMC VII, the seventh GIKI Moot Cup, hosted by SOPHEP at GIK Institute from 4 to 6 December ${getEventYear(await getSiteConfig())}.`,
     path: '/moot-cup',
     image: '/images/og/moot-cup.jpg',
   });
@@ -33,7 +34,6 @@ export default async function MootCupOverviewPage() {
   const [categories, site, copy] = await Promise.all([getMootCategories(), getSiteConfig(), getCopy('moot-cup')]);
   const now = serverRenderTime();
   const open = canRegister(site, 'mootCup', now);
-  const scoring = site.mootScoring;
   const hero = copy('moot-hero');
   const how = copy('moot-how');
   const cases = copy('moot-cases');
@@ -44,7 +44,10 @@ export default async function MootCupOverviewPage() {
   const chapter = chapterNumbers(copy, ['moot-how', 'moot-cases', 'moot-team', 'moot-dates', 'moot-closing']);
   const vars = { cases: categories.length, year: getEventYear(site) };
   const lines = (text?: string) => fill(text, vars).split('\n').map((line) => line.trim()).filter(Boolean);
-  const register = { label: open ? 'Register your team' : 'Registration status', href: '/register?track=moot-cup' };
+  const register = { label: open ? 'Register your team' : 'Registration status', href: '/register#moot-cup' };
+  const tier = currentFeeTier(site, 'mootCup', now);
+  const fees = tier ? mootFees(site, tier.key) : null;
+  const tierEnds = tierEndDates(site, 'mootCup');
 
   return (
     <>
@@ -60,7 +63,7 @@ export default async function MootCupOverviewPage() {
               description={fill(hero.lead, vars)}
               actions={[
                 { ...register, variant: 'track-moot' },
-                { label: 'Problem categories', href: '/moot-cup/categories', variant: 'secondary' },
+                { label: 'Rules & memorials', href: '/moot-cup/rules', variant: 'secondary' },
               ]}
               aside={
                 <div className="glance glance--gmc">
@@ -70,11 +73,11 @@ export default async function MootCupOverviewPage() {
                   <p className="glance__title">At a glance</p>
                   <FactList
                     items={[
-                      { term: 'Team', value: '2 to 4 members: two oralists, up to two researchers' },
-                      { term: 'Written round', value: 'Applicant and Respondent memorials' },
-                      { term: 'Scoring', value: scoring ? `Memorial ${scoring.memorialWeight}% · Oral ${scoring.oralWeight}%` : 'Published with the rules' },
-                      { term: 'Awards', value: 'Champions, Best Memorial, Best Oralist' },
-                      { term: 'Applications close', value: formatEventDate(site.registrationDeadlines.mootCup) },
+                      { term: 'Team', value: 'Two speakers, or two speakers and a researcher' },
+                      { term: 'Written round', value: 'Petitioner and respondent memorials' },
+                      { term: 'Oral rounds', value: 'Preliminaries, quarter-finals, semi-finals, final' },
+                      { term: 'Citation', value: 'Bluebook, 20th edition' },
+                      { term: 'Registration closes', value: formatEventDate(site.registrationDeadlines.mootCup) },
                     ]}
                   />
                 </div>
@@ -127,8 +130,8 @@ export default async function MootCupOverviewPage() {
               <Link href="/moot-cup/categories" className="text-link">
                 All categories
               </Link>
-              <Link href="/moot-cup/clarifications" className="text-link">
-                Clarifications
+              <Link href="/moot-cup/rules" className="text-link">
+                Rules &amp; memorials
               </Link>
             </div>
           </ChapterHead>
@@ -151,18 +154,26 @@ export default async function MootCupOverviewPage() {
             <FactList
               items={[
                 ...(team.items ?? []).map((item) => ({ term: fill(item.title, vars), value: fill(item.body, vars) })),
-                { term: 'Memorials due', value: site.memorialDeadline ? `${formatEventDate(site.memorialDeadline)}, 23:59 Pakistan time` : 'Announced with the problem' },
+                { term: 'Memorials due', value: site.memorialDeadline ? formatEventDate(site.memorialDeadline) : 'Announced with the problem' },
               ]}
             />
           </div>
           <div className="glance glance--gmc self-start">
-            <p className="glance__title">Team fee</p>
-            <p className="flex items-baseline gap-2">
-              <span className="font-display text-[2.75rem] font-medium tracking-tight text-text" data-numeric="">
-                {site.fees.mootCupTeam}
-              </span>
-              <span className="text-small text-text-3">per team</span>
-            </p>
+            <p className="glance__title">{tier ? `${tier.label} fees` : 'Fees'}</p>
+            {fees && (
+              <>
+                <p className="flex items-baseline gap-2">
+                  <span className="font-display text-[2.75rem] font-medium tracking-tight text-text" data-numeric="">
+                    {rupees(fees.teamMember)}
+                  </span>
+                  <span className="text-small text-text-3">per team member</span>
+                </p>
+                <p className="mt-1 text-small text-text-2">
+                  Plus {rupees(fees.teamFee)} per team. Observer {rupees(fees.observer)}, coach {rupees(fees.coach)}.
+                  {tier?.endsOn && <> Until {formatEventDate(tier.endsOn, { year: undefined })}.</>}
+                </p>
+              </>
+            )}
             <ul className="stack__list">
               {lines(team.body).map((line) => (
                 <li key={line}>{line}</li>
@@ -189,10 +200,13 @@ export default async function MootCupOverviewPage() {
             now={now}
             className="dates--flush"
             dates={[
-              { iso: site.registrationDeadlines.mootCup, what: 'Applications close', note: 'Teams of two to four' },
-              ...(site.memorialDeadline ? [{ iso: site.memorialDeadline, what: 'Memorials due', note: 'By email to the moot court address, both sides' }] : []),
-              { iso: site.eventDates.start, what: 'Preliminary rounds begin', note: 'Two guaranteed rounds for every team' },
-              ...(site.galaDate ? [{ iso: site.galaDate, what: 'Grand Final', note: 'Before the full bench, then the awards gala' }] : []),
+              ...(tierEnds.earlyBird ? [{ iso: tierEnds.earlyBird, what: 'Early Bird registrations end', note: 'Normal fees apply from the next day' }] : []),
+              ...(tierEnds.normal ? [{ iso: tierEnds.normal, what: 'Normal registrations end', note: 'Late fees apply from the next day' }] : []),
+              ...(site.memorialDeadline ? [{ iso: site.memorialDeadline, what: 'Memorials due', note: 'Soft copies of both sides, through the submission link' }] : []),
+              { iso: site.registrationDeadlines.mootCup, what: 'Registration closes', note: 'Teams and observers' },
+              { iso: site.eventDates.start, what: 'Inaugural ceremony, draw of lots', note: 'Memorials exchanged; hand in three hard copies of each side' },
+              { iso: addDays(site.eventDates.start, 1), what: 'Preliminary rounds and quarter-finals', note: 'Each team argues twice in the preliminaries' },
+              { iso: site.eventDates.end, what: 'Semi-finals and final', note: 'The winner of the final wins GMC VII' },
             ]}
           />
         </div>

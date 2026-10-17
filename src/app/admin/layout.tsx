@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './admin.css';
+import './admin-brand.css';
 export const metadata: Metadata = { title: 'Event administration', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;

@@ -44,10 +44,53 @@ const track = z.enum(['gimun', 'moot-cup', 'shared']);
 const email = z.email();
 const personLinks = z.object({ email: email.optional(), linkedin: link.optional() });
 export const phases = ['pre-launch', 'registration-open', 'registration-closed', 'event-live', 'results', 'archived'] as const;
+/** Registration fee windows, in the order they run. Late ends at each track's registration deadline. */
+export const feeTierKeys = ['earlyBird', 'normal', 'late'] as const;
+const rupees = z.number().int().min(0);
+const gimunTierFees = z.object({
+  delegate: rupees.meta({ description: 'Per delegate attending without a delegation (PKR).' }),
+  observer: rupees.meta({ description: 'Per observer: views sessions without speaking or voting rights (PKR).' }),
+  chaperone: rupees.meta({ description: 'Per chaperone: accompanying faculty, advisor, coach or guardian (PKR).' }),
+  delegationMember: rupees.meta({ description: 'Paid by each individual in a delegation (PKR).' }),
+  delegationFee: rupees.optional().meta({ description: 'One-off delegation registration fee (PKR). Leave empty if this tier has none.' }),
+});
+const mootTierFees = z.object({
+  teamMember: rupees.meta({ description: 'Per team member (PKR).' }),
+  observer: rupees.meta({ description: 'Per observer (PKR).' }),
+  coach: rupees.meta({ description: 'Per coach (PKR).' }),
+  teamFee: rupees.meta({ description: 'Per team (PKR).' }),
+});
+const feeTiers = z.object({
+  active: z.enum(['auto', ...feeTierKeys]).meta({
+    description: 'Which fee tier the website shows. "Follow the dates" switches tier automatically on the dates below; pick a tier to show it regardless of the dates.',
+    optionLabels: { auto: 'Follow the dates', earlyBird: 'Early Bird', normal: 'Normal', late: 'Late' },
+  }),
+  earlyBirdEnds: date.optional().meta({ description: 'Last day of Early Bird registrations. From the next day, Normal fees apply.' }),
+  normalEnds: date.optional().meta({ description: 'Last day of Normal registrations. From the next day, Late fees apply until the registration deadline.' }),
+  gimun: z.object({ earlyBird: gimunTierFees, normal: gimunTierFees, late: gimunTierFees }),
+  mootCup: z.object({ earlyBird: mootTierFees, normal: mootTierFees, late: mootTierFees }),
+}).refine((v) => !v.earlyBirdEnds || !v.normalEnds || v.earlyBirdEnds < v.normalEnds, { message: 'Early Bird must end before Normal ends', path: ['normalEnds'] });
+const registrationForm = z.object({
+  label: required.meta({ description: 'The form name shown on the button, e.g. "Delegate Registration Form".' }),
+  href: link.meta({ description: 'The form’s web address (https://…). It opens in a new tab.' }),
+  track: z.enum(['gimun', 'moot-cup']).meta({ optionLabels: { gimun: 'GIMUN', 'moot-cup': 'GMC' } }),
+  kind: z.enum(['registration', 'application']).meta({
+    description: 'Registration forms are for participants; applications are for chairs, judges and ambassadors.',
+    optionLabels: { registration: 'Registration (participants)', application: 'Application (team, chairs, judges)' },
+  }),
+  description: text.optional(),
+});
+const contactPerson = z.object({
+  name: required,
+  role: required,
+  phone: text.optional(),
+  track: z.enum(['gimun', 'moot-cup', 'shared']).meta({ optionLabels: { gimun: 'GIMUN', 'moot-cup': 'GMC', shared: 'Both' } }),
+  group: z.enum(['host-team', 'registrations']).meta({ optionLabels: { 'host-team': 'Host team', registrations: 'Directors of Registrations' } }),
+});
 export const siteSchema = z.object({
   eventNames: z.object({ gimun: required, mootCup: required, combined: required }),
   hostInstitution: required, eventDates: z.object({ start: date, end: date }),
-  registrationDeadlines: z.object({ gimun: date, mootCup: date }), venue: required,
+  registrationDeadlines: z.object({ gimun: date, mootCup: date }).meta({ description: 'Last day to register for each track. Late fees run until this day.' }), venue: required,
   socialLinks: z.object({ instagram: link.optional(), facebook: link.optional(), linkedin: link.optional(), twitter: link.optional() }),
   contactEmails: z.object({ general: email, gimun: email.optional(), mootCup: email.optional(), sponsorship: email.optional() }),
   fees: z.object({ gimunIndividual: required, gimunDelegationPerDelegate: required, mootCupTeam: required }),
@@ -62,6 +105,10 @@ export const siteSchema = z.object({
   stats: z.array(z.object({ label: required, value: required })).optional(),
   mootScoring: z.object({memorialWeight:z.number().min(0).max(100),oralWeight:z.number().min(0).max(100),citationStyle:required}).optional(),
   gimunRubric: z.array(z.object({label:required,weight:z.number().min(0).max(100)})).optional(),
+  feeTiers: feeTiers.optional(),
+  // Registration happens on external forms; the website links to them by name.
+  registrationForms: z.array(registrationForm).optional(),
+  contacts: z.array(contactPerson).optional(),
 });
 /** Public pages whose copy is editable, in site order. */
 export const copyPages = ['home', 'gimun', 'committees', 'committee', 'gimun-rules', 'moot-cup', 'categories', 'moot-rules', 'clarifications', 'schedule', 'resources', 'announcements', 'results', 'register', 'about', 'faq', 'venue', 'team', 'sponsors', 'gallery', 'contact', 'privacy'] as const;
@@ -84,12 +131,12 @@ const copy = z.object({
 }).refine((v) => !v.accentPhrase || (v.title ?? '').includes(v.accentPhrase), { message: 'The accent phrase must appear in the title', path: ['accentPhrase'] });
 export const registry = {
   announcements: z.object({ id, title: required, body: required, track: z.enum(['gimun', 'moot-cup', 'shared', 'all', 'general']), timestamp: z.iso.datetime({ offset: true }), pinnedFlag: z.boolean(), badgeLabel: text.optional(), actionUrl: link.optional() }),
-  schedule: z.object({ id, day: z.number().int().min(1).max(31), dayLabel: text.optional(), startTime: z.string().regex(/^\d{2}:\d{2}$/), endTime: z.string().regex(/^\d{2}:\d{2}$/), title: required, track, location: required, notes: text, updatedFlag: z.boolean() }),
-  committees: z.object({ id, name: required, type: z.enum(['general-assembly', 'specialized-agency', 'crisis', 'regional-body', 'other']), slug: id, topics: z.array(required).min(1), topicDescriptions: z.array(text), chairs: z.array(z.object({ id: id.optional(), name: required, role: required, photo: image.optional(), bio: text.optional(), group: text.optional(), links: personLinks.optional() })), backgroundGuideDocId: text, countryList: z.array(z.object({ country: required, status: z.enum(['available', 'assigned', 'reserved']) })), capacity: z.number().int().positive().nullable(), shortDescription: required }),
+  schedule: z.object({ id, day: z.number().int().min(1).max(31), dayLabel: text.optional(), startTime: z.string().regex(/^(\d{2}:\d{2})?$/).meta({ description: 'Leave both times blank if the time is not announced yet.' }), endTime: z.string().regex(/^(\d{2}:\d{2})?$/), title: required, track, location: required, notes: text, updatedFlag: z.boolean() }),
+  committees: z.object({ id, name: required, type: z.enum(['general-assembly', 'specialized-agency', 'crisis', 'regional-body', 'parliament', 'other']), slug: id, topics: z.array(required).min(1), topicDescriptions: z.array(text), chairs: z.array(z.object({ id: id.optional(), name: required, role: required, photo: image.optional(), bio: text.optional(), group: text.optional(), links: personLinks.optional() })), backgroundGuideDocId: text, countryList: z.array(z.object({ country: required, status: z.enum(['available', 'assigned', 'reserved']) })), capacity: z.number().int().positive().nullable(), shortDescription: required }),
   'moot-categories': z.object({ id, name: required, areaOfLaw: required, description: required, propositionDocId: text, lastUpdated: date }),
   resources: z.object({ id, title: required, track, type: z.enum(['handbook', 'background-guide', 'proposition', 'rules', 'form', 'map', 'sponsorship-deck', 'other']), fileUrl: link.meta({ media: 'file' }), fileSize: required, fileFormat: required, versionDate: date }),
   faq: z.object({ id, category: z.enum(['general', 'registration-fees', 'gimun-specific', 'moot-cup-specific', 'logistics']), question: required, answer: required }),
-  team: z.object({ id, name: required, role: required, group: z.enum(['secretariat', 'convening-committee', 'organizing-committee']), photo: image, bio: text, links: personLinks.optional() }),
+  team: z.object({ id, name: required, role: required, group: z.enum(['secretariat', 'convening-committee', 'organizing-committee', 'executive-council']), photo: image, bio: text, links: personLinks.optional() }),
   sponsors: z.object({ id, name: required, tier: z.enum(['title', 'gold', 'silver', 'partner', 'media-partner']), logo: image, url: link, description: text.optional() }),
   gallery: z.object({ id, title: required, category: z.enum(['gimun', 'moot-cup', 'campus', 'ceremonies']), edition: required, caption: text, location: text, aspectRatio: z.enum(['landscape', 'portrait', 'square', 'wide']), image: requiredImage }),
   clarifications: z.object({ id, number: z.number().int().positive(), question: required, answer: required, submittedAt: date }),

@@ -10,6 +10,8 @@ export const COMMITTEE_TYPE: Record<string, string> = {
   'general-assembly': 'General Assembly',
   'specialized-agency': 'Specialized agency',
   crisis: 'Crisis committee',
+  'regional-body': 'Regional body',
+  parliament: 'National parliament',
   other: 'Council',
 };
 
@@ -65,7 +67,7 @@ export function CommitteePlacard({
         </span>
         <span className="flex flex-wrap justify-end gap-x-5 gap-y-2">
           {applyHref && (
-            <Link href={applyHref} className="text-link" aria-label={`Apply for ${committee.name}`}>
+            <Link href={applyHref} className="text-link" aria-label={`Register for GIMUN (${committee.name})`}>
               Apply
             </Link>
           )}

@@ -59,8 +59,9 @@ export function AdminNavigation({ name, role, allowed, websiteConnected, website
     <div className={`admin-sidebar-backdrop ${open ? 'is-visible' : ''}`} aria-hidden="true" onClick={() => setOpen(false)} />
     <aside id="admin-sidebar" className={`admin-sidebar ${open ? 'is-open' : ''}`}>
       <Link className="admin-brand" href="/admin">
-        <span className="admin-brand-mark" aria-hidden="true">G</span>
-        <span>GIMUN & GMC<small>Admin · 2027</small></span>
+        {/* eslint-disable-next-line @next/next/no-img-element -- the fixed-colour shield, also the site icon */}
+        <img className="admin-brand-mark" src="/icon.svg" alt="" width={36} height={36} />
+        <span>GIMUN & GMC<small>Admin · GIMUN 26 · GMC VII</small></span>
       </Link>
       <nav aria-label="Admin sections">
         <Link className="admin-overview-link" href="/admin" aria-current={path === '/admin' ? 'page' : undefined}><LayoutDashboard size={16} aria-hidden="true" /> Overview</Link>

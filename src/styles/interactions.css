@@ -44,14 +44,6 @@
   background: color-mix(in srgb, var(--color-text) 7%, transparent);
 }
 
-.mega__link {
-  transition: transform var(--dur-ui) var(--ease-out-expo);
-}
-
-.mega__link:hover {
-  transform: translateX(3px);
-}
-
 /* --- Text links: the underline draws in from the left --------------------- */
 .text-link {
   padding-bottom: 0.125rem;
@@ -208,13 +200,11 @@ textarea {
   .nav-glide,
   .text-link,
   .btn-arrow > *,
-  .mega__link,
   .copy-button svg {
     transition: none;
   }
 
   .group:hover .btn-arrow > :first-child,
-  .mega__link:hover,
   .text-link:hover svg,
   .back-to-top:hover svg {
     transform: none;

@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type KeyboardEvent, type PointerEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { useRenderedAt, useSiteConfig } from '@/components/SiteConfigProvider';
 import { canRegister, eventPhase } from '@/lib/phase';
 import { navigationTree } from '@/lib/navigation';
-import { formatEventDate } from '@/lib/site-config';
+import { formatEventDate, getEventYear } from '@/lib/site-config';
 import { BrandMark } from './BrandMark';
 import { MobileMenu } from './MobileMenu';
 import { isCurrentPath } from './nav-utils';
@@ -28,7 +28,7 @@ type PanelKind = 'gimun' | 'gmc' | 'about';
  */
 const PANEL_COPY: Record<PanelKind, string> = {
   gimun: 'Model United Nations. Represent a country in committee, on your own or with a delegation.',
-  gmc: 'The GIKI Moot Court. Argue a case problem as a team before a bench of judges.',
+  gmc: 'The GIKI Moot Cup. Argue a case problem as a team before a bench of judges.',
   about: 'The event, the campus at Topi, and answers before you ask.',
 };
 function panelLead(href: string): { kind: PanelKind; copy: string } {
@@ -37,6 +37,8 @@ function panelLead(href: string): { kind: PanelKind; copy: string } {
 }
 
 const HIDE_AFTER = 480;
+/** How long a closing panel stays mounted while it rolls back up (matches .mega[data-leaving]). */
+const LEAVE_MS = 260;
 const noopSubscribe = () => () => {};
 
 export function SiteHeader() {
@@ -53,6 +55,18 @@ export function SiteHeader() {
   const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [panel, setPanel] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  // The panel that just closed stays mounted briefly so it can roll back up.
+  const [leaving, setLeaving] = useState<string | null>(null);
+  const [shownPanel, setShownPanel] = useState<string | null>(null);
+  if (panel !== shownPanel) {
+    setShownPanel(panel);
+    setLeaving(shownPanel && shownPanel !== panel ? shownPanel : null);
+  }
+  useEffect(() => {
+    if (!leaving) return;
+    const timer = setTimeout(() => setLeaving(null), LEAVE_MS);
+    return () => clearTimeout(timer);
+  }, [leaving]);
 
   // A new page closes whatever was open.
   const [lastPath, setLastPath] = useState(pathname);
@@ -155,7 +169,7 @@ export function SiteHeader() {
           <Link href="/" className="brand">
             <BrandMark className="brand__mark" />
             <span>GIMUN &amp; GMC</span>
-            <span className="brand__year">2027</span>
+            <span className="brand__year">{getEventYear(site)}</span>
           </Link>
 
           <nav
@@ -198,9 +212,9 @@ export function SiteHeader() {
                       <ChevronDown aria-hidden="true" strokeWidth={1.75} className="size-3.5" />
                     </button>
                   )}
-                  {hasPanel && open && (
-                    <div id={panelId} className="mega">
-                      <div className={lead.kind === 'about' ? 'mega__lead tone-deep' : 'mega__lead tone-crest'}>
+                  {hasPanel && (open || leaving === item.id) && (
+                    <div id={panelId} className="mega" data-leaving={open ? undefined : ''} aria-hidden={open ? undefined : true}>
+                      <div className={lead.kind === 'about' ? 'mega__lead mega__card tone-deep' : 'mega__lead mega__card tone-crest'} style={{ '--i': 0 } as React.CSSProperties}>
                         <span className="mega__lead-title">{item.label}</span>
                         <p className="mega__lead-copy">{item.description || lead.copy}</p>
                         <Link href={item.href} className="mega__lead-link" onClick={() => setPanel(null)}>
@@ -214,16 +228,24 @@ export function SiteHeader() {
                           <Link
                             key={child.id}
                             href={child.href}
-                            className="mega__link"
-                            style={{ '--i': index } as React.CSSProperties}
+                            className="mega__link mega__card"
+                            style={{ '--i': index + 1 } as React.CSSProperties}
+                            tabIndex={open ? undefined : -1}
                             aria-current={isCurrentPath(child.href, pathname) ? 'page' : undefined}
                             onClick={() => setPanel(null)}
                           >
-                            <span className="mega__link-label">{child.label}</span>
+                            <span className="mega__link-label">
+                              {child.label}
+                              {/* Two arrows in one slot: on hover the first leaves up-right, the second arrives. */}
+                              <span className="mega__arrow" aria-hidden="true">
+                                <ArrowUpRight strokeWidth={2} className="mega__arrow-icon mega__arrow-icon--out" />
+                                <ArrowUpRight strokeWidth={2} className="mega__arrow-icon mega__arrow-icon--in" />
+                              </span>
+                            </span>
                             {child.description && <span className="mega__link-copy">{child.description}</span>}
                           </Link>
                         ))}
-                        <MegaFoot kind={lead.kind} onNavigate={() => setPanel(null)} />
+                        <MegaFoot kind={lead.kind} order={item.dropdown.length + 1} onNavigate={() => setPanel(null)} />
                       </div>
                     </div>
                   )}
@@ -255,19 +277,19 @@ export function SiteHeader() {
               </button>
               {panel === 'register' && (
                 <div className="register__menu">
-                  <Link href="/register?track=gimun" className="register__track" onClick={() => setPanel(null)}>
+                  <Link href="/register#gimun" className="register__track" onClick={() => setPanel(null)}>
                     <span className="register__track-dot bg-crimson" aria-hidden="true" />
                     <span>
                       <span className="register__track-name">GIMUN, Model UN</span>
-                      <span className="register__track-state">{gimunOpen ? 'Applications open' : 'Registration closed'}</span>
+                      <span className="register__track-state">{gimunOpen ? 'Registration open' : 'Registration closed'}</span>
                     </span>
                     <ArrowRight aria-hidden="true" strokeWidth={1.75} className="size-4 text-text-3" />
                   </Link>
-                  <Link href="/register?track=moot-cup" className="register__track" onClick={() => setPanel(null)}>
+                  <Link href="/register#moot-cup" className="register__track" onClick={() => setPanel(null)}>
                     <span className="register__track-dot bg-champagne" aria-hidden="true" />
                     <span>
                       <span className="register__track-name">GMC, Moot Court</span>
-                      <span className="register__track-state">{mootOpen ? 'Applications open' : 'Registration closed'}</span>
+                      <span className="register__track-state">{mootOpen ? 'Registration open' : 'Registration closed'}</span>
                     </span>
                     <ArrowRight aria-hidden="true" strokeWidth={1.75} className="size-4 text-text-3" />
                   </Link>
@@ -312,13 +334,14 @@ function MobileMenuPortal(props: { open: boolean; onClose: () => void; triggerRe
 }
 
 /** A practical last row in each panel: the deadline and a direct way in. */
-function MegaFoot({ kind, onNavigate }: { kind?: PanelKind; onNavigate: () => void }) {
+function MegaFoot({ kind, order, onNavigate }: { kind?: PanelKind; order: number; onNavigate: () => void }) {
   const site = useSiteConfig();
   if (!kind) return null;
+  const style = { '--i': order } as React.CSSProperties;
   if (kind === 'about') {
     const email = site.contactEmails?.general;
     return (
-      <div className="mega__foot">
+      <div className="mega__foot mega__card" style={style}>
         <span>{email ? `Questions: ${email}` : 'Questions before you apply?'}</span>
         <Link href="/contact" className="mega__foot-link" onClick={onNavigate}>
           Contact the organizers
@@ -329,10 +352,10 @@ function MegaFoot({ kind, onNavigate }: { kind?: PanelKind; onNavigate: () => vo
   }
   const deadline = kind === 'gimun' ? site.registrationDeadlines.gimun : site.registrationDeadlines.mootCup;
   return (
-    <div className="mega__foot">
-      <span>Applications close {formatEventDate(deadline, { month: 'short' })}</span>
-      <Link href={kind === 'gimun' ? '/register?track=gimun' : '/register?track=moot-cup'} className="mega__foot-link" onClick={onNavigate}>
-        Apply for {kind === 'gimun' ? 'GIMUN' : 'GMC'}
+    <div className="mega__foot mega__card" style={style}>
+      <span>Registration closes {formatEventDate(deadline, { month: 'short' })}</span>
+      <Link href={kind === 'gimun' ? '/register#gimun' : '/register#moot-cup'} className="mega__foot-link" onClick={onNavigate}>
+        Register for {kind === 'gimun' ? 'GIMUN' : 'GMC'}
         <ArrowRight aria-hidden="true" strokeWidth={1.75} className="size-3.5" />
       </Link>
     </div>

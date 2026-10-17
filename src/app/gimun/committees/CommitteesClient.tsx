@@ -11,6 +11,8 @@ const FILTER_LABEL: Record<string, string> = {
   'general-assembly': 'General Assembly',
   'specialized-agency': 'Specialized agencies',
   crisis: 'Crisis',
+  'regional-body': 'Regional bodies',
+  parliament: 'Parliament',
   other: 'Councils',
 };
 
@@ -63,7 +65,7 @@ export function CommitteesClient({ committees, registrationOpen }: { committees:
             <CommitteePlacard
               key={committee.id}
               committee={committee}
-              applyHref={registrationOpen ? `/register?track=gimun&committee=${committee.slug}` : undefined}
+              applyHref={registrationOpen ? '/register#gimun' : undefined}
             />
           ))}
         </div>

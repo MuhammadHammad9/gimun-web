@@ -18,12 +18,13 @@ import { chapterNumbers, fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { canRegister, serverRenderTime } from '@/lib/phase';
 import { formatEventDate, getEventYear } from '@/lib/site-config';
-import { addDays, formatDateRange } from '@/lib/utils';
+import { currentFeeTier, gimunFees, rupees, tierEndDates } from '@/lib/fee-tiers';
+import { formatDateRange } from '@/lib/utils';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
     title: `GIMUN ${getEventYear(await getSiteConfig())} | GIKI Model United Nations`,
-    description: `Committees, format, fees and key dates for GIKI Model United Nations ${getEventYear(await getSiteConfig())}. Register on your own or as a delegation.`,
+    description: `Committees, format, fees and key dates for GIKI Model United Nations ${getEventYear(await getSiteConfig())}. Five committees, hosted by SOPHEP at GIK Institute, 4 to 6 December 2026. Register as a delegate, a delegation or an observer.`,
     path: '/gimun',
     image: '/images/og/gimun.jpg',
   });
@@ -46,7 +47,10 @@ export default async function GimunOverviewPage() {
   const chapter = chapterNumbers(copy, ['gimun-how', 'gimun-chambers', 'gimun-entry', 'gimun-dates', 'gimun-closing']);
   const vars = { committees: committees.length, year: getEventYear(site) };
   const [individual, delegation] = entry.items ?? [];
-  const register = { label: open ? 'Register for GIMUN' : 'Registration status', href: '/register?track=gimun' };
+  const register = { label: open ? 'Register for GIMUN' : 'Registration status', href: '/register#gimun' };
+  const tier = currentFeeTier(site, 'gimun', now);
+  const fees = tier ? gimunFees(site, tier.key) : null;
+  const tierEnds = tierEndDates(site, 'gimun');
 
   return (
     <>
@@ -73,10 +77,11 @@ export default async function GimunOverviewPage() {
                   <FactList
                     items={[
                       { term: 'Committees', value: committees.map((c) => c.slug.toUpperCase()).join(' · ') },
-                      { term: 'Seats open', value: `${openSeats} of ${seats}` },
-                      { term: 'Enter as', value: 'An individual, or a delegation of 2 to 20' },
-                      { term: 'Awards', value: 'Best Delegate, Outstanding Delegate, Best Delegation' },
-                      { term: 'Applications close', value: formatEventDate(site.registrationDeadlines.gimun) },
+                      ...(seats > 0 ? [{ term: 'Seats open', value: `${openSeats} of ${seats}` }] : []),
+                      { term: 'Enter as', value: 'A delegate, a delegation or an observer' },
+                      { term: 'Eligibility', value: '18 or older; entry on CNIC' },
+                      ...(tier ? [{ term: 'Fees now', value: `${tier.label}${tier.endsOn ? `, until ${formatEventDate(tier.endsOn, { year: undefined })}` : ''}` }] : []),
+                      { term: 'Registration closes', value: formatEventDate(site.registrationDeadlines.gimun) },
                     ]}
                   />
                 </div>
@@ -169,12 +174,12 @@ export default async function GimunOverviewPage() {
               title={fill(individual?.title, vars)}
               copy={fill(individual?.body, vars)}
               facts={[
-                { term: 'Fee', value: `${site.fees.gimunIndividual} per delegate` },
-                { term: 'Preferences', value: 'Three committees' },
-                { term: 'Awards', value: 'Individual awards' },
-                { term: 'Included', value: 'Kit, meals, socials' },
+                ...(fees && tier ? [{ term: `Fee (${tier.label})`, value: `${rupees(fees.delegate)} per delegate` }] : []),
+                ...(fees ? [{ term: 'Observer', value: `${rupees(fees.observer)}, no speaking or voting rights` }] : []),
+                { term: 'Accommodation', value: 'Free, shared student hostels' },
+                { term: 'Transport', value: 'Free from Islamabad/Rawalpindi and Peshawar' },
               ]}
-              action={{ label: open ? 'Register as an individual' : 'Registration status', href: '/register?track=gimun&type=individual' }}
+              action={{ label: open ? 'Register as a delegate' : 'Registration status', href: '/register#gimun' }}
             />
             <Door
               id="door-delegation"
@@ -183,18 +188,18 @@ export default async function GimunOverviewPage() {
               title={fill(delegation?.title, vars)}
               copy={fill(delegation?.body, vars)}
               facts={[
-                { term: 'Fee', value: `${site.fees.gimunDelegationPerDelegate} per delegate` },
-                { term: 'Roster', value: '2 to 20 delegates' },
-                { term: 'Awards', value: 'Contends for Best Delegation' },
-                { term: 'Invoice', value: 'One for the institution' },
+                ...(fees && tier ? [{ term: `Fee (${tier.label})`, value: `${rupees(fees.delegationMember)} per member${fees.delegationFee ? `, plus ${rupees(fees.delegationFee)} per delegation` : ''}` }] : []),
+                { term: 'Teams', value: 'Up to 5 per institution, of 3 members' },
+                { term: 'Head delegate', value: 'One per institution, for all correspondence' },
+                ...(fees ? [{ term: 'Chaperone', value: rupees(fees.chaperone) }] : []),
               ]}
-              action={{ label: open ? 'Register a delegation' : 'Registration status', href: '/register?track=gimun&type=delegation' }}
+              action={{ label: open ? 'Register a delegation' : 'Registration status', href: '/register#gimun' }}
             />
           </div>
           <p className="mt-8 max-w-3xl text-small text-text-3">
             {entry.note && <>{fill(entry.note, vars)} </>}
-            <Link href="/about/faq#fees" className="text-link">
-              Fees and refunds
+            <Link href="/register#gimun" className="text-link">
+              The full fee structure
             </Link>
           </p>
         </div>
@@ -211,10 +216,11 @@ export default async function GimunOverviewPage() {
             now={now}
             className="dates--flush"
             dates={[
-              { iso: site.registrationDeadlines.gimun, what: 'Applications close', note: 'Individuals and delegations' },
-              { iso: addDays(site.eventDates.start, -7), what: 'Position papers due', note: 'At least 7 days before Day 1, to your committee’s chairs' },
-              { iso: site.eventDates.start, what: 'Conference opens', note: site.checkinDesk ?? 'Check-in from 09:00' },
-              ...(site.galaDate ? [{ iso: site.galaDate, what: 'Awards gala', note: 'Best Delegate, Outstanding Delegate, Best Delegation' }] : []),
+              ...(tierEnds.earlyBird ? [{ iso: tierEnds.earlyBird, what: 'Early Bird registrations end', note: 'Normal fees apply from the next day' }] : []),
+              ...(tierEnds.normal ? [{ iso: tierEnds.normal, what: 'Normal registrations end', note: 'Late fees apply from the next day' }] : []),
+              { iso: site.registrationDeadlines.gimun, what: 'Registration closes', note: 'Delegates, delegations and observers' },
+              { iso: site.eventDates.start, what: 'Conference opens', note: site.checkinDesk ?? 'Bring your original CNIC' },
+              { iso: site.eventDates.end, what: 'Final day', note: 'Committee sessions close' },
             ]}
           />
         </div>

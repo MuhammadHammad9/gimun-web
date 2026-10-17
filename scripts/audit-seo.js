@@ -113,7 +113,6 @@ const publicPageRoutes = [
   { route: '/moot-cup', file: path.join(appDir, 'moot-cup', 'page.tsx') },
   { route: '/moot-cup/categories', file: path.join(appDir, 'moot-cup', 'categories', 'page.tsx') },
   { route: '/moot-cup/rules', file: path.join(appDir, 'moot-cup', 'rules', 'page.tsx') },
-  { route: '/moot-cup/clarifications', file: path.join(appDir, 'moot-cup', 'clarifications', 'page.tsx') },
   { route: '/schedule', file: path.join(appDir, 'schedule', 'page.tsx') },
   { route: '/resources', file: path.join(appDir, 'resources', 'page.tsx') },
   { route: '/register', file: path.join(appDir, 'register', 'page.tsx') },

@@ -50,7 +50,7 @@ export async function isPreviewing() {
 
 const COPY_PATHS: Record<string, string> = {
   home: '/', gimun: '/gimun', committees: '/gimun/committees', committee: '/gimun/committees', 'gimun-rules': '/gimun/rules',
-  'moot-cup': '/moot-cup', categories: '/moot-cup/categories', 'moot-rules': '/moot-cup/rules', clarifications: '/moot-cup/clarifications',
+  'moot-cup': '/moot-cup', categories: '/moot-cup/categories', 'moot-rules': '/moot-cup/rules',
   schedule: '/schedule', resources: '/resources', announcements: '/announcements', results: '/results', register: '/register',
   about: '/about', faq: '/about/faq', venue: '/about/venue', team: '/about/team', sponsors: '/about/sponsors', gallery: '/about/gallery',
   contact: '/contact', privacy: '/privacy',
@@ -68,7 +68,7 @@ export function previewPath(collection: Collection, data: Record<string, unknown
     case 'team': return '/about/team';
     case 'sponsors': return '/about/sponsors';
     case 'gallery': return '/about/gallery';
-    case 'clarifications': return '/moot-cup/clarifications';
+    case 'clarifications': return '/moot-cup/rules';
     case 'results': return '/results';
     case 'navigation': return '/';
     case 'copy': return COPY_PATHS[String(data.page)] ?? '/';

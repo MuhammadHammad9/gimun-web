@@ -161,7 +161,7 @@ export async function previewEmail(input:unknown):Promise<{error:string}|{subjec
  const p=z.object({subject:text.min(1),body:text.min(1),audience:z.enum(['test','gimun','moot-cup','accepted','all'])}).parse(input);
  let count=1;
  if(p.audience!=='test'){let q=database().from('registrations').select('*',{count:'exact',head:true}).not('status','in','(rejected,withdrawn)').neq('contact_email','anonymized@invalid.example');if(p.audience==='accepted')q=q.eq('status','accepted');else if(p.audience!=='all')q=q.eq('track',p.audience);const result=await q;if(result.error)throw new Error('Audience unavailable');count=result.count||0;}
- const site=await getSiteConfig();const values={name:user.display_name,reference:'REG-GIMUN-2027-0001',status:'accepted',payment_status:'paid',event_name:site.eventNames.combined,amount_due:site.fees.gimunIndividual,fee:site.fees.gimunIndividual};
+ const site=await getSiteConfig();const values={name:user.display_name,reference:`REG-GIMUN-${site.eventDates.start.slice(0,4)}-0001`,status:'accepted',payment_status:'paid',event_name:site.eventNames.combined,amount_due:site.fees.gimunIndividual,fee:site.fees.gimunIndividual};
  return {subject:renderTemplate(p.subject,values),body:renderTemplate(p.body,values),count};
  }catch(error){unstable_rethrow(error);return {error:actionMessage(error,'Unable to preview. Check the template variables.')};}
 }

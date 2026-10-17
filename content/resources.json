@@ -1,92 +1,22 @@
 [
   {
-    "id": "doc-delegate-handbook",
-    "title": "Official Delegate & Participant Handbook 2027",
-    "track": "shared",
+    "id": "doc-gimun-liaison-package",
+    "title": "GIMUN 26 Liaison Package",
+    "track": "gimun",
     "type": "handbook",
-    "fileUrl": "/documents/shared/GIMUN_MootCup_Handbook_2027.pdf",
-    "fileSize": "19.6 KB",
+    "fileUrl": "/documents/gimun/GIMUN_26_Liaison_Package.pdf",
+    "fileSize": "9.1 MB",
     "fileFormat": "PDF",
-    "versionDate": "2026-09-01"
+    "versionDate": "2026-10-16"
   },
   {
-    "id": "doc-bg-unsc",
-    "title": "UNSC Background Guide: Maritime Security & Humanitarian Sanction Exceptions",
-    "track": "gimun",
-    "type": "background-guide",
-    "fileUrl": "/documents/gimun/UNSC_Background_Guide_2027.pdf",
-    "fileSize": "18.9 KB",
-    "fileFormat": "PDF",
-    "versionDate": "2026-09-05"
-  },
-  {
-    "id": "doc-bg-unhrc",
-    "title": "UNHRC Background Guide: Biometric Surveillance & Climate Displacement",
-    "track": "gimun",
-    "type": "background-guide",
-    "fileUrl": "/documents/gimun/UNHRC_Background_Guide_2027.pdf",
-    "fileSize": "18.8 KB",
-    "fileFormat": "PDF",
-    "versionDate": "2026-09-05"
-  },
-  {
-    "id": "doc-bg-disec",
-    "title": "DISEC Background Guide: Autonomous Weapons & Illicit Arms Proliferation",
-    "track": "gimun",
-    "type": "background-guide",
-    "fileUrl": "/documents/gimun/DISEC_Background_Guide_2027.pdf",
-    "fileSize": "18.5 KB",
-    "fileFormat": "PDF",
-    "versionDate": "2026-09-05"
-  },
-  {
-    "id": "doc-gimun-rop",
-    "title": "GIMUN Parliamentary Rules of Procedure (RoP)",
-    "track": "gimun",
-    "type": "rules",
-    "fileUrl": "/documents/gimun/GIMUN_Rules_of_Procedure.pdf",
-    "fileSize": "19.6 KB",
-    "fileFormat": "PDF",
-    "versionDate": "2026-09-04"
-  },
-  {
-    "id": "doc-moot-prop-2027",
-    "title": "GMC 2027 Moot Problem (Compromis)",
+    "id": "doc-gmc-liaison-package",
+    "title": "GMC VII Liaison Package",
     "track": "moot-cup",
-    "type": "proposition",
-    "fileUrl": "/documents/moot-cup/GIKI_Moot_Cup_2027_Proposition.pdf",
-    "fileSize": "19.0 KB",
+    "type": "handbook",
+    "fileUrl": "/documents/moot-cup/GMC_VII_Liaison_Package.pdf",
+    "fileSize": "10.5 MB",
     "fileFormat": "PDF",
-    "versionDate": "2026-09-03"
-  },
-  {
-    "id": "doc-moot-rules",
-    "title": "GMC Competition Rules, Memorial Formatting & Citation Guide",
-    "track": "moot-cup",
-    "type": "rules",
-    "fileUrl": "/documents/moot-cup/Moot_Cup_Rules_and_Memorial_Guide.pdf",
-    "fileSize": "18.7 KB",
-    "fileFormat": "PDF",
-    "versionDate": "2026-09-03"
-  },
-  {
-    "id": "doc-campus-map",
-    "title": "GIKI Campus & Venue Map for Delegations",
-    "track": "shared",
-    "type": "map",
-    "fileUrl": "/documents/shared/GIKI_Campus_Map_Venue_Guide.pdf",
-    "fileSize": "18.8 KB",
-    "fileFormat": "PDF",
-    "versionDate": "2026-09-01"
-  },
-  {
-    "id": "doc-sponsor-deck",
-    "title": "Official Sponsorship Deck & Corporate Partnership Proposal",
-    "track": "shared",
-    "type": "sponsorship-deck",
-    "fileUrl": "/documents/shared/GIMUN_MootCup_Sponsorship_Deck.pdf",
-    "fileSize": "18.5 KB",
-    "fileFormat": "PDF",
-    "versionDate": "2026-08-25"
+    "versionDate": "2026-10-16"
   }
 ]

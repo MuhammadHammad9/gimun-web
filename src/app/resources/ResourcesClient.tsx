@@ -24,23 +24,23 @@ export function ResourcesClient({ initialDocuments }: ResourcesClientProps) {
   const starters = [
     {
       title: "GIMUN delegates",
-      body: "Read the rules of procedure first, then the background guide for your committee.",
-      documents: [find("gimun", "rules")],
+      body: "The GIMUN 26 liaison package: committees, fees, instructions, rules and contacts.",
+      documents: [find("gimun", "handbook"), find("gimun", "rules")],
     },
     {
       title: "GMC teams",
-      body: `The ${eventYear} case problem, then the competition rules, which also cover memorial formatting and citation.`,
-      documents: [find("moot-cup", "proposition"), find("moot-cup", "rules")],
+      body: `The GMC VII liaison package covers the ${eventYear} rounds, memorial formatting, citation and scoring.`,
+      documents: [find("moot-cup", "handbook"), find("moot-cup", "proposition"), find("moot-cup", "rules")],
     },
     {
       title: "Travelling to Topi",
-      body: "The campus and venue map, and the participant handbook for everyone attending.",
-      documents: [find("shared", "map"), find("shared", "handbook")],
+      body: "Free host transport, accommodation and campus rules are set out in both liaison packages.",
+      documents: [find("shared", "map"), find("shared", "handbook"), find("gimun", "handbook"), find("moot-cup", "handbook")],
     },
   ].map((starter) => ({
     ...starter,
     documents: starter.documents.filter((document): document is Document => Boolean(document)),
-  }));
+  })).filter((starter) => starter.documents.length > 0);
   const [searchQuery, setSearchQuery] = useState("");
   const [trackFilter, setTrackFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");

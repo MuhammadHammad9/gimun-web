@@ -65,14 +65,6 @@ export const defaultNavigation: NavigationItem[] = [
     area: 'all',
     description: 'Written argument format and judging',
   },
-  {
-    id: 'gmc-clarifications',
-    parentId: 'gmc',
-    label: 'Clarifications',
-    href: '/moot-cup/clarifications',
-    area: 'all',
-    description: 'Bench rulings on the case problem',
-  },
 
   // --- Standalone tasks --------------------------------------------------
   { id: 'register-footer', label: 'Register', href: '/register', area: 'footer', footerGroup: 'event' },

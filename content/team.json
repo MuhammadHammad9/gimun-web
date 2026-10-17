@@ -1,1 +1,18 @@
-[]
+[
+  { "id": "team-ayaan-omer", "name": "Ayaan Omer", "role": "Executive Council Member", "group": "executive-council", "photo": "/images/team/ayaan-omer.png", "bio": "" },
+  { "id": "team-dawar-jawad", "name": "Dawar Jawad", "role": "Executive Council Member", "group": "executive-council", "photo": "/images/team/dawar-jawad.png", "bio": "" },
+  { "id": "team-hania-khan", "name": "Hania Khan", "role": "Chief Sponsorship", "group": "executive-council", "photo": "/images/team/hania-khan.png", "bio": "" },
+  { "id": "team-malaika-shah", "name": "Malaika Shah", "role": "Vice President", "group": "executive-council", "photo": "/images/team/malaika-shah.png", "bio": "" },
+  { "id": "team-momina-najeeb", "name": "Momina Najeeb", "role": "Executive Council Member", "group": "executive-council", "photo": "/images/team/momina-najeeb.png", "bio": "" },
+  { "id": "team-muhammad-hammad", "name": "Muhammad Hammad", "role": "General Secretary", "group": "executive-council", "photo": "/images/team/muhammad-hammad.png", "bio": "" },
+  { "id": "team-musa-jafri", "name": "Musa Jafri", "role": "Executive Council Member", "group": "executive-council", "photo": "/images/team/musa-jafri.png", "bio": "" },
+  { "id": "team-mustajaab", "name": "Syed Mustajaab", "role": "President", "group": "executive-council", "photo": "/images/team/syed-mustajaab.png", "bio": "" },
+  { "id": "team-rafay-akram", "name": "Rafay Akram", "role": "Event Coordinator, SOPHEP", "group": "executive-council", "photo": "/images/team/rafay-akram.png", "bio": "" },
+  { "id": "team-toqeer-ahmed", "name": "Toqeer Ahmed", "role": "Chief Liaison", "group": "executive-council", "photo": "/images/team/toqeer-ahmed.png", "bio": "" },
+  { "id": "team-abdullah-waheed", "name": "Abdullah Waheed", "role": "Treasurer", "group": "executive-council", "photo": "/images/team/abdullah-waheed.png", "bio": "" },
+  { "id": "team-ahmed-ali", "name": "Ahmed Ali", "role": "Press Secretary", "group": "executive-council", "photo": "/images/team/ahmed-ali.png", "bio": "" },
+  { "id": "team-anas-faizan", "name": "Anas Faizan", "role": "Secretary General", "group": "executive-council", "photo": "/images/team/anas-faizan.png", "bio": "" },
+  { "id": "team-ahmed-arsalan", "name": "Ahmed Arsalan", "role": "Event Coordinator, GIKI Moot Cup", "group": "executive-council", "photo": "/images/team/ahmed-arsalan.png", "bio": "" },
+  { "id": "team-taha-shafique", "name": "Taha Shafique", "role": "Director General", "group": "executive-council", "photo": "", "bio": "" },
+  { "id": "team-ahmed-abbasi", "name": "Ahmed Abbasi", "role": "Event Coordinator, GIMUN", "group": "executive-council", "photo": "/images/team/ahmed-abbasi.webp", "bio": "" }
+]

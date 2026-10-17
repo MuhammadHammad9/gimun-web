@@ -7,22 +7,32 @@ import { getCopy, getSiteConfig } from '@/lib/content';
 import { fill } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
+import { ContactDirectory, contactsFor } from '@/components/registration/ContactDirectory';
+import { StickyStack } from '@/components/motion/StickyStack';
+import type { SiteConfig } from '@/lib/types';
+import bundledSiteData from '../../../content/site.json';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
-    title: `Contact the Organizing Team | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
+    title: `Contact the Host Team | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
     path: '/contact',
     description:
-      'Questions about GIMUN committees, the GMC case problem, partnerships or getting to GIKI: write to the organizing team.',
+      'Phone numbers for the GIMUN 26 and GMC VII host team and Directors of Registrations, and a form for questions about registration, the moot or getting to GIKI.',
   });
 }
 
 export default async function ContactPage() {
   const copy = await getCopy('contact');
   const hero = copy('contact-hero');
-  const config = await getSiteConfig();
+  const publishedConfig = await getSiteConfig();
+  const bundledConfig = bundledSiteData as SiteConfig;
+  const sameEdition = publishedConfig.eventDates.start === bundledConfig.eventDates.start
+    && publishedConfig.eventDates.end === bundledConfig.eventDates.end;
+  const config = sameEdition && publishedConfig.contacts == null
+    ? { ...publishedConfig, contacts: bundledConfig.contacts }
+    : publishedConfig;
   const inboxes = [
-    { label: 'General questions', email: config.contactEmails.general },
+    { label: 'Organizing team', email: config.contactEmails.general },
     { label: 'GIMUN secretariat', email: config.contactEmails.gimun },
     { label: 'GMC organizers', email: config.contactEmails.mootCup },
     { label: 'Sponsorship and media', email: config.contactEmails.sponsorship },
@@ -60,7 +70,7 @@ export default async function ContactPage() {
           <aside className="space-y-12 lg:col-span-5" aria-label="Other ways to reach us">
             <div>
               <h2 className="font-display text-xl font-medium text-text">Who to email</h2>
-              <p className="mt-2 text-sm text-text-3">Email the team that owns your question, or use the form.</p>
+              <p className="mt-2 text-sm text-text-3">Email the organizing team, or use the form.</p>
               <dl className="mt-6 border-b border-line">
                 {inboxes.map((inbox) => (
                   <div key={inbox.label} className="border-t border-line py-4">
@@ -110,6 +120,20 @@ export default async function ContactPage() {
               and used only to answer your question.
             </p>
           </aside>
+        </div>
+      </section>
+
+      <section className="chapter chapter--flush-top" aria-labelledby="phone-title">
+        <div className="wrap space-y-10">
+          <div>
+            <h2 id="phone-title" className="font-display text-h3 font-medium text-text">Call the host team</h2>
+            <p className="mt-2 max-w-2xl text-text-2">Every number from the liaison packages. For registration questions, start with a Director of Registrations for your track.</p>
+          </div>
+          <ContactDirectory contacts={contactsFor(config, { group: 'host-team' })} />
+          <StickyStack className="director-stack" minWidth={1024}>
+            <ContactDirectory track="gimun" stackIndex={0} contacts={contactsFor(config, { track: 'gimun', group: 'registrations' })} />
+            <ContactDirectory track="gmc" stackIndex={1} contacts={contactsFor(config, { track: 'moot-cup', group: 'registrations' })} />
+          </StickyStack>
         </div>
       </section>
     </>

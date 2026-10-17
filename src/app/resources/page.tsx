@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> { return await const
   title: `Resource Hub & Document Archive | GIMUN & GMC ${getEventYear(await getSiteConfig())}`,
   path: '/resources',
   description:
-    "The authoritative digital archive for official delegate handbooks, committee background guides, legal compromises, competition rules, and campus logistical dossiers.",
+    "The official GIMUN 26 and GMC VII liaison packages: fees, rules, instructions and contacts.",
 }); }
 
 export default async function ResourcesPage() {

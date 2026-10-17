@@ -16,13 +16,12 @@ import { NextSteps } from '@/components/story/NextSteps';
 export async function generateMetadata(): Promise<Metadata> { return await constructMetadata({
   title: `Rules & Memorial Guidelines | GMC ${getEventYear(await getSiteConfig())}`,
   path: '/moot-cup/rules',
-  description: `Memorial format, submission, courtroom timing and scoring for the ${getEventYear(await getSiteConfig())} GIKI Moot Court (GMC).`,
+  description: `Memorial format and submission, the oral rounds and their timing, and scoring for GMC VII, the ${getEventYear(await getSiteConfig())} GIKI Moot Cup.`,
 }); }
 
 export default async function MootRulesPage() {
-  const rulesDocument = (await getDocuments()).find(
-    (document) => document.track === "moot-cup" && document.type === "rules",
-  );
+  const documents = (await getDocuments()).filter((document) => document.track === "moot-cup");
+  const rulesDocument = documents.find((document) => document.type === "rules") ?? documents.find((document) => document.type === "handbook");
   const [site, copy] = await Promise.all([getSiteConfig(), getCopy('moot-rules')]);
   const hero = copy('moot-rules-hero');
   const submission = copy('moot-rules-submission');
@@ -46,11 +45,11 @@ export default async function MootRulesPage() {
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             {rulesDocument && (
               <a href={rulesDocument.fileUrl} className="text-link" data-no-transition="">
-                Full rules as a PDF
+                {rulesDocument.type === 'rules' ? 'Full rules as a PDF' : `${rulesDocument.title} (PDF)`}
               </a>
             )}
-            <TransitionLink href="/moot-cup/clarifications" className="text-link">
-              Clarifications log
+            <TransitionLink href="/register#moot-cup" className="text-link">
+              Register a team
             </TransitionLink>
           </div>
         }
@@ -64,7 +63,7 @@ export default async function MootRulesPage() {
       <section className="handoff__sheet tone-deep chapter" aria-labelledby="submission-heading">
         <div className="wrap grid gap-16 lg:grid-cols-2">
           <div>
-            <ChapterHead id="submission-heading" chapter={chapter['moot-rules-submission']} act={submission.kicker} split={false} title={fill(submission.title, vars)} lead={<>Deadline: <strong className="text-text">{memorialDue}, 23:59 Pakistan time.</strong> {fill(submission.lead, vars)}</>} />
+            <ChapterHead id="submission-heading" chapter={chapter['moot-rules-submission']} act={submission.kicker} split={false} title={fill(submission.title, vars)} lead={<>Deadline: <strong className="text-text">{memorialDue}.</strong> {fill(submission.lead, vars)}</>} />
             <Steps
               accent="gmc"
               steps={(submission.items ?? []).map((item) => ({ title: fill(item.title, vars), body: fill(item.body, vars) }))}

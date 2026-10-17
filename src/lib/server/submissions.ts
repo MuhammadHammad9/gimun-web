@@ -535,12 +535,12 @@ async function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId
       <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 14px 18px; margin-bottom: 24px; font-size: 12px; color: #166534; line-height: 1.55;">
         <strong style="display: block; margin-bottom: 4px; font-size: 13px;">What Happens Next:</strong>
         1. <strong>Dossier Evaluation:</strong> ${escapeHtml(site.replyTime || 'The Secretariat will review your application.')}<br>
-        2. <strong>Payment:</strong> ${site.paymentInstructions ? escapeHtml(site.paymentInstructions).replace(/\n/g, '<br>') : 'Once your application is accepted, an invoice with bank transfer details will be emailed to you.'}<br>
+        2. <strong>Payment:</strong> ${site.paymentInstructions ? escapeHtml(site.paymentInstructions).replace(/\n/g, '<br>') : 'Pay by bank transfer to the account on the Register page, then send the payment and documents by mail.'}<br>
         3. <strong>Seat Confirmation:</strong> Upon payment verification, your status will be updated to <strong>Confirmed</strong> and your final badge credentials will be released.
       </div>
 
       <p style="font-size: 12px; color: #64748b; line-height: 1.5; margin: 0;">
-        Zero online payment has been charged yet. For any assistance or queries, please contact <a href="mailto:${escapeHtml(site.contactEmails.general)}" style="color: #4f46e5; text-decoration: none; font-weight: 600;">${escapeHtml(site.contactEmails.general)}</a> citing reference <strong>${safeReferenceId}</strong>.
+        For any assistance or queries, please contact <a href="mailto:${escapeHtml(site.contactEmails.general)}" style="color: #4f46e5; text-decoration: none; font-weight: 600;">${escapeHtml(site.contactEmails.general)}</a> citing reference <strong>${safeReferenceId}</strong>.
       </p>
     </div>
 

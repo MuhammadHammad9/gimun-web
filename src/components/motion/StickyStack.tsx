@@ -9,12 +9,14 @@ import { useEnhance } from './useEnhance';
  * enhancement makes each earlier card recede (scale and shade) as the next
  * arrives, scrubbed to the scroll position so it can never get stuck.
  */
-export function StickyStack({ children, className }: { children: ReactNode; className?: string }) {
+export function StickyStack({ children, className, minWidth = 0 }: { children: ReactNode; className?: string; minWidth?: number }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEnhance(ref, async (stack, signal) => {
+    if (minWidth && window.innerWidth < minWidth) return;
     const cards = [...stack.querySelectorAll<HTMLElement>(':scope > .stack__card')];
     if (cards.length < 2) return;
+    if (minWidth && cards.some((card) => card.offsetHeight > window.innerHeight - 120)) return;
     const { gsap } = await import('@/lib/motion/gsap');
     if (signal.aborted) return;
     const timelines = cards.slice(0, -1).map((card, index) => {
