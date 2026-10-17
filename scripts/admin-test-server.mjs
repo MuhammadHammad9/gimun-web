@@ -7,15 +7,29 @@ import { randomUUID } from 'node:crypto';
 const db=new PGlite();const port=Number(process.env.FIXTURE_PORT||54329);
 await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);create table auth.sessions(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade);create schema storage;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);`);
 for(const f of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.sql')).sort())await db.exec(await readFile(`supabase/migrations/${f}`,'utf8'));
-const user={id:randomUUID(),email:'owner@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:new Date().toISOString()};
-await db.query('insert into auth.users values($1)',[user.id]);await db.query("insert into admin_users(user_id,email,display_name,role,must_change_password) values($1,$2,'Fixture owner','owner',false)",[user.id,user.email]);
+// Admin accounts, all with the password fixture-password-123. The secure owner
+// has an authenticator; the fixture accepts the code 123456 for it.
+const accounts=[['owner@example.test','Fixture owner','owner','{gimun,moot-cup}',false],['gimun-desk@example.test','GIMUN desk','registrar','{gimun}',false],['gmc-desk@example.test','GMC desk','registrar','{moot-cup}',false],['gimun-admin@example.test','GIMUN admin','admin','{gimun}',false],['secure-owner@example.test','Secure owner','owner','{gimun,moot-cup}',true]];
+const users=new Map();
+for(const [email,name,role,events,totp] of accounts){
+  const now=new Date().toISOString();
+  const u={id:randomUUID(),email,aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:now,last_sign_in_at:null,factors:totp?[{id:randomUUID(),factor_type:'totp',status:'verified',friendly_name:'Phone',created_at:now,updated_at:now}]:[]};
+  users.set(email,u);
+  await db.query('insert into auth.users values($1)',[u.id]);await db.query('insert into admin_users(user_id,email,display_name,role,events,must_change_password) values($1,$2,$3,$4,$5,false)',[u.id,email,name,role,events]);
+}
+const user=users.get('owner@example.test');
+// The registration tools start switched off (registration runs on Google Forms);
+// the fixture switches them on so the registration workflow stays covered.
+await db.query(`update admin_settings set data=jsonb_set(data,'{modules,registrations}','true')`);
 const site=JSON.parse(await readFile('content/site.json','utf8'));await db.query("insert into site_settings(id,data) values('site',$1)",[JSON.stringify(site)]);
 for(const f of ['announcements','schedule','committees','moot-categories','resources','faq','team-groups','team','sponsors','gallery','clarifications','results','copy']){
   const data=JSON.parse(await readFile(`content/${f}.json`,'utf8'));for(const [index,item]of data.entries())await db.query("insert into content_entries(collection,id,status,sort_order,data) values($1,$2,'published',$3,$4) on conflict(collection,id) do nothing",[f,item.id,index,JSON.stringify(item)]);
 }
 const objects=new Map();const uploadTokens=new Map();
-const sessions=new Set();
-function token(){const now=Math.floor(Date.now()/1000);const t=[{alg:'HS256',typ:'JWT'},{sub:user.id,email:user.email,aud:'authenticated',role:'authenticated',iat:now,exp:now+3600}].map(v=>Buffer.from(JSON.stringify(v)).toString('base64url')).join('.')+'.'+Buffer.alloc(32).toString('base64url');sessions.add(t);return t;}
+const sessions=new Map();
+function token(u=user,mfa=false){const now=Math.floor(Date.now()/1000);const amr=[{method:'password',timestamp:now},...(mfa?[{method:'totp',timestamp:now}]:[])];const t=[{alg:'HS256',typ:'JWT'},{sub:u.id,email:u.email,aud:'authenticated',role:'authenticated',iat:now,exp:now+3600,session_id:randomUUID(),aal:mfa?'aal2':'aal1',amr}].map(v=>Buffer.from(JSON.stringify(v)).toString('base64url')).join('.')+'.'+Buffer.alloc(32).toString('base64url');sessions.set(t,u);return t;}
+const sessionUser=req=>sessions.get(req.headers.authorization?.replace('Bearer ','')||'');
+const session=(u,mfa=false)=>({access_token:token(u,mfa),refresh_token:'fixture-refresh',token_type:'bearer',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,user:u});
 const ident=v=>{if(!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(v))throw new Error('Invalid identifier');return `"${v}"`;};
 const col=v=>{const [name,json]=v.split('->>');return ident(name)+(json?`->>'${json.replace(/[^a-zA-Z_]/g,'')}'`:'');};
 const tables=new Set((await db.query("select tablename from pg_tables where schemaname='public' union select viewname as tablename from pg_views where schemaname='public'")).rows.map(r=>r.tablename));
@@ -45,10 +59,13 @@ try{
  const body=raw.toString();const input=body?JSON.parse(body):null;
  if(url.pathname.startsWith('/auth/v1/')){
    console.log('Fixture auth',req.method,url.pathname);
-   if(url.pathname.endsWith('/token')){if(input.email!==user.email||input.password!=='fixture-password-123'){status=400;return send({error:'invalid_grant',error_description:'Invalid credentials'});}return send({access_token:token(),refresh_token:'fixture-refresh',token_type:'bearer',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,user});}
+   if(url.pathname.endsWith('/token')){const u=users.get(input.email);if(!u||input.password!=='fixture-password-123'){status=400;return send({error:'invalid_grant',error_description:'Invalid credentials'});}u.last_sign_in_at=new Date().toISOString();return send(session(u));}
+   if(url.pathname.endsWith('/admin/users')&&req.method==='GET')return send({users:[...users.values()],aud:'authenticated'});
+   if(/\/factors\/[^/]+\/challenge$/.test(url.pathname)){if(!sessionUser(req)){status=401;return send({message:'Invalid JWT'});}return send({id:randomUUID(),type:'totp',expires_at:Math.floor(Date.now()/1000)+300});}
+   if(/\/factors\/[^/]+\/verify$/.test(url.pathname)){const u=sessionUser(req);if(!u){status=401;return send({message:'Invalid JWT'});}if(input.code!=='123456'){status=422;return send({code:'mfa_verification_failed',error_code:'mfa_verification_failed',msg:'Invalid TOTP code entered'});}return send(session(u,true));}
    if(url.pathname.endsWith('/.well-known/jwks.json'))return send({keys:[]});
    if(url.pathname.endsWith('/logout'))return send({});
-   if(url.pathname.endsWith('/user')){if(!sessions.has(req.headers.authorization?.replace('Bearer ',''))){status=401;return send({message:'Invalid JWT'});}return send(user);}
+   if(url.pathname.endsWith('/user')){const u=sessionUser(req);if(!u){status=401;return send({message:'Invalid JWT'});}return send(u);}
  }
  if(url.pathname==='/redis')return send({result:1});
  if(!url.pathname.startsWith('/rest/v1/')){status=404;return send({message:'Not found'});}

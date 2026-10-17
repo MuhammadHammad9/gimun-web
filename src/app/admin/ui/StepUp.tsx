@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
+import { createPortal } from 'react-dom';
 import { ShieldCheck } from 'lucide-react';
 import { verifyStepUp } from '../mfa-actions';
 
@@ -24,7 +25,7 @@ export function useStepUp(): [<R extends Result>(action: () => Promise<R>) => Pr
     if (!(await ask(first.stepUp))) return null;
     return action();
   }, [ask]);
-  return [guard, step ? <StepUpDialog key={step} step={step} onSettle={settle} /> : null];
+  return [guard, step ? createPortal(<StepUpDialog key={step} step={step} onSettle={settle} />, document.querySelector('.admin') ?? document.body) : null];
 }
 
 function StepUpDialog({ step, onSettle }: { step: Step; onSettle: (ok: boolean) => void }) {
@@ -37,6 +38,7 @@ function StepUpDialog({ step, onSettle }: { step: Step; onSettle: (ok: boolean) 
   useEffect(() => { if (ref.current && !ref.current.open) ref.current.showModal(); input.current?.focus(); }, []);
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    e.stopPropagation();
     setPending(true);
     const result = await verifyStepUp(code);
     setPending(false);

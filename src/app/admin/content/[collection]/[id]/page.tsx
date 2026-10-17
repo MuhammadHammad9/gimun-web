@@ -26,6 +26,8 @@ export default async function EntryPage({ params }: { params: Promise<{ collecti
   const media=can(user,'media')?(await readAll('media_assets')).filter(a=>a.state==='available'&&!a.deleted_at).map(a=>({path:String(a.path),url:database().storage.from('media').getPublicUrl(String(a.path)).data.publicUrl,alt:String(a.alt),mime:String(a.mime),size:Number(a.size)})):[];
   // The team editor picks a category; committees and case categories pick a document.
   const resources=collection==='team'?(await teamCategories()).map(c=>({id:c.id,title:c.name})):await getDocuments();
+  // A new team member starts in the first category, so the form is valid as it opens.
+  if(collection==='team'&&id==='new'&&resources[0])entry={...entry,data:{...entry.data,group:resources[0].id}};
   const [live,scheduled,site]=await Promise.all([database().from('effective_content').select('version').eq('collection',collection).eq('id',id).maybeSingle(),database().from('content_publications').select('effective_at').eq('collection',collection).eq('entry_id',id).is('cancelled_at',null).gt('effective_at',new Date().toISOString()).order('effective_at').limit(1),getSiteConfig()]);
   const info = COLLECTION_INFO[collection];
   const title = id === 'new' ? `New ${info.singular}` : entryTitle(entry.data, `Untitled ${info.singular}`);

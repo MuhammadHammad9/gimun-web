@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { AlertTriangle } from 'lucide-react';
 
 export type ConfirmOptions = {
@@ -34,7 +35,8 @@ export function useConfirm(): [(options: ConfirmOptions) => Promise<boolean>, Re
     resolver.current = null;
     setOptions(null);
   }, []);
-  return [confirm, options ? <ConfirmDialog key={options.title} options={options} onSettle={settle} /> : null];
+  // In the admin root, outside every form: a dialog opened inside a form must not submit it too.
+  return [confirm, options ? createPortal(<ConfirmDialog key={options.title} options={options} onSettle={settle} />, document.querySelector('.admin') ?? document.body) : null];
 }
 
 function ConfirmDialog({ options, onSettle }: { options: ConfirmOptions; onSettle: (ok: boolean) => void }) {
@@ -50,7 +52,7 @@ function ConfirmDialog({ options, onSettle }: { options: ConfirmOptions; onSettl
   const ready = !options.typeToConfirm || typed.trim() === options.typeToConfirm.trim();
   const danger = options.tone === 'danger';
   return <dialog ref={ref} className="admin-dialog" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} onCancel={(e) => { e.preventDefault(); onSettle(false); }}>
-    <form method="dialog" onSubmit={(e) => { e.preventDefault(); if (ready) onSettle(true); }}>
+    <form method="dialog" onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); if (ready) onSettle(true); }}>
       <h2 id={`${id}-title`}>{danger && <AlertTriangle size={18} aria-hidden="true" />} {options.title}</h2>
       <div id={`${id}-body`} className="admin-dialog__body">
         {options.body && <div>{options.body}</div>}

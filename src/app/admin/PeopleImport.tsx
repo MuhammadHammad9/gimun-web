@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { FileUp, UserPlus } from 'lucide-react';
 import { parseCsv } from '@/lib/csv';
@@ -33,11 +33,16 @@ export function PeopleImport({ events }: { events: string[] }) {
   const [pending, start] = useTransition();
   const notice = useNotice();
   const router = useRouter();
+  const fileInput = useRef<HTMLInputElement>(null);
   const headers = rows[0] ?? [];
   const body = rows.slice(1);
 
   function load(file: File) {
-    file.text().then((text) => {
+    // FileReader rather than file.text(), which some older browsers lack.
+    const reader = new FileReader();
+    reader.onerror = () => notice({ text: 'That file could not be read. Download it again as CSV and retry.', tone: 'error' });
+    reader.onload = () => {
+      const text = String(reader.result ?? '');
       const parsed = parseCsv(text);
       if (parsed.length < 2) { notice({ text: 'That file has no responses in it.', tone: 'error' }); return; }
       setRows(parsed); setFileName(file.name);
@@ -47,8 +52,15 @@ export function PeopleImport({ events }: { events: string[] }) {
         if (matches.length) guessed[f.key] = f.key === 'committees' ? matches.filter((i) => !Object.values(guessed).flat().includes(i)).slice(0, 3) : [matches.find((i) => !Object.values(guessed).flat().includes(i)) ?? matches[0]];
       }
       setMap(guessed);
-    });
+    };
+    reader.readAsText(file);
   }
+  // A file picked before the page finished loading raised no change event; read it now.
+  useEffect(() => {
+    const file = fileInput.current?.files?.[0];
+    if (file) load(file);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, on mount
+  }, []);
   const people = useMemo(() => body.map((r) => {
     const pick = (f: Field) => (map[f] ?? []).map((i) => (r[i] ?? '').trim()).filter(Boolean);
     return { name: pick('name')[0] ?? '', email: (pick('email')[0] ?? '').toLowerCase(), institution: pick('institution')[0], role: pick('role')[0]?.toLowerCase().replace(/\s+/g, '-'), committees: pick('committees').flatMap((v) => v.split(/[;,]/)).map((v) => v.trim()).filter(Boolean).slice(0, 3), country: pick('country')[0] };
@@ -77,14 +89,14 @@ export function PeopleImport({ events }: { events: string[] }) {
       <label>Event<select value={event} onChange={(e) => setEvent(e.target.value)} disabled={events.length < 2}>{events.map((e) => <option key={e} value={e}>{EVENT_LABELS[e]}</option>)}</select></label>
       <label>Payment status<select value={payment} onChange={(e) => setPayment(e.target.value)}>{PAYMENTS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}</select></label>
     </div>
-    <details open={!rows.length}>
+    <details open>
       <summary><FileUp size={15} aria-hidden="true" /> Import a Google Forms CSV</summary>
       <p className="admin-muted">In the form&apos;s responses sheet choose File › Download › Comma-separated values, then pick the file here. Nothing is saved until you press Import.</p>
-      <label>CSV file<input type="file" accept=".csv,text/csv" onChange={(e) => { const f = e.target.files?.[0]; if (f) load(f); }} /></label>
+      <label>CSV file<input ref={fileInput} type="file" accept=".csv,text/csv" onChange={(e) => { const f = e.target.files?.[0]; if (f) load(f); }} /></label>
       {rows.length > 0 && <>
         <h3>Match the columns in {fileName}</h3>
         <div className="admin-import-map">{FIELDS.map((f) => <label key={f.key}>{f.label}{f.required ? ' (required)' : ''}
-          <select multiple={f.key === 'committees'} value={(map[f.key] ?? []).map(String)} onChange={(e) => setMap({ ...map, [f.key]: [...e.target.selectedOptions].map((o) => Number(o.value)).filter((n) => n >= 0) })}>
+          <select multiple={f.key === 'committees'} value={f.key === 'committees' ? (map[f.key] ?? []).map(String) : String(map[f.key]?.[0] ?? -1)} onChange={(e) => setMap({ ...map, [f.key]: [...e.target.selectedOptions].map((o) => Number(o.value)).filter((n) => n >= 0) })}>
             {f.key !== 'committees' && <option value="-1">Not in this file</option>}
             {headers.map((h, i) => <option key={i} value={i}>{h || `Column ${i + 1}`}</option>)}
           </select></label>)}</div>

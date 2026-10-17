@@ -33,7 +33,7 @@ test('a photo uploaded while adding a team member is published and shows on the 
   // The public Team page shows the member with the uploaded photo.
   await page.goto('/about/team');
   await expect(page.getByText(name, { exact: true }).first()).toBeVisible();
-  const src = await page.locator(`img[alt="${name}"]`).first().getAttribute('src');
+  const src = await page.locator(`img[alt="Portrait of ${name}"]`).first().getAttribute('src');
   expect(decodeURIComponent(src ?? '')).toContain('/storage/v1/object/public/media/');
 
   // The library lists the file and where it is used.

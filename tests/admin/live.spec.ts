@@ -10,7 +10,7 @@ test('published changes reach another admin and public page; dirty drafts surviv
       await page.getByLabel('Password', { exact: true }).fill('fixture-password-123');
       await page.getByRole('button', { name: 'Sign in', exact: true }).click();
       await expect(page.getByRole('heading', { name: 'Event dashboard' })).toBeVisible();
-      await page.goto('/admin/content/announcements/ann-01');
+      await page.goto('/admin/content/announcements/ann-memorial-deadline');
     }
     await website.goto('/announcements');
     editor.on('dialog', d => d.accept());
@@ -36,8 +36,8 @@ test('published changes reach another admin and public page; dirty drafts surviv
 
 test('scheduled publication and expiry update an open public page without another write', async ({ page, request }) => {
   const base='http://127.0.0.1:54329/rest/v1';const headers={apikey:'fixture-service'};
-  const users=await (await request.get(`${base}/admin_users`,{headers})).json();
-  const entries=await (await request.get(`${base}/content_entries?collection=eq.announcements&id=eq.ann-01`,{headers})).json();
+  const users=await (await request.get(`${base}/admin_users?email=eq.owner@example.test`,{headers})).json();
+  const entries=await (await request.get(`${base}/content_entries?collection=eq.announcements&id=eq.ann-memorial-deadline`,{headers})).json();
   const entry=entries[0];const title=`Scheduled browser release ${Date.now()}`;
   await page.goto('/announcements');
   const release=Date.now()+3000;
@@ -52,8 +52,8 @@ test('scheduled publication and expiry update an open public page without anothe
 // Publishes an announcement straight through the fixture database (no save action).
 async function publishAnnouncement(request: import('@playwright/test').APIRequestContext, id: string, title: string, status: 'published' | 'draft' = 'published') {
   const base='http://127.0.0.1:54329/rest/v1';const headers={apikey:'fixture-service'};
-  const users=await (await request.get(`${base}/admin_users`,{headers})).json();
-  const entries=await (await request.get(`${base}/content_entries?collection=eq.announcements&id=eq.ann-01`,{headers})).json();
+  const users=await (await request.get(`${base}/admin_users?email=eq.owner@example.test`,{headers})).json();
+  const entries=await (await request.get(`${base}/content_entries?collection=eq.announcements&id=eq.ann-memorial-deadline`,{headers})).json();
   const entry=entries[0];
   const result=await request.post(`${base}/rpc/save_content`,{headers,data:{p_actor:users[0].user_id,p_entry:{...entry,id,version:0,status,publish_at:null,expire_at:null,data:{...entry.data,id,pinnedFlag:false,title}}}});
   expect(result.ok()).toBeTruthy();
@@ -122,7 +122,7 @@ test('preview cannot be switched on without signing in', async ({ page, request 
 
 test('edited page copy reaches an open public page, now and on schedule', async ({ page, request }) => {
   const base='http://127.0.0.1:54329/rest/v1';const headers={apikey:'fixture-service'};
-  const users=await (await request.get(`${base}/admin_users`,{headers})).json();
+  const users=await (await request.get(`${base}/admin_users?email=eq.owner@example.test`,{headers})).json();
   const save=async(title:string,publishAt:string|null)=>{
     const [entry]=await (await request.get(`${base}/content_entries?collection=eq.copy&id=eq.home-hero`,{headers})).json();
     const data={...entry.data,title};delete data.accentPhrase;
