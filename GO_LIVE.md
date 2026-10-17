@@ -7,7 +7,7 @@ Time needed: about half a day, plus DNS propagation.
 ## 1. Supabase (database, admin sign-in, file storage)
 
 1. Create a project at supabase.com. Use a paid plan for production: the free tier pauses when idle and has no point-in-time recovery.
-2. **SQL editor:** run `supabase/migrations/0001_public_launch.sql`, then `supabase/harden_legacy_access.sql`, then the remaining migrations in order (`0002` … `0011`). This is the order the migration tests use.
+2. **SQL editor:** run `supabase/migrations/0001_public_launch.sql`, then `supabase/harden_legacy_access.sql`, then the remaining migrations in order (`0002` … `0020`). This is the order the migration tests use. On a live database that already has some of them, run only the newer files, oldest first, before deploying the code that needs them (each file is additive, so the running site keeps working).
 3. **Authentication → Providers:** turn off public sign-ups. **Authentication → Multi-factor:** enable TOTP.
 4. **Authentication → URL configuration:** Site URL = your domain; add `https://<domain>/admin/**` as a redirect URL.
 5. **Project settings → API:** copy the project URL, the publishable key and the secret key (for step 4).

@@ -16,6 +16,7 @@ const tables:Record<string,{table:string;section:string;select:string;order:stri
   feedback:{table:'survey_responses',section:'feedback',select:'submitted_at,answers',order:'submitted_at'},
   email_outbox:{table:'email_outbox',section:'email',select:'id,message_type,reference_id,status,attempts,last_error,created_at,sent_at',order:'created_at'},
   contact_messages:{table:'contact_messages',section:'inbox',select:'id,submitted_at,name,email,query_type,kind,message,handled_status',order:'id'},
+  audit:{table:'audit_log',section:'audit',select:'id,created_at,actor_label,action,section,entity_id,event,detail',order:'id'},
 };
 // Nested relation objects become flat columns (participants.name → participant_name).
 function flatten(row:Record<string,unknown>){
@@ -35,8 +36,16 @@ export async function GET(request:Request){
   const config=Object.hasOwn(tables,type)?tables[type]:null;if(!config)return new Response('Invalid export',{status:400});
   const user=await routePermission(config.section,true,'page');if(user instanceof Response)return user;
   if(!(await moduleOn(config.section)))return new Response(MODULE_OFF,{status:403,headers:{'Cache-Control':'private, no-store'}});
+  // The activity log names every admin's actions; only owners take it out of the system.
+  if(type==='audit'&&user.role!=='owner')return new Response('Only owners can export the activity log.',{status:403,headers:{'Cache-Control':'private, no-store'}});
   const rows:Record<string,unknown>[]=[];for(let offset=0;;offset+=500){let query=database().from(config.table).select(config.select).order(config.order).order(type==='allocations'||type==='feedback'?'participant_id':type==='registrations'?'reference_id':'id').range(offset,offset+499);
     if(EVENT_COLUMN[type])query=scopeEvent(query,user,...EVENT_COLUMN[type]);
+    if(type==='audit'){const who=params.get('who')||'',section=params.get('section')||'',event=params.get('event')||'',from=params.get('from')||'',to=params.get('to')||'';
+      if(params.get('security')==='1')query=query.eq('section','security');else if(section)query=query.eq('section',section);
+      if(who==='system')query=query.is('actor',null);else if(/^[0-9a-f-]{36}$/.test(who))query=query.eq('actor',who);
+      if(event==='shared')query=query.is('event',null);else if(event==='gimun'||event==='moot-cup')query=query.eq('event',event);
+      if(/^\d{4}-\d{2}-\d{2}$/.test(from))query=query.gte('created_at',new Date(`${from}T00:00:00+05:00`).toISOString());
+      if(/^\d{4}-\d{2}-\d{2}$/.test(to))query=query.lt('created_at',new Date(new Date(`${to}T00:00:00+05:00`).getTime()+86400000).toISOString());}
     if(type==='registrations'){const q=(params.get('q')||'').replace(/[^\p{L}\p{N}@. -]/gu,'').trim();if(q)query=query.or(`applicant_name.ilike.%${q}%,contact_email.ilike.%${q}%,institution.ilike.%${q}%,reference_id.ilike.%${q}%`);const track=params.get('track'),status=params.get('status'),payment=params.get('payment');if(track&&['gimun','moot-cup'].includes(track))query=query.eq('track',track);if(status==='review')query=query.in('status',['received','under-review']);else if(status)query=query.eq('status',status);if(payment==='outstanding')query=query.in('payment_status',['unpaid','pending_verification']).in('status',['received','under-review','accepted','waitlisted']);else if(payment)query=query.eq('payment_status',payment);}
     const {data,error}=await query;if(error)return new Response('Export failed',{status:503});rows.push(...(data as unknown as Record<string,unknown>[]).map(flatten));if(data.length<500)break;}
   const logged=await database().rpc('log_admin_export',{p_actor:user.user_id,p_export:type,p_rows:rows.length});

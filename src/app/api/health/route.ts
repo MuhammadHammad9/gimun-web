@@ -29,22 +29,25 @@ let memo: { at: number; value: Health } | null = null;
 async function check(): Promise<Health> {
   const configOk = getMissingProductionConfig({ emailDelivery: true }).length === 0;
   const [cms, rateLimit] = await Promise.all([contentHealth(), rateLimiterHealth()]);
-  // public_revision arrives with migration 0012; its absence means the database
-  // is behind the code and admin operations will fail.
+  // public_revision arrives with migration 0012, the Trash columns with 0017 and
+  // the people roster with 0019; a missing one means the database is behind the
+  // code and admin operations will fail.
   let schema: Health['schema'] = 'unknown';
   let outbox: Health['outbox'] = 'unknown';
   if (hasDatabase()) {
     try {
       const db = database();
-      const [revision, overdue] = await Promise.all([
+      const [revision, trash, people, overdue] = await Promise.all([
         db.rpc('public_revision'),
+        db.from('content_entries').select('deleted_at', { count: 'exact', head: true }).not('deleted_at', 'is', null),
+        db.rpc('person_impact', { p_id: '00000000-0000-0000-0000-000000000000' }),
         db
           .from('email_outbox')
           .select('id', { count: 'exact', head: true })
           .in('status', ['pending', 'retry'])
           .lt('next_attempt_at', new Date(Date.now() - OUTBOX_DELAY_MS).toISOString()),
       ]);
-      schema = revision.error ? 'outdated' : 'ok';
+      schema = revision.error || trash.error || people.error ? 'outdated' : 'ok';
       outbox = overdue.error ? 'unknown' : (overdue.count ?? 0) > 0 ? 'delayed' : 'ok';
     } catch {
       schema = 'unknown';

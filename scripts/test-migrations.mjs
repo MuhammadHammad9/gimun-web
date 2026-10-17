@@ -271,6 +271,11 @@ try {
   await assert.rejects(()=>db.query('select purge_participant($1,$2)',[imported.id,gimunDesk]),/Only owners/);
   await db.query('select purge_participant($1,$2)',[imported.id,gimunAdmin]);
   assert.equal((await db.query('select count(*)::int n from registrations where reference_id=$1',[imported.reference_id])).rows[0].n,0);
+  // 0020: a content save records what changed.
+  await save({collection:'faq',id:'audited',status:'draft',sort_order:0,publish_at:null,expire_at:null,version:0,data:{id:'audited',question:'Q1',answer:'A'}});
+  await save({collection:'faq',id:'audited',status:'published',sort_order:0,publish_at:null,expire_at:null,version:1,data:{id:'audited',question:'Q2',answer:'A'}});
+  const detail=(await db.query("select detail from audit_log where action='save' and entity_id='audited' order by id desc limit 1")).rows[0].detail;
+  assert.deepEqual(detail.changed,['question']);assert.equal(detail.status,'published');assert.equal(detail.title,'Q2');
   console.log('PASS: people import, edit and permanent delete');
 
   console.log('PASS: event scope on operations, content, site settings and email; append-only audit log; removable accounts');

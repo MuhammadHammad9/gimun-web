@@ -24,12 +24,36 @@ Registration pages offer **Send invoice** (PDF built from amount due, amount pai
 
 ## Admin security
 
+### Who sees what
+
+- Each admin has a **job** (owner, admin, content editor, registrar, check-in staff, viewer) and **events** (GIMUN, GMC or both), set in **Admin accounts**. An admin of one event sees only that event's records, messages, emails, exports and dashboard counts; shared website content (team, FAQ, page text…) is open to editors of either event. Site settings need both events. Records outside an admin's events answer as if they did not exist, and the database refuses writes to them (migration 0015).
+- Owners manage **Admin accounts** and **Admin settings**: which tools are switched on (Registrations & payments is off while registration runs on Google Forms; its data is kept) and how long Trash keeps items.
+- The database always keeps at least one active owner (migration 0016).
+
+### Deleting
+
+- Anyone who can edit a section moves items to **Trash** (with Undo) and can restore them. Website content in Trash is off the website at once.
+- **Delete permanently** (in Trash) is for owners, and for admins on records of their own event; a shared record needs both events. It asks for a fresh authenticator code and the item's name typed. The activity log keeps one line (what, who, when) and none of the content.
+- Trash empties itself after the days in Admin settings (default 30; 0 = never), on the email scheduler's run. Items still used elsewhere (a document a committee links to, a team category with members, a committee with allocations) are never deleted; change those first.
+- Revoking a certificate (Certificates › Revoke) makes its verification page say so and stops its PDF download; un-revoke from Trash.
+- Archive snapshots (Archive & retention) contain copies of content as it was; deleting an entry does not change snapshots taken before.
+
+### Sessions and two-step sign-in
+
+- Admin sessions end after `ADMIN_IDLE_MINUTES` without activity (default 30) and `ADMIN_SESSION_HOURS` after sign-in (default 12). The page warns two minutes before an idle sign-out; typing counts as activity. Session cookies are httpOnly.
+- Risky actions (permanent delete, emptying Trash, admin accounts, admin settings) ask for a code from an authenticator app made within the last 15 minutes. **Every owner and admin who deletes must enrol first** at **My account › Two-step sign-in**. Normal sign-in still works without it (see below).
+- A lost phone: an owner opens **Admin accounts › Manage › Reset two-step sign-in**; the admin enrols again after signing in.
+- **Sign out everywhere** (My account, or Admin accounts for an owner) ends every session of that account.
+- Sign-ins, failed sign-ins, sign-outs, password and two-step changes appear in the **Activity log** under "Sign-in & security". Owners can export the log as CSV.
+
+### Settings outside the code
+
 - Enable TOTP MFA in Supabase Auth. Admins enrol from **Two-factor** in the admin header; `ADMIN_REQUIRE_MFA=1` makes enrolment mandatory before any admin page loads. It is currently off by decision (2026-10-02): enrolment is optional and builds only warn. Turn it on once every admin has enrolled; before that, confirm TOTP is enabled under Authentication → Multi-Factor, or admins without an authenticator are locked out.
-- Supabase Auth settings the code cannot enforce (Dashboard → Authentication): turn **off** "Allow new users to sign up" (admins are created from **Users**), turn **on** leaked-password protection, set the minimum password length to 12, and set a session time-box (for example 12 hours) and an inactivity timeout (for example 1 hour).
+- Supabase Auth settings the code cannot enforce (Dashboard → Authentication): turn **off** "Allow new users to sign up" (admins are created from **Admin accounts**), turn **on** leaked-password protection, set the minimum password length to 12, and (if your plan offers them) a session time-box and inactivity timeout no longer than the admin's own limits above.
 - Google Analytics: in the GA4 data stream's enhanced measurement, turn **off** "Page changes based on browser history events". The site sends its own page views and never for `/admin`, `/survey/…` or `/verify/…`, whose addresses carry private tokens; the automatic setting would report them.
 - Hosting outside Vercel: rate limits read the visitor's address from `X-Forwarded-For`, counting `TRUSTED_PROXY_HOPS` entries from the right (default 1, for one reverse proxy that appends the address it saw). `X-Real-IP` is trusted only on Vercel.
 - Changing a password requires the current password and signs out the account's other sessions.
-- The database enforces section permissions itself (`admin_can`, migration 0011), and every CSV export writes an audit-log row. Read-only viewers cannot export.
+- The database enforces section permissions (`admin_can`, migration 0011) and event scope (migration 0015) itself, and every CSV export writes an audit-log row. Read-only viewers cannot export. The audit log cannot be edited or deleted, even with the service key.
 - `/api/health` returns 200 when configuration is complete, the CMS is reachable, the database has migration 0012 and the shared rate limiter (Upstash) answers; otherwise 503. Point an uptime monitor at it. Anonymous callers see only `{"ok":…}`; send `Authorization: Bearer $CRON_SECRET` to see each part: `schema: "outdated"` means migrations are behind the code, `rateLimit: "degraded"` means Upstash is unreachable and each server instance is limiting on its own (almost no protection). `outbox: "delayed"` means an email has waited more than 30 minutes past its due time: no worker is draining the queue, so run `supabase/email_scheduler.sql` (GO_LIVE.md) or check its job in `cron.job_run_details`. The answer is reused for 10 seconds.
 
 ## How the backend degrades
