@@ -766,18 +766,39 @@
   font-size: 0.8125rem;
 }
 
-/* The abbreviation and the committee's emblem share one row. */
 .placard__mark-row {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem;
   margin-top: 2.5rem;
 }
 
+/* The committee's emblem, centred in the card's open middle on a faint halo. */
+.placard__stage {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 9rem;
+  padding-block: 1.5rem 0.5rem;
+}
+
+.placard__stage::before {
+  content: '';
+  position: absolute;
+  width: 11.5rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-emblem) 16%, transparent), transparent);
+  pointer-events: none;
+}
+
 .placard__emblem {
-  height: 4.75rem;
-  flex: none;
+  position: relative;
+  height: 8.5rem;
+  transition: transform var(--dur-ui) var(--ease-brand);
+}
+
+.placard:hover .placard__emblem {
+  transform: scale(1.04);
 }
 
 /* Committee emblems (CommitteeEmblem): masks coloured by --color-emblem. */

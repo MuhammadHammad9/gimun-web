@@ -2,7 +2,7 @@ import { ViewTransition } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ScalesArt } from '@/components/art/LineArt';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
-import { CommitteeEmblem } from '@/components/ui/CommitteeEmblem';
+import { CommitteeEmblem, hasCommitteeEmblem } from '@/components/ui/CommitteeEmblem';
 import { formatPublishedDate } from '@/lib/site-config';
 import type { Committee, ProblemCategory } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -57,12 +57,17 @@ export function CommitteePlacard({
             {committee.slug.toUpperCase()}
           </p>
         </ViewTransition>
-        <CommitteeEmblem slug={committee.slug} className="placard__emblem" />
       </div>
       <h3 id={headingId} className="placard__name">
         {committee.name}
       </h3>
       {committee.topics?.[0] && <p className="placard__copy">Agenda: {committee.topics[0]}</p>}
+      {/* The emblem takes the open middle of the card, so it never crowds the name. */}
+      {hasCommitteeEmblem(committee.slug) && (
+        <div className="placard__stage">
+          <CommitteeEmblem slug={committee.slug} className="placard__emblem" />
+        </div>
+      )}
       <div className="placard__foot">
         <span className="placard__seats" aria-hidden="true">
           {(committee.countryList ?? []).slice(0, 20).map((entry, index) => (
