@@ -158,12 +158,12 @@ html .scroll-progress {
 }
 
 .brand-logos__logo--gimun {
-  --logo: url('/images/brand/gimun-logo.png');
+  --logo: url('/images/brand/gimun-logo-288.webp');
   aspect-ratio: 813 / 696;
 }
 
 .brand-logos__logo--gmc {
-  --logo: url('/images/brand/gmc-logo.png');
+  --logo: url('/images/brand/gmc-logo-288.webp');
   aspect-ratio: 924 / 761;
 }
 

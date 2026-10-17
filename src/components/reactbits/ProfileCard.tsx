@@ -11,11 +11,28 @@
  * - without a photo, the person's initials sit on the maroon ground.
  */
 import { memo, useEffect, useRef, type CSSProperties } from 'react';
+import { getImageProps } from 'next/image';
 import { Phone } from 'lucide-react';
 import { telHref } from '@/components/registration/ContactDirectory';
+import { supabaseOrigin } from '@/lib/csp';
 import './ProfileCard.css';
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+/**
+ * Portraits are uploaded as large PNGs (up to ~900 KB). The image optimizer
+ * serves them resized to the card and as WebP; getImageProps keeps the plain
+ * <img> the parallax needs. Only site files and Supabase media are allowed by
+ * next.config.ts, so any other address is used as it is.
+ */
+const PHOTO_SIZES = '(max-width: 380px) 92vw, 352px';
+function photoProps(src: string) {
+  const media = supabaseOrigin() && `${supabaseOrigin()}/storage/v1/object/public/media/`;
+  const optimizable = (src.startsWith('/') && !src.startsWith('//')) || Boolean(media && src.startsWith(media));
+  if (!optimizable) return { src };
+  const { props } = getImageProps({ src, alt: '', fill: true, sizes: PHOTO_SIZES });
+  return { src: props.src, srcSet: props.srcSet, sizes: props.sizes };
+}
 
 export interface ProfileCardProps {
   name: string;
@@ -220,7 +237,7 @@ function ProfileCard({
           <span className="profile-card__holo" />
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- the portrait moves with the tilt (parallax), which next/image's fill layout would fight
-            <img className="profile-card__photo" src={avatarUrl} alt={`Portrait of ${name}`} loading="lazy" draggable={false} />
+            <img className="profile-card__photo" {...photoProps(avatarUrl)} alt={`Portrait of ${name}`} loading="lazy" decoding="async" draggable={false} />
           ) : (
             <span className="profile-card__monogram" aria-hidden="true">{initials(name)}</span>
           )}

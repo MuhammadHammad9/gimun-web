@@ -8,11 +8,11 @@ import {
   type RefObject,
 } from "react";
 import { usePathname } from "next/navigation";
-import gsap from "gsap";
 import { ArrowRight, X } from "lucide-react";
 import { TransitionLink as Link } from "@/components/motion/TransitionLink";
 import { useRenderedAt, useSiteConfig } from "@/components/SiteConfigProvider";
 import { lockScroll, unlockScroll } from "@/lib/motion/bridge";
+import { firstIntent } from "@/lib/motion/gates";
 import { prefersReducedMotion } from "@/lib/motion/policy";
 import { navigationTree } from "@/lib/navigation";
 import { eventPhase } from "@/lib/phase";
@@ -21,6 +21,15 @@ import { isCurrentPath } from "./nav-utils";
 import { ThemeSwitch } from "./ThemeSwitch";
 
 type MenuState = "closed" | "open" | "closing";
+
+// The header renders this menu on every page, so a static GSAP import put
+// GSAP in every page's first-load JavaScript. It loads on the visitor's first
+// touch, scroll or key press instead, and again on demand when the menu opens.
+let gsapModule: Promise<typeof import("gsap")> | undefined;
+const loadGsap = () => (gsapModule ??= import("gsap").catch((error: unknown) => {
+  gsapModule = undefined;
+  throw error;
+}));
 
 const FOCUSABLE =
   'a[href], button:not([disabled]):not([tabindex="-1"]), [tabindex]:not([tabindex="-1"])';
@@ -51,6 +60,11 @@ export function MobileMenu({
   if (open && state !== "open") setState("open");
   if (!open && state === "open") setState("closing");
 
+  // Fetch GSAP once the visitor shows intent, so it is ready before a tap opens the menu.
+  useEffect(() => {
+    void firstIntent().then(loadGsap).catch(() => undefined);
+  }, []);
+
   useEffect(() => {
     const menu = menuRef.current;
     if (!menu || state === "closed") return;
@@ -64,60 +78,84 @@ export function MobileMenu({
     );
     if (!surface || !backdrop) return;
 
-    if (prefersReducedMotion()) {
-      gsap.set([...panels, surface], { xPercent: state === "open" ? 0 : 110, visibility: "visible" });
-      gsap.set(backdrop, { opacity: state === "open" ? 1 : 0 });
-      gsap.set(rows, { y: 0, opacity: 1 });
-      if (state === "closing") {
-        const timer = window.setTimeout(() => setState("closed"), 0);
-        return () => window.clearTimeout(timer);
-      }
-      return undefined;
-    }
+    let cancelled = false;
+    let timer: number | undefined;
+    let timeline: { kill: () => void } | undefined;
+    // The panels stay hidden until GSAP shows them, so focus moves in only then.
+    const focusClose = () => {
+      if (state === "open" && !menu.contains(document.activeElement)) closeRef.current?.focus();
+    };
+    const finish = () => setState("closed");
+    loadGsap()
+      .then(({ gsap }) => {
+        if (cancelled) return;
+        if (prefersReducedMotion()) {
+          gsap.set([...panels, surface], { xPercent: state === "open" ? 0 : 110, visibility: "visible" });
+          gsap.set(backdrop, { opacity: state === "open" ? 1 : 0 });
+          gsap.set(rows, { y: 0, opacity: 1 });
+          focusClose();
+          if (state === "closing") timer = window.setTimeout(finish, 0);
+          return;
+        }
 
-    const timeline = gsap.timeline({
-      onComplete: state === "closing" ? () => setState("closed") : undefined,
-    });
-    if (state === "open") {
-      gsap.set([...panels, surface], { xPercent: 110, visibility: "visible" });
-      gsap.set(backdrop, { opacity: 0 });
-      gsap.set(rows, { y: 22, opacity: 0.35 });
-      timeline
-        .to(backdrop, { opacity: 1, duration: 0.32, ease: "power2.out" }, 0)
-        .to(panels, { xPercent: 0, duration: 0.5, ease: "power4.out", stagger: 0.07 }, 0)
-        .to(surface, { xPercent: 0, duration: 0.56, ease: "power4.out" }, 0.16)
-        .to(
-          rows,
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.42,
-            ease: "power3.out",
-            stagger: 0.035,
-          },
-          0.3,
-        );
-    } else {
-      timeline
-        .to(
-          surface,
-          { xPercent: 110, duration: 0.36, ease: "power3.inOut" },
-          0,
-        )
-        .to(
-          [...panels].reverse(),
-          {
-            xPercent: 110,
-            duration: 0.36,
-            ease: "power3.inOut",
-            stagger: 0.045,
-          },
-          0.04,
-        )
-        .to(backdrop, { opacity: 0, duration: 0.28, ease: "power2.out" }, 0.12);
-    }
+        const tl = gsap.timeline({
+          onComplete: state === "closing" ? finish : undefined,
+        });
+        timeline = tl;
+        if (state === "open") {
+          gsap.set([...panels, surface], { xPercent: 110, visibility: "visible" });
+          gsap.set(backdrop, { opacity: 0 });
+          gsap.set(rows, { y: 22, opacity: 0.35 });
+          focusClose();
+          tl
+            .to(backdrop, { opacity: 1, duration: 0.32, ease: "power2.out" }, 0)
+            .to(panels, { xPercent: 0, duration: 0.5, ease: "power4.out", stagger: 0.07 }, 0)
+            .to(surface, { xPercent: 0, duration: 0.56, ease: "power4.out" }, 0.16)
+            .to(
+              rows,
+              {
+                y: 0,
+                opacity: 1,
+                duration: 0.42,
+                ease: "power3.out",
+                stagger: 0.035,
+              },
+              0.3,
+            );
+        } else {
+          tl
+            .to(
+              surface,
+              { xPercent: 110, duration: 0.36, ease: "power3.inOut" },
+              0,
+            )
+            .to(
+              [...panels].reverse(),
+              {
+                xPercent: 110,
+                duration: 0.36,
+                ease: "power3.inOut",
+                stagger: 0.045,
+              },
+              0.04,
+            )
+            .to(backdrop, { opacity: 0, duration: 0.28, ease: "power2.out" }, 0.12);
+        }
+      })
+      // Offline before GSAP arrived: close without the animation rather than strand the dialog.
+      .catch(() => {
+        if (cancelled) return;
+        if (state === "closing") finish();
+        else {
+          for (const el of [...panels, surface]) el.style.visibility = "visible";
+          backdrop.style.opacity = "1";
+          focusClose();
+        }
+      });
     return () => {
-      timeline.kill();
+      cancelled = true;
+      timeline?.kill();
+      if (timer !== undefined) window.clearTimeout(timer);
     };
   }, [state]);
 

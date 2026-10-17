@@ -14,8 +14,8 @@ const CIRCUMFERENCE = 2 * Math.PI * RING_R;
 // centre line in the gap between them. Sizes keep each PNG's proportions.
 const LOGO_H = 92;
 const LOGOS = {
-  gimun: { href: '/images/brand/gimun-logo.png', x: 87.5, width: LOGO_H * (813 / 696) },
-  gmc: { href: '/images/brand/gmc-logo.png', x: 205, width: LOGO_H * (924 / 761) },
+  gimun: { href: '/images/brand/gimun-logo-288.webp', x: 87.5, width: LOGO_H * (813 / 696) },
+  gmc: { href: '/images/brand/gmc-logo-288.webp', x: 205, width: LOGO_H * (924 / 761) },
 } as const;
 const LOGO_Y = C - LOGO_H / 2;
 
