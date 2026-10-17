@@ -3,6 +3,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveAdminSettings } from './workspace-actions';
 import { useDirtyGuard } from './useDirtyGuard';
+import { useStepUp } from './ui/StepUp';
 
 type Tool = { id: string; label: string; description: string };
 
@@ -14,12 +15,14 @@ export function WorkspaceForm({ tools, modules, trashDays, version }: { tools: T
   const [failed, setFailed] = useState(false);
   const [pending, start] = useTransition();
   const router = useRouter();
+  const [guard, stepUpDialog] = useStepUp();
   useDirtyGuard(dirty);
 
   function save(event: React.FormEvent) {
     event.preventDefault();
     start(async () => {
-      const result = await saveAdminSettings({ modules: on, trashDays: days, version });
+      const result = await guard(() => saveAdminSettings({ modules: on, trashDays: days, version }));
+      if (!result) return;
       setFailed(Boolean(result.error));
       setMessage(result.error || 'Saved. The menu and pages follow these settings now.');
       if (!result.error) { setDirty(false); router.refresh(); }
@@ -27,6 +30,7 @@ export function WorkspaceForm({ tools, modules, trashDays, version }: { tools: T
   }
 
   return <form className="admin-card admin-workspace" onSubmit={save} data-admin-dirty={dirty ? 'true' : undefined}>
+    {stepUpDialog}
     <fieldset disabled={pending}>
       <legend><h2>Tools</h2></legend>
       <p className="admin-muted">Switching a tool off hides it from every admin and stops its actions. Its records are kept, and switching it back on brings everything back.</p>

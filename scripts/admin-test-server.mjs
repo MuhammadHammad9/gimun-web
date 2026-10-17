@@ -5,7 +5,7 @@ import { createServer } from 'node:http';
 import { readFile,readdir } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 const db=new PGlite();const port=Number(process.env.FIXTURE_PORT||54329);
-await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);create schema storage;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);`);
+await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);create table auth.sessions(id uuid primary key default gen_random_uuid(),user_id uuid references auth.users(id) on delete cascade);create schema storage;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);`);
 for(const f of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.sql')).sort())await db.exec(await readFile(`supabase/migrations/${f}`,'utf8'));
 const user={id:randomUUID(),email:'owner@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:new Date().toISOString()};
 await db.query('insert into auth.users values($1)',[user.id]);await db.query("insert into admin_users(user_id,email,display_name,role,must_change_password) values($1,$2,'Fixture owner','owner',false)",[user.id,user.email]);

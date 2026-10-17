@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 const db=new PGlite();
 try {
-  await db.exec(`create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create table auth.users(id uuid primary key); create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);`);
+  await db.exec(`create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create table auth.users(id uuid primary key); create table auth.sessions(id uuid primary key default gen_random_uuid(), user_id uuid references auth.users(id) on delete cascade); create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);`);
   for(const file of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.sql')).sort()) { await db.exec(await readFile(`supabase/migrations/${file}`,'utf8')); console.log(`Applied ${file}`); if(file==='0001_public_launch.sql'){await db.exec(await readFile('supabase/harden_legacy_access.sql','utf8'));await db.exec('set role anon');await assert.rejects(()=>db.query("select public.next_submission_reference('gimun')"),/permission denied/);await db.exec('reset role');} }
   const actor=randomUUID();await db.query('insert into auth.users values($1)',[actor]);await db.query("insert into admin_users(user_id,email,display_name,role,must_change_password) values($1,'owner@example.test','Test Owner','owner',false)",[actor]);
   const key=randomUUID(),token=randomUUID();
@@ -192,6 +192,15 @@ try {
   await assert.rejects(()=>db.query("select admin_operation_unscoped('checkin',$1,$2)",[JSON.stringify({participant_id:mootPerson.id,checked:true,override:false}),gimunDesk]),/permission denied/);
   await assert.rejects(()=>db.query('select save_content_unscoped($1,$2)',[JSON.stringify(session),gimunDesk]),/permission denied/);
   await db.exec('reset role');
+  // 0016: ending an account's sessions, and the last owner cannot be removed or demoted.
+  await db.query('insert into auth.sessions(user_id) values($1),($1)',[gimunDesk]);
+  await assert.rejects(()=>db.query('select admin_end_sessions($1,$2)',[mootDesk,gimunDesk]),/Only an owner/);
+  assert.equal((await db.query('select admin_end_sessions($1,$2) as n',[actor,gimunDesk])).rows[0].n,2);
+  await db.query('insert into auth.sessions(user_id) values($1)',[mootDesk]);
+  assert.equal((await db.query('select admin_end_sessions($1,$1) as n',[mootDesk])).rows[0].n,1);
+  await assert.rejects(()=>db.query("update admin_users set role='admin' where user_id=$1",[actor]),/active owner/);
+  await assert.rejects(()=>db.query('update admin_users set active=false where user_id=$1',[actor]),/active owner/);
+  await assert.rejects(()=>db.query('delete from auth.users where id=$1',[actor]),/active owner/);
   console.log('PASS: event scope on operations, content, site settings and email; append-only audit log; removable accounts');
   console.log('PASS: migrations, private grants, idempotency, references, roster, revisions, attendance, certificates, allocation conflicts/capacity, guarded reset, retention dry-run/anonymization, database permissions and correction operations');
 } finally { await db.close(); }

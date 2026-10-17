@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { HEAD_BOOT_SCRIPT } from '@/lib/boot-script';
 import { adminCsp } from '@/lib/csp';
+import { SEEN_COOKIE, adminCookieOptions, mintSeen, readSeen, sessionState } from '@/lib/server/admin/session';
 
 /**
  * A path with a broken percent escape ("/gimun/committees/abc%") makes Next
@@ -59,7 +60,7 @@ export async function proxy(request: NextRequest) {
     const target = request.nextUrl.clone(); target.pathname = '/admin/login'; target.search = '';
     return withPolicy(NextResponse.redirect(target));
   }
-  const client = createServerClient(url, key, { cookies: {
+  const client = createServerClient(url, key, { cookieOptions: adminCookieOptions(), cookies: {
     getAll: () => request.cookies.getAll(),
     setAll: values => { values.forEach(({ name, value }) => request.cookies.set(name, value)); response = forward(); values.forEach(({ name, value, options }) => response.cookies.set(name, value, options)); },
   } });
@@ -69,6 +70,24 @@ export async function proxy(request: NextRequest) {
     const redirect = NextResponse.redirect(target);
     response.cookies.getAll().forEach(cookie => redirect.cookies.set(cookie));
     return withPolicy(redirect);
+  }
+  const path = request.nextUrl.pathname;
+  if (path !== '/admin/login') {
+    const current = request.cookies.get(SEEN_COOKIE)?.value;
+    const state = sessionState(current);
+    if (state === 'idle' || state === 'expired') {
+      // End the session on the server too, so its refresh token cannot be reused.
+      await client.auth.signOut({ scope: 'local' }).catch(() => undefined);
+      const target = request.nextUrl.clone(); target.pathname = '/admin/login'; target.search = `?reason=${state}`;
+      const redirect = NextResponse.redirect(target);
+      response.cookies.getAll().forEach(cookie => redirect.cookies.set(cookie));
+      request.cookies.getAll().filter(c => c.name.startsWith('sb-')).forEach(c => redirect.cookies.delete(c.name));
+      redirect.cookies.delete(SEEN_COOKIE);
+      return withPolicy(redirect);
+    }
+    // Open admin tabs poll /admin/live in the background; only a ping sent while someone works counts as use.
+    const background = path === '/admin/live' && request.nextUrl.searchParams.get('active') !== '1';
+    if (state === 'missing' || !background) response.cookies.set(SEEN_COOKIE, mintSeen(readSeen(current)?.since ?? Date.now(), Date.now()), adminCookieOptions());
   }
   response.headers.set('Cache-Control', 'private, no-store');
   response.headers.set('X-Robots-Tag', 'noindex, nofollow');

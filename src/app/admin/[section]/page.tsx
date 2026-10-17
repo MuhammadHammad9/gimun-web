@@ -22,7 +22,6 @@ import { BulkRegistration } from '../BulkRegistration';
 import { FeedbackReport } from '../FeedbackReport';
 import { MediaLibrary } from '../MediaLibrary';
 import { ProcessOutbox } from '../ProcessOutbox';
-import { UsersForm } from '../UsersForm';
 import { scopeEvent } from '@/lib/server/admin/scope';
 import { moduleOn,MODULE_OFF } from '@/lib/server/admin/modules';
 import { AdminPageHeader } from '../AdminPageHeader';
@@ -79,7 +78,7 @@ export default async function OpsPage({params,searchParams}:{params:Promise<{sec
     {['certificates','feedback'].includes(section)&&write&&can(user,'email',true)&&<PostEventMail kind={section==='feedback'?'survey':'certificate'} people={checkedPeople}/>}
     {section==='close-out'&&write&&<><p className="admin-card">An archive preserves a snapshot of public content and settings and closes both registration tracks. Later content edits remain possible. Export operational data first. Retention decisions require institutional approval.</p><p><a href="/admin/export?type=registrations" download>Export registrations</a> · <a href="/admin/export?type=participants" download>Export roster</a> · <a href="/admin/export?type=contact_messages" download>Export inbox</a></p><OperationForm operation="archive" title="Create archive snapshot" initial={{name:''}} schema={schema({name:string})}/><RetentionForm/></>}
     {section==='feedback'&&<FeedbackReport/>}{section==='media'&&<MediaLibrary/>}
-    {section==='media'&&write&&<MediaUpload/>}{section==='users'&&write&&<UsersForm users={rows as {user_id:string;display_name:string;email:string;role:string;active:boolean;sections:string[];events:string[]}[]}/>}
+    {section==='media'&&write&&<MediaUpload/>}
     <DataTable caption={`${count ?? rows.length} ${(count ?? rows.length)===1?'record':'records'}`} rows={rows} rowKey={row=>String(row.reference_id||row.id||row.participant_id||row.user_id)}
       columns={[...(['allocations','certificates'].includes(section)?[{key:'participant',label:'Participant',render:(row:Record<string,unknown>)=>String(allPeople.find(p=>p.id===row.participant_id)?.name||'Participant unavailable')}]:[]),...recordColumns[section].filter(k=>!HIDDEN_COLUMNS.includes(k)).map(key=>({key,label:columnLabels[key]??key.replaceAll('_',' '),secondary:secondaryColumns.has(key)}))]}
       empty={<p><strong>No matching records.</strong> Adjust the filters, or come back after new submissions arrive.</p>}

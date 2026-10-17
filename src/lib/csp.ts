@@ -57,10 +57,11 @@ export function adminCsp(nonce: string, bootScriptHash: string): string {
     // data: covers the two-factor QR code; blob: covers upload previews.
     `img-src 'self' data: blob: ${supabase}`,
     "font-src 'self'",
-    `connect-src 'self' ${supabase}`,
+    `connect-src 'self' ${supabase} https://challenges.cloudflare.com`,
     "media-src 'self' blob:",
     "worker-src 'self' blob:",
-    "frame-src 'none'",
+    // The sign-in page's human check (Turnstile) runs in Cloudflare's frame.
+    'frame-src https://challenges.cloudflare.com',
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",

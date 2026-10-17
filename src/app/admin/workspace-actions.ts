@@ -2,16 +2,17 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { unstable_rethrow } from 'next/navigation';
-import { requirePermission } from '@/lib/server/admin/auth';
+import { requirePermission, stepUpNeeded } from '@/lib/server/admin/auth';
 import { MODULES, type ModuleId } from '@/lib/server/admin/modules';
 import { database } from '@/lib/server/supabase';
 
 const moduleIds = Object.keys(MODULES) as [ModuleId, ...ModuleId[]];
 
 /** Owner-only: which tools are on, and how long Trash keeps items. */
-export async function saveAdminSettings(input: unknown) {
+export async function saveAdminSettings(input: unknown): Promise<{ error?: string; version?: number; stepUp?: 'code' | 'enrol' }> {
   try {
     const owner = await requirePermission('users', true);
+    const step = await stepUpNeeded(); if (step) return { stepUp: step };
     const p = z.object({
       modules: z.record(z.enum(moduleIds), z.boolean()),
       trashDays: z.number().int().min(0).max(365),

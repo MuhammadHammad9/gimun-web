@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { authClient, mfaState, requireAdmin } from '@/lib/server/admin/auth';
 import { clientIp, enforceRateLimit } from '@/lib/server/submissions';
 import { headers } from 'next/headers';
+import { securityEvent } from '@/lib/server/admin/security-log';
 const code = z.string().regex(/^\d{6}$/);
 /** Limited per address and per account, so a code cannot be guessed from many addresses. */
 async function throttled(email: string) {
@@ -34,7 +35,8 @@ export async function verifyCode(_previous: string, form: FormData) {
   const verified = factors?.totp.filter((f) => f.status === 'verified') ?? [];
   const requested = String(form.get('factorId') || '');
   let factorId: string;
-  if ((await mfaState()).needsCode) {
+  const signingIn = (await mfaState()).needsCode;
+  if (signingIn) {
     // Signing in: only an authenticator that was already confirmed counts.
     factorId = verified.find((f) => f.id === requested)?.id ?? verified[0]?.id ?? '';
   } else {
@@ -43,6 +45,23 @@ export async function verifyCode(_previous: string, form: FormData) {
   }
   if (!factorId) return 'No authenticator is set up for this account.';
   const { error } = await client.auth.mfa.challengeAndVerify({ factorId, code: value.data });
-  if (error) return 'That code did not match. Check the time on your phone and try again.';
+  if (error) { await securityEvent('two-step-failed', user.user_id); return 'That code did not match. Check the time on your phone and try again.'; }
+  await securityEvent(signingIn ? 'two-step-verified' : 'two-step-enrolled', user.user_id);
   redirect('/admin');
+}
+
+/** Confirms a fresh code for a risky action without leaving the page (see stepUpNeeded). */
+export async function verifyStepUp(input: string): Promise<{ ok: true } | { error: string }> {
+  const user = await requireAdmin();
+  const value = code.safeParse(String(input || '').replace(/\s/g, ''));
+  if (!value.success) return { error: 'Enter the 6-digit code from your authenticator app.' };
+  try { if (await throttled(user.email)) return { error: 'Too many attempts. Please try later.' }; } catch { return { error: 'Verification is unavailable. Try again shortly.' }; }
+  const client = await authClient();
+  const { data: factors } = await client.auth.mfa.listFactors();
+  const factor = factors?.totp.find((f) => f.status === 'verified');
+  if (!factor) return { error: 'Set up two-step sign-in first.' };
+  const { error } = await client.auth.mfa.challengeAndVerify({ factorId: factor.id, code: value.data });
+  if (error) { await securityEvent('two-step-failed', user.user_id); return { error: 'That code did not match. Check the time on your phone and try again.' }; }
+  await securityEvent('two-step-verified', user.user_id);
+  return { ok: true };
 }

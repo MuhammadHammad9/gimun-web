@@ -82,7 +82,7 @@ export function AdminNavigation({ name, role, allowed, owner = false, websiteCon
         <div className="admin-avatar" aria-hidden="true">{name.slice(0, 1).toUpperCase()}</div>
         <div className="admin-account-copy"><strong>{name}</strong><small>{role.replaceAll('-', ' ')}</small></div>
         <form action={logout}><button className="admin-signout secondary" aria-label="Sign out"><LogOut size={15} aria-hidden="true" /></button></form>
-        <div className="admin-account-links"><Link href="/admin/mfa">Two-step sign-in</Link><Link href="/admin/password">Change password</Link></div>
+        <div className="admin-account-links"><Link href="/admin/account">My account</Link><Link href="/admin/password">Change password</Link></div>
       </div>
     </aside>
   </>;
