@@ -4,6 +4,7 @@
  *
  *   node scripts/scan-secrets.mjs            every tracked file (CI)
  *   node scripts/scan-secrets.mjs --staged   the staged version of each changed file (pre-commit)
+ *   node scripts/scan-secrets.mjs --history  every line ever added, in every commit on every ref
  *
  * Placeholders such as `<CRON_SECRET>` or `re_xxxx` pass. A line that must
  * contain a match on purpose can end with the comment `secret-scan: allow`.
@@ -12,6 +13,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 
 const staged = process.argv.includes('--staged');
+const history = process.argv.includes('--history');
 const SKIP = /(^|\/)(package-lock\.json)$|\.(png|jpe?g|webp|gif|ico|avif|woff2?|ttf|otf|pdf|zip|docx|mp4|webm)$/i;
 const MAX_BYTES = 1024 * 1024;
 
@@ -49,6 +51,33 @@ function readStaged(path) {
   } catch {
     return null;
   }
+}
+
+/** A secret removed from the tree is still readable in old commits, so check every added line. */
+function scanHistory() {
+  const log = git(['log', '--all', '-p', '--no-color', '--unified=0', '--no-ext-diff', '--format=commit %H']);
+  const hits = [];
+  let commit = '';
+  let file = '';
+  let commits = 0;
+  for (const line of log.split('\n')) {
+    if (line.startsWith('commit ')) { commit = line.slice(7, 19); commits += 1; continue; }
+    if (line.startsWith('+++ ')) { file = line.slice(4).replace(/^b\//, ''); continue; }
+    if (!line.startsWith('+') || SKIP.test(file) || /secret-scan:\s*allow/.test(line)) continue;
+    for (const [name, pattern] of rules) if (pattern.test(line)) hits.push(`${commit} ${file}  ${name}`);
+  }
+  return { hits: [...new Set(hits)], commits };
+}
+
+if (history) {
+  const { hits, commits } = scanHistory();
+  if (hits.length) {
+    console.error(`Possible secrets in git history (${hits.length}). Rotate each credential, then rewrite history if it was ever pushed:\n`);
+    for (const hit of hits) console.error(`  ${hit}`);
+    process.exit(1);
+  }
+  console.log(`History secret scan passed (${commits} commits, all refs).`);
+  process.exit(0);
 }
 
 const files = (staged ? git(['diff', '--cached', '--name-only', '--diff-filter=ACMR']) : git(['ls-files']))

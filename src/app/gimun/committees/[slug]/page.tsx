@@ -91,7 +91,7 @@ export default async function CommitteeDetailPage({ params }: CommitteePageProps
         }
         art={
           <div className="committee-hero-art">
-            <CommitteeEmblem slug={committee.slug} className="committee-hero-art__emblem" />
+            <CommitteeEmblem slug={committee.slug} className="committee-hero-art__emblem" large />
             <ViewTransition name={`committee-mark-${committee.slug}`} share="morph" default="none">
               <p className="committee-mark" aria-hidden="true">
                 {committee.slug.toUpperCase()}
