@@ -82,6 +82,7 @@ export const adminRevision = cache(async (user: AdminUser) => {
         site.revision,
         user.role,
         user.sections,
+        user.events,
         user.active,
       ]),
     )

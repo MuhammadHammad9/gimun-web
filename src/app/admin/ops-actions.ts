@@ -12,11 +12,14 @@ import { database } from '@/lib/server/supabase';
 import { getServerConfig } from '@/lib/server/config';
 import { drainEmailOutbox } from '@/lib/server/submissions';
 import { validateEntry } from '@/lib/content/registry';
+import { canEvent, coversBothEvents, eventsOf, type AdminUser, type EventId } from '@/lib/server/admin/permissions';
+import { requireModule } from '@/lib/server/admin/modules';
+import { eventOfTrack } from '@/lib/server/admin/scope';
 /**
  * Messages that are safe and useful to show staff. Server actions return them
  * rather than throwing: production replaces a thrown message with a generic one.
  */
-function actionMessage(error:unknown,fallback:string){if(error instanceof z.ZodError)return error.issues.map(i=>`${i.path.join('.')||'input'}: ${i.message}`).join('; ');const message=error instanceof Error?error.message:'';return /Unknown template variable|permission|require|changed|Choose|already|valid|Invalid/i.test(message)?message:fallback;}
+function actionMessage(error:unknown,fallback:string){if(error instanceof z.ZodError)return error.issues.map(i=>`${i.path.join('.')||'input'}: ${i.message}`).join('; ');const message=error instanceof Error?error.message:'';return /Unknown template variable|permission|require|changed|Choose|already|valid|Invalid|switched off|outside your access|both events/i.test(message)?message:fallback;}
 const id = z.uuid(); const text = z.string().max(20000);
 const schemas = {
   // expected_updated_at makes a stale form fail instead of overwriting a colleague's edit.
@@ -36,12 +39,24 @@ const schemas = {
   'amount-due':z.object({reference:text.min(1),amount_due:z.number().min(0).max(1e9),reason:text.min(5),expected_updated_at:z.string().min(1)}),
   archive:z.object({name:text.min(1)}),
 };
+/** The switchable tool each operation belongs to; a switched-off tool refuses its operations. */
+const OPERATION_MODULE: Partial<Record<keyof typeof schemas,string>> = {registration:'registrations','registration-contact':'registrations','resend-ticket':'registrations','amount-due':'registrations',checkin:'event-day',allocation:'allocations',reserve:'allocations',unassign:'allocations',certificate:'certificates','survey-question':'feedback',outbox:'email',template:'email'};
+/**
+ * Who a message goes to, within the sender's events: an admin of one event
+ * reaches only that event's applicants, whatever audience they picked.
+ */
+function audienceScope(user:AdminUser,audience:string):{track:EventId|null;event:EventId|null}{
+  if(audience==='gimun'||audience==='moot-cup'){if(!canEvent(user,audience))throw new Error('That audience belongs to an event outside your access.');return {track:audience,event:audience};}
+  if(coversBothEvents(user))return {track:null,event:null};
+  const own=eventsOf(user)[0];return {track:own,event:own};
+}
 const sections: Record<keyof typeof schemas,string> = {'amount-due':'registrations',unassign:'allocations',registration:'registrations','registration-contact':'registrations','participant-edit':'registrations','resend-ticket':'registrations',checkin:'event-day',allocation:'allocations',reserve:'allocations',certificate:'certificates',inbox:'inbox',outbox:'email',template:'email','survey-question':'feedback',archive:'close-out'};
 export async function runOperation(operation: string, input: unknown): Promise<{ error?: string; result?: unknown; record?:Record<string,unknown> }> {
   if (!Object.hasOwn(schemas,operation)) return {error:'Unknown operation.'};
   const key = operation as keyof typeof schemas;
   try {
     const parsed=schemas[key].parse(input) as Record<string,unknown>;
+    const toolModule=OPERATION_MODULE[key];if(toolModule)await requireModule(toolModule);
     if ((key==='checkin' || key==='certificate') && parsed.override) await requirePermission('registrations',true);
     if (key==='resend-ticket') { await requirePermission('email',true); parsed.from=getServerConfig().emailFrom; }
     if(key==='registration' && parsed.notify) {
@@ -57,7 +72,7 @@ export async function runOperation(operation: string, input: unknown): Promise<{
     if(key==='outbox' || key==='resend-ticket' || parsed.notify) after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Dispatch deferred');}});
     if(parsed.reference){const {data}=await database().from('registrations').select('updated_at').eq('reference_id',parsed.reference).single();return {result,record:{expected_updated_at:data?.updated_at}};}
     return {result};
-  } catch(error) { unstable_rethrow(error); if(error instanceof z.ZodError)return {error:error.issues.map(i=>`${i.path.join('.')}: ${i.message}`).join('; ')};const message=error instanceof Error?error.message:'';return {error:/changed|requires|require |Choose |reserved|allocated|capacity|permission|attendance|valid email|applicant name|participant name|Cannot invoice|No original receipt|current state|Override|Entry|Country/i.test(message)?message:'Operation could not be completed. Check the record and try again.'}; }
+  } catch(error) { unstable_rethrow(error); if(error instanceof z.ZodError)return {error:error.issues.map(i=>`${i.path.join('.')}: ${i.message}`).join('; ')};const message=error instanceof Error?error.message:'';return {error:/changed|requires|require |Choose |reserved|allocated|capacity|permission|attendance|valid email|applicant name|participant name|Cannot invoice|No original receipt|current state|Override|Entry|Country|switched off|outside your access|both events/i.test(message)?message:'Operation could not be completed. Check the record and try again.'}; }
 }
 export async function emergencyChange(session: unknown,announcement: unknown) {
   try {
@@ -83,6 +98,7 @@ export async function queueEmail(input:unknown):Promise<{error?:string;result?:s
   const parsed=z.object({subject:text.min(1),body:text.min(1),audience:z.enum(['test','gimun','moot-cup','accepted','all']),test_email:z.email().optional(),confirm:z.boolean()}).parse(input);
   const site=await getSiteConfig();
   if(!parsed.confirm) return {error:'Review the audience and confirm before queueing.'};
+  const scope=audienceScope(user,parsed.audience);
   const from=getServerConfig().emailFrom;if(!from)return {error:'EMAIL_FROM must be configured.'};
   let recipients:{contact_email:string;applicant_name:string;reference_id:string;status:string;payment_status:string;amount_due:number;fee_display:string|null}[]=[];
   if(parsed.audience==='test') recipients=[{contact_email:parsed.test_email || user.email,applicant_name:user.display_name,reference_id:'TEST',status:'test',payment_status:'test',amount_due:feeAmount(site,'gimunIndividual')??0,fee_display:site.fees.gimunIndividual}];
@@ -91,24 +107,26 @@ export async function queueEmail(input:unknown):Promise<{error?:string;result?:s
     for(let offset=0;;offset+=500){let query=database().from('registrations').select('contact_email,applicant_name,reference_id,status,payment_status,amount_due,fee_display').order('reference_id').range(offset,offset+499)
         // Rejected, withdrawn and anonymised records never receive broadcasts.
         .not('status','in','(rejected,withdrawn)').neq('contact_email','anonymized@invalid.example');
-      if(parsed.audience==='accepted')query=query.eq('status','accepted');else if(parsed.audience!=='all')query=query.eq('track',parsed.audience);
+      if(parsed.audience==='accepted')query=query.eq('status','accepted');
+      if(scope.track)query=query.eq('track',scope.track);
       const {data,error}=await query;if(error)return {error:'Unable to load the audience.'};recipients.push(...data);if(data.length<500)break;
     }
   }
   const messages=recipients.map(r=>{const vars={name:r.applicant_name,reference:r.reference_id,status:r.status,payment_status:r.payment_status,event_name:site.eventNames.combined,amount_due:formatFee(Number(r.amount_due)||0,site.fees.gimunIndividual),fee:r.fee_display||''};return {type:'broadcast',to:r.contact_email,subject:renderTemplate(parsed.subject,vars),html:emailHtml(renderTemplate(parsed.body,vars))};});
   // One transaction prevents partial broadcasts if the insert fails.
-  await operate('email','email',{from,messages});
+  await operate('email','email',{from,messages,event:scope.event});
   after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Dispatch deferred');}});
   revalidatePath('/admin/email');return {result:`Queued ${messages.length} messages.`};
  }catch(error){unstable_rethrow(error);return {error:actionMessage(error,'Unable to queue. Check permissions and template variables.')};}
 }
 export async function lookupAttendees(value:string) {
-  await requirePermission('event-day');
+  const user=await requirePermission('event-day');
   const normalized=value.trim();
   if(!/^REG-(GIMUN|MOOT)-\d{4}-\d{4,}$/.test(normalized)&&!z.uuid().safeParse(normalized).success)return {error:'Scan a ticket or enter a registration reference.'};
   const column=normalized.startsWith('REG-')?'reference_id':'checkin_token';
-  const {data,error}=await database().from('registrations').select('reference_id,applicant_name,status,payment_status,participants(id,name,role,checked_in_at)').eq(column,normalized).maybeSingle();
-  return error || !data ? {error:'No matching registration.'} : {result:data};
+  const {data,error}=await database().from('registrations').select('reference_id,track,applicant_name,status,payment_status,participants(id,name,role,checked_in_at)').eq(column,normalized).maybeSingle();
+  // A ticket from another event reads as unknown, not as someone else's record.
+  return error || !data || !canEvent(user,eventOfTrack(data.track)) ? {error:'No matching registration.'} : {result:data};
 }
 export async function replyInquiry(id:string,body:string):Promise<{error?:string;result?:string}> {
   try{
@@ -129,7 +147,7 @@ export async function processOutbox() {
 
 export async function bulkRegistration(input:unknown){
   try{
-    const user=await requirePermission('registrations',true);
+    const user=await requirePermission('registrations',true);await requireModule('registrations');
     const parsed=z.object({references:z.array(z.string().regex(/^REG-(GIMUN|MOOT)-\d{4}-\d{4,}$/)).min(1).max(50),status:schemas.registration.shape.status,confirm:z.literal(true)}).parse(input);
     const {data,error}=await database().from('registrations').select('reference_id,payment_status,payment_reference,amount_paid,internal_notes,updated_at').in('reference_id',parsed.references);
     if(error||data.length!==new Set(parsed.references).size)throw new Error('Selection changed. Refresh and select again.');
@@ -142,10 +160,10 @@ export async function bulkRegistration(input:unknown){
 /** Emails the registration's invoice as a PDF. The number derives from the reference, so re-sending is safe. */
 export async function sendInvoice(reference:string){
   try{
-    await requirePermission('registrations',true);await requirePermission('email',true);
+    const user=await requirePermission('registrations',true);await requirePermission('email',true);await requireModule('registrations');
     const from=getServerConfig().emailFrom;if(!from)return {error:'EMAIL_FROM must be configured.'};
-    const {data,error}=await database().from('registrations').select('reference_id,applicant_name,institution,contact_email,track,applicant_type,participant_count,fee_display,amount_due,amount_paid').eq('reference_id',reference).maybeSingle();
-    if(error||!data)return {error:'Registration not found.'};
+    const {data,error}=await database().from('registrations').select('reference_id,track,applicant_name,institution,contact_email,track,applicant_type,participant_count,fee_display,amount_due,amount_paid').eq('reference_id',reference).maybeSingle();
+    if(error||!data||!canEvent(user,eventOfTrack(data.track)))return {error:'Registration not found.'};
     const r=data as InvoiceRegistration;
     if(!(Number(r.amount_due)>0))return {error:'Set the amount due before sending an invoice.'};
     const pdf=await invoicePdf(r);const number=invoiceNumber(r.reference_id);
@@ -159,8 +177,9 @@ export async function previewEmail(input:unknown):Promise<{error:string}|{subjec
  try{
  const user=await requirePermission('email',true);
  const p=z.object({subject:text.min(1),body:text.min(1),audience:z.enum(['test','gimun','moot-cup','accepted','all'])}).parse(input);
+ const scope=audienceScope(user,p.audience);
  let count=1;
- if(p.audience!=='test'){let q=database().from('registrations').select('*',{count:'exact',head:true}).not('status','in','(rejected,withdrawn)').neq('contact_email','anonymized@invalid.example');if(p.audience==='accepted')q=q.eq('status','accepted');else if(p.audience!=='all')q=q.eq('track',p.audience);const result=await q;if(result.error)throw new Error('Audience unavailable');count=result.count||0;}
+ if(p.audience!=='test'){let q=database().from('registrations').select('*',{count:'exact',head:true}).not('status','in','(rejected,withdrawn)').neq('contact_email','anonymized@invalid.example');if(p.audience==='accepted')q=q.eq('status','accepted');if(scope.track)q=q.eq('track',scope.track);const result=await q;if(result.error)throw new Error('Audience unavailable');count=result.count||0;}
  const site=await getSiteConfig();const values={name:user.display_name,reference:`REG-GIMUN-${site.eventDates.start.slice(0,4)}-0001`,status:'accepted',payment_status:'paid',event_name:site.eventNames.combined,amount_due:site.fees.gimunIndividual,fee:site.fees.gimunIndividual};
  return {subject:renderTemplate(p.subject,values),body:renderTemplate(p.body,values),count};
  }catch(error){unstable_rethrow(error);return {error:actionMessage(error,'Unable to preview. Check the template variables.')};}

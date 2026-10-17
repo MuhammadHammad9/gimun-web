@@ -5,6 +5,8 @@ import { previewPath } from '@/lib/content/preview';
 import { routePermission } from '@/lib/server/admin/auth';
 import { can } from '@/lib/server/admin/permissions';
 import { database } from '@/lib/server/supabase';
+import { eventOfEntry } from '@/lib/server/admin/scope';
+import { canEvent } from '@/lib/server/admin/permissions';
 
 /**
  * "Preview on site": turns on draft mode for this editor and opens the public
@@ -20,7 +22,7 @@ export async function GET(request: Request) {
   if (user instanceof Response) return user;
   if (!can(user, collection)) return new Response('You do not have permission to preview this content.', { status: 403 });
   const { data, error } = await database().from('content_entries').select('data').eq('collection', collection).eq('id', id).maybeSingle();
-  if (error || !data) return new Response('Save the entry before previewing it.', { status: 404 });
+  if (error || !data || !canEvent(user, eventOfEntry(collection, data.data as Record<string, unknown>))) return new Response('Save the entry before previewing it.', { status: 404 });
   (await draftMode()).enable();
   redirect(previewPath(collection, data.data as Record<string, unknown>));
 }

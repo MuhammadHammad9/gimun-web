@@ -9,16 +9,21 @@ import { database } from '@/lib/server/supabase';
 import { getServerConfig } from '@/lib/server/config';
 import { drainEmailOutbox } from '@/lib/server/submissions';
 import { certificatePdf } from '@/lib/server/certificate-pdf';
+import { canEvent } from '@/lib/server/admin/permissions';
+import { requireModule } from '@/lib/server/admin/modules';
+import { eventOfTrack } from '@/lib/server/admin/scope';
 
 export async function queuePostEvent(input:unknown){
   const issued:string[]=[];
   try {
     const value=z.object({kind:z.enum(['survey','certificate']),certificate_kind:z.enum(['participation','award','chair']).default('participation'),ids:z.array(z.uuid()).min(1).max(25),confirm:z.literal(true)}).parse(input);
-    await requirePermission(value.kind==='survey'?'feedback':'certificates',true);
-    await requirePermission('email',true);
+    const user=await requirePermission(value.kind==='survey'?'feedback':'certificates',true);
+    await requirePermission('email',true);await requireModule(value.kind==='survey'?'feedback':'certificates');await requireModule('email');
     const config=getServerConfig();if(!config.siteUrl||!config.emailFrom)throw new Error('SITE_URL and EMAIL_FROM must be configured.');
-    const {data:people,error}=await database().from('participants').select('id,name,email,survey_token,checked_in_at').in('id',[...new Set(value.ids)]);
-    if(error||people.length!==new Set(value.ids).size)throw new Error('One or more participants are unavailable.');
+    const {data:people,error}=await database().from('participants').select('id,name,email,survey_token,checked_in_at,event').in('id',[...new Set(value.ids)]);
+    // Someone outside the sender's events counts as unavailable, like a missing record.
+    if(error||people.length!==new Set(value.ids).size||people.some(p=>!canEvent(user,eventOfTrack(p.event))))throw new Error('One or more participants are unavailable.');
+    const batchEvents=[...new Set(people.map(p=>eventOfTrack(p.event)))];
     const messages=[];const skipped:string[]=[];
     for(const person of people){
       if(!person.checked_in_at)throw new Error('Only checked-in participants are eligible for this batch.');
@@ -38,7 +43,7 @@ export async function queuePostEvent(input:unknown){
       }
     }
     if(!messages.length)return {error:`No emails queued. ${issued.length} certificates issued or already available. ${skipped.join('; ')}`};
-    await operate('email','email',{from:config.emailFrom,messages});
+    await operate('email','email',{from:config.emailFrom,messages,event:batchEvents.length===1?batchEvents[0]:null});
     after(async()=>{try{await drainEmailOutbox();}catch{console.error('[Outbox] Post-event delivery deferred');}});
     revalidatePath('/admin','layout');return {message:`Queued ${messages.length} emails. ${issued.length?`${issued.length} certificates issued or already available. `:''}Review delivery in Email.${skipped.length?` Skipped: ${skipped.join('; ')}.`:''}`};
   }catch(error){unstable_rethrow(error);return {error:`Emails could not be queued. ${issued.length?`${issued.length} certificates were issued or already exist; review them before retrying. `:''}${error instanceof z.ZodError?'Check the recipients and confirmation.':'Check permissions and the connection.'}`};}

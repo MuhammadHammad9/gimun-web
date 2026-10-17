@@ -15,6 +15,7 @@ import { AdminNav } from '../../AdminNav';
 import { AdminPageHeader } from '../../AdminPageHeader';
 import { COLLECTION_INFO, entrySummary, entryTitle } from '../../collection-info';
 import { toSerializable } from '../../serializable';
+import { scopeEvent } from '@/lib/server/admin/scope';
 
 type Row = { id: string; status: string; version: number; publish_at: string | null; updated_at?: string; data: Record<string, unknown> };
 
@@ -39,7 +40,8 @@ export default async function CollectionPage({ params, searchParams }: { params:
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
   const query = { page: one(raw.page), q: one(raw.q), section: one(raw.section) };
   const page = Math.max(0, Math.min(100000, Math.floor(Number(query.page) || 0)));
-  let entries = database().from('content_entries').select('*', { count: 'exact' }).eq('collection', collection);
+  // Entries with another event's track are outside this admin's access; shared ones stay.
+  let entries = scopeEvent(database().from('content_entries').select('*', { count: 'exact' }).eq('collection', collection), user, 'data->>track');
   const search = (query.q || '').replace(/[%_,()]/g, '').slice(0, 100);
   const copyPage = collection === 'copy' && (copyPages as readonly string[]).includes(query.section || '') ? query.section! : '';
   if (copyPage) entries = entries.eq('data->>page', copyPage);

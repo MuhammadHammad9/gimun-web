@@ -22,14 +22,21 @@ import { FeedbackReport } from '../FeedbackReport';
 import { MediaLibrary } from '../MediaLibrary';
 import { ProcessOutbox } from '../ProcessOutbox';
 import { UsersForm } from '../UsersForm';
+import { scopeEvent } from '@/lib/server/admin/scope';
+import { moduleOn,MODULE_OFF } from '@/lib/server/admin/modules';
+import { AdminPageHeader } from '../AdminPageHeader';
 const string:Schema={type:'string'};const boolean:Schema={type:'boolean'};
 function schema(properties:Record<string,Schema>):Schema{return {type:'object',properties};}
 type Query={q?:string;page?:string;track?:string;status?:string;payment?:string;sort?:string};
+// The column naming each row's event, and whether rows without one (shared) stay visible.
+const EVENT_COLUMN:Record<string,[string,boolean]>={registrations:['track',false],inbox:['event',true],email:['event',true],'event-day':['event',false],certificates:['event',false],audit:['event',true]};
 // A repeated parameter (?q=a&q=b) arrives as an array; string methods on it crashed the page.
 function firstValues(raw:Record<string,string|string[]|undefined>):Query{return Object.fromEntries(Object.entries(raw).map(([k,v])=>[k,Array.isArray(v)?v[0]:v]));}
 export default async function OpsPage({params,searchParams}:{params:Promise<{section:string}>;searchParams:Promise<Record<string,string|string[]|undefined>>}) {
   const {section}=await params;if(!sections.includes(section as typeof sections[number]))notFound();
-  const user=await requirePermission(section);const write=can(user,section,true);const query=firstValues(await searchParams);const page=Math.min(100000,Math.max(0,Math.floor(Number(query.page)||0)));
+  const user=await requirePermission(section);
+  if(!(await moduleOn(section)))return <><AdminNav user={user}/><AdminPageHeader title={section==='event-day'?'Check-in':section.replace(/-/g,' ')} description={MODULE_OFF}/>{user.role==='owner'&&<p><Link className="admin-button" href="/admin/workspace">Open Admin settings</Link></p>}</>;
+  const write=can(user,section,true);const query=firstValues(await searchParams);const page=Math.min(100000,Math.max(0,Math.floor(Number(query.page)||0)));
   const table:Record<string,string>={registrations:'registrations',inbox:'contact_messages',email:'email_outbox','event-day':'participants',allocations:'allocations',certificates:'certificates',feedback:'survey_questions','close-out':'event_archives',users:'admin_users',media:'media_assets',audit:'audit_log'};
   if(!table[section])notFound();
   let request=database().from(table[section]).select(recordColumns[section].join(','),{count:'exact'});
@@ -40,13 +47,14 @@ export default async function OpsPage({params,searchParams}:{params:Promise<{sec
   if(section==='email'&&query.status)request=query.status==='attention'?request.in('status',['failed','needs_review']):request.eq('status',query.status);
   // Check-in users receive names/attendance only, never contact or survey tokens.
   if(section==='event-day')request=database().from('participants').select('id,registration_ref,name,role,checked_in_at',{count:'exact'});
+  if(EVENT_COLUMN[section])request=scopeEvent(request,user,...EVENT_COLUMN[section]);
   const searchColumns:Record<string,string>={inbox:'name',email:'subject','event-day':'name',allocations:'country',certificates:'serial',feedback:'label',users:'display_name',media:'alt',audit:'action','close-out':'name'};
   if(section!=='registrations'&&query.q&&searchColumns[section])request=request.ilike(searchColumns[section],`%${query.q.replace(/[%_]/g,'')}%`);
   const sort=query.sort&&recordColumns[section].includes(query.sort)?query.sort:null;
   const {data,error,count}=await request.order(sort|| (section==='registrations'?'submitted_at':section==='feedback'?'sort_order':section==='allocations'?'committee_slug':section==='certificates'?'issued_at':section==='event-day'?'registration_ref':'created_at'),{ascending:false}).order(section==='registrations'?'reference_id':section==='users'?'user_id':section==='allocations'?'participant_id':'id').range(page*50,page*50+49);
   if(error)throw new Error('Unable to load this section. Check migrations and database availability.');
   const rows=(data||[]) as unknown as Record<string,unknown>[];
-  const allPeople=['allocations','certificates','feedback'].includes(section)?await readAll('participants','id,name,registration_ref,checked_in_at'):[];
+  const allPeople=['allocations','certificates','feedback'].includes(section)?await readAll('participants','id,name,registration_ref,checked_in_at','id',q=>scopeEvent(q,user,'event',false)):[];
   const accepted=section==='allocations'?(await readAll('registrations','reference_id,track,status','reference_id')).filter(r=>r.track==='gimun'&&r.status==='accepted').map(r=>r.reference_id):[];
   const people=allPeople.filter(p=>accepted.includes(p.registration_ref)) as {id:string;name:string;registration_ref:string}[];
   const checkedPeople=allPeople.filter(p=>p.checked_in_at) as {id:string;name:string;registration_ref:string}[];
@@ -69,6 +77,6 @@ export default async function OpsPage({params,searchParams}:{params:Promise<{sec
     {section==='inbox'&&write&&<OperationForm operation="inbox" title="Update inquiry" initial={{id:'',status:'read',note:'',assignee:''}} schema={schema({id:{enum:rows.map(r=>String(r.id)),optionLabels:Object.fromEntries(rows.map(r=>[String(r.id),String(r.name)]))},status:{enum:['new','read','replied','archived']},note:string,assignee:{enum:['',...staff.filter(u=>u.active).map(u=>String(u.user_id))],optionLabels:Object.fromEntries(staff.map(u=>[String(u.user_id),String(u.display_name)]))}})}/>}
     {section==='close-out'&&write&&<><p className="admin-card">An archive preserves a snapshot of public content and settings and closes both registration tracks. Later content edits remain possible. Export operational data first. Retention decisions require institutional approval.</p><p><a href="/admin/export?type=registrations" download>Export registrations</a> · <a href="/admin/export?type=participants" download>Export roster</a> · <a href="/admin/export?type=contact_messages" download>Export inbox</a></p><OperationForm operation="archive" title="Create archive snapshot" initial={{name:''}} schema={schema({name:string})}/><RetentionForm/></>}
     {section==='feedback'&&<FeedbackReport/>}{section==='media'&&<MediaLibrary/>}
-    {section==='media'&&write&&<MediaUpload/>}{section==='users'&&write&&<UsersForm users={rows as {user_id:string;display_name:string;email:string;role:string;active:boolean;sections:string[]}[]}/>}
+    {section==='media'&&write&&<MediaUpload/>}{section==='users'&&write&&<UsersForm users={rows as {user_id:string;display_name:string;email:string;role:string;active:boolean;sections:string[];events:string[]}[]}/>}
     <div className="admin-card admin-table" role="region" aria-label="Records table" tabIndex={0}><h2>{count ?? rows.length} records</h2><table><thead><tr>{['allocations','certificates'].includes(section)&&<th>Participant</th>}{recordColumns[section].filter(k=>!['id','participant_id','user_id','verify_code'].includes(k)).map(k=><th key={k}>{k.replaceAll('_',' ')}</th>)}{['registrations','inbox','certificates'].includes(section)&&<th>Action</th>}</tr></thead><tbody>{rows.map(row=><tr key={String(row.reference_id||row.id||row.participant_id||row.user_id)}>{['allocations','certificates'].includes(section)&&<td>{String(allPeople.find(p=>p.id===row.participant_id)?.name||'Participant unavailable')}</td>}{recordColumns[section].filter(k=>!['id','participant_id','user_id','verify_code'].includes(k)).map(key=><td key={key}>{typeof row[key]==='boolean'?row[key]?'Yes':'No':Array.isArray(row[key])?(row[key] as string[]).join(', '):key.endsWith('_at')&&row[key]?new Date(String(row[key])).toLocaleString('en-GB',{timeZone:'Asia/Karachi'}):key.includes('status')?<span className="admin-status">{String(row[key]||'').replaceAll('_',' ').replaceAll('-',' ')}</span>:String(row[key]??'—')}</td>)}{section==='registrations'&&<td><Link href={`/admin/registrations/${row.reference_id}`}>Review application</Link></td>}{section==='inbox'&&<td><Link href={`/admin/inbox/${row.id}`}>Read inquiry</Link></td>}{section==='certificates'&&<td><Link href={`/verify/${row.verify_code}`}>Verify / download</Link></td>}</tr>)}</tbody></table>{!rows.length&&<p>No matching records. Adjust the filters or return after new submissions arrive.</p>}</div><nav>{page>0&&<Link href={`?page=${page-1}&sort=${encodeURIComponent(query.sort||'')}&q=${encodeURIComponent(query.q||'')}&track=${encodeURIComponent(query.track||'')}&status=${encodeURIComponent(query.status||'')}&payment=${encodeURIComponent(query.payment||'')}`}>Previous</Link>}{(count||0)>(page+1)*50&&<Link href={`?page=${page+1}&sort=${encodeURIComponent(query.sort||'')}&q=${encodeURIComponent(query.q||'')}&track=${encodeURIComponent(query.track||'')}&status=${encodeURIComponent(query.status||'')}&payment=${encodeURIComponent(query.payment||'')}`}>Next</Link>}</nav></>;
 }

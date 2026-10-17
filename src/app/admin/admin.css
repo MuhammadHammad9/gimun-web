@@ -393,3 +393,11 @@
   .editor-bar__actions .editor-bar__more { flex: 0 0 auto; }
   .editor-message { font-size: 12.5px; }
 }
+
+/* Admin settings: one switch per tool */
+.admin-workspace fieldset{border:0;padding:0;margin:0 0 1.5rem}
+.admin-toggle-list{list-style:none;padding:0;margin:.75rem 0 0;display:grid;gap:.5rem}
+.admin-toggle-list label{display:flex;gap:.75rem;align-items:flex-start;padding:.75rem;border:1px solid var(--a-line);border-radius:.6rem;cursor:pointer}
+.admin-toggle-list input{margin-top:.2rem;width:1.1rem;height:1.1rem}
+.admin-toggle-list span{display:grid;gap:.15rem}
+.admin-toggle-list small{color:var(--a-ink-3)}

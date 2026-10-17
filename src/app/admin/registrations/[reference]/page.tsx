@@ -7,10 +7,14 @@ import { database } from '@/lib/server/supabase';
 import { AdminNav } from '../../AdminNav';
 import { OperationForm } from '../../OperationForm';
 import { RegistrationTools } from '../../RegistrationTools';
+import { assertInScope, eventOfTrack } from '@/lib/server/admin/scope';
+import { moduleOn, MODULE_OFF } from '@/lib/server/admin/modules';
+import { AdminPageHeader } from '../../AdminPageHeader';
 type Participant={id:string;name:string;email:string;role:string;checked_in_at:string|null};
 export default async function RegistrationPage({params}:{params:Promise<{reference:string}>}) {
   const user=await requirePermission('registrations');const {reference}=await params;
-  const {data:r,error}=await database().from('registrations').select('reference_id,applicant_name,contact_email,institution,duplicate_of,amount_due,amount_paid,status,payment_status,payment_reference,internal_notes,updated_at,form_data,participants(id,name,email,role,checked_in_at)').eq('reference_id',reference).maybeSingle();if(error||!r)notFound();
+  if(!(await moduleOn('registrations')))return <><AdminNav user={user}/><AdminPageHeader title="Registrations" description={MODULE_OFF}/></>;
+  const {data:r,error}=await database().from('registrations').select('reference_id,track,applicant_name,contact_email,institution,duplicate_of,amount_due,amount_paid,status,payment_status,payment_reference,internal_notes,updated_at,form_data,participants(id,name,email,role,checked_in_at)').eq('reference_id',reference).maybeSingle();if(error||!r)notFound();assertInScope(user,eventOfTrack(r.track));
   const {data:history}=await database().from('registration_history').select('id,created_at,action,detail').eq('registration_ref',reference).order('created_at',{ascending:false});
   const write=can(user,'registrations',true);
   return <><AdminNav user={user}/><p><Link href="/admin/registrations">Back to registrations</Link></p><h1>{r.applicant_name}</h1><p className="admin-muted">{reference}</p><nav className="admin-tabs"><a href="#application">Application</a><a href="#payment">Payment</a><a href="#participants">Participants</a><a href="#history">History</a></nav><p>{r.applicant_name} · {r.contact_email} · {r.institution}</p>{r.duplicate_of&&<p role="alert">Possible duplicate of {r.duplicate_of}; review before acceptance.</p>}<p>Amount due: {r.amount_due} · Paid: {r.amount_paid} · Confirmed: {r.status==='accepted'&&['paid','waived'].includes(r.payment_status)?'Yes':'No'}</p>

@@ -1,6 +1,10 @@
 import { routePermission } from '@/lib/server/admin/auth';
 import { database } from '@/lib/server/supabase';
 import { csv } from '@/lib/csv';
+import { scopeEvent } from '@/lib/server/admin/scope';
+import { moduleOn, MODULE_OFF } from '@/lib/server/admin/modules';
+// The column naming each export's event, and whether shared rows (no event) are included.
+const EVENT_COLUMN:Record<string,[string,boolean]>={registrations:['track',false],participants:['event',false],attendance:['event',false],certificates:['event',false],feedback:['event',false],email_outbox:['event',true],contact_messages:['event',true]};
 // Exports carry personal data out of the system, so they need write access to
 // the owning section (read-only viewers cannot export) and each one is logged.
 const tables:Record<string,{table:string;section:string;select:string;order:string}>={
@@ -30,7 +34,9 @@ export async function GET(request:Request){
   const params=new URL(request.url).searchParams;const type=params.get('type')||'registrations';
   const config=Object.hasOwn(tables,type)?tables[type]:null;if(!config)return new Response('Invalid export',{status:400});
   const user=await routePermission(config.section,true,'page');if(user instanceof Response)return user;
+  if(!(await moduleOn(config.section)))return new Response(MODULE_OFF,{status:403,headers:{'Cache-Control':'private, no-store'}});
   const rows:Record<string,unknown>[]=[];for(let offset=0;;offset+=500){let query=database().from(config.table).select(config.select).order(config.order).order(type==='allocations'||type==='feedback'?'participant_id':type==='registrations'?'reference_id':'id').range(offset,offset+499);
+    if(EVENT_COLUMN[type])query=scopeEvent(query,user,...EVENT_COLUMN[type]);
     if(type==='registrations'){const q=(params.get('q')||'').replace(/[^\p{L}\p{N}@. -]/gu,'').trim();if(q)query=query.or(`applicant_name.ilike.%${q}%,contact_email.ilike.%${q}%,institution.ilike.%${q}%,reference_id.ilike.%${q}%`);const track=params.get('track'),status=params.get('status'),payment=params.get('payment');if(track&&['gimun','moot-cup'].includes(track))query=query.eq('track',track);if(status==='review')query=query.in('status',['received','under-review']);else if(status)query=query.eq('status',status);if(payment==='outstanding')query=query.in('payment_status',['unpaid','pending_verification']).in('status',['received','under-review','accepted','waitlisted']);else if(payment)query=query.eq('payment_status',payment);}
     const {data,error}=await query;if(error)return new Response('Export failed',{status:503});rows.push(...(data as unknown as Record<string,unknown>[]).map(flatten));if(data.length<500)break;}
   const logged=await database().rpc('log_admin_export',{p_actor:user.user_id,p_export:type,p_rows:rows.length});

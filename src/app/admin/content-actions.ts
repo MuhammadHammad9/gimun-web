@@ -7,11 +7,16 @@ import { requirePermission } from '@/lib/server/admin/auth';
 import { requireAdmin } from '@/lib/server/admin/auth';
 import { database } from '@/lib/server/supabase';
 import { validateEntry, siteSchema, isCollection } from '@/lib/content/registry';
+import { canEvent } from '@/lib/server/admin/permissions';
+import { eventOfEntry } from '@/lib/server/admin/scope';
+
+const OUT_OF_SCOPE = 'This entry belongs to an event outside your access.';
 
 export async function saveContent(input: unknown) {
   try {
     const entry = validateEntry(input);
     const user = await requirePermission(entry.collection, true);
+    if (!canEvent(user, eventOfEntry(entry.collection, entry.data))) return { error: OUT_OF_SCOPE };
     try{await checkContentLinks(entry);}catch(error){return {error:error instanceof Error?error.message:'Check content references.'};}
     const { error } = await database().rpc('save_content', { p_entry: entry, p_actor: user.user_id });
     if (error) {console.error('[CMS save]',error);return {error:error.code==='P0001'?error.message:'Unable to save. Check for an existing identifier or contact an administrator.'};}
@@ -55,9 +60,10 @@ export async function saveContentBatch(input: unknown[]) {
     const entries=input.map(validateEntry);const collection=entries[0].collection;
     if(entries.some(e=>e.collection!==collection))return {error:'Batch must belong to one section.'};
     const user=await requirePermission(collection,true);
+    if(entries.some(e=>!canEvent(user,eventOfEntry(e.collection,e.data))))return {error:OUT_OF_SCOPE};
     for(const entry of entries)await checkContentLinks(entry);
     const {error}=await database().rpc('save_content_batch',{p_entries:entries,p_actor:user.user_id});
-    if(error)return {error:'Batch not saved. Check IDs, versions and pin conflicts.'};
+    if(error)return {error:error.code==='P0001'?error.message:'Batch not saved. Check IDs, versions and pin conflicts.'};
     updateTag(`content:${collection}`);revalidatePath('/', 'layout');revalidatePath('/admin','layout');return {success:true};
   }catch(error){unstable_rethrow(error);return {error:'Invalid batch or insufficient permission.'};}
 }
@@ -67,7 +73,7 @@ export async function cancelSchedule(collection:string,id:string,version:number)
  try{
   const user=await requirePermission(collection,true);
   const {error}=await database().rpc('cancel_content_schedule',{p_collection:collection,p_id:id,p_version:version,p_actor:user.user_id});
-  if(error)return {error:'The entry changed or its schedule could not be cancelled. Reload and try again.'};
+  if(error)return {error:error.code==='P0001'&&/outside your access/.test(error.message)?OUT_OF_SCOPE:'The entry changed or its schedule could not be cancelled. Reload and try again.'};
   revalidatePath('/admin','layout');return {version:version+1};
  }catch(error){unstable_rethrow(error);return {error:'The schedule could not be cancelled. Check your permission and try again.'};}
 }

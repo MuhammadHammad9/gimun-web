@@ -3,10 +3,10 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { requirePermission } from '@/lib/server/admin/auth';
 import { database } from '@/lib/server/supabase';
-import { sections } from '@/lib/server/admin/permissions';
+import { sections, events } from '@/lib/server/admin/permissions';
 export async function manageUser(input:unknown){
   const owner=await requirePermission('users',true);
-  const p=z.object({id:z.union([z.uuid(),z.literal('')]),email:z.email(),display_name:z.string().min(1).max(100),role:z.enum(['owner','admin','editor','registrar','checkin','viewer']),sections:z.array(z.enum(sections)),active:z.boolean(),password:z.string().max(200)}).parse(input);
+  const p=z.object({id:z.union([z.uuid(),z.literal('')]),email:z.email(),display_name:z.string().min(1).max(100),role:z.enum(['owner','admin','editor','registrar','checkin','viewer']),sections:z.array(z.enum(sections)),events:z.array(z.enum(events)).min(1,'Choose at least one event.'),active:z.boolean(),password:z.string().max(200)}).parse(input);
   if(p.id===owner.user_id && (!p.active||p.role!=='owner'))return {error:'You cannot deactivate or demote your own owner account.'};
   const db=database();let userId=p.id;
   if(!userId){if(p.password.length<12)return {error:'A temporary password of at least 12 characters is required.'};const {data,error}=await db.auth.admin.createUser({email:p.email,password:p.password,email_confirm:true});if(error||!data.user)return {error:'Unable to create auth account. It may already exist.'};userId=data.user.id;}
@@ -17,7 +17,7 @@ export async function manageUser(input:unknown){
     if(auth.user.email!==p.email)return {error:'Email must match the existing Auth account. Change sign-in email through the verified Supabase Auth workflow first.'};
     if(p.password){const {error}=await db.auth.admin.updateUserById(userId,{password:p.password});if(error)return {error:'Password reset failed.'};}
   }
-  const values={user_id:userId,email:p.email,display_name:p.display_name,role:p.role,sections:p.sections,active:p.active,...(!p.id||p.password?{must_change_password:true}:{})};
+  const values={user_id:userId,email:p.email,display_name:p.display_name,role:p.role,sections:p.sections,events:p.role==='owner'?[...events]:p.events,active:p.active,...(!p.id||p.password?{must_change_password:true}:{})};
   const {error}=await db.from('admin_users').upsert(values);if(error){if(!p.id){const rollback=await db.auth.admin.deleteUser(userId);if(!rollback.error)return {error:'Account setup could not finish. No account was retained; try again.'};}return {error:`Account changes partially completed. Recovery account: ${userId}. Contact the owner before retrying.`};}
   // A deactivated admin must not be able to sign in again (admin_users.active only gates pages and the
   // database); ban the Auth account while inactive, which also stops refresh tokens. Reactivation lifts it.

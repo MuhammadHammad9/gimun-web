@@ -1,12 +1,14 @@
 import 'server-only';
 import { database } from '../supabase';
 const PAGE = 500;
-function page(table:string,select:string,order:string,offset:number){let query=database().from(table).select(select).order(order);if(table==='content_entries')query=query.order('collection');return query.range(offset,offset+PAGE-1);}
+/** Narrows each page, e.g. to the admin's events with scopeEvent. */
+export type RowFilter = <Q extends { or(filters: string): Q; eq(column: string, value: string): Q }>(query: Q) => Q;
+function page(table:string,select:string,order:string,offset:number,filter?:RowFilter){let query=database().from(table).select(select).order(order);if(filter)query=filter(query);if(table==='content_entries')query=query.order('collection');return query.range(offset,offset+PAGE-1);}
 // Call only after the section's permission check. The stable primary-key order
 // avoids Supabase's default row cap silently truncating exports/operations.
-export async function readAll(table:string,select='*',order='id') {
+export async function readAll(table:string,select='*',order='id',filter?:RowFilter) {
   const rows:Record<string,unknown>[]=[];
-  for(let offset=0;;offset+=PAGE){const {data,error}=await page(table,select,order,offset);if(error)throw new Error(`Unable to load ${table}`);rows.push(...data as unknown as Record<string,unknown>[]);if(data.length<PAGE)break;}
+  for(let offset=0;;offset+=PAGE){const {data,error}=await page(table,select,order,offset,filter);if(error)throw new Error(`Unable to load ${table}`);rows.push(...data as unknown as Record<string,unknown>[]);if(data.length<PAGE)break;}
   return rows;
 }
 /**

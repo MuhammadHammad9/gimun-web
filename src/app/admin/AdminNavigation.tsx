@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import {
   Archive, Award, BookOpenText, CalendarDays, ClipboardCheck, ExternalLink, FileText, Gavel, Globe2, HelpCircle, Image, Images, Inbox,
-  LayoutDashboard, LogOut, Mail, Map, Megaphone, Menu, MessageSquareQuote, ScrollText, Settings2, ShieldCheck, Sparkles, Type, UserRound, Users, X, type LucideIcon,
+  LayoutDashboard, LogOut, Mail, Map, Megaphone, Menu, MessageSquareQuote, ScrollText, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Type, UserRound, Users, X, type LucideIcon,
 } from 'lucide-react';
 import { collections } from '@/lib/content/registry';
 import { COLLECTION_INFO, CONTENT_GROUPS } from './collection-info';
@@ -12,13 +12,13 @@ import { logout } from './auth-actions';
 
 const OPS_LABELS: Record<string, string> = {
   settings: 'Site settings', media: 'Media library', registrations: 'Registrations', allocations: 'Country allocation', 'event-day': 'Check-in',
-  inbox: 'Messages', email: 'Email', certificates: 'Certificates', feedback: 'Feedback survey', users: 'Admin accounts', audit: 'Activity log', 'close-out': 'Archive & retention',
+  inbox: 'Messages', email: 'Email', certificates: 'Certificates', feedback: 'Feedback survey', users: 'Admin accounts', audit: 'Activity log', 'close-out': 'Archive & retention', workspace: 'Admin settings',
 };
 const ICONS: Record<string, LucideIcon> = {
   copy: Type, navigation: Map, settings: Settings2, announcements: Megaphone, schedule: CalendarDays, results: Award, committees: Globe2,
   'moot-categories': Gavel, clarifications: MessageSquareQuote, team: UserRound, gallery: Images, sponsors: Sparkles, faq: HelpCircle,
   resources: BookOpenText, media: Image, registrations: Users, allocations: Globe2, 'event-day': ClipboardCheck, inbox: Inbox, email: Mail,
-  certificates: ScrollText, feedback: FileText, users: ShieldCheck, audit: FileText, 'close-out': Archive,
+  certificates: ScrollText, feedback: FileText, users: ShieldCheck, audit: FileText, 'close-out': Archive, workspace: SlidersHorizontal,
 };
 /** The sidebar, in the order people look for things: the website first, then running the event. */
 const GROUPS: [string, string[]][] = [
@@ -30,12 +30,12 @@ const GROUPS: [string, string[]][] = [
   ['Registrations & event day', ['registrations', 'allocations', 'event-day']],
   ['Messages', ['inbox', 'email']],
   ['After the event', ['certificates', 'feedback']],
-  ['Administration', ['users', 'audit', 'close-out']],
+  ['Administration', ['users', 'workspace', 'audit', 'close-out']],
 ];
 const hrefOf = (section: string) => (collections.includes(section as (typeof collections)[number]) ? `/admin/content/${section}` : `/admin/${section}`);
 const labelOf = (section: string) => COLLECTION_INFO[section as keyof typeof COLLECTION_INFO]?.label ?? OPS_LABELS[section] ?? section.replaceAll('-', ' ');
 
-export function AdminNavigation({ name, role, allowed, websiteConnected, websiteReason }: { name: string; role: string; allowed: string[]; websiteConnected?: boolean; websiteReason?: string }) {
+export function AdminNavigation({ name, role, allowed, owner = false, websiteConnected, websiteReason }: { name: string; role: string; allowed: string[]; owner?: boolean; websiteConnected?: boolean; websiteReason?: string }) {
   const path = usePathname();
   // The phone menu is open only on the page it was opened on, so navigating closes it.
   const [openOn, setOpenOn] = useState<string | null>(null);
@@ -66,7 +66,8 @@ export function AdminNavigation({ name, role, allowed, websiteConnected, website
       <nav aria-label="Admin sections">
         <Link className="admin-overview-link" href="/admin" aria-current={path === '/admin' ? 'page' : undefined}><LayoutDashboard size={16} aria-hidden="true" /> Overview</Link>
         {GROUPS.map(([title, items]) => {
-          const visible = items.filter((s) => allowed.includes(s));
+          // Admin settings are the owner's, like the accounts they sit beside.
+          const visible = items.filter((s) => allowed.includes(s) || (s === 'workspace' && owner));
           return visible.length ? <div className="admin-nav-group" key={title}>
             <p>{title}</p>
             {visible.map((s) => {
