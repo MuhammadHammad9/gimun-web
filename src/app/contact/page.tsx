@@ -40,7 +40,6 @@ export default async function ContactPage() {
   const socials = (
     [
       ['Instagram', config.socialLinks?.instagram],
-      ['Facebook', config.socialLinks?.facebook],
       ['LinkedIn', config.socialLinks?.linkedin],
       ['X (Twitter)', config.socialLinks?.twitter],
     ] as const

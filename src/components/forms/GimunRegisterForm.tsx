@@ -726,7 +726,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                   className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                 >
                   <option value="" className="bg-canvas text-champagne">Select referral channel...</option>
-                  <option value="social-media" className="bg-canvas text-champagne">Social Media (Instagram / Facebook / LinkedIn)</option>
+                  <option value="social-media" className="bg-canvas text-champagne">Social Media (Instagram / LinkedIn)</option>
                   <option value="university-club" className="bg-canvas text-champagne">University Club / Debating Society</option>
                   <option value="friend" className="bg-canvas text-champagne">Friend / Colleague Recommendation</option>
                   <option value="faculty-advisor" className="bg-canvas text-champagne">Faculty Advisor / Teacher</option>
@@ -1036,7 +1036,7 @@ export function GimunRegisterForm({ committees, onSuccess, endpoint = '/api/regi
                   className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
                 >
                   <option value="" className="bg-canvas text-champagne">Select referral channel...</option>
-                  <option value="social-media" className="bg-canvas text-champagne">Social Media (Instagram / Facebook / LinkedIn)</option>
+                  <option value="social-media" className="bg-canvas text-champagne">Social Media (Instagram / LinkedIn)</option>
                   <option value="university-club" className="bg-canvas text-champagne">University Club / Debating Society</option>
                   <option value="friend" className="bg-canvas text-champagne">Friend / Colleague Recommendation</option>
                   <option value="faculty-advisor" className="bg-canvas text-champagne">Faculty Advisor / Teacher</option>

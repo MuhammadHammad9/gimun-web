@@ -1,4 +1,4 @@
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6';
+import { FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6';
 import { FooterMolten } from '@/components/art/Backdrops';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { SponsorStrip } from '@/components/ui/SponsorStrip';
@@ -23,7 +23,6 @@ export function SiteFooter({ site, sponsors }: { site: SiteConfig; sponsors: Spo
   // visitors to someone else's profile.
   const socials = [
     { Icon: FaInstagram, label: 'Instagram', href: site.socialLinks?.instagram },
-    { Icon: FaFacebookF, label: 'Facebook', href: site.socialLinks?.facebook },
     { Icon: FaXTwitter, label: 'X', href: site.socialLinks?.twitter },
     { Icon: FaLinkedinIn, label: 'LinkedIn', href: site.socialLinks?.linkedin },
   ].filter((item): item is typeof item & { href: string } => Boolean(item.href));
