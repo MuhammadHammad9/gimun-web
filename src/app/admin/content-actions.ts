@@ -77,3 +77,59 @@ export async function cancelSchedule(collection:string,id:string,version:number)
   revalidatePath('/admin','layout');return {version:version+1};
  }catch(error){unstable_rethrow(error);return {error:'The schedule could not be cancelled. Check your permission and try again.'};}
 }
+
+type StoredEntry = { collection: string; id: string; status: string; sort_order: number; publish_at: string | null; expire_at: string | null; data: Record<string, unknown>; version: number };
+/** The listed entries as stored, refusing any outside the admin's events. */
+async function loadEntries(collection: string, ids: string[], user: Awaited<ReturnType<typeof requirePermission>>) {
+  const { data, error } = await database().from('content_entries').select('collection,id,status,sort_order,publish_at,expire_at,data,version').eq('collection', collection).in('id', ids);
+  if (error || !data || data.length !== new Set(ids).size) throw new Error('Some entries changed or are unavailable. Reload and try again.');
+  const rows = data as StoredEntry[];
+  if (rows.some((e) => !canEvent(user, eventOfEntry(collection, e.data)))) throw new Error(OUT_OF_SCOPE);
+  return rows;
+}
+const publicFields = (e: StoredEntry) => ({ collection: e.collection, id: e.id, status: e.status, sort_order: e.sort_order, publish_at: e.publish_at, expire_at: e.expire_at, data: e.data, version: e.version });
+
+/** Publishes or takes off the website several entries of one section at once. */
+export async function bulkStatus(collection: string, ids: string[], mode: 'publish' | 'archive') {
+  if (!isCollection(collection) || !Array.isArray(ids) || !ids.length || ids.length > 100 || !['publish', 'archive'].includes(mode)) return { error: 'Choose between 1 and 100 entries.' };
+  try {
+    const user = await requirePermission(collection, true);
+    const entries = (await loadEntries(collection, ids, user)).map((e) => validateEntry({ ...publicFields(e), status: mode === 'publish' ? 'published' : 'archived', publish_at: null, expire_at: mode === 'publish' ? e.expire_at : null }));
+    for (const entry of entries) await checkContentLinks(entry);
+    const { error } = await database().rpc('save_content_batch', { p_entries: entries, p_actor: user.user_id });
+    if (error) return { error: error.code === 'P0001' ? error.message : 'Not saved. Someone may have changed these entries; reload and try again.' };
+    updateTag(`content:${collection}`); revalidatePath('/', 'layout'); revalidatePath('/admin', 'layout');
+    return { count: entries.length };
+  } catch (error) { unstable_rethrow(error); return { error: error instanceof Error && /changed|outside/.test(error.message) ? error.message : 'Not saved. Check your permission and try again.' }; }
+}
+
+/**
+ * Saves a new order for the entries shown on one page. They keep the same set
+ * of position numbers, so entries on other pages do not move. Published
+ * entries move on the website at once; an entry with unpublished draft changes
+ * moves when those are published.
+ */
+export async function reorderContent(collection: string, orderedIds: string[]) {
+  if (!isCollection(collection) || !Array.isArray(orderedIds) || !orderedIds.length || orderedIds.length > 100) return { error: 'Nothing to reorder.' };
+  try {
+    const user = await requirePermission(collection, true);
+    const stored = await loadEntries(collection, orderedIds, user);
+    const byId = new Map(stored.map((e) => [e.id, e]));
+    const numbers = stored.map((e) => e.sort_order).sort((a, b) => a - b);
+    const distinct = new Set(numbers).size === numbers.length;
+    const positions = distinct ? numbers : orderedIds.map((_, i) => (numbers[0] ?? 0) + i);
+    const { data: live } = await database().from('effective_content').select('id,version').eq('collection', collection).in('id', orderedIds);
+    const liveVersion = new Map((live ?? []).map((r) => [r.id as string, Number(r.version)]));
+    let waiting = 0;
+    const changed = orderedIds.map((id, i) => ({ entry: byId.get(id)!, position: positions[i] })).filter(({ entry, position }) => entry.sort_order !== position).map(({ entry, position }) => {
+      // Each entry keeps its status: a published one is republished in place, a scheduled one keeps its time, a draft stays a draft.
+      if (entry.status === 'draft' && liveVersion.has(entry.id)) waiting++;
+      return validateEntry({ ...publicFields(entry), sort_order: position });
+    });
+    if (!changed.length) return { count: 0, waiting: 0 };
+    const { error } = await database().rpc('save_content_batch', { p_entries: changed, p_actor: user.user_id });
+    if (error) return { error: error.code === 'P0001' ? error.message : 'Order not saved. Someone may have changed these entries; reload and try again.' };
+    updateTag(`content:${collection}`); revalidatePath('/', 'layout'); revalidatePath('/admin', 'layout');
+    return { count: changed.length, waiting };
+  } catch (error) { unstable_rethrow(error); return { error: error instanceof Error && /changed|outside/.test(error.message) ? error.message : 'Order not saved. Check your permission and try again.' }; }
+}

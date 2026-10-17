@@ -10,6 +10,7 @@ import type { ContentEntry } from '@/lib/content/registry';
 import type { UploadedMedia } from './media-actions';
 import { MediaContext } from './MediaField';
 import { useDirtyGuard } from './useDirtyGuard';
+import { useConfirm } from './ui/ConfirmDialog';
 
 const groups: Record<string, string[]> = {
   'Event details': ['eventNames', 'hostInstitution', 'venue', 'eventDates', 'galaDate', 'phaseOverride'],
@@ -39,6 +40,7 @@ export function ContentEditor({ initial, schema, settings = false, readOnly = fa
   const [more, setMore] = useState(false);
   const [pending, start] = useTransition();
   const router = useRouter();
+  const [confirm, dialog] = useConfirm();
   useDirtyGuard(dirty);
   if (seen !== initial.version) { setSeen(initial.version); if (!dirty) setEntry(initialize()); }
   const conflict = dirty && entry.version !== initial.version;
@@ -75,12 +77,12 @@ export function ContentEditor({ initial, schema, settings = false, readOnly = fa
     setEntry({ ...entry, data, id: settings ? 'site' : String(data.id || entry.id) });
   };
 
-  function save(mode: Mode) {
+  async function save(mode: Mode) {
     if (settings) { execute(() => saveSettings(entry.data, entry.version), 'Settings saved. The website uses them now.'); return; }
     if (mode === 'schedule' && (!entry.publish_at || new Date(entry.publish_at).getTime() <= Date.now())) { setFailed(true); setMessage('Choose a date and time in the future (Pakistan time) to publish.'); return; }
-    if (scheduledAt && mode !== 'draft' && !window.confirm('This replaces the publication that is already scheduled. Continue?')) return;
-    if (mode === 'archive' && !window.confirm(`Take this ${singular} off the website? You can publish it again later.`)) return;
-    if (mode !== 'draft' && entry.collection === 'announcements' && entry.data.pinnedFlag && !window.confirm('This will become the pinned announcement shown at the top of every page. Continue?')) return;
+    if (scheduledAt && mode !== 'draft' && !(await confirm({ title: 'Replace the scheduled publication?', body: `A version is already scheduled for ${pkt(scheduledAt)}. This one takes its place.`, confirmLabel: 'Replace it' }))) return;
+    if (mode === 'archive' && !(await confirm({ title: `Take this ${singular} off the website?`, body: 'Visitors stop seeing it. It stays here, and you can publish it again later.', confirmLabel: 'Take it off', tone: 'danger' }))) return;
+    if (mode !== 'draft' && entry.collection === 'announcements' && entry.data.pinnedFlag && !(await confirm({ title: 'Pin this announcement?', body: 'It becomes the notice shown at the top of every page, replacing any other pinned one.', confirmLabel: 'Pin and publish' }))) return;
     execute(
       () => saveContent({ ...entry, status: mode === 'draft' ? 'draft' : mode === 'archive' ? 'archived' : 'published', publish_at: mode === 'schedule' ? entry.publish_at : null, expire_at: mode === 'draft' || mode === 'archive' ? null : entry.expire_at }),
       mode === 'draft' ? 'Draft saved. Only people in the admin can see it; the website is unchanged.' : mode === 'schedule' ? `Scheduled. It will appear on the website on ${entry.publish_at ? pkt(entry.publish_at) : 'the chosen date'} (Pakistan time).` : mode === 'archive' ? 'Taken off the website.' : 'Published. It is on the website now; open pages update within seconds.',
@@ -103,11 +105,12 @@ export function ContentEditor({ initial, schema, settings = false, readOnly = fa
 
   return <MediaContext.Provider value={{ media: library, canUpload: upload && !readOnly, add: asset => setLibrary(list => [asset, ...list.filter(a => a.url !== asset.url)]) }}>
     <div className="editor" data-admin-dirty={dirty ? 'true' : undefined}>
+      {dialog}
       {status && <section className={`editor-status editor-status--${status.tone}`} aria-label="Publication status">
         <status.icon size={20} aria-hidden="true" />
         <div><strong>{status.title}</strong><p>{status.text}</p>
           {(scheduledAt || entry.collection === 'results' && !resultsReleased) && <div className="editor-status__extra">
-            {scheduledAt && <button type="button" className="secondary" disabled={busy} onClick={() => execute(() => cancelSchedule(entry.collection, entry.id, entry.version), 'Schedule cancelled. The website is unchanged.')}>Cancel the scheduled publication</button>}
+            {scheduledAt && <button type="button" className="secondary" disabled={busy} onClick={async () => { if (await confirm({ title: 'Cancel the scheduled publication?', body: 'The website keeps showing what it shows now. Your saved version stays here.', confirmLabel: 'Cancel publication', cancelLabel: 'Keep it scheduled' })) execute(() => cancelSchedule(entry.collection, entry.id, entry.version), 'Schedule cancelled. The website is unchanged.'); }}>Cancel the scheduled publication</button>}
             {entry.collection === 'results' && !resultsReleased && <p role="alert">Results are hidden on the website until you release them in Site settings, even when published here.</p>}
           </div>}
         </div>
@@ -134,7 +137,7 @@ export function ContentEditor({ initial, schema, settings = false, readOnly = fa
         <div className="editor-bar" role="group" aria-label="Save">
           <div className="editor-bar__state">
             {dirty ? <span className="editor-dirty"><i aria-hidden="true" /> Unsaved changes</span> : <span className="admin-muted">All changes saved</span>}
-            {dirty && <button type="button" className="secondary admin-link-button" onClick={() => { setEntry(initialize()); setDirty(false); setMessage('Changes discarded.'); setFailed(false); }}><Undo2 size={14} aria-hidden="true" /> Discard</button>}
+            {dirty && <button type="button" className="secondary admin-link-button" onClick={async () => { if (!(await confirm({ title: 'Discard your changes?', body: 'Everything you changed since the last save is lost.', confirmLabel: 'Discard', cancelLabel: 'Keep editing', tone: 'danger' }))) return; setEntry(initialize()); setDirty(false); setMessage('Changes discarded.'); setFailed(false); }}><Undo2 size={14} aria-hidden="true" /> Discard</button>}
           </div>
           <div className="editor-bar__actions">
             {settings
@@ -171,7 +174,7 @@ export function ContentEditor({ initial, schema, settings = false, readOnly = fa
       <details className="editor-history">
         <summary><History size={16} aria-hidden="true" /> Revision history</summary>
         <p className="admin-muted">{settings ? 'Restoring settings applies them to the website at once.' : 'Restoring an earlier version makes it a draft; publish it to put it back on the website.'}</p>
-        {revisions.length ? <ul>{revisions.map(r => <li key={r.id}><span>{pkt(r.created_at)}</span><button className="secondary" disabled={busy} onClick={() => execute(() => restoreRevision(r.id, entry.version), settings ? 'Settings restored.' : 'Earlier version restored as a draft.')}>Restore revision {r.id}</button></li>)}</ul> : <p>No earlier versions yet.</p>}
+        {revisions.length ? <ul>{revisions.map(r => <li key={r.id}><span>{pkt(r.created_at)}</span><button className="secondary" disabled={busy} onClick={async () => { if (await confirm(settings ? { title: 'Restore these settings?', body: `The website switches to the settings saved on ${pkt(r.created_at)} straight away.`, confirmLabel: 'Restore and apply', tone: 'danger' } : { title: 'Restore this version as a draft?', body: `The version saved on ${pkt(r.created_at)} replaces your working copy${dirty ? ', and your unsaved changes are lost' : ''}. The website is unchanged until you publish.`, confirmLabel: 'Restore as draft' })) execute(() => restoreRevision(r.id, entry.version), settings ? 'Settings restored.' : 'Earlier version restored as a draft.'); }}>Restore revision {r.id}</button></li>)}</ul> : <p>No earlier versions yet.</p>}
       </details>
       {!settings && initial.version > 0 && <p className="editor-foot"><Link href={`/admin/content/${entry.collection}/${initial.id}/preview`} target="_blank">See every saved field</Link></p>}
     </div>

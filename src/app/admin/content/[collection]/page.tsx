@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { z } from 'zod';
-import { ExternalLink, FileText, Plus, Search } from 'lucide-react';
+import { ExternalLink, Plus, Search } from 'lucide-react';
 import { registry } from '@/lib/content/registry';
 import { BulkContentEditor } from '../../BulkContentEditor';
 import type { Schema } from '../../SchemaForm';
@@ -16,6 +15,10 @@ import { AdminPageHeader } from '../../AdminPageHeader';
 import { COLLECTION_INFO, entrySummary, entryTitle } from '../../collection-info';
 import { toSerializable } from '../../serializable';
 import { scopeEvent } from '@/lib/server/admin/scope';
+import { ContentRows, type ContentRow } from '../../ContentRows';
+
+/** Tabs over the stored status: what was last done to each entry. */
+const TABS = [{ key: '', label: 'All' }, { key: 'published', label: 'On website' }, { key: 'draft', label: 'Drafts' }, { key: 'archived', label: 'Off website' }] as const;
 
 type Row = { id: string; status: string; version: number; publish_at: string | null; updated_at?: string; data: Record<string, unknown> };
 
@@ -30,7 +33,7 @@ function standing(row: Row, liveVersion: number | undefined) {
 
 const looksLikeImage = (url: unknown) => typeof url === 'string' && /\.(jpe?g|png|webp|avif|gif)(\?|$)/i.test(url);
 
-export default async function CollectionPage({ params, searchParams }: { params: Promise<{ collection: string }>; searchParams: Promise<{ page?: string | string[]; q?: string | string[]; section?: string | string[] }> }) {
+export default async function CollectionPage({ params, searchParams }: { params: Promise<{ collection: string }>; searchParams: Promise<{ page?: string | string[]; q?: string | string[]; section?: string | string[]; status?: string | string[] }> }) {
   const { collection } = await params;
   if (!isCollection(collection)) notFound();
   const user = await requirePermission(collection);
@@ -38,13 +41,15 @@ export default async function CollectionPage({ params, searchParams }: { params:
   // A repeated parameter (?q=a&q=b) arrives as an array; use the first value.
   const raw = await searchParams;
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
-  const query = { page: one(raw.page), q: one(raw.q), section: one(raw.section) };
+  const query = { page: one(raw.page), q: one(raw.q), section: one(raw.section), status: one(raw.status) };
+  const status = TABS.some((t) => t.key && t.key === query.status) ? query.status : '';
   const page = Math.max(0, Math.min(100000, Math.floor(Number(query.page) || 0)));
   // Entries with another event's track are outside this admin's access; shared ones stay.
   let entries = scopeEvent(database().from('content_entries').select('*', { count: 'exact' }).eq('collection', collection), user, 'data->>track');
   const search = (query.q || '').replace(/[%_,()]/g, '').slice(0, 100);
   const copyPage = collection === 'copy' && (copyPages as readonly string[]).includes(query.section || '') ? query.section! : '';
   if (copyPage) entries = entries.eq('data->>page', copyPage);
+  if (status) entries = entries.eq('status', status);
   if (search) entries = entries.or(['title', 'name', 'label', 'question', 'awardName'].map((k) => `data->>${k}.ilike.%${search}%`).join(','));
   const { data, error, count } = await entries.order('sort_order').order('id').range(page * 50, page * 50 + 49);
   if (error) throw new Error('Unable to load content. Apply the CMS migrations and seed first.');
@@ -56,7 +61,19 @@ export default async function CollectionPage({ params, searchParams }: { params:
   const { data: pinned } = activePin.data ? await database().from('content_entries').select('*').eq('collection', 'announcements').eq('id', activePin.data.id).single() : { data: null };
   const write = can(user, collection, true);
   const onSite = rows.filter((r) => liveVersions.has(r.id)).length;
-  const pageQuery = (n: number) => `?page=${n}&q=${encodeURIComponent(search)}&section=${copyPage}`;
+  const pageQuery = (n: number) => `?page=${n}&q=${encodeURIComponent(search)}&section=${copyPage}&status=${status}`;
+  const tabCounts = await Promise.all(TABS.map(async (t) => {
+    let q = database().from('content_entries').select('id', { count: 'exact', head: true }).eq('collection', collection);
+    q = scopeEvent(q, user, 'data->>track');
+    if (copyPage) q = q.eq('data->>page', copyPage);
+    if (t.key) q = q.eq('status', t.key);
+    return (await q).count ?? 0;
+  }));
+  const listRows: ContentRow[] = rows.map((row) => {
+    const state = standing(row, liveVersions.get(row.id));
+    const picture = info.media ? row.data[info.media] : undefined;
+    return { id: row.id, title: collection === 'copy' && typeof row.data.label === 'string' ? row.data.label : entryTitle(row.data, row.id), summary: entrySummary(collection, row.data), picture: looksLikeImage(picture) ? String(picture) : null, hasMedia: Boolean(info.media), tone: state.tone, state: state.text };
+  });
 
   return <>
     <AdminNav user={user} />
@@ -80,23 +97,11 @@ export default async function CollectionPage({ params, searchParams }: { params:
         <p className="admin-list__count">{count ?? 0} {count === 1 ? info.singular : `${info.singular}s`}{rows.length ? ` · ${onSite} on the website` : ''}</p>
       </form>
 
-      {rows.length ? <ul className="admin-rows">
-        {rows.map((row) => {
-          const state = standing(row, liveVersions.get(row.id));
-          const picture = info.media ? row.data[info.media] : undefined;
-          const title = collection === 'copy' && typeof row.data.label === 'string' ? row.data.label : entryTitle(row.data, row.id);
-          return <li key={row.id}>
-            <Link className="admin-row" href={`/admin/content/${collection}/${row.id}`}>
-              {info.media && <span className="admin-row__thumb">{looksLikeImage(picture) ? <Image src={String(picture)} alt="" aria-hidden="true" fill sizes="64px" unoptimized /> : <FileText size={20} aria-hidden="true" />}</span>}
-              <span className="admin-row__text"><strong>{title}</strong><small>{entrySummary(collection, row.data)}</small></span>
-              <span className={`admin-pill admin-pill--${state.tone}`}>{state.text}</span>
-            </Link>
-          </li>;
-        })}
-      </ul> : <div className="admin-empty">
-        <p><strong>{search || copyPage ? 'Nothing matches that search.' : `No ${info.label.toLowerCase()} yet.`}</strong></p>
-        {!search && !copyPage && write && <p>Add the first {info.singular}; it appears on the website once you publish it.</p>}
-        {!search && !copyPage && write && <Link className="admin-button" href={`/admin/content/${collection}/new`}><Plus size={16} aria-hidden="true" /> Add {info.singular}</Link>}
+      <nav className="admin-status-tabs" aria-label="Filter by status">{TABS.map((t, i) => <Link key={t.key} href={`?q=${encodeURIComponent(search)}&section=${copyPage}&status=${t.key}`} aria-current={status === t.key ? 'page' : undefined}>{t.label}<small>{tabCounts[i]}</small></Link>)}</nav>
+      {rows.length ? <ContentRows collection={collection} rows={listRows} write={write} singular={info.singular} reorderable={!search && !status} /> : <div className="admin-empty">
+        <p><strong>{search || copyPage || status ? 'Nothing matches.' : `No ${info.label.toLowerCase()} yet.`}</strong></p>
+        {!search && !copyPage && !status && write && <p>Add the first {info.singular}; it appears on the website once you publish it.</p>}
+        {!search && !copyPage && !status && write && <Link className="admin-button" href={`/admin/content/${collection}/new`}><Plus size={16} aria-hidden="true" /> Add {info.singular}</Link>}
       </div>}
 
       {(page > 0 || (count || 0) > (page + 1) * 50) && <nav className="admin-pagination" aria-label="Pages">
