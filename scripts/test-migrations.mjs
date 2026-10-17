@@ -255,6 +255,24 @@ try {
   await item('content',{collection:'team-groups',id:'secretariat'},'trash_item',actor);
   await assert.rejects(()=>item('content',{collection:'team-groups',id:'secretariat'},'purge_item',actor),/Still used by A Member/);
   console.log('PASS: Trash, restore, scoped permanent delete, reference guards and automatic clean-up; team categories');
+  // 0019: importing people, editing them and deleting them for good.
+  const rows=[{name:'Imported Delegate',email:'Delegate@Example.test',institution:'NUST',committees:['unsc','unhrc'],country:'Chile'},{name:'Second Delegate',email:'second@example.test'}];
+  await assert.rejects(()=>db.query("select import_people('gimun',$1,'paid',$2)",[JSON.stringify(rows),mootDesk]),/permission/);
+  await assert.rejects(()=>db.query("select import_people('gimun',$1,'paid',$2)",[JSON.stringify([{name:'No email'}]),gimunDesk]),/valid email/);
+  assert.deepEqual((await db.query("select import_people('gimun',$1,'paid',$2) as r",[JSON.stringify(rows),gimunDesk])).rows[0].r,{created:2,updated:0});
+  const imported=(await db.query("select p.id,p.role,p.event,p.committee_pref,r.status,r.payment_status,r.reference_id from participants p join registrations r on r.reference_id=p.registration_ref where lower(p.email)='delegate@example.test'")).rows[0];
+  assert.equal(imported.event,'gimun');assert.equal(imported.role,'delegate');assert.equal(imported.status,'accepted');assert.equal(imported.payment_status,'paid');assert.match(imported.reference_id,/^REG-GIMUN-/);
+  assert.deepEqual((await db.query("select import_people('gimun',$1,'paid',$2) as r",[JSON.stringify([{...rows[0],name:'Renamed Delegate'}]),gimunDesk])).rows[0].r,{created:0,updated:1});
+  assert.equal((await db.query('select name from participants where id=$1',[imported.id])).rows[0].name,'Renamed Delegate');
+  await opAs(gimunDesk,'checkin',{participant_id:imported.id,checked:true,override:false});
+  await assert.rejects(()=>db.query("select update_person($1,'X Y','x@example.test','',$2)",[imported.id,mootDesk]),/permission/);
+  await db.query("select update_person($1,'Fixed Spelling','fixed@example.test','observer',$2)",[imported.id,gimunDesk]);
+  assert.equal((await db.query('select person_impact($1) as i',[imported.id])).rows[0].i.checked_in,true);
+  await assert.rejects(()=>db.query('select purge_participant($1,$2)',[imported.id,gimunDesk]),/Only owners/);
+  await db.query('select purge_participant($1,$2)',[imported.id,gimunAdmin]);
+  assert.equal((await db.query('select count(*)::int n from registrations where reference_id=$1',[imported.reference_id])).rows[0].n,0);
+  console.log('PASS: people import, edit and permanent delete');
+
   console.log('PASS: event scope on operations, content, site settings and email; append-only audit log; removable accounts');
   console.log('PASS: migrations, private grants, idempotency, references, roster, revisions, attendance, certificates, allocation conflicts/capacity, guarded reset, retention dry-run/anonymization, database permissions and correction operations');
 } finally { await db.close(); }

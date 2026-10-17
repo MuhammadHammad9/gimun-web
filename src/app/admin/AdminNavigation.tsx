@@ -11,13 +11,13 @@ import { COLLECTION_INFO, CONTENT_GROUPS } from './collection-info';
 import { logout } from './auth-actions';
 
 const OPS_LABELS: Record<string, string> = {
-  settings: 'Site settings', media: 'Media library', registrations: 'Registrations', allocations: 'Country allocation', 'event-day': 'Check-in',
+  settings: 'Site settings', media: 'Media library', registrations: 'Registrations', people: 'People', allocations: 'Country allocation', 'event-day': 'Check-in',
   inbox: 'Messages', email: 'Email', certificates: 'Certificates', feedback: 'Feedback survey', users: 'Admin accounts', audit: 'Activity log', 'close-out': 'Archive & retention', workspace: 'Admin settings',
 };
 const ICONS: Record<string, LucideIcon> = {
   copy: Type, navigation: Map, settings: Settings2, announcements: Megaphone, schedule: CalendarDays, results: Award, committees: Globe2,
   'moot-categories': Gavel, clarifications: MessageSquareQuote, team: UserRound, 'team-groups': Tags, gallery: Images, sponsors: Sparkles, faq: HelpCircle,
-  resources: BookOpenText, media: Image, registrations: Users, allocations: Globe2, 'event-day': ClipboardCheck, inbox: Inbox, email: Mail,
+  resources: BookOpenText, media: Image, registrations: Users, people: UserRound, allocations: Globe2, 'event-day': ClipboardCheck, inbox: Inbox, email: Mail,
   certificates: ScrollText, feedback: FileText, users: ShieldCheck, audit: FileText, 'close-out': Archive, workspace: SlidersHorizontal,
 };
 /** The sidebar, in the order people look for things: the website first, then running the event. */
@@ -27,7 +27,7 @@ const GROUPS: [string, string[]][] = [
     ...collections.filter((c) => COLLECTION_INFO[c].group === group),
     ...(group === 'Files' ? ['media'] : []),
   ]]),
-  ['Registrations & event day', ['registrations', 'allocations', 'event-day']],
+  ['Registrations & event day', ['people', 'registrations', 'allocations', 'event-day']],
   ['Messages', ['inbox', 'email']],
   ['After the event', ['certificates', 'feedback']],
   ['Administration', ['users', 'workspace', 'audit', 'close-out']],

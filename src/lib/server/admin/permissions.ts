@@ -1,5 +1,5 @@
 import { collections } from '@/lib/content/registry';
-export const sections = [...collections, 'settings', 'registrations', 'inbox', 'email', 'event-day', 'allocations', 'certificates', 'feedback', 'close-out', 'users', 'media', 'audit'] as const;
+export const sections = [...collections, 'settings', 'registrations', 'people', 'inbox', 'email', 'event-day', 'allocations', 'certificates', 'feedback', 'close-out', 'users', 'media', 'audit'] as const;
 export const events = ['gimun', 'moot-cup'] as const;
 export type EventId = (typeof events)[number];
 export const EVENT_LABELS: Record<EventId, string> = { gimun: 'GIMUN', 'moot-cup': 'GMC' };
@@ -28,7 +28,7 @@ export function can(user: AdminUser, section: string, write = false) {
   switch (user.role) {
     case 'admin': return true;
     case 'editor': return collections.includes(section as typeof collections[number]) || section === 'media';
-    case 'registrar': return ['registrations', 'inbox', 'email', 'event-day', 'allocations', 'certificates', 'feedback'].includes(section);
+    case 'registrar': return ['registrations', 'people', 'inbox', 'email', 'event-day', 'allocations', 'certificates', 'feedback'].includes(section);
     case 'checkin': return section === 'event-day';
     case 'viewer': return !['audit', 'email'].includes(section);
     default: return false;

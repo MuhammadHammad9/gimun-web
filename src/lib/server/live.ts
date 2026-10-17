@@ -78,7 +78,7 @@ export const adminRevision = cache(async (user: AdminUser) => {
   const revision = createHash('sha256')
     .update(
       JSON.stringify([
-        data.filter((r) => allowed.includes(r.section) || (r.section === 'event-day' && allowed.some((s) => ['registrations', 'certificates', 'feedback', 'allocations'].includes(s)))),
+        data.filter((r) => allowed.includes(r.section) || (r.section === 'event-day' && allowed.some((s) => ['registrations', 'people', 'certificates', 'feedback', 'allocations'].includes(s)))),
         site.revision,
         user.role,
         user.sections,
