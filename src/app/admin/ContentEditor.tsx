@@ -11,6 +11,8 @@ import type { UploadedMedia } from './media-actions';
 import { MediaContext } from './MediaField';
 import { useDirtyGuard } from './useDirtyGuard';
 import { useConfirm } from './ui/ConfirmDialog';
+import { TrashButton } from './ui/TrashButton';
+import { entryTitle } from './collection-info';
 
 const groups: Record<string, string[]> = {
   'Event details': ['eventNames', 'hostInstitution', 'venue', 'eventDates', 'galaDate', 'phaseOverride'],
@@ -167,6 +169,11 @@ export function ContentEditor({ initial, schema, settings = false, readOnly = fa
             <h3>Remove from the website</h3>
             <p className="admin-muted">Visitors stop seeing it. It stays here, and you can publish it again.</p>
             <button type="button" className="secondary is-danger" disabled={busy} onClick={() => save('archive')}><EyeOff size={15} aria-hidden="true" /> Remove from website</button>
+          </div>}
+          {initial.version > 0 && !readOnly && <div>
+            <h3>Delete</h3>
+            <p className="admin-muted">Moves it to Trash: off the website and out of this list. You can restore it from Trash.</p>
+            <TrashButton kind="content" itemKey={{ collection: initial.collection, id: initial.id }} title={entryTitle(initial.data, initial.id)} after={`/admin/content/${initial.collection}`} />
           </div>}
         </section>}
       </form>

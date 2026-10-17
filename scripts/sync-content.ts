@@ -21,7 +21,7 @@ nextEnv.loadEnvConfig(process.cwd());
 const COLLECTIONS: Collection[] = ['committees', 'schedule', 'faq', 'copy', 'announcements', 'resources', 'team', 'moot-categories', 'clarifications'];
 const apply = process.argv.includes('--apply');
 
-type Row = { id: string; data: Record<string, unknown>; version: number; status: string; sort_order: number };
+type Row = { id: string; data: Record<string, unknown>; version: number; status: string; sort_order: number; deleted_at: string | null };
 
 async function main() {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -44,18 +44,20 @@ async function main() {
 
   for (const collection of COLLECTIONS) {
     const items = registry[collection].array().parse(JSON.parse(await readFile(`content/${collection}.json`, 'utf8'))) as { id: string }[];
-    const { data: rows, error } = await db.from('content_entries').select('id,data,version,status,sort_order').eq('collection', collection);
+    const { data: rows, error } = await db.from('content_entries').select('id,data,version,status,sort_order,deleted_at').eq('collection', collection);
     if (error) throw error;
     const existing = new Map((rows as Row[]).map((row) => [row.id, row]));
     items.forEach((data, sort_order) => {
       const row = existing.get(data.id);
+      // Someone moved it to Trash in the admin: leave that decision alone.
+      if (row?.deleted_at) { console.log(`  ${collection}/${data.id}: in Trash in the admin, skipped`); return; }
       const entry = { collection, id: data.id, status: 'published', sort_order, publish_at: null, expire_at: null, data, version: row?.version ?? 0 };
       if (!row) changes.push({ label: `${collection}/${data.id}: add`, entry });
       else if (row.status !== 'published' || row.sort_order !== sort_order || !isDeepStrictEqual(row.data, data)) changes.push({ label: `${collection}/${data.id}: update`, entry });
     });
     const wanted = new Set(items.map((item) => item.id));
     for (const row of existing.values()) {
-      if (wanted.has(row.id) || row.status === 'archived') continue;
+      if (wanted.has(row.id) || row.status === 'archived' || row.deleted_at) continue;
       changes.push({ label: `${collection}/${row.id}: archive`, entry: { collection, id: row.id, status: 'archived', sort_order: row.sort_order, publish_at: null, expire_at: null, data: row.data, version: row.version } });
     }
   }

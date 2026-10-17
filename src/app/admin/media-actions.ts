@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { unstable_rethrow } from 'next/navigation';
 import { requirePermission } from '@/lib/server/admin/auth';
-import { someRow } from '@/lib/server/admin/read-all';
 import { database } from '@/lib/server/supabase';
 const types={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','application/pdf':'pdf'} as const;
 export type UploadedMedia={url:string;alt:string;size:number;mime:string;path:string};
@@ -74,27 +73,4 @@ export async function abandonUpload(path:string):Promise<MediaResult<{removed:tr
     const deleted=await db.from('media_assets').delete().eq('path',asset.path).eq('uploaded_by',user.user_id).eq('state','pending');if(deleted.error)throw new MediaError('Upload metadata cleanup failed.');
     return {removed:true};
   }catch(error){return failure(error,'The incomplete upload could not be removed. Try again.');}
-}
-/** Deletes a file only when no content entry, setting, revision, publication or archive still links to it. */
-export async function deleteMedia(id:string):Promise<MediaResult<{result:string}>>{
-  try{
-    await writer();
-    const assetId=z.uuid().safeParse(id);if(!assetId.success)return {error:'Media not found.'};
-    const db=database();
-    const {data:asset,error}=await db.from('media_assets').select('path').eq('id',assetId.data).single();
-    if(error||!asset)return {error:'Media not found.'};
-    // The object name is a random UUID, so it identifies the file in any stored
-    // link, whichever host or URL form the link was saved with.
-    const needle=String(asset.path);
-    const uses=(row:Record<string,unknown>)=>JSON.stringify(row).includes(needle);
-    let referenced=false;
-    try{
-      for(const [table,select,order] of [['content_entries','collection,id,data','id'],['site_settings','data','id'],['content_publications','data','release_id'],['event_archives','snapshot','id'],['content_revisions','snapshot','id']] as const){
-        if(await someRow(table,select,order,uses)){referenced=true;break;}
-      }
-    }catch{return {error:'Unable to verify file references. No file was deleted.'};}
-    if(referenced)return {error:'This file is retained by content, a revision, a publication, or an archive. Replace it without deleting the original.'};
-    const removed=await db.storage.from('media').remove([asset.path]);if(removed.error)return {error:'Unable to delete the file.'};
-    const deleted=await db.from('media_assets').delete().eq('id',assetId.data);if(deleted.error)return {error:'File removed, but metadata cleanup failed. Retry deletion.'};revalidatePath('/admin/media');return {result:'Deleted.'};
-  }catch(error){return failure(error,'The file could not be deleted. Try again.');}
 }

@@ -12,11 +12,12 @@ export class CertificateLookupError extends Error {}
 export async function findCertificate(code:string){
   if(!z.uuid().safeParse(code).success)return null;
   let result;
-  try{result=await database().from('certificates').select('participant_id,serial,kind,issued_at,verify_code,participants(name,registration_ref)').eq('verify_code',code).maybeSingle();}
+  try{result=await database().from('certificates').select('participant_id,serial,kind,issued_at,verify_code,deleted_at,participants(name,registration_ref)').eq('verify_code',code).maybeSingle();}
   catch{throw new CertificateLookupError('Certificate verification is temporarily unavailable.');}
   const {data,error}=result;
   if(error)throw new CertificateLookupError('Certificate verification is temporarily unavailable.');
   if(!data)return null;
   const participant=Array.isArray(data.participants)?data.participants[0]:data.participants;
-  return participant?{serial:data.serial,kind:data.kind,issuedAt:data.issued_at,code:data.verify_code,name:participant.name}:null;
+  // A revoked certificate still answers, so whoever checks it learns it is no longer valid.
+  return participant?{serial:data.serial,kind:data.kind,issuedAt:data.issued_at,code:data.verify_code,name:participant.name,revoked:Boolean(data.deleted_at)}:null;
 }

@@ -3,8 +3,9 @@ import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ChevronDown, ChevronUp, EyeOff, FileText, Send } from 'lucide-react';
+import { ChevronDown, ChevronUp, EyeOff, FileText, Send, Trash2 } from 'lucide-react';
 import { bulkStatus, reorderContent } from './content-actions';
+import { restoreItem, trashItem } from './trash-actions';
 import { useConfirm } from './ui/ConfirmDialog';
 import { useNotice } from './ui/Notice';
 
@@ -59,6 +60,22 @@ export function ContentRows({ collection, rows, write, singular, reorderable }: 
       router.refresh();
     });
   }
+  async function moveToTrash() {
+    const ids = [...selected];
+    if (!(await confirm({ title: `Move ${plural(ids.length)} to Trash?`, body: 'They disappear from this list and the website. You can restore them from Trash.', confirmLabel: 'Move to Trash', tone: 'danger' }))) return;
+    start(async () => {
+      const moved: string[] = []; let failure = '';
+      for (const id of ids) { const r = await trashItem('content', { collection, id }); if (r.error) failure = r.error; else moved.push(id); }
+      if (failure && !moved.length) { notice({ text: failure, tone: 'error' }); return; }
+      notice({ text: `${plural(moved.length)} moved to Trash.${failure ? ` Some could not be moved: ${failure}` : ''}`, action: { label: 'Undo', run: async () => {
+        for (const id of moved) await restoreItem('content', { collection, id });
+        notice({ text: `${plural(moved.length)} restored. They stay off the website until published.` });
+        router.refresh();
+      } } });
+      setSelected([]);
+      router.refresh();
+    });
+  }
   const toggle = (id: string) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
   const canMove = write && reorderable && !pending;
 
@@ -98,6 +115,7 @@ export function ContentRows({ collection, rows, write, singular, reorderable }: 
       <strong>{plural(selected.length)} selected</strong>
       <button type="button" disabled={pending} onClick={() => setStatus('publish')}><Send size={14} aria-hidden="true" /> Publish</button>
       <button type="button" className="secondary" disabled={pending} onClick={() => setStatus('archive')}><EyeOff size={14} aria-hidden="true" /> Take off website</button>
+      <button type="button" className="secondary" disabled={pending} onClick={moveToTrash}><Trash2 size={14} aria-hidden="true" /> Move to Trash</button>
       <button type="button" className="secondary" disabled={pending} onClick={() => setSelected([])}>Clear</button>
     </div>}
   </>;

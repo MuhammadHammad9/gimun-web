@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import {
-  Archive, Award, BookOpenText, CalendarDays, ClipboardCheck, ExternalLink, FileText, Gavel, Globe2, HelpCircle, Image, Images, Inbox,
+  Archive, Trash2, Award, BookOpenText, CalendarDays, ClipboardCheck, ExternalLink, FileText, Gavel, Globe2, HelpCircle, Image, Images, Inbox,
   LayoutDashboard, LogOut, Mail, Map, Megaphone, Menu, MessageSquareQuote, ScrollText, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Type, UserRound, Users, X, type LucideIcon,
 } from 'lucide-react';
 import { collections } from '@/lib/content/registry';
@@ -35,7 +35,7 @@ const GROUPS: [string, string[]][] = [
 const hrefOf = (section: string) => (collections.includes(section as (typeof collections)[number]) ? `/admin/content/${section}` : `/admin/${section}`);
 const labelOf = (section: string) => COLLECTION_INFO[section as keyof typeof COLLECTION_INFO]?.label ?? OPS_LABELS[section] ?? section.replaceAll('-', ' ');
 
-export function AdminNavigation({ name, role, allowed, owner = false, websiteConnected, websiteReason }: { name: string; role: string; allowed: string[]; owner?: boolean; websiteConnected?: boolean; websiteReason?: string }) {
+export function AdminNavigation({ name, role, allowed, owner = false, trash = false, websiteConnected, websiteReason }: { name: string; role: string; allowed: string[]; owner?: boolean; trash?: boolean; websiteConnected?: boolean; websiteReason?: string }) {
   const path = usePathname();
   // The phone menu is open only on the page it was opened on, so navigating closes it.
   const [openOn, setOpenOn] = useState<string | null>(null);
@@ -65,6 +65,7 @@ export function AdminNavigation({ name, role, allowed, owner = false, websiteCon
       </Link>
       <nav aria-label="Admin sections">
         <Link className="admin-overview-link" href="/admin" aria-current={path === '/admin' ? 'page' : undefined}><LayoutDashboard size={16} aria-hidden="true" /> Overview</Link>
+        {trash && <Link className="admin-overview-link" href="/admin/trash" aria-current={path === '/admin/trash' ? 'page' : undefined}><Trash2 size={16} aria-hidden="true" /> Trash</Link>}
         {GROUPS.map(([title, items]) => {
           // Admin settings are the owner's, like the accounts they sit beside.
           const visible = items.filter((s) => allowed.includes(s) || (s === 'workspace' && owner));

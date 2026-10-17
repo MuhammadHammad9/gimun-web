@@ -45,7 +45,7 @@ export default async function CollectionPage({ params, searchParams }: { params:
   const status = TABS.some((t) => t.key && t.key === query.status) ? query.status : '';
   const page = Math.max(0, Math.min(100000, Math.floor(Number(query.page) || 0)));
   // Entries with another event's track are outside this admin's access; shared ones stay.
-  let entries = scopeEvent(database().from('content_entries').select('*', { count: 'exact' }).eq('collection', collection), user, 'data->>track');
+  let entries = scopeEvent(database().from('content_entries').select('*', { count: 'exact' }).eq('collection', collection).is('deleted_at', null), user, 'data->>track');
   const search = (query.q || '').replace(/[%_,()]/g, '').slice(0, 100);
   const copyPage = collection === 'copy' && (copyPages as readonly string[]).includes(query.section || '') ? query.section! : '';
   if (copyPage) entries = entries.eq('data->>page', copyPage);
@@ -63,7 +63,7 @@ export default async function CollectionPage({ params, searchParams }: { params:
   const onSite = rows.filter((r) => liveVersions.has(r.id)).length;
   const pageQuery = (n: number) => `?page=${n}&q=${encodeURIComponent(search)}&section=${copyPage}&status=${status}`;
   const tabCounts = await Promise.all(TABS.map(async (t) => {
-    let q = database().from('content_entries').select('id', { count: 'exact', head: true }).eq('collection', collection);
+    let q = database().from('content_entries').select('id', { count: 'exact', head: true }).eq('collection', collection).is('deleted_at', null);
     q = scopeEvent(q, user, 'data->>track');
     if (copyPage) q = q.eq('data->>page', copyPage);
     if (t.key) q = q.eq('status', t.key);

@@ -1,13 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const state=vi.hoisted(()=>({asset:null as null|Record<string,unknown>,remove:vi.fn(),info:vi.fn(),createUpload:vi.fn(),insert:vi.fn(),references:[] as Record<string,unknown>[],filters:[] as unknown[][]}));
-vi.mock('next/cache',()=>({revalidatePath:vi.fn()}));
-vi.mock('@/lib/server/admin/auth',()=>({requirePermission:async()=>({user_id:'owner'})}));
+const state=vi.hoisted(()=>({rpc:vi.fn(),asset:null as null|Record<string,unknown>,remove:vi.fn(),info:vi.fn(),createUpload:vi.fn(),insert:vi.fn(),references:[] as Record<string,unknown>[],filters:[] as unknown[][]}));
+vi.mock('next/cache',()=>({revalidatePath:vi.fn(),updateTag:vi.fn()}));
+vi.mock('@/lib/server/admin/auth',()=>({requirePermission:async()=>({user_id:'owner'}),requireAdmin:async()=>({user_id:'owner'}),stepUpNeeded:async()=>null}));
 vi.mock('@/lib/server/admin/read-all',()=>({readAll:async()=>state.references,someRow:async(_t:string,_s:string,_o:string,match:(row:Record<string,unknown>)=>boolean)=>state.references.some(match)}));
 vi.mock('@/lib/server/supabase',()=>({database:()=>({
  from:()=>{const chain={select:()=>chain,eq:(...args:unknown[])=>{state.filters.push(args);return chain;},single:async()=>({data:state.asset,error:null}),maybeSingle:async()=>({data:state.asset,error:null}),insert:state.insert,delete:()=>chain,update:()=>chain};return chain;},
  storage:{from:()=>({createSignedUploadUrl:state.createUpload,remove:state.remove,info:state.info,getPublicUrl:()=>({data:{publicUrl:'https://media.test/file.png'}})})},
+rpc:state.rpc,
 })}));
-import { abandonUpload, deleteMedia, finishUpload, startUpload } from '../../src/app/admin/media-actions';
+import { abandonUpload, finishUpload, startUpload } from '../../src/app/admin/media-actions';
+import { trashItem } from '../../src/app/admin/trash-actions';
 beforeEach(()=>{state.asset=null;state.references=[];state.filters=[];state.remove.mockReset();state.info.mockReset();state.createUpload.mockReset();state.insert.mockReset();state.createUpload.mockResolvedValue({data:{token:'signed-token'},error:null});state.insert.mockResolvedValue({error:null});state.remove.mockResolvedValue({error:null});});
 describe('media lifecycle authorization',()=>{
  it('does not contact storage when no owned pending upload exists',async()=>{
@@ -35,12 +37,11 @@ describe('media lifecycle authorization',()=>{
   // Thrown server-action messages are replaced by a generic text in production.
   await expect(startUpload({mime:'image/png',size:6*1024*1024,alt:'Too big'})).resolves.toEqual({error:expect.stringContaining('too large')});
   await expect(finishUpload('../escape')).resolves.toEqual({error:'Invalid media path.'});
-  await expect(deleteMedia('not-a-uuid')).resolves.toEqual({error:'Media not found.'});
   expect(state.createUpload).not.toHaveBeenCalled();
  });
- it('protects media referenced beyond the first thousand entries',async()=>{
+ it('keeps a file on the website out of Trash, even past the first thousand entries',async()=>{
   state.asset={path:'file.png'};state.references=Array.from({length:1002},(_,i)=>({data:i===1001?'https://media.test/file.png':'unrelated'}));
-  await expect(deleteMedia('11111111-1111-4111-8111-111111111111')).resolves.toMatchObject({error:expect.stringContaining('retained')});
-  expect(state.remove).not.toHaveBeenCalled();
+  await expect(trashItem('media',{id:'11111111-1111-4111-8111-111111111111'})).resolves.toMatchObject({error:expect.stringContaining('used on the website')});
+  expect(state.rpc).not.toHaveBeenCalled();expect(state.remove).not.toHaveBeenCalled();
  });
 });

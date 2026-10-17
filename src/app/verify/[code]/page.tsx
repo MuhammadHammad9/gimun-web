@@ -30,7 +30,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ code: s
     <section className="utility-page wrap">
       <div className="utility-card space-y-8">
         <Seal id="verify-seal" className="utility-card__seal" spin={false} />
-        <p className="text-meta font-mono uppercase text-champagne">Verified certificate</p>
+        <p className="text-meta font-mono uppercase text-champagne">{certificate.revoked ? 'Revoked certificate' : 'Verified certificate'}</p>
         <h1 className="font-display text-4xl font-medium tracking-tight text-text sm:text-5xl">{certificate.name}</h1>
         <dl className="grid gap-6 border-y border-line py-6 sm:grid-cols-3">
           <div>
@@ -46,12 +46,20 @@ export default async function VerifyPage({ params }: { params: Promise<{ code: s
             <dd className="mt-1.5 text-sm text-text">{issued}</dd>
           </div>
         </dl>
-        <p className="text-base leading-relaxed text-text-2">
-          This certificate was issued by the GIMUN &amp; GMC organizing team and matches our records.
-        </p>
-        <Button href={`/verify/${code}/pdf`} variant="primary" icon={<Download aria-hidden="true" className="size-4" />}>
-          Download certificate PDF
-        </Button>
+        {certificate.revoked ? (
+          <p role="alert" className="text-base leading-relaxed text-text-2">
+            The GIMUN &amp; GMC organizing team has revoked this certificate. It is no longer valid.
+          </p>
+        ) : (
+          <>
+            <p className="text-base leading-relaxed text-text-2">
+              This certificate was issued by the GIMUN &amp; GMC organizing team and matches our records.
+            </p>
+            <Button href={`/verify/${code}/pdf`} variant="primary" icon={<Download aria-hidden="true" className="size-4" />}>
+              Download certificate PDF
+            </Button>
+          </>
+        )}
       </div>
     </section>
   );

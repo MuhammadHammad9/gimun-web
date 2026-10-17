@@ -7,7 +7,7 @@ import { readAll } from '@/lib/server/admin/read-all';
 import { database } from '@/lib/server/supabase';
 import { can } from '@/lib/server/admin/permissions';
 import { isCollection } from '@/lib/content/registry';
-import { DeleteMedia } from './DeleteMedia';
+import { TrashButton } from './ui/TrashButton';
 import { CopyLink } from './CopyLink';
 import { COLLECTION_INFO, entryTitle } from './collection-info';
 
@@ -17,7 +17,9 @@ const kb = (size: number) => (size >= 1048576 ? `${(size / 1048576).toFixed(1)} 
 export async function MediaLibrary({ search = '' }: { search?: string }) {
   const user = await requirePermission('media');
   const write = can(user, 'media', true);
-  const [assets, entries] = await Promise.all([readAll('media_assets'), readAll('content_entries', 'collection,id,data')]);
+  const [allAssets, allEntries] = await Promise.all([readAll('media_assets'), readAll('content_entries', 'collection,id,data,deleted_at')]);
+  const assets = allAssets.filter((a) => !a.deleted_at);
+  const entries = allEntries.filter((e) => !e.deleted_at);
   const storage = database().storage.from('media');
   const q = search.trim().toLowerCase();
   const shown = assets
@@ -56,7 +58,7 @@ export async function MediaLibrary({ search = '' }: { search?: string }) {
             </div>
             <div className="media-card__actions">
               <CopyLink url={url} label={String(asset.alt)} />
-              {write && !used.length && <DeleteMedia id={String(asset.id)} />}
+              {write && !used.length && <TrashButton kind="media" itemKey={{ id: String(asset.id) }} title={String(asset.alt)} compact />}
             </div>
           </li>;
         })}

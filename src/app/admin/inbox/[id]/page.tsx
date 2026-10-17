@@ -8,6 +8,8 @@ import { AdminPageHeader } from '../../AdminPageHeader';
 import { InquiryActions } from '../../InquiryActions';
 import { OperationForm } from '../../OperationForm';
 import { assertInScope, eventOfTrack } from '@/lib/server/admin/scope';
+import { TrashButton } from '../../ui/TrashButton';
+import { RestoreBanner } from '../../RestoreBanner';
 
 const pkt = (value: string) => new Date(value).toLocaleString('en-GB', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'short' });
 const TOPICS: Record<string, string> = { gimun: 'GIMUN', 'moot-cup': 'GMC', sponsorship: 'Sponsorship', media: 'Media', other: 'Other' };
@@ -26,9 +28,11 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
     <AdminNav user={user} />
     <AdminPageHeader
       title={data.name}
+      actions={write && !data.deleted_at ? <TrashButton kind="inbox" itemKey={{ id: data.id }} title={data.name} after="/admin/inbox" /> : undefined}
       crumbs={[{ label: 'Messages', href: '/admin/inbox' }]}
       description={<>{data.kind === 'clarification' ? 'Clarification request' : 'Message'} about {TOPICS[data.query_type] ?? data.query_type}{event ? ` (${EVENT_LABELS[event]})` : ''} · received {pkt(data.submitted_at ?? data.created_at)}</>}
     />
+    {data.deleted_at && <RestoreBanner kind="inbox" itemKey={{ id: data.id }} canRestore={write} />}
     <div className="admin-card">
       <p><a href={`mailto:${data.email}`}>{data.email}</a> · <span className="admin-status">{String(data.handled_status).replaceAll('-', ' ')}</span></p>
       <p className="whitespace-pre-wrap">{data.message}</p>
