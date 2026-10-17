@@ -115,16 +115,18 @@ html .scroll-progress {
   transition:
     opacity 320ms var(--ease-brand),
     transform 520ms var(--ease-out-expo),
-    backdrop-filter 0s linear 320ms,
-    -webkit-backdrop-filter 0s linear 320ms;
+    -webkit-backdrop-filter 0s linear 320ms,
+    backdrop-filter 0s linear 320ms;
 }
 
 .site-header[data-condensed] .site-header__bar::before,
 .site-header[data-panel] .site-header__bar::before {
   opacity: 1;
   transform: none;
-  backdrop-filter: blur(18px) saturate(140%);
+  /* Prefixed first, standard last: in the other order Lightning CSS kept only
+     the -webkit- form, which Chrome ignores, so the glass never blurred there. */
   -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
   transition:
     opacity 320ms var(--ease-brand),
     transform 520ms var(--ease-out-expo);

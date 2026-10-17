@@ -1,6 +1,7 @@
 # Security audit and performance pass — 2026-10-17
 
-Branch `claude/security-perf-audit`, built on `main` at c635281. Builds on the 2026-10-08 review
+Branch `claude/security-perf-audit`, started from `main` at c635281, with `main` up to 00d180b merged in
+(conflicts resolved as described under Performance). Builds on the 2026-10-08 review
 (`SECURITY_REVIEW_2026-10-08.md`) rather than repeating it. Nothing was written to the live database;
 the live site was only read (headers, public files, and the Supabase API with the public key).
 
@@ -37,68 +38,127 @@ the live site was only read (headers, public files, and the Supabase API with th
 
 ## Performance
 
-**Method.** `scripts/measure-perf.mjs` (new) runs Lighthouse 3 times per page and reports the median.
-It uses two profiles: the release gate's mobile profile (150 ms RTT, 1.6 Mbps, 4× CPU) and slow 3G
-(400 ms RTT, 400 kbps, 4× CPU). Before and after are both production builds of this branch served on
-the same machine (`next start`), so the only difference is the code.
+### How it was measured
 
-| Profile / page | Score | LCP | FCP | TBT | CLS | Page weight | JS |
+`scripts/measure-perf.mjs` (new) runs Lighthouse with the release gate's mobile profile (150 ms RTT,
+1.6 Mbps, 4× CPU) and a slow-3G profile (400 ms RTT, 400 kbps, 4× CPU) on `/`, `/register`,
+`/resources` and `/gimun`, and reports the median of 3 runs.
+
+The laptop was busy during this work (OneDrive syncing, other dev servers, about 40% CPU at idle),
+and sequential runs drifted badly: the same build scored TBT 176 ms in one run and 1,437 ms in a later
+one. So the final numbers come from three production builds served side by side and measured
+**interleaved** (every round runs each build once, in shuffled order), so all three see the same
+conditions:
+
+- **start**: `c635281`, `main` when this work began;
+- **main**: `00d180b`, `main` at the end, which by then had its own GSAP and portrait fixes
+  (`1bd6c78`) and the new committee emblems (`00d180b`);
+- **branch**: this branch, with `main` merged in.
+
+All three used the same `node_modules`. TBT still swung up to 2× between builds that ship the same JS,
+so read TBT as noisy; page weight and JS are exact.
+
+Cells show **start / main / branch**:
+
+| Profile / page | Score | LCP (s) | FCP (s) | TBT (ms) | CLS | Page weight (KB) | JS (KB) |
 |---|---|---|---|---|---|---|---|
-| gate / | 58 → 80 | 4.80 s → 4.58 s | 1.61 s → 1.53 s | 673 ms → 176 ms | 0.149 → 0.000 | 730 KB → 543 KB | 251 KB → 223 KB |
-| gate /register | 67 → 81 | 4.63 s → 4.26 s | 1.67 s → 1.67 s | 591 ms → 138 ms | 0.000 → 0.000 | 718 KB → 533 KB | 248 KB → 221 KB |
-| gate /resources | 73 → 83 | 5.27 s → 4.50 s | 1.67 s → 1.67 s | 257 ms → 105 ms | 0.000 → 0.000 | 707 KB → 522 KB | 248 KB → 221 KB |
-| gate /gimun | 75 → 80 | 4.80 s → 4.62 s | 1.52 s → 1.52 s | 295 ms → 193 ms | 0.000 → 0.000 | 749 KB → 561 KB | 266 KB → 238 KB |
-| slow3g / | 59 → 60 | 15.28 s → 14.56 s | 4.82 s → 4.82 s | 159 ms → 148 ms | 0.000 → 0.000 | 730 KB → 543 KB | 251 KB → 223 KB |
-| slow3g /register | 50 → 61 | 14.82 s → 14.11 s | 4.82 s → 4.82 s | 465 ms → 134 ms | 0.000 → 0.000 | 718 KB → 533 KB | 248 KB → 221 KB |
-| slow3g /resources | 57 → 62 | 18.82 s → 15.14 s | 4.82 s → 4.82 s | 225 ms → 97 ms | 0.000 → 0.000 | 707 KB → 522 KB | 248 KB → 221 KB |
-| slow3g /gimun | 61 → 59 | 15.22 s → 14.50 s | 4.81 s → 4.82 s | 138 ms → 184 ms | 0.000 → 0.000 | 749 KB → 561 KB | 266 KB → 238 KB |
+| gate / | 70 / 74 / 64 | 4.83 / 5.59 / 5.19 | 1.52 / 1.52 / 1.54 | 452 / 242 / 602 | 0.000 / 0.000 / 0.000 | 732 / 1159 / 625 | 251 / 254 / 223 |
+| gate /register | 77 / 68 / 76 | 4.63 / 4.45 / 4.36 | 1.67 / 1.67 / 1.52 | 207 / 485 / 367 | 0.000 / 0.000 / 0.000 | 719 / 722 / 502 | 248 / 251 / 221 |
+| gate /resources | 73 / 77 / 78 | 5.28 / 4.97 / 4.55 | 1.68 / 1.67 / 1.53 | 286 / 228 / 246 | 0.000 / 0.000 / 0.000 | 709 / 711 / 491 | 248 / 251 / 221 |
+| gate /gimun | 78 / 72 / 75 | 4.65 / 5.60 / 4.94 | 1.52 / 1.53 / 1.53 | 236 / 289 / 277 | 0.000 / 0.000 / 0.000 | 749 / 1177 / 644 | 266 / 269 / 239 |
+| slow3g / | 53 / 55 / 59 | 15.52 / 18.96 / 15.59 | 4.82 / 4.81 / 4.42 | 344 / 291 / 211 | 0.000 / 0.000 / 0.000 | 732 / 1159 / 625 | 251 / 254 / 223 |
+| slow3g /register | 50 / 62 / 58 | 15.24 / 14.71 / 13.80 | 4.82 / 4.82 / 4.82 | 480 / 137 / 229 | 0.000 / 0.000 / 0.000 | 719 / 722 / 502 | 248 / 251 / 221 |
+| slow3g /resources | 59 / 60 / 57 | 18.82 / 18.02 / 16.02 | 4.82 / 4.82 / 6.24 | 199 / 198 / 195 | 0.000 / 0.000 / 0.000 | 706 / 711 / 491 | 248 / 251 / 221 |
+| slow3g /gimun | 56 / 60 / 62 | 15.35 / 18.85 / 15.18 | 4.82 / 4.82 / 4.42 | 234 / 143 / 123 | 0.000 / 0.000 / 0.000 | 748 / 1177 / 644 | 266 / 269 / 239 |
 
-The project's own first-load guard (`scripts/report-first-load.js`) failed on `main` and passes on this
-branch: about 26 KB gzip less JS on every page.
+What the table shows:
+
+- **Against today's `main`**, the branch has the lowest page weight on every page (−30% to −46%),
+  27–30 KB less JS, and lower LCP on all four pages in both profiles.
+- **Against `start`**, the branch is 15–31% lighter and has lower LCP on `/register` and
+  `/resources`. On `/` and `/gimun`, `start` is slightly faster only because it predates the committee
+  emblems.
+- **CI:** `main` has failed CI since `c635281` on the first-load guard (GSAP in every first load), so
+  the Lighthouse release gate has not run since. `1bd6c78` fixed that on `main`, and the guard passes
+  on this branch.
+
+An earlier sequential before/after run of the first commit on this branch (gate profile, home: score
+58→80, TBT 673→176 ms, CLS 0.149→0) pointed the same way, but was taken while the machine was quieter.
+Treat the interleaved table as the reliable comparison.
 
 ### What changed
 
-- **GSAP no longer loads with every page.** c635281 added a static `import gsap` to `MobileMenu`,
-  which the header renders everywhere, so GSAP (27 KB gzip) landed in every page's first load and the
-  guard failed. GSAP now loads on the visitor's first touch, scroll or key press, and on demand when
-  the menu opens. Focus moves into the menu once it is visible. Checked in the browser: opens,
-  focuses Close, Escape closes and returns focus, scroll unlocks. This drove most of the TBT and
-  score gains.
-- **Team portraits:** the source PNGs are 350–900 KB each (about 8 MB on /about/team). They now go
-  through the Next image optimizer via `getImageProps`, keeping the plain `<img>` the tilt parallax
-  needs: WebP at the card size, about 25 KB each, still lazy. Admin-uploaded Supabase media is
-  optimized the same way; any other URL is used as is.
-- **Logo masks:** the header, footer and seal used the full 98 KB + 119 KB PNGs. They now use 288 px
-  alpha-only WebP copies (29 KB + 26 KB, −75%) made by `scripts/optimize-brand-logos.mjs`. The
-  originals stay as the source files. Rerun the script after replacing a logo.
-- **Static file caching:** files in `public/` were served with `max-age=0`, so every visit
-  revalidated them. They now get a 1-day cache plus 7 days of stale-while-revalidate.
-- **CLS:** home measured 0.149 before and 0.000 after (3 of 3 runs). It was not reproducible in a
-  traced run, so the exact element was not isolated; the GSAP and logo changes are the likely cause.
+- **GSAP out of every first load.** `c635281` imported GSAP statically in `MobileMenu`, which the
+  header renders on every page (+27 KB gzip, first-load guard failing). `main` later fixed this
+  independently with a 1.5 s timer. The merge keeps `main`'s approach with three changes:
+  - GSAP is fetched after the visitor's first touch, scroll or key press (still only where the menu
+    button shows), not on a timer. The timer downloaded it during every page load.
+  - If the GSAP download fails, the menu opens or closes without animation. Before, a failed
+    download left an invisible dialog holding the page's scroll lock.
+  - Focus moves into the menu once the panels are visible.
 
-### Not fixed: LCP is still over the 3.0 s gate
+  Checked in the browser: opens on first tap, focus goes to Close, a real Escape closes it and
+  returns focus to the menu button, and scrolling unlocks.
+- **Team portraits** (350–900 KB PNGs) go through the image optimizer via `getImageProps` (about
+  25 KB WebP each). The merge keeps `main`'s 800×1000 sizing, adds Supabase-uploaded photos, and
+  guards protocol-relative `//` paths, on which `getImageProps` throws during render. Without the
+  guard, one bad photo URL entered in the admin would crash the team page.
+- **Mask images** (`scripts/optimize-mask-images.mjs`, replacing the earlier logo script): every
+  logo and emblem is an alpha mask, so the colour is flattened and only alpha kept, as lossless
+  WebP:
+  - logos 192 px tall: 217 KB → 32 KB. They load on every page at high priority, so they sit on the
+    path to the first paint.
+  - committee emblems 256 px for the home placards: 428 KB → 107 KB;
+  - committee emblems at full size for a committee page's hero: up to 125 KB → 33–92 KB.
+- **JetBrains Mono** limited to the `wght 400..600` range `layout.tsx` declares (38 → 28 KB). The
+  OFL permits modification and the family has no Reserved Font Name; nothing on screen changes.
+  Satoshi and General Sans were left alone: they are already Latin-only (about 33 KB each), and their
+  ITF licence was not checked for modification rights.
+- **Header glass:** the blur is applied only while the pill shows. At opacity 0 it still cost a full
+  blur on the first frame, and it now stays through the 320 ms fade-out, so the transition looks the
+  same. This also **fixed a pre-existing visual bug**: the rule listed `backdrop-filter` before
+  `-webkit-backdrop-filter`, and Lightning CSS then compiled only the prefixed form, which Chrome does
+  not support (`CSS.supports` is false in Chrome 152). The frosted header never blurred in
+  Chrome/Edge on `main`. It now does (checked: `blur(18px) saturate(1.4)` when condensed, `none` at
+  rest).
+- **Static files in `public/`** get a 1-day cache plus 7 days of stale-while-revalidate (they were
+  `max-age=0`).
 
-LCP is still 4.3–4.6 s under the gate profile; the gate was not loosened. The cause, measured:
+### LCP: still over the 3.0 s gate on this machine (gate not loosened)
 
-- The LCP element is hero text (the home `h1`, the register lead paragraph), and 85–91% of its LCP
-  is *render delay*. Network is not the problem: locally every resource has arrived by about
-  120 ms.
-- First paint itself is late. Live production shows it too: the first paint at 1,969 ms comes
-  after the load event at 1,812 ms. With all JavaScript blocked it is still about 650 ms locally,
-  so JS is not the whole story.
-- The trace shows about 560 ms of GPU-process work before the first frame, against 67 ms for a
-  trivial page. Headless Chrome renders in software (SwiftShader), so the page's visual effects
-  (blurs, backdrop filters, gradients, masks, the 186 KB stylesheet) are expensive in the lab, and in
-  the CI gate, which also runs headless.
-- An A/B test that switched off one effect class at a time was too noisy to name a single culprit:
-  every variant landed at 750–1,000 ms, with a clear warm-up order effect.
+No build reaches the 3.0 s LCP budget on this laptop, including `start`. What the investigation
+established:
 
-The next step is a focused session that profiles the first frame in DevTools with GPU raster on and
-off, or that tries `content-visibility` and moving the 186 KB stylesheet off the critical path. That
-work touches the design's visual effects and needs the owner's call.
+1. **The LCP element is hero text.** It is the home `h1` and the `/register` lead paragraph, and
+   85–91% of its LCP is *render delay*; the network is not the bottleneck.
+2. **Lighthouse's simulated LCP counts every request that starts before the observed paint.** The
+   framework JS (about 200 KB gzip, mostly React and the Next runtime) is requested from `<head>` at
+   about 70 ms, so it always lands on the LCP path.
+   - Blocking all JS gave a simulated LCP of 2.58 s, against 4.4 s with it: JS accounts for about
+     1.8 s.
+3. **Visual effects are not the lever.** A Lighthouse A/B through a proxy that injected one CSS
+   override per variant on `/register` showed:
+   - switching off **every** effect (blurs, backdrop filters, gradients, masks, shadows, blend
+     modes) halved the observed first paint (1,093 → 490 ms);
+   - but it moved simulated LCP only about 0.5 s (8.3 → 7.8 s through the uncompressed proxy).
+   - The film grain alone: about −0.1 s. So the design's effects stay.
+4. **What remains is mostly the framework.** About 200 KB of first-load JS is React, the Next router
+   and Turbopack runtime (about 135 KB gzip) plus small app chunks. No change that keeps the
+   framework closes the remaining 1.3–2 s on this hardware.
+
+Options for the owner, in order:
+
+- **(a) Let CI decide.** The gate runs on GitHub's Ubuntu runners, which have faster CPUs than this
+  laptop. The earlier CI reading was 3.0–3.9 s, and this branch is lighter than anything measured
+  then. Merging the branch (or `main`, now that its guard passes) lets the release gate run again.
+- **(b)** If CI still fails narrowly, decide whether 3.0 s is the right budget for simulated LCP
+  with this framework. Loosening the gate is the owner's call; it was not changed here.
+- **(c)** Larger structural work: fewer client components in the shared layout, or a lighter
+  motion stack.
 
 ## Checks run on this branch
 
-`npx tsc --noEmit` ✓ · `npx vitest run tests/unit` (19 files, 148 tests) ✓ · `npx eslint` ✓ ·
-`node scripts/validate-content.mjs` ✓ · `node scripts/scan-secrets.mjs` and `--history` ✓ ·
-`npm audit --omit=dev` 0 · production build ✓ · `scripts/report-first-load.js` guard ✓.
+On the final tree (`main` merged in): `npx tsc --noEmit` ✓ · `npx vitest run tests/unit` (19 files,
+148 tests) ✓ · `npx eslint` ✓ · `node scripts/validate-content.mjs` ✓ · `npm run test:migrations` ✓ ·
+`node scripts/scan-secrets.mjs` and `--history` (169 commits) ✓ · `npm audit --omit=dev` 0 ·
+production build ✓ · `scripts/report-first-load.js` guard ✓.

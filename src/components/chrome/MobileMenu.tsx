@@ -13,6 +13,7 @@ import { ArrowRight, X } from "lucide-react";
 import { TransitionLink as Link } from "@/components/motion/TransitionLink";
 import { useRenderedAt, useSiteConfig } from "@/components/SiteConfigProvider";
 import { lockScroll, unlockScroll } from "@/lib/motion/bridge";
+import { firstIntent, whenIdle } from "@/lib/motion/gates";
 import { prefersReducedMotion } from "@/lib/motion/policy";
 import { navigationTree } from "@/lib/navigation";
 import { eventPhase } from "@/lib/phase";
@@ -21,7 +22,8 @@ import { isCurrentPath } from "./nav-utils";
 import { ThemeSwitch } from "./ThemeSwitch";
 
 // GSAP stays out of every page's first load (scripts/report-first-load.js):
-// it is fetched while the browser is idle, before anyone opens the menu.
+// it is fetched after the visitor's first touch, scroll or key press, once
+// the browser is idle, and still well before a tap can open the menu.
 let gsapLoad: Promise<typeof Gsap> | undefined;
 // A failed fetch (flaky connection) is forgotten, so the next open retries.
 const loadGsap = () =>
@@ -65,12 +67,19 @@ export function MobileMenu({
   if (!open && state === "open") setState("closing");
 
   // Only where the menu button shows (phones, tablets) is GSAP worth fetching.
+  // A fixed timer fetched it during every page load (27 KB gzip), before the
+  // visitor had done anything; waiting for intent keeps the load itself lean.
   useEffect(() => {
-    const prefetch = () => {
-      if (triggerRef.current?.offsetParent) loadGsap().catch(() => undefined);
+    let active = true;
+    void firstIntent()
+      .then(() => whenIdle())
+      .then(() => {
+        if (active && triggerRef.current?.offsetParent) return loadGsap();
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
     };
-    const timer = window.setTimeout(prefetch, 1500);
-    return () => window.clearTimeout(timer);
   }, [triggerRef]);
 
   useEffect(() => {
