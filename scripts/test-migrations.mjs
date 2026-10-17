@@ -248,7 +248,13 @@ try {
   await db.query('select purge_expired_trash(30)');
   assert.deepEqual((await db.query('select id from email_templates order by id')).rows.map(r=>r.id),['new-template']);
   assert.equal((await db.query("select actor_label from audit_log where action='delete-permanently' and entity_id='old-template'")).rows[0].actor_label,'Automatic Trash clean-up');
-  console.log('PASS: Trash, restore, scoped permanent delete, reference guards and automatic clean-up');
+  // 0018: team categories exist, editors manage them, and one with members cannot be deleted.
+  assert.deepEqual((await db.query("select id from effective_content where collection='team-groups' order by sort_order")).rows.map(r=>r.id),['executive-council','secretariat','convening-committee','organizing-committee']);
+  assert.equal((await db.query("select admin_can($1,'team-groups',true) as ok",[copyEditor])).rows[0].ok,true);
+  await save({collection:'team',id:'member-1',status:'published',sort_order:0,publish_at:null,expire_at:null,version:0,data:{id:'member-1',name:'A Member',role:'Role',group:'secretariat'}});
+  await item('content',{collection:'team-groups',id:'secretariat'},'trash_item',actor);
+  await assert.rejects(()=>item('content',{collection:'team-groups',id:'secretariat'},'purge_item',actor),/Still used by A Member/);
+  console.log('PASS: Trash, restore, scoped permanent delete, reference guards and automatic clean-up; team categories');
   console.log('PASS: event scope on operations, content, site settings and email; append-only audit log; removable accounts');
   console.log('PASS: migrations, private grants, idempotency, references, roster, revisions, attendance, certificates, allocation conflicts/capacity, guarded reset, retention dry-run/anonymization, database permissions and correction operations');
 } finally { await db.close(); }

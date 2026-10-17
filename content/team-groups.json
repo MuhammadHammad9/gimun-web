@@ -1,0 +1,6 @@
+[
+  { "id": "executive-council", "name": "Executive Council", "description": "SOPHEP leadership" },
+  { "id": "secretariat", "name": "Secretariat", "description": "" },
+  { "id": "convening-committee", "name": "Convening Committee", "description": "" },
+  { "id": "organizing-committee", "name": "Organizing Committee", "description": "" }
+]

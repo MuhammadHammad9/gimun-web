@@ -18,7 +18,7 @@ import { registry, siteSchema, type Collection } from '../src/lib/content/regist
 
 nextEnv.loadEnvConfig(process.cwd());
 
-const COLLECTIONS: Collection[] = ['committees', 'schedule', 'faq', 'copy', 'announcements', 'resources', 'team', 'moot-categories', 'clarifications'];
+const COLLECTIONS: Collection[] = ['committees', 'schedule', 'faq', 'copy', 'announcements', 'resources', 'team-groups', 'team', 'moot-categories', 'clarifications'];
 const apply = process.argv.includes('--apply');
 
 type Row = { id: string; data: Record<string, unknown>; version: number; status: string; sort_order: number; deleted_at: string | null };

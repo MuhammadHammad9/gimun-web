@@ -16,6 +16,7 @@ import { COLLECTION_INFO, entrySummary, entryTitle } from '../../collection-info
 import { toSerializable } from '../../serializable';
 import { scopeEvent } from '@/lib/server/admin/scope';
 import { ContentRows, type ContentRow } from '../../ContentRows';
+import { teamCategories } from '@/lib/server/admin/read-all';
 
 /** Tabs over the stored status: what was last done to each entry. */
 const TABS = [{ key: '', label: 'All' }, { key: 'published', label: 'On website' }, { key: 'draft', label: 'Drafts' }, { key: 'archived', label: 'Off website' }] as const;
@@ -33,7 +34,7 @@ function standing(row: Row, liveVersion: number | undefined) {
 
 const looksLikeImage = (url: unknown) => typeof url === 'string' && /\.(jpe?g|png|webp|avif|gif)(\?|$)/i.test(url);
 
-export default async function CollectionPage({ params, searchParams }: { params: Promise<{ collection: string }>; searchParams: Promise<{ page?: string | string[]; q?: string | string[]; section?: string | string[]; status?: string | string[] }> }) {
+export default async function CollectionPage({ params, searchParams }: { params: Promise<{ collection: string }>; searchParams: Promise<{ page?: string | string[]; q?: string | string[]; section?: string | string[]; status?: string | string[]; group?: string | string[] }> }) {
   const { collection } = await params;
   if (!isCollection(collection)) notFound();
   const user = await requirePermission(collection);
@@ -41,7 +42,9 @@ export default async function CollectionPage({ params, searchParams }: { params:
   // A repeated parameter (?q=a&q=b) arrives as an array; use the first value.
   const raw = await searchParams;
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
-  const query = { page: one(raw.page), q: one(raw.q), section: one(raw.section), status: one(raw.status) };
+  const query = { page: one(raw.page), q: one(raw.q), section: one(raw.section), status: one(raw.status), group: one(raw.group) };
+  const categories = collection === 'team' ? await teamCategories() : [];
+  const group = categories.some((c) => c.id === query.group) ? query.group : '';
   const status = TABS.some((t) => t.key && t.key === query.status) ? query.status : '';
   const page = Math.max(0, Math.min(100000, Math.floor(Number(query.page) || 0)));
   // Entries with another event's track are outside this admin's access; shared ones stay.
@@ -50,6 +53,7 @@ export default async function CollectionPage({ params, searchParams }: { params:
   const copyPage = collection === 'copy' && (copyPages as readonly string[]).includes(query.section || '') ? query.section! : '';
   if (copyPage) entries = entries.eq('data->>page', copyPage);
   if (status) entries = entries.eq('status', status);
+  if (group) entries = entries.eq('data->>group', group);
   if (search) entries = entries.or(['title', 'name', 'label', 'question', 'awardName'].map((k) => `data->>${k}.ilike.%${search}%`).join(','));
   const { data, error, count } = await entries.order('sort_order').order('id').range(page * 50, page * 50 + 49);
   if (error) throw new Error('Unable to load content. Apply the CMS migrations and seed first.');
@@ -61,7 +65,8 @@ export default async function CollectionPage({ params, searchParams }: { params:
   const { data: pinned } = activePin.data ? await database().from('content_entries').select('*').eq('collection', 'announcements').eq('id', activePin.data.id).single() : { data: null };
   const write = can(user, collection, true);
   const onSite = rows.filter((r) => liveVersions.has(r.id)).length;
-  const pageQuery = (n: number) => `?page=${n}&q=${encodeURIComponent(search)}&section=${copyPage}&status=${status}`;
+  const pageQuery = (n: number) => `?page=${n}&q=${encodeURIComponent(search)}&section=${copyPage}&status=${status}&group=${group}`;
+  const categoryName = new Map(categories.map((c) => [c.id, c.name]));
   const tabCounts = await Promise.all(TABS.map(async (t) => {
     let q = database().from('content_entries').select('id', { count: 'exact', head: true }).eq('collection', collection).is('deleted_at', null);
     q = scopeEvent(q, user, 'data->>track');
@@ -72,7 +77,8 @@ export default async function CollectionPage({ params, searchParams }: { params:
   const listRows: ContentRow[] = rows.map((row) => {
     const state = standing(row, liveVersions.get(row.id));
     const picture = info.media ? row.data[info.media] : undefined;
-    return { id: row.id, title: collection === 'copy' && typeof row.data.label === 'string' ? row.data.label : entryTitle(row.data, row.id), summary: entrySummary(collection, row.data), picture: looksLikeImage(picture) ? String(picture) : null, hasMedia: Boolean(info.media), tone: state.tone, state: state.text };
+    const summary = collection === 'team' ? [entrySummary(collection, row.data), categoryName.get(String(row.data.group)) ?? 'No category'].filter(Boolean).join(' · ') : entrySummary(collection, row.data);
+    return { id: row.id, title: collection === 'copy' && typeof row.data.label === 'string' ? row.data.label : entryTitle(row.data, row.id), summary, picture: looksLikeImage(picture) ? String(picture) : null, hasMedia: Boolean(info.media), tone: state.tone, state: state.text };
   });
 
   return <>
@@ -97,8 +103,9 @@ export default async function CollectionPage({ params, searchParams }: { params:
         <p className="admin-list__count">{count ?? 0} {count === 1 ? info.singular : `${info.singular}s`}{rows.length ? ` · ${onSite} on the website` : ''}</p>
       </form>
 
-      <nav className="admin-status-tabs" aria-label="Filter by status">{TABS.map((t, i) => <Link key={t.key} href={`?q=${encodeURIComponent(search)}&section=${copyPage}&status=${t.key}`} aria-current={status === t.key ? 'page' : undefined}>{t.label}<small>{tabCounts[i]}</small></Link>)}</nav>
-      {rows.length ? <ContentRows collection={collection} rows={listRows} write={write} singular={info.singular} reorderable={!search && !status} /> : <div className="admin-empty">
+      <nav className="admin-status-tabs" aria-label="Filter by status">{TABS.map((t, i) => <Link key={t.key} href={`?q=${encodeURIComponent(search)}&section=${copyPage}&status=${t.key}&group=${group}`} aria-current={status === t.key ? 'page' : undefined}>{t.label}<small>{tabCounts[i]}</small></Link>)}</nav>
+      {categories.length > 0 && <nav className="admin-status-tabs" aria-label="Filter by category"><Link href={`?q=${encodeURIComponent(search)}&status=${status}`} aria-current={!group ? 'page' : undefined}>All categories</Link>{categories.map((c) => <Link key={c.id} href={`?q=${encodeURIComponent(search)}&status=${status}&group=${c.id}`} aria-current={group === c.id ? 'page' : undefined}>{c.name}</Link>)}<Link href="/admin/content/team-groups">Manage categories</Link></nav>}
+      {rows.length ? <ContentRows collection={collection} rows={listRows} write={write} singular={info.singular} reorderable={!search && !status} categories={categories} /> : <div className="admin-empty">
         <p><strong>{search || copyPage || status ? 'Nothing matches.' : `No ${info.label.toLowerCase()} yet.`}</strong></p>
         {!search && !copyPage && !status && write && <p>Add the first {info.singular}; it appears on the website once you publish it.</p>}
         {!search && !copyPage && !status && write && <Link className="admin-button" href={`/admin/content/${collection}/new`}><Plus size={16} aria-hidden="true" /> Add {info.singular}</Link>}

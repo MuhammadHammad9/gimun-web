@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { TransitionLink as Link } from '@/components/motion/TransitionLink';
 import { PageHero } from '@/components/ui/PageHero';
-import { getCopy, getSiteConfig, getTeamMembers } from '@/lib/content';
+import { getCopy, getSiteConfig, getTeamGroups, getTeamMembers } from '@/lib/content';
 import { fill, nextSteps } from '@/lib/copy';
 import { constructMetadata } from '@/lib/metadata';
 import { getEventYear } from '@/lib/site-config';
@@ -21,7 +21,7 @@ export default async function TeamPage() {
   const copy = await getCopy('team');
   const hero = copy('team-hero');
   const next = copy('team-next');
-  const [members, site] = await Promise.all([getTeamMembers(), getSiteConfig()]);
+  const [members, groups, site] = await Promise.all([getTeamMembers(), getTeamGroups(), getSiteConfig()]);
 
   return (
     <>
@@ -45,7 +45,7 @@ export default async function TeamPage() {
       />
       <section className="handoff__sheet tone-deep chapter chapter--flush-top" aria-label="Team members">
         <div className="wrap">
-          <TeamClient initialMembers={members} phones={phonesByMember(members, site.contacts ?? [])} />
+          <TeamClient initialMembers={members} groups={groups} phones={phonesByMember(members, site.contacts ?? [])} />
         </div>
       </section>
       {!next.hidden && <NextSteps steps={nextSteps(next)} />}

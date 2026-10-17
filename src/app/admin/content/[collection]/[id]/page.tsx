@@ -1,4 +1,4 @@
-import { readAll } from '@/lib/server/admin/read-all';
+import { readAll, teamCategories } from '@/lib/server/admin/read-all';
 import { getSiteConfig, getDocuments } from '@/lib/content';
 import { randomUUID } from 'node:crypto';
 import { notFound } from 'next/navigation';
@@ -24,7 +24,8 @@ export default async function EntryPage({ params }: { params: Promise<{ collecti
   if (id !== 'new') { const { data,error } = await database().from('content_entries').select('*').eq('collection',collection).eq('id',id).single(); if(error || !data) notFound(); entry=data; assertInScope(user, eventOfEntry(collection, entry.data)); }
   const { data: revisions } = await database().from('content_revisions').select('id,created_at').eq('collection',collection).eq('entry_id',id).order('id',{ascending:false});
   const media=can(user,'media')?(await readAll('media_assets')).filter(a=>a.state==='available'&&!a.deleted_at).map(a=>({path:String(a.path),url:database().storage.from('media').getPublicUrl(String(a.path)).data.publicUrl,alt:String(a.alt),mime:String(a.mime),size:Number(a.size)})):[];
-  const resources=await getDocuments();
+  // The team editor picks a category; committees and case categories pick a document.
+  const resources=collection==='team'?(await teamCategories()).map(c=>({id:c.id,title:c.name})):await getDocuments();
   const [live,scheduled,site]=await Promise.all([database().from('effective_content').select('version').eq('collection',collection).eq('id',id).maybeSingle(),database().from('content_publications').select('effective_at').eq('collection',collection).eq('entry_id',id).is('cancelled_at',null).gt('effective_at',new Date().toISOString()).order('effective_at').limit(1),getSiteConfig()]);
   const info = COLLECTION_INFO[collection];
   const title = id === 'new' ? `New ${info.singular}` : entryTitle(entry.data, `Untitled ${info.singular}`);

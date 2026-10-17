@@ -24,6 +24,11 @@ export async function checkContentLinks(entry:ContentEntry){
   const actions=Array.isArray(entry.data.actions)?entry.data.actions as {href?:unknown}[]:[];
   for(const action of actions)await checkPublicHref(String(action.href??''),db);
  }
+ // Every member sits under a category that exists (and is not in Trash).
+ if(entry.collection==='team'){
+  const {data,error}=await db.from('content_entries').select('id').eq('collection','team-groups').eq('id',String(entry.data.group)).is('deleted_at',null).maybeSingle();
+  if(error||!data)throw new Error('Choose a category from Team categories.');
+ }
  if(entry.collection==='schedule'){
   const valid=(v:unknown)=>/^([01]\d|2[0-3]):[0-5]\d$/.test(String(v));
   // Both times blank means "time to be announced".

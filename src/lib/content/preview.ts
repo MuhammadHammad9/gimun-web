@@ -66,6 +66,7 @@ export function previewPath(collection: Collection, data: Record<string, unknown
     case 'resources': return '/resources';
     case 'faq': return '/about/faq';
     case 'team': return '/about/team';
+    case 'team-groups': return '/about/team';
     case 'sponsors': return '/about/sponsors';
     case 'gallery': return '/about/gallery';
     case 'clarifications': return '/moot-cup/rules';

@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import {
   Archive, Trash2, Award, BookOpenText, CalendarDays, ClipboardCheck, ExternalLink, FileText, Gavel, Globe2, HelpCircle, Image, Images, Inbox,
-  LayoutDashboard, LogOut, Mail, Map, Megaphone, Menu, MessageSquareQuote, ScrollText, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Type, UserRound, Users, X, type LucideIcon,
+  LayoutDashboard, LogOut, Mail, Map, Megaphone, Menu, MessageSquareQuote, ScrollText, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Tags, Type, UserRound, Users, X, type LucideIcon,
 } from 'lucide-react';
 import { collections } from '@/lib/content/registry';
 import { COLLECTION_INFO, CONTENT_GROUPS } from './collection-info';
@@ -16,7 +16,7 @@ const OPS_LABELS: Record<string, string> = {
 };
 const ICONS: Record<string, LucideIcon> = {
   copy: Type, navigation: Map, settings: Settings2, announcements: Megaphone, schedule: CalendarDays, results: Award, committees: Globe2,
-  'moot-categories': Gavel, clarifications: MessageSquareQuote, team: UserRound, gallery: Images, sponsors: Sparkles, faq: HelpCircle,
+  'moot-categories': Gavel, clarifications: MessageSquareQuote, team: UserRound, 'team-groups': Tags, gallery: Images, sponsors: Sparkles, faq: HelpCircle,
   resources: BookOpenText, media: Image, registrations: Users, allocations: Globe2, 'event-day': ClipboardCheck, inbox: Inbox, email: Mail,
   certificates: ScrollText, feedback: FileText, users: ShieldCheck, audit: FileText, 'close-out': Archive, workspace: SlidersHorizontal,
 };

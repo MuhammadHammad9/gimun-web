@@ -209,6 +209,17 @@ const validationRules = [
     },
   },
   {
+    file: 'team-groups.json',
+    validate: (data) => {
+      const errs = [];
+      if (!Array.isArray(data) || data.length === 0) return ['Must be a non-empty array'];
+      data.forEach((item, index) => {
+        if (!item.id || !item.name) errs.push(`Team category [${index}] missing fields`);
+      });
+      return errs;
+    },
+  },
+  {
     file: 'sponsors.json',
     validate: (data) => {
       const errs = [];

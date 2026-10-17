@@ -19,3 +19,9 @@ export async function readAll(table:string,select='*',order='id',filter?:RowFilt
 export async function someRow(table:string,select:string,order:string,match:(row:Record<string,unknown>)=>boolean) {
   for(let offset=0;;offset+=PAGE){const {data,error}=await page(table,select,order,offset);if(error)throw new Error(`Unable to load ${table}`);const rows=data as unknown as Record<string,unknown>[];if(rows.some(match))return true;if(rows.length<PAGE)return false;}
 }
+/** Team categories as editors see them (drafts included, Trash excluded), in page order. */
+export async function teamCategories(): Promise<{ id: string; name: string }[]> {
+  const { data, error } = await database().from('content_entries').select('id,data').eq('collection', 'team-groups').is('deleted_at', null).order('sort_order').order('id');
+  if (error) throw new Error('Unable to load team categories');
+  return ((data ?? []) as { id: string; data: Record<string, unknown> }[]).map((e) => ({ id: e.id, name: String(e.data?.name ?? e.id) }));
+}

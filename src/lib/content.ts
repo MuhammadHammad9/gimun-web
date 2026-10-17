@@ -10,6 +10,7 @@ import type {
   ScheduleItem,
   FAQItem,
   TeamMember,
+  TeamGroup,
   Sponsor,
   Clarification,
   ResultAward,
@@ -25,6 +26,7 @@ import resourcesData from '../../content/resources.json';
 import scheduleData from '../../content/schedule.json';
 import faqData from '../../content/faq.json';
 import teamData from '../../content/team.json';
+import teamGroupsData from '../../content/team-groups.json';
 import sponsorsData from '../../content/sponsors.json';
 import clarificationsData from '../../content/clarifications.json';
 import resultsData from '../../content/results.json';
@@ -105,6 +107,11 @@ export async function getTeam(): Promise<TeamMember[] > {
 }
 
 export const getTeamMembers = getTeam;
+
+/** Team categories, in the order the Team page shows them. */
+export async function getTeamGroups(): Promise<TeamGroup[]> {
+  return await readCollection<TeamGroup>('team-groups', teamGroupsData as TeamGroup[]);
+}
 
 export async function getSponsors(): Promise<Sponsor[] > {
   return await readCollection<Sponsor>('sponsors', sponsorsData as Sponsor[]);

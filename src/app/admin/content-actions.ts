@@ -133,3 +133,18 @@ export async function reorderContent(collection: string, orderedIds: string[]) {
     return { count: changed.length, waiting };
   } catch (error) { unstable_rethrow(error); return { error: error instanceof Error && /changed|outside/.test(error.message) ? error.message : 'Order not saved. Check your permission and try again.' }; }
 }
+
+/** Moves team members to another category, keeping each one's status (published ones update on the website). */
+export async function setTeamCategory(ids: string[], group: string) {
+  if (!Array.isArray(ids) || !ids.length || ids.length > 100 || typeof group !== 'string' || !group) return { error: 'Choose members and a category.' };
+  try {
+    const user = await requirePermission('team', true);
+    const entries = (await loadEntries('team', ids, user)).filter((e) => e.data.group !== group).map((e) => validateEntry({ ...publicFields(e), data: { ...e.data, group } }));
+    if (!entries.length) return { count: 0 };
+    await checkContentLinks(entries[0]);
+    const { error } = await database().rpc('save_content_batch', { p_entries: entries, p_actor: user.user_id });
+    if (error) return { error: error.code === 'P0001' ? error.message : 'Not saved. Someone may have changed these members; reload and try again.' };
+    updateTag('content:team'); revalidatePath('/', 'layout'); revalidatePath('/admin', 'layout');
+    return { count: entries.length };
+  } catch (error) { unstable_rethrow(error); return { error: error instanceof Error && /category|changed|outside/.test(error.message) ? error.message : 'Not saved. Check your permission and try again.' }; }
+}

@@ -30,9 +30,10 @@ type Saved = { fieldErrors?: Record<string, string>; error?: string; version?: n
 type Mode = 'draft' | 'publish' | 'schedule' | 'archive';
 
 /** Linked-document pickers: these fields hold a document's id, not a link. */
-const RESOURCE_FIELDS: Record<string, { key: string; label: string }> = {
-  committees: { key: 'backgroundGuideDocId', label: 'Background guide' },
-  'moot-categories': { key: 'propositionDocId', label: 'Case problem document' },
+const RESOURCE_FIELDS: Record<string, { key: string; label: string; hint: string; none?: string }> = {
+  committees: { key: 'backgroundGuideDocId', label: 'Background guide', hint: 'Pick a published document. Add new documents under Documents first.', none: 'None yet' },
+  'moot-categories': { key: 'propositionDocId', label: 'Case problem document', hint: 'Pick a published document. Add new documents under Documents first.', none: 'None yet' },
+  team: { key: 'group', label: 'Category', hint: 'The section of the Team page this person appears in. Add or rename categories under Team categories.' },
 };
 
 export function ContentEditor({ initial, schema, settings = false, readOnly = false, revisions = [], media = [], resources = [], upload = false, liveVersion = null, scheduledAt = null, resultsReleased = true, singular = 'entry', publicPath }: { initial: ContentEntry; schema: Schema; settings?: boolean; readOnly?: boolean; revisions?: { id: number; created_at: string }[]; media?: UploadedMedia[]; resources?: { id: string; title: string }[]; upload?: boolean; liveVersion?: number | null; scheduledAt?: string | null; resultsReleased?: boolean; singular?: string; publicPath?: string }) {
@@ -128,7 +129,7 @@ export function ContentEditor({ initial, schema, settings = false, readOnly = fa
       <form className="editor-form" onSubmit={e => { e.preventDefault(); save('publish'); }}>
         <fieldset disabled={readOnly || pending}>
           <legend className="sr-only">{settings ? 'Site settings' : `${singular} details`}</legend>
-          {!settings && resourceField && <div className="schema-field"><label htmlFor="entry-resource">{resourceField.label}</label><small className="admin-field-hint" id="entry-resource-hint">Pick a published document. Add new documents under Documents first.</small><select id="entry-resource" aria-describedby="entry-resource-hint" value={String(entry.data[resourceField.key] || '')} onChange={e => change({ ...entry.data, [resourceField.key]: e.target.value })}><option value="">None yet</option>{resources.map(r => <option key={r.id} value={r.id}>{r.title}</option>)}</select></div>}
+          {!settings && resourceField && <div className="schema-field"><label htmlFor="entry-resource">{resourceField.label}</label><small className="admin-field-hint" id="entry-resource-hint">{resourceField.hint}</small><select id="entry-resource" aria-describedby="entry-resource-hint" value={String(entry.data[resourceField.key] || '')} onChange={e => change({ ...entry.data, [resourceField.key]: e.target.value })}><option value="">{resourceField.none ?? 'Choose one'}</option>{resources.map(r => <option key={r.id} value={r.id}>{r.title}</option>)}</select></div>}
           {settings
             ? Object.entries(groups).map(([label, keys]) => <details key={label} className="editor-group" open={label === 'Event details'}><summary>{label}</summary><SchemaForm schema={{ ...schema, properties: Object.fromEntries(Object.entries(schema.properties || {}).filter(([k]) => keys.includes(k))) }} value={entry.data} onChange={change} label={label} errors={fieldErrors} /></details>)
             : <SchemaForm errors={fieldErrors} schema={editableSchema} value={entry.data} onChange={change} />}

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ChevronDown, ChevronUp, EyeOff, FileText, Send, Trash2 } from 'lucide-react';
-import { bulkStatus, reorderContent } from './content-actions';
+import { bulkStatus, reorderContent, setTeamCategory } from './content-actions';
 import { restoreItem, trashItem } from './trash-actions';
 import { useConfirm } from './ui/ConfirmDialog';
 import { useNotice } from './ui/Notice';
@@ -16,7 +16,7 @@ export type ContentRow = { id: string; title: string; summary: string; picture: 
  * publish or take them off together, and drag (or use the arrows) to change
  * their order on the website.
  */
-export function ContentRows({ collection, rows, write, singular, reorderable }: { collection: string; rows: ContentRow[]; write: boolean; singular: string; reorderable: boolean }) {
+export function ContentRows({ collection, rows, write, singular, reorderable, categories = [] }: { collection: string; rows: ContentRow[]; write: boolean; singular: string; reorderable: boolean; categories?: { id: string; name: string }[] }) {
   const [order, setOrder] = useState(rows.map((r) => r.id));
   const [source, setSource] = useState(rows.map((r) => r.id).join());
   const [selected, setSelected] = useState<string[]>([]);
@@ -76,6 +76,16 @@ export function ContentRows({ collection, rows, write, singular, reorderable }: 
       router.refresh();
     });
   }
+  function moveToCategory(group: string) {
+    const name = categories.find((c) => c.id === group)?.name ?? group;
+    start(async () => {
+      const result = await setTeamCategory(selected, group);
+      if (result.error) { notice({ text: result.error, tone: 'error' }); return; }
+      notice({ text: `${plural(result.count ?? 0)} moved to ${name}.` });
+      setSelected([]);
+      router.refresh();
+    });
+  }
   const toggle = (id: string) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
   const canMove = write && reorderable && !pending;
 
@@ -115,6 +125,7 @@ export function ContentRows({ collection, rows, write, singular, reorderable }: 
       <strong>{plural(selected.length)} selected</strong>
       <button type="button" disabled={pending} onClick={() => setStatus('publish')}><Send size={14} aria-hidden="true" /> Publish</button>
       <button type="button" className="secondary" disabled={pending} onClick={() => setStatus('archive')}><EyeOff size={14} aria-hidden="true" /> Take off website</button>
+      {categories.length > 0 && <label className="admin-bulkbar__select"><span className="sr-only">Move to category</span><select disabled={pending} value="" onChange={(e) => { if (e.target.value) moveToCategory(e.target.value); }}><option value="">Change category…</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>}
       <button type="button" className="secondary" disabled={pending} onClick={moveToTrash}><Trash2 size={14} aria-hidden="true" /> Move to Trash</button>
       <button type="button" className="secondary" disabled={pending} onClick={() => setSelected([])}>Clear</button>
     </div>}

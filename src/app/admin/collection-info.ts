@@ -27,7 +27,8 @@ export const COLLECTION_INFO: Record<Collection, CollectionInfo> = {
   committees: { label: 'Committees', singular: 'committee', group: 'GIMUN', path: '/gimun/committees', description: 'Each GIMUN committee: agenda, chairs, countries and seats. Each one gets its own page.' },
   'moot-categories': { label: 'Case categories', singular: 'case category', group: 'Moot Court', path: '/moot-cup/categories', description: 'The areas of law for the moot court, on the Case categories page.' },
   clarifications: { label: 'Clarifications', singular: 'clarification', group: 'Moot Court', path: '/moot-cup/rules', description: 'Kept for records only: the Clarifications page has been removed, so nothing here shows on the website.' },
-  team: { label: 'Team', singular: 'team member', group: 'About the event', path: '/about/team', media: 'photo', description: 'The host team on the Team page: portrait (4:5), role and a short message. Call buttons use the numbers in Site settings › Phone contacts, matched by name.' },
+  team: { label: 'Team', singular: 'team member', group: 'About the event', path: '/about/team', media: 'photo', description: 'The host team on the Team page: portrait (4:5), role, category and a short message. Call buttons use the numbers in Site settings › Phone contacts, matched by name.' },
+  'team-groups': { label: 'Team categories', singular: 'team category', group: 'About the event', path: '/about/team', description: 'The sections of the Team page, such as Executive Council or Secretariat. Their order here is their order on the page; a category without members is hidden.' },
   gallery: { label: 'Gallery', singular: 'photo', group: 'About the event', path: '/about/gallery', media: 'image', description: 'Photographs on the Gallery page.' },
   sponsors: { label: 'Sponsors', singular: 'sponsor', group: 'About the event', path: '/about/sponsors', media: 'logo', description: 'Sponsors and partners with their logos, on the Sponsors page and in the footer.' },
   faq: { label: 'Questions & answers', singular: 'question', group: 'About the event', path: '/about/faq', description: 'The FAQ page.' },
@@ -53,6 +54,8 @@ export function entrySummary(collection: Collection, data: Record<string, unknow
       return `Day ${data.day ?? '?'} · ${text(data.startTime)}–${text(data.endTime)} · ${text(data.location)}`;
     case 'team':
       return text(data.role);
+    case 'team-groups':
+      return text(data.description);
     case 'results':
       return `${text(data.winnerName)} · ${text(data.institution)}`;
     case 'committees':
@@ -86,7 +89,8 @@ export const FIELD_LABELS: Record<string, string> = {
   name: 'Name',
   label: 'Label',
   role: 'Role',
-  group: 'Group',
+  group: 'Category',
+  photoZoom: 'Photo zoom',
   photo: 'Photo',
   image: 'Image',
   logo: 'Logo',

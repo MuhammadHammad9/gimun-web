@@ -11,6 +11,7 @@ export type Document = z.infer<typeof registry.resources>;
 export type ScheduleItem = z.infer<typeof registry.schedule>;
 export type Announcement = z.infer<typeof registry.announcements> & { publicationVersion?: number };
 export type TeamMember = z.infer<typeof registry.team>;
+export type TeamGroup = z.infer<(typeof registry)['team-groups']>;
 export type Sponsor = z.infer<typeof registry.sponsors>;
 export type FAQItem = z.infer<typeof registry.faq>;
 export type GalleryItem = z.infer<typeof registry.gallery>;
