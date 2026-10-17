@@ -377,7 +377,7 @@ function detailsHtml(details: Awaited<ReturnType<typeof submittedDetails>>) {
 async function buildApplicantReceiptHtml(record: RegistrationRecord, referenceId: string, qrDataUrl?: string | null): Promise<string> {
   const isMoot = record.track === 'moot-cup';
   const trackNameShort = isMoot ? 'GMC' : 'GIMUN';
-  const trackNameLong = isMoot ? 'GIKI Moot Court (GMC)' : 'GIKI Model United Nations (GIMUN)';
+  const trackNameLong = isMoot ? 'GIKI Moot Cup (GMC)' : 'GIKI Model United Nations (GIMUN)';
   const typeLabel =
     record.applicantType === 'individual'
       ? 'Individual Delegate'

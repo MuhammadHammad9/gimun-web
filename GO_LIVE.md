@@ -49,6 +49,7 @@ Create a Redis database and copy its REST URL and REST token.
 | `RATE_LIMIT_HMAC_SECRET`, `CRON_SECRET` | Two different random values: `openssl rand -hex 32` |
 | `ADMIN_REQUIRE_MFA` | `1` (every admin must set up two-factor sign-in) |
 | `ANALYTICS_MEASUREMENT_ID` | Optional GA4 ID; loads only after visitor consent |
+| `GOOGLE_SITE_VERIFICATION` | Optional Search Console token: the `content` value of its HTML-tag verification method |
 
    `scripts/check-env.mjs` runs before every Vercel build. A **production** build with a missing, malformed or mismatched variable fails and lists the problems, so the live site is never replaced by one that cannot take registrations. Preview builds only warn. To test a set of values locally: `npm run check:env -- --strict`.
 3. **Settings → Domains:** add the domain and follow the DNS instructions. HTTPS is automatic.
@@ -86,6 +87,23 @@ Sign in as the owner, change the temporary password and set up two-factor. Then 
 1. `npm run validate:launch` passes (real documents and media approved).
 2. Merge to `main`; CI runs the full QA suite and the Lighthouse release gate.
 3. Open registration in **Settings → registrationStatus** when ready.
+
+## Google Analytics and Search Console
+
+1. **Analytics:** at analytics.google.com create a GA4 property and a Web data stream for the site's address. Copy the Measurement ID (`G-…`) into `ANALYTICS_MEASUREMENT_ID` (Vercel → Production) and redeploy. Visitors who accept the banner then show in **Reports → Realtime**.
+2. **Search Console:** at search.google.com/search-console add a **URL prefix** property for the site's address. Choose **HTML tag**, copy only the `content` value into `GOOGLE_SITE_VERIFICATION`, redeploy, then click **Verify**. Under **Sitemaps** submit `sitemap.xml`, and use **URL inspection → Request indexing** for `/`, `/gimun`, `/moot-cup` and `/register`.
+
+A custom domain later is a new Search Console property: add it and submit its sitemap again.
+
+## Domain email (once there is a domain)
+
+The site uses the Gmail inbox `sophepsocialmedia@gmail.com` until the event has its own domain. After buying one, forward addresses on it to that inbox:
+
+1. Use Cloudflare Email Routing (if the domain's DNS is on Cloudflare) or ImprovMX (any DNS host), both free. Create e.g. `info@`, `registrations@` and `moot@` forwarding to the Gmail inbox. Add the MX and TXT records they show at the DNS host.
+2. **SPF:** keep one TXT record on the root, combining every sender, e.g. `v=spf1 include:_spf.mx.cloudflare.net include:_spf.google.com include:amazonses.com ~all` (Resend sends through Amazon SES; follow what Resend's domain page shows).
+3. **DMARC:** TXT on `_dmarc`: `v=DMARC1; p=none; rua=mailto:sophepsocialmedia@gmail.com`.
+4. **Reply from the new address:** Gmail → Settings → Accounts → **Send mail as** → add `info@<domain>`. Use Gmail's SMTP (`smtp.gmail.com`, port 587, the account plus a Google app password) so mail is signed by Google.
+5. Verify the domain in Resend (section 2), set `EMAIL_FROM` to an address on it, and update the contact email in Admin → Settings.
 
 ## During the event
 

@@ -19,18 +19,20 @@ import './ProfileCard.css';
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
+// Team portraits are 800×1000 cutouts; the card is at most 340px wide.
+const PORTRAIT = { width: 800, height: 1000, sizes: '(max-width: 640px) 92vw, 340px' };
+
 /**
- * Portraits are uploaded as large PNGs (up to ~900 KB). The image optimizer
- * serves them resized to the card and as WebP; getImageProps keeps the plain
- * <img> the parallax needs. Only site files and Supabase media are allowed by
- * next.config.ts, so any other address is used as it is.
+ * Resized WebP from the image optimizer, keeping the plain <img> the parallax
+ * needs. Only site files and Supabase media are allowed by next.config.ts;
+ * any other address (including a protocol-relative "//host/..." path, which
+ * getImageProps would throw on) is used as given.
  */
-const PHOTO_SIZES = '(max-width: 380px) 92vw, 352px';
-function photoProps(src: string) {
+function portraitSources(src: string) {
   const media = supabaseOrigin() && `${supabaseOrigin()}/storage/v1/object/public/media/`;
   const optimizable = (src.startsWith('/') && !src.startsWith('//')) || Boolean(media && src.startsWith(media));
   if (!optimizable) return { src };
-  const { props } = getImageProps({ src, alt: '', fill: true, sizes: PHOTO_SIZES });
+  const { props } = getImageProps({ src, alt: '', ...PORTRAIT });
   return { src: props.src, srcSet: props.srcSet, sizes: props.sizes };
 }
 
@@ -237,7 +239,7 @@ function ProfileCard({
           <span className="profile-card__holo" />
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- the portrait moves with the tilt (parallax), which next/image's fill layout would fight
-            <img className="profile-card__photo" {...photoProps(avatarUrl)} alt={`Portrait of ${name}`} loading="lazy" decoding="async" draggable={false} />
+            <img className="profile-card__photo" {...portraitSources(avatarUrl)} alt={`Portrait of ${name}`} loading="lazy" decoding="async" draggable={false} />
           ) : (
             <span className="profile-card__monogram" aria-hidden="true">{initials(name)}</span>
           )}

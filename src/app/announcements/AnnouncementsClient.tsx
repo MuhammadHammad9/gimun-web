@@ -15,12 +15,20 @@ interface AnnouncementsClientProps {
   initialAnnouncements: Announcement[];
 }
 
+const TRACK_NOTICE: Record<string, string> = {
+  gimun: 'GIMUN',
+  'moot-cup': 'GMC',
+  general: 'General',
+  all: 'All tracks',
+  shared: 'All tracks',
+};
+
 export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClientProps) {
   const [selectedTrack, setSelectedTrack] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const filterOptions = [
-    { label: 'All Dispatches', value: 'all' },
+    { label: 'All notices', value: 'all' },
     { label: 'GIMUN Track', value: 'gimun' },
     { label: 'GMC Track', value: 'moot-cup' },
     { label: 'General & Campus', value: 'general' },
@@ -102,6 +110,7 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
 
       {/* Regular Dispatches Feed */}
       <section className="space-y-4">
+        <h2 className="sr-only">All notices</h2>
         <p className="pb-2 font-mono text-xs text-text-3">
           {regularItems.length} {regularItems.length === 1 ? 'notice' : 'notices'}, newest first
         </p>
@@ -145,14 +154,14 @@ export function AnnouncementsClient({ initialAnnouncements }: AnnouncementsClien
                           href={item.actionUrl}
                           className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-champagne hover:text-text underline underline-offset-4 transition-colors"
                         >
-                          Associated Resource Link &rarr;
+                          Read more &rarr;
                         </Link>
                       </div>
                     )}
                   </div>
 
                   <div className="pt-3 border-t border-line flex items-center justify-between text-xs font-mono text-text-3">
-                    <span className="capitalize">{item.track} Bulletin</span>
+                    <span>{TRACK_NOTICE[item.track] ?? 'General'} notice</span>
                     <span className="text-champagne font-semibold flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-champagne" />
                       Verified

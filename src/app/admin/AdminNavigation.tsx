@@ -60,7 +60,7 @@ export function AdminNavigation({ name, role, allowed, websiteConnected, website
     <aside id="admin-sidebar" className={`admin-sidebar ${open ? 'is-open' : ''}`}>
       <Link className="admin-brand" href="/admin">
         {/* eslint-disable-next-line @next/next/no-img-element -- the fixed-colour shield, also the site icon */}
-        <img className="admin-brand-mark" src="/icon.svg" alt="" width={36} height={36} />
+        <img className="admin-brand-mark" src="/icon.svg" alt="" aria-hidden="true" width={36} height={36} />
         <span>GIMUN & GMC<small>Admin · GIMUN 26 · GMC VII</small></span>
       </Link>
       <nav aria-label="Admin sections">

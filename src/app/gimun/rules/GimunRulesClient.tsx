@@ -80,12 +80,12 @@ const MOTIONS_DATA: MotionItem[] = [
   {
     name: "Motion to Introduce Draft Resolution",
     category: "resolution",
-    purpose: "Formally introduce comprehensive resolution document approved by Dais with Sponsors & Signatories.",
+    purpose: "Formally introduce a comprehensive resolution document approved by the Dais, with Sponsors & Signatories.",
     interrupt: "No",
     second: "Yes",
     vote: "Simple Majority (50% + 1)",
     precedence: 7,
-    proTip: "Requires 2+ primary Sponsors and minimum 20% of committee present as Signatories.",
+    proTip: "Requires 2+ primary Sponsors and at least 20% of the committee present as Signatories.",
   },
   {
     name: "Motion to Enter Voting Procedure",

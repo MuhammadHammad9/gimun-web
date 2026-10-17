@@ -597,7 +597,7 @@ export function MootRegisterForm({ categories, onSuccess, endpoint = '/api/regis
             className="w-full px-4 py-3 rounded-xl border border-line-2 bg-canvas text-text text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-focus focus:border-champagne"
           >
             <option value="" className="bg-canvas text-champagne">Select referral channel...</option>
-            <option value="social-media" className="bg-canvas text-champagne">Social Media (Instagram / Facebook / LinkedIn)</option>
+            <option value="social-media" className="bg-canvas text-champagne">Social Media (Instagram / LinkedIn)</option>
             <option value="university-club" className="bg-canvas text-champagne">University Moot Court Society / Law Clinic</option>
             <option value="friend" className="bg-canvas text-champagne">Peer / Senior Recommendation</option>
             <option value="faculty-advisor" className="bg-canvas text-champagne">Law Faculty Dean / Professor</option>

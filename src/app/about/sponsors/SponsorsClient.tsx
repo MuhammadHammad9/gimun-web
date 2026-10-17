@@ -49,7 +49,7 @@ export function SponsorsClient({ initialSponsors }: SponsorsClientProps) {
           <p className="text-base leading-relaxed text-text-2">
             {groups.length > 0
               ? "Thank you to the organizations supporting this year's conference."
-              : `Partnerships for ${eventYear} are being finalised. Partners are listed here once agreements are signed.`}
+              : `Partnerships for ${eventYear} are being finalized. Partners are listed here once agreements are signed.`}
           </p>
         </div>
 

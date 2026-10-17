@@ -104,7 +104,7 @@ export const defaultNavigation: NavigationItem[] = [
     label: 'Team',
     href: '/about/team',
     area: 'all',
-    description: 'Secretariat and organising committee',
+    description: 'Secretariat and organizing committee',
   },
   {
     id: 'about-contact',

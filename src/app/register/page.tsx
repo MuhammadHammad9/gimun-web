@@ -171,7 +171,7 @@ function TrackOverview({ site, now }: { site: SiteConfig; now: number }) {
     },
     {
       id: 'moot-cup',
-      name: 'GIKI Moot Court',
+      name: 'GIKI Moot Cup',
       label: 'Track 02 · GMC',
       description: 'Register a competing team or attend the rounds as an observer.',
       deadline: site.registrationDeadlines.mootCup,

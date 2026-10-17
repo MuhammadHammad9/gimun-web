@@ -18,7 +18,7 @@ function rows(site: SiteConfig, track: RegistrationTrack): Row[] {
       { label: 'Per delegate', note: 'An individual attending without a delegation', amounts: pick((t) => g[t].delegate) },
       { label: 'Per delegation member', note: 'Paid by each individual in a delegation', amounts: pick((t) => g[t].delegationMember) },
       { label: 'Delegation registration fee', note: 'Once per delegation', amounts: pick((t) => g[t].delegationFee) },
-      { label: 'Per observer', note: 'Views sessions without speaking or voting rights', amounts: pick((t) => g[t].observer) },
+      { label: 'Per observer', note: 'Watches sessions without speaking or voting rights', amounts: pick((t) => g[t].observer) },
       { label: 'Per chaperone', note: 'Accompanying faculty, advisor, coach or guardian', amounts: pick((t) => g[t].chaperone) },
     ];
   }

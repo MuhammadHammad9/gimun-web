@@ -19,6 +19,10 @@ const fs = require('fs');
 const path = require('path');
 const net = require('net');
 
+// Expectations follow the bundled content, so a new edition needs no edits here.
+const eventYear = require('../content/site.json').eventDates.start.slice(0, 4);
+const mootCategories = require('../content/moot-categories.json');
+
 const rootDir = process.cwd();
 const nextBuildDir = path.join(rootDir, '.next');
 const nextBin = path.join(rootDir, 'node_modules', 'next', 'dist', 'bin', 'next');
@@ -179,7 +183,7 @@ async function runE2ETests() {
       if (
         res.status === 201 &&
         res.data.success &&
-        /^REG-GIMUN-2027-\d{4}$/.test(res.data.referenceId)
+        new RegExp(`^REG-GIMUN-${eventYear}-[0-9]{4}$`).test(res.data.referenceId)
       ) {
         passedCount++;
         console.log(`  [PASS] Test 1: GIMUN Individual Registration -> 201 Created (${res.data.referenceId})`);
@@ -231,7 +235,11 @@ async function runE2ETests() {
       console.error('  [FAIL] Test 2 Exception:', err.message);
     }
 
-    // Test 3: GMC Team Registration
+    // Test 3: GMC Team Registration. Teams register through Google Forms
+    // while no problem categories are published, so there is nothing to pick.
+    if (mootCategories.length === 0) {
+      console.log('  [SKIP] Test 3: GMC Team Registration (no problem categories published)');
+    } else {
     testCount++;
     try {
       const payload = {
@@ -240,7 +248,7 @@ async function runE2ETests() {
         formData: {
           teamName: 'Advocates of LUMS Law Society',
           institution: 'Lahore University of Management Sciences',
-          problemCategoryPreference: 'moot-cat-01',
+          problemCategoryPreference: mootCategories[0]?.id,
           members: [
             { fullName: 'Hamza Khan', email: 'hamza@lums.edu.pk', phone: '03011234567', role: 'lead-oralist' },
             { fullName: 'Sara Ahmed', email: 'sara@lums.edu.pk', phone: '03021234567', role: 'second-oralist' },
@@ -259,7 +267,7 @@ async function runE2ETests() {
       if (
         res.status === 201 &&
         res.data.success &&
-        /^REG-MOOT-2027-\d{4}$/.test(res.data.referenceId)
+        new RegExp(`^REG-MOOT-${eventYear}-[0-9]{4}$`).test(res.data.referenceId)
       ) {
         passedCount++;
         console.log(`  [PASS] Test 3: GMC Team Registration -> 201 Created (${res.data.referenceId}, 3 members)`);
@@ -270,6 +278,7 @@ async function runE2ETests() {
     } catch (err) {
       failedCount++;
       console.error('  [FAIL] Test 3 Exception:', err.message);
+    }
     }
 
     // Test 4: Contact Inquiry Submission
