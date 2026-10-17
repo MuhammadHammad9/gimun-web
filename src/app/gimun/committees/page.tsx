@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { GlobeArt } from '@/components/art/LineArt';
-import { LiveGlobe, type GlobeMarker } from '@/components/art/LiveGlobe';
-import { centroidOf } from '@/lib/geo/centroids';
+import { LiveGlobe } from '@/components/art/LiveGlobe';
+import { globeMarkers } from '@/lib/geo/globe-markers';
 import { seatsOpen } from '@/components/sections/Placards';
 import { PageHero } from '@/components/ui/PageHero';
 import { getCommittees, getCopy, getSiteConfig } from '@/lib/content';
@@ -25,17 +25,7 @@ export default async function CommitteesPage() {
   const seats = committees.reduce((sum, c) => sum + (c.countryList?.length ?? 0), 0);
   const open = committees.reduce((sum, c) => sum + seatsOpen(c), 0);
   const registrationOpen = canRegister(site, 'gimun');
-  // One marker per country, showing its most open seat across committees.
-  const rank: Record<GlobeMarker['status'], number> = { available: 3, assigned: 2, reserved: 1 };
-  const byCountry = new Map<string, GlobeMarker['status']>();
-  for (const { country, status } of committees.flatMap((c) => c.countryList ?? [])) {
-    const current = byCountry.get(country);
-    if (!current || rank[status] > rank[current]) byCountry.set(country, status);
-  }
-  const markers = [...byCountry].flatMap(([country, status]) => {
-    const centre = centroidOf(country);
-    return centre ? [{ country, lat: centre[0], lon: centre[1], status }] : [];
-  });
+  const markers = globeMarkers(committees);
 
   return (
     <>
@@ -56,6 +46,7 @@ export default async function CommitteesPage() {
             <p className="live-globe__legend" aria-hidden="true">
               <span style={{ '--legend-dot': 'var(--color-champagne)' } as React.CSSProperties}>Open</span>
               <span style={{ '--legend-dot': 'var(--color-accent-gimun)' } as React.CSSProperties}>Allocated</span>
+              <span style={{ '--legend-dot': 'color-mix(in srgb, var(--color-accent-gimun) 45%, transparent)' } as React.CSSProperties}>Reserved</span>
             </p>
           </div>
         }
