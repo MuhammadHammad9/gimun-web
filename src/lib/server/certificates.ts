@@ -12,10 +12,16 @@ export class CertificateLookupError extends Error {}
 export async function findCertificate(code:string){
   if(!z.uuid().safeParse(code).success)return null;
   let result;
-  try{result=await database().from('certificates').select('participant_id,serial,kind,issued_at,verify_code,deleted_at,participants(name,registration_ref)').eq('verify_code',code).maybeSingle();}
+  const lookup=(columns:string)=>database().from('certificates').select(columns).eq('verify_code',code).maybeSingle();
+  try{
+    result=await lookup('participant_id,serial,kind,issued_at,verify_code,deleted_at,participants(name,registration_ref)');
+    // Before migration 0017 there is no revocation column; certificates then cannot be revoked yet.
+    if(result.error?.code==='42703')result=await lookup('participant_id,serial,kind,issued_at,verify_code,participants(name,registration_ref)');
+  }
   catch{throw new CertificateLookupError('Certificate verification is temporarily unavailable.');}
-  const {data,error}=result;
+  const {error}=result;
   if(error)throw new CertificateLookupError('Certificate verification is temporarily unavailable.');
+  const data=result.data as unknown as {serial:string;kind:string;issued_at:string;verify_code:string;deleted_at?:string|null;participants:{name:string}|{name:string}[]|null}|null;
   if(!data)return null;
   const participant=Array.isArray(data.participants)?data.participants[0]:data.participants;
   // A revoked certificate still answers, so whoever checks it learns it is no longer valid.

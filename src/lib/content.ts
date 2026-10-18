@@ -110,7 +110,9 @@ export const getTeamMembers = getTeam;
 
 /** Team categories, in the order the Team page shows them. */
 export async function getTeamGroups(): Promise<TeamGroup[]> {
-  return await readCollection<TeamGroup>('team-groups', teamGroupsData as TeamGroup[]);
+  // A team always has categories; none in the CMS (before migration 0018) means the bundled set applies.
+  const groups = await readCollection<TeamGroup>('team-groups', teamGroupsData as TeamGroup[]);
+  return groups.length ? groups : (teamGroupsData as TeamGroup[]);
 }
 
 export async function getSponsors(): Promise<Sponsor[] > {
