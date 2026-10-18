@@ -15,8 +15,6 @@ const supabaseUrl = (() => {
 const contentSecurityPolicy = publicCsp();
 
 const nextConfig: NextConfig = {
-  // Do not announce the framework (and so its known weaknesses) in every response.
-  poweredByHeader: false,
   distDir: process.env.ADMIN_TEST_BUILD === '1' ? '.next-admin-test' : '.next',
   // No framework banner on every response; it only helps fingerprinting.
   poweredByHeader: false,
