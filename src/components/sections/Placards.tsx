@@ -76,7 +76,7 @@ export function CommitteePlacard({
         </span>
         <span className="flex flex-wrap justify-end gap-x-5 gap-y-2">
           {applyHref && (
-            <Link href={applyHref} className="text-link" aria-label={`Register for GIMUN (${committee.name})`}>
+            <Link href={applyHref} className="text-link" aria-label={`Apply for GIMUN (${committee.name})`}>
               Apply
             </Link>
           )}

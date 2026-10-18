@@ -28,6 +28,11 @@ test('admins of one event never see the other event', async ({ browser, request 
     await page.goto('/admin/inbox');
     await expect(page.getByText('Gimun Asker')).toBeVisible();
     await expect(page.getByText('Moot Asker')).toHaveCount(0);
+    // A message can always be answered from the admin's own email app.
+    await page.goto('/admin/inbox/INQ-E2E-GIMUN');
+    await expect(page.getByRole('heading', { name: 'Gimun Asker' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Reply from your own email' })).toHaveAttribute('href', /^mailto:gimun@example\.test\?subject=/);
+    await expect(page.getByText('Replies from the admin cannot reach visitors yet.')).toBeVisible();
     await page.goto('/admin/inbox/INQ-E2E-GMC');
     await expect(page.getByText('Moot Asker')).toHaveCount(0);
     const csv = await page.evaluate(async () => (await fetch('/admin/export?type=contact_messages')).text());

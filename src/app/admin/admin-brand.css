@@ -229,3 +229,5 @@
 .admin-audit-detail pre { white-space: pre-wrap; font-size: 11.5px; background: var(--a-sunken); padding: 8px 10px; border-radius: 8px; margin: 4px 0 0; max-width: 520px; }
 /* Links inside sentences are underlined, not told apart by colour alone. */
 .admin p a:not(.admin-button):not(.admin-inline-link), .admin small a, .admin-muted-line a { text-decoration: underline; text-underline-offset: 3px; }
+.admin-reply-log { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.admin-reply-log p { margin: 4px 0 0; }

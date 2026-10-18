@@ -90,3 +90,13 @@ export function getMissingProductionConfig(options: { emailDelivery?: boolean } 
   }
   return [...new Set(missing)];
 }
+
+/**
+ * Whether email can reach people outside the Resend account. Resend's shared
+ * test sender (…@resend.dev) only delivers to the account owner, so replies to
+ * visitors fail with HTTP 403 until a domain is verified and EMAIL_FROM uses it.
+ */
+export function emailReachesVisitors(config = getServerConfig()) {
+  const from = config.emailFrom?.trim() ?? '';
+  return Boolean(config.resendApiKey && from && !/@resend\.dev>?$/i.test(from));
+}
