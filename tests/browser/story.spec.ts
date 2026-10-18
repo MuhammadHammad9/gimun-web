@@ -48,6 +48,6 @@ test('the quick jump opens with Ctrl+K, filters, goes with Enter and closes with
 test('copying a contact address confirms it to screen readers', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/contact');
-  await page.getByRole('button', { name: 'Copy the general questions address' }).click();
+  await page.getByRole('button', { name: 'Copy the organizing team address' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'copied' })).toHaveCount(1);
 });

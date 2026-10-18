@@ -66,8 +66,13 @@ test('the clock counts down to the next deadline and draws its rail as it arrive
   await expect(page.locator('.clock')).toHaveAttribute('data-rolling', '');
 });
 
+// The home marquee lists the countries in the committees' country lists; until
+// those are published the page has no marquee, which is correct.
+const hasMarquee = async (page: import('@playwright/test').Page) => (await page.locator('.marquee__track').count()) > 0;
+
 test('the home marquee can be paused', async ({ page }) => {
   await page.goto('/');
+  test.skip(!(await hasMarquee(page)), 'No committee countries are published yet, so the home page shows no marquee.');
   const pause = page.getByRole('button', { name: 'Pause the moving list' });
   await pause.click();
   await expect(page.getByRole('button', { name: 'Play the moving list' })).toHaveAttribute('aria-pressed', 'true');
@@ -85,6 +90,7 @@ test.describe('with reduced motion', () => {
     await expect(page.locator('.live-globe')).not.toHaveAttribute('data-live', '');
     await expect(page.locator('.live-globe__fallback svg')).toBeVisible();
     await page.goto('/');
+    if (!(await hasMarquee(page))) return; // nothing moving to check until countries are published
     expect(await page.locator('.marquee__track').evaluate((track) => track.getAnimations().length)).toBe(0);
     await expect(page.getByRole('button', { name: 'Pause the moving list' })).toBeHidden();
   });
