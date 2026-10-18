@@ -50,7 +50,8 @@ export async function resetTwoStep(userId: string): Promise<Result> {
       const removed = await db.auth.admin.mfa.deleteFactor({ userId: id, id: factor.id });
       if (removed.error) return { error: 'One authenticator could not be removed. Try again.' };
     }
-    await db.rpc('admin_end_sessions', { p_actor: owner.user_id, p_user: id });
+    const ended = await db.rpc('admin_end_sessions', { p_actor: owner.user_id, p_user: id });
+    if (ended.error) return { error: 'Two-step sign-in was reset, but sessions could not be ended. Apply migration 0016 and sign this account out everywhere.' };
     await securityEvent('two-step-reset', owner.user_id, { account: id });
     refresh();
     return { result: 'Two-step sign-in was reset and the account was signed out everywhere. They can set up a new authenticator after signing in.' };
@@ -79,23 +80,53 @@ export async function signOutEverywhere(userId: string): Promise<Result> {
  * last active owner (the database refuses that too).
  */
 export async function removeAdmin(userId: string, typedName: string): Promise<Result> {
+  let authDeleted = false;
   try {
     const owner = await requirePermission('users', true);
     const step = await stepUpNeeded(); if (step) return { stepUp: step };
     const id = z.uuid().parse(userId);
     if (id === owner.user_id) return { error: 'You cannot remove your own account.' };
     const db = database();
-    const { data: profile } = await db.from('admin_users').select('display_name,email,role,active').eq('user_id', id).maybeSingle();
+    const { data: profile, error: profileError } = await db.from('admin_users').select('*').eq('user_id', id).maybeSingle();
+    if (profileError) return { error: 'The account could not be checked. Try again when the database is available.' };
     if (!profile) return { error: 'This account no longer exists.' };
     if (typedName.trim() !== String(profile.display_name).trim()) return { error: 'Type the account name exactly to confirm.' };
     if (profile.role === 'owner' && profile.active) {
-      const { count } = await db.from('admin_users').select('user_id', { count: 'exact', head: true }).eq('role', 'owner').eq('active', true);
+      const { count, error: countError } = await db.from('admin_users').select('user_id', { count: 'exact', head: true }).eq('role', 'owner').eq('active', true);
+      if (countError) return { error: 'Owner access could not be checked. Try again when the database is available.' };
       if ((count ?? 0) <= 1) return { error: 'Keep at least one active owner.' };
     }
-    const { error } = await db.auth.admin.deleteUser(id);
-    if (error) return { error: /owner/i.test(error.message) ? 'Keep at least one active owner.' : 'The account could not be removed. Try again.' };
-    await db.from('audit_log').insert({ actor: owner.user_id, action: 'remove-admin', section: 'users', entity_id: id, detail: { name: profile.display_name, role: profile.role } });
+    // Supabase Auth's database role can be blocked by the admin_users cascade
+    // even when our migration allows it. Remove the access profile first; if
+    // Auth rejects the deletion, restore the exact profile we just removed.
+    const { data: removedProfile, error: accessError } = await db.from('admin_users').delete().eq('user_id', id).select('user_id');
+    if (accessError) return { error: /active owner/i.test(accessError.message) ? 'Keep at least one active owner.' : 'The account access profile could not be removed. Check the database logs.' };
+    if (!removedProfile?.length) return { error: 'This account changed while you were removing it. Refresh and try again.' };
+    let authError: { message: string; status?: number; code?: string } | null = null;
+    try { authError = (await db.auth.admin.deleteUser(id)).error; }
+    catch (cause) { authError = { message: cause instanceof Error ? cause.message : 'The Auth request failed.' }; }
+    if (authError) {
+      let authUserMissing = false;
+      try { authUserMissing = (await db.auth.admin.getUserById(id)).error?.status === 404; }
+      catch { /* An uncertain Auth result must restore access or report recovery. */ }
+      if (!authUserMissing) {
+        let rollbackError: string | undefined;
+        try { rollbackError = (await db.from('admin_users').upsert(profile)).error?.message; }
+        catch (cause) { rollbackError = cause instanceof Error ? cause.message : 'The database request failed.'; }
+        console.error('Admin Auth deletion failed', { status: authError.status, code: authError.code, message: authError.message, rollbackError });
+        if (rollbackError) return { error: `Auth deletion failed and the access profile could not be restored. Recovery account: ${id}. Contact the site owner immediately.` };
+        if (/storage|objects owned|owns? .*objects|owner of any objects/i.test(authError.message)) return { error: 'This account owns files in Supabase Storage. Reassign those files before removing the account.' };
+        return { error: `Supabase Auth could not remove this account; its access profile was restored. ${authError.message.slice(0, 160)}` };
+      }
+    }
+    authDeleted = true;
+    const { error: auditError } = await db.from('audit_log').insert({ actor: owner.user_id, action: 'remove-admin', section: 'users', entity_id: id, detail: { name: profile.display_name, role: profile.role } });
     refresh();
+    if (auditError) return { result: `${profile.display_name}'s account was removed, but the activity log could not record who removed it. Contact the site owner.` };
     return { result: `${profile.display_name}'s account was removed.` };
-  } catch (error) { unstable_rethrow(error); return { error: 'The account could not be removed. Check your permission.' }; }
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error('Admin account removal failed before Auth deletion', error);
+    return { error: authDeleted ? 'The account was removed, but the activity log could not be verified. Refresh the page and contact the site owner.' : 'The account could not be removed. Check your connection and server logs, then try again.' };
+  }
 }

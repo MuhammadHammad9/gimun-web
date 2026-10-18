@@ -55,6 +55,39 @@ test('admins of one event never see the other event', async ({ browser, request 
   } finally { await gmc.close(); }
 });
 
+test('owner removes an admin account and its sign-in while preserving activity', async ({ page, request }) => {
+  await signIn(page, 'secure-owner@example.test', '123456');
+  await page.goto('/admin/users');
+  const row = page.getByRole('row').filter({ hasText: 'Remove Me' });
+  await expect(row).toBeVisible();
+  await row.getByRole('button', { name: 'Manage' }).click();
+  await page.getByRole('button', { name: 'Remove account permanently' }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('textbox').fill('Remove Me');
+  await dialog.getByRole('button', { name: 'Remove account', exact: true }).click();
+  await expect(page.getByText("Remove Me's account was removed.")).toBeVisible();
+  await expect(page.getByRole('row').filter({ hasText: 'Remove Me' })).toHaveCount(0);
+  await page.goto('/admin/audit');
+  await expect(page.getByText('Removed an admin account').first()).toBeVisible();
+  const auth = await (await request.get('http://127.0.0.1:54329/auth/v1/admin/users')).json();
+  expect(auth.users.some((user: { email: string }) => user.email === 'remove-me@example.test')).toBe(false);
+});
+
+test('failed Auth deletion restores the admin access profile', async ({ page, request }) => {
+  await signIn(page, 'secure-owner@example.test', '123456');
+  await page.goto('/admin/users');
+  await page.getByRole('row').filter({ hasText: 'Blocked Delete' }).getByRole('button', { name: 'Manage' }).click();
+  await page.getByRole('button', { name: 'Remove account permanently' }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('textbox').fill('Blocked Delete');
+  await dialog.getByRole('button', { name: 'Remove account', exact: true }).click();
+  await expect(page.getByText(/access profile was restored/)).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('row').filter({ hasText: 'Blocked Delete' })).toBeVisible();
+  const auth = await (await request.get('http://127.0.0.1:54329/auth/v1/admin/users')).json();
+  expect(auth.users.some((user: { email: string }) => user.email === 'blocked@example.test')).toBe(true);
+});
+
 test('trash, undo, restore and permanent delete with a two-step code', async ({ browser }) => {
   const plain = await browser.newContext();
   const page = await plain.newPage();

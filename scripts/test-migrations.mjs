@@ -182,8 +182,11 @@ try {
   await assert.rejects(()=>db.query('delete from audit_log where id=$1',[auditRow]),/cannot be deleted/);
   await assert.rejects(()=>db.query('truncate audit_log'),/cannot be deleted/);
   await db.query("update audit_log set detail='{}' where id=$1",[auditRow]);
+  await db.exec('create role supabase_auth_admin; grant usage on schema auth to supabase_auth_admin; grant select, delete on auth.users to supabase_auth_admin; set role supabase_auth_admin');
   await db.query('delete from auth.users where id=$1',[mootEditor]);
+  await db.exec('reset role');
   assert.equal((await db.query('select count(*)::int n from admin_users where user_id=$1',[mootEditor])).rows[0].n,0);
+  assert.equal((await db.query("select entity_id from audit_log where action='DELETE' and section='admin_users' order by id desc limit 1")).rows[0].entity_id,mootEditor);
   const orphaned=(await db.query("select actor,actor_label from audit_log where actor_label='GMC editor' limit 1")).rows[0];
   assert.equal(orphaned.actor,null);assert.equal(orphaned.actor_label,'GMC editor');
   assert.equal((await db.query("select updated_by from content_entries where id='scoped-session'")).rows[0].updated_by,null);

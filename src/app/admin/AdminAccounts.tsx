@@ -33,10 +33,14 @@ export function AdminAccounts({ accounts, me }: { accounts: Account[]; me: strin
 
   function run(action: () => Promise<{ error?: string; result?: string; stepUp?: 'code' | 'enrol' }>, after?: () => void) {
     start(async () => {
-      const result = await guard(action);
-      if (!result) return;
-      notice({ text: result.error || result.result || 'Done.', tone: result.error ? 'error' : 'success' });
-      if (!result.error) { after?.(); router.refresh(); }
+      try {
+        const result = await guard(action);
+        if (!result) return;
+        notice({ text: result.error || result.result || 'Done.', tone: result.error ? 'error' : 'success' });
+        if (!result.error) { after?.(); router.refresh(); }
+      } catch {
+        notice({ text: 'The request could not finish. Check your connection and try again.', tone: 'error' });
+      }
     });
   }
   async function remove(a: Account) {
@@ -84,7 +88,6 @@ function AccountEditor({ account, me, pending, onCancel, onSave, onResetTwoStep,
     e.preventDefault();
     const f = new FormData(e.currentTarget);
     onSave({ id: account?.user_id ?? '', email: f.get('email'), display_name: f.get('display_name'), role: f.get('role'), active: f.get('active') === 'on', password: f.get('password') ?? '', sections: f.getAll('sections'), events: role === 'owner' ? [...events] : f.getAll('events') });
-    setDirty(false);
   }}>
     <h2>{account ? `Manage ${account.display_name}` : 'Add an admin'}</h2>
     <fieldset disabled={pending}>

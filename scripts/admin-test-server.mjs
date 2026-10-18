@@ -9,7 +9,7 @@ await db.exec(`create role anon;create role authenticated;create role service_ro
 for(const f of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.sql')).sort())await db.exec(await readFile(`supabase/migrations/${f}`,'utf8'));
 // Admin accounts, all with the password fixture-password-123. The secure owner
 // has an authenticator; the fixture accepts the code 123456 for it.
-const accounts=[['owner@example.test','Fixture owner','owner','{gimun,moot-cup}',false],['gimun-desk@example.test','GIMUN desk','registrar','{gimun}',false],['gmc-desk@example.test','GMC desk','registrar','{moot-cup}',false],['gimun-admin@example.test','GIMUN admin','admin','{gimun}',false],['secure-owner@example.test','Secure owner','owner','{gimun,moot-cup}',true]];
+const accounts=[['owner@example.test','Fixture owner','owner','{gimun,moot-cup}',false],['gimun-desk@example.test','GIMUN desk','registrar','{gimun}',false],['gmc-desk@example.test','GMC desk','registrar','{moot-cup}',false],['gimun-admin@example.test','GIMUN admin','admin','{gimun}',false],['secure-owner@example.test','Secure owner','owner','{gimun,moot-cup}',true],['remove-me@example.test','Remove Me','viewer','{gimun,moot-cup}',false],['blocked@example.test','Blocked Delete','viewer','{gimun,moot-cup}',false]];
 const users=new Map();
 for(const [email,name,role,events,totp] of accounts){
   const now=new Date().toISOString();
@@ -61,6 +61,21 @@ try{
    console.log('Fixture auth',req.method,url.pathname);
    if(url.pathname.endsWith('/token')){const u=users.get(input.email);if(!u||input.password!=='fixture-password-123'){status=400;return send({error:'invalid_grant',error_description:'Invalid credentials'});}u.last_sign_in_at=new Date().toISOString();return send(session(u));}
    if(url.pathname.endsWith('/admin/users')&&req.method==='GET')return send({users:[...users.values()],aud:'authenticated'});
+   const adminUserId=/^\/auth\/v1\/admin\/users\/([0-9a-f-]+)$/.exec(url.pathname)?.[1];
+   if(adminUserId&&req.method==='GET'){
+     const target=[...users.values()].find(u=>u.id===adminUserId);
+     if(!target){status=404;return send({message:'User not found'});}
+     return send({user:target});
+   }
+   if(adminUserId&&req.method==='DELETE'){
+     const target=[...users.values()].find(u=>u.id===adminUserId);
+     if(!target){status=404;return send({message:'User not found'});}
+     if(target.email==='blocked@example.test'){status=500;return send({message:'Database error deleting user'});}
+     await db.query('delete from auth.users where id=$1',[adminUserId]);
+     users.delete(target.email);
+     for(const [key,value] of sessions)if(value.id===adminUserId)sessions.delete(key);
+     return send({user:target});
+   }
    if(/\/factors\/[^/]+\/challenge$/.test(url.pathname)){if(!sessionUser(req)){status=401;return send({message:'Invalid JWT'});}return send({id:randomUUID(),type:'totp',expires_at:Math.floor(Date.now()/1000)+300});}
    if(/\/factors\/[^/]+\/verify$/.test(url.pathname)){const u=sessionUser(req);if(!u){status=401;return send({message:'Invalid JWT'});}if(input.code!=='123456'){status=422;return send({code:'mfa_verification_failed',error_code:'mfa_verification_failed',msg:'Invalid TOTP code entered'});}return send(session(u,true));}
    if(url.pathname.endsWith('/.well-known/jwks.json'))return send({keys:[]});
@@ -81,6 +96,7 @@ try{
   const singular=req.headers.accept?.includes('application/vnd.pgrst.object');if(singular){if(result.rows.length!==1){status=406;return send({code:'PGRST116',details:`The result contains ${result.rows.length} rows`,message:'JSON object requested, multiple (or no) rows returned'});}return send(result.rows[0]);}return send(result.rows);
  }
  if(req.method==='PATCH'){const keys=Object.keys(input || {});const offset=values.length;values.push(...keys.map(k=>input[k]&&typeof input[k]==='object'?JSON.stringify(input[k]):input[k]));const result=await db.query(`update ${ident(table)} set ${keys.map((k,i)=>`${ident(k)}=$${offset+i+1}`).join(',')}${conditions} returning *`,values);return send(req.headers.prefer?.includes('return=representation')?result.rows:null);}
+ if(req.method==='DELETE'){const result=await db.query(`delete from ${ident(table)}${conditions} returning *`,values);return send(req.headers.prefer?.includes('return=representation')?result.rows:null);}
  if(req.method==='POST'){const rows=Array.isArray(input)?input:[input];const out=[];for(const row of rows){const keys=Object.keys(row);const vals=keys.map(k=>row[k]&&typeof row[k]==='object'&&!Array.isArray(row[k])?JSON.stringify(row[k]):row[k]);const result=await db.query(`insert into ${ident(table)}(${keys.map(ident).join(',')}) values(${keys.map((_,i)=>`$${i+1}`).join(',')}) returning *`,vals);out.push(...result.rows);}status=201;return send(req.headers.prefer?.includes('return=representation')?out:null);}
  throw new Error('Unsupported fixture operation');
 }catch(error){console.error('Fixture',url.pathname,error.message);status=400;send({message:error.message,code:error.code||'FIXTURE'});}});
