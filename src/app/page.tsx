@@ -36,7 +36,7 @@ import { addDays, dayDate, formatDateRange } from '@/lib/utils';
 
 export async function generateMetadata(): Promise<Metadata> {
   return await constructMetadata({
-    title: `GIMUN & GMC ${getEventYear(await getSiteConfig())} | Where Diplomacy Meets the Courtroom`,
+    title: `GIMUN 26 & GMC VII | 4 to 6 December ${getEventYear(await getSiteConfig())}, GIK Institute`,
     path: '/',
     description:
       'GIMUN 26 and GMC VII: two student competitions hosted by SOPHEP at GIK Institute, Topi, from 4 to 6 December 2026. Committees, the moot, fees and registration.',

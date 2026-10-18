@@ -15,6 +15,8 @@ const supabaseUrl = (() => {
 const contentSecurityPolicy = publicCsp();
 
 const nextConfig: NextConfig = {
+  // Do not announce the framework (and so its known weaknesses) in every response.
+  poweredByHeader: false,
   distDir: process.env.ADMIN_TEST_BUILD === '1' ? '.next-admin-test' : '.next',
   typescript: process.env.ADMIN_TEST_BUILD === '1' ? { tsconfigPath: 'tsconfig.admin-test.json' } : {},
   // PDFs embed this font from disk. Tracing finds it today; listing it keeps

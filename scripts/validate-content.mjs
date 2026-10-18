@@ -485,7 +485,8 @@ if (process.env.CONTENT_VALIDATION_STRICT === '1') {
   if (placeholderUrlPatterns.some((pattern) => pattern.test(allContentText))) {
     launchErrors.push('Content contains a placeholder external URL');
   }
-  if (eventYear !== '2027') launchErrors.push(`site.json event year must be 2027, received ${eventYear || 'unknown'}`);
+  // The year comes from site.json's event dates; a past year means the content was never updated for this edition.
+  if (!eventYear || Number(eventYear) < new Date().getFullYear()) launchErrors.push(`site.json event year ${eventYear || 'unknown'} is in the past; update the event dates`);
 
   const siteUrl = process.env.SITE_URL || 'https://gimungiki.org';
   let siteHost = '';

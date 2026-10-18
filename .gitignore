@@ -77,3 +77,25 @@ scratch/
 
 # Legacy file-based submission counter (submissions live in Supabase)
 data/submission-counter.json
+
+# Local working files: AI assistant tooling, drafts, planning notes and internal
+# security write-ups. They stay on the maintainer's machine, never in this public repo.
+/.claude/
+/.agents/
+/Claude Skills/
+/.impeccable/
+/.mcp.json
+/skills-lock.json
+/task.md
+/walkthrough.md
+/PULL_REQUEST.md
+/IMPLEMENTATION_PLAN.MD
+/MOBILE_UI_PLAN.md
+/CODE_AUDIT.md
+/PRODUCT.md
+/ADMIN_PUBLISHING_ROLLOUT.md
+/SECURITY_*.md
+/*.docx
+/*_extracted.txt
+/artifacts/
+/.next-admin-test/

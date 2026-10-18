@@ -17,7 +17,7 @@ function destinations(): Destination[] {
   const parents = new Map(defaultNavigation.filter((i) => !i.parentId).map((i) => [i.id, i.label]));
   const seen = new Set<string>();
   const list: Destination[] = [
-    { label: 'Home', href: '/', section: 'GIMUN & GMC', description: 'Where diplomacy meets the courtroom' },
+    { label: 'Home', href: '/', section: 'GIMUN & GMC', description: 'GIMUN 26 and GMC VII at GIK Institute' },
     { label: 'Register', href: '/register', section: 'Apply', description: 'The official forms for GIMUN and GMC' },
   ];
   for (const item of defaultNavigation) {
