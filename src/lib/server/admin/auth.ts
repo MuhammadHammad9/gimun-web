@@ -44,6 +44,8 @@ export const requireAdmin=cache(async(allowPasswordChange = false, allowMfaSetup
   if (profileError) throw new Error('The admin profile could not be loaded. Try again shortly.');
   if (!user) throw new Error('This account has no active admin access.');
   if (user.must_change_password && !allowPasswordChange) redirect('/admin/password');
+  // Only an unreachable database is ignored here; a missing migration is reported clearly.
+  if ((await missingMigrations().catch(() => [])).length) redirect('/admin/update-needed');
   await adminRevision(user as AdminUser).catch(()=>undefined);
   return user as AdminUser;
 });
@@ -88,4 +90,23 @@ export async function stepUpNeeded(): Promise<StepUp | null> {
   if (fresh) return null;
   const { data: factors } = await client.auth.mfa.listFactors();
   return factors?.totp.some((f) => f.status === 'verified') ? 'code' : 'enrol';
+}
+
+/**
+ * The admin needs migrations 0015–0020. When the database is behind the code
+ * every page would fail with a vague error, so requireAdmin sends people to a
+ * page that says exactly what to run. Checked at most once a minute per server.
+ */
+export const REQUIRED_MIGRATIONS = [
+  { file: '0015_event_scope.sql', probe: () => database().from('admin_settings').select('id').limit(1) },
+  { file: '0017_trash.sql', probe: () => database().from('content_entries').select('deleted_at').limit(1) },
+  { file: '0018_team_groups.sql', probe: async () => { const r = await database().from('content_entries').select('id', { count: 'exact', head: true }).eq('collection', 'team-groups'); return r.error ? r : { error: (r.count ?? 0) > 0 ? null : { message: 'no team categories' } }; } },
+  { file: '0019_people.sql', probe: () => database().from('participants').select('event').limit(1) },
+];
+let schemaCheck: { at: number; missing: string[] } | null = null;
+export async function missingMigrations(): Promise<string[]> {
+  if (schemaCheck && Date.now() - schemaCheck.at < 60_000) return schemaCheck.missing;
+  const results = await Promise.all(REQUIRED_MIGRATIONS.map(async (m) => ({ file: m.file, ok: !(await m.probe()).error })));
+  schemaCheck = { at: Date.now(), missing: results.filter((r) => !r.ok).map((r) => r.file) };
+  return schemaCheck.missing;
 }
