@@ -47,8 +47,13 @@ async function main() {
     const { data: rows, error } = await db.from('content_entries').select('id,data,version,status,sort_order,deleted_at').eq('collection', collection);
     if (error) throw error;
     const existing = new Map((rows as Row[]).map((row) => [row.id, row]));
-    items.forEach((data, sort_order) => {
+    // Positions set in the admin are kept while the order is the same as the
+    // file's; only a different order is written (positions are then 0, 1, 2…).
+    const liveOrder = items.filter((i) => existing.get(i.id) && !existing.get(i.id)!.deleted_at).sort((a, b) => existing.get(a.id)!.sort_order - existing.get(b.id)!.sort_order).map((i) => i.id);
+    const sameOrder = liveOrder.join() === items.filter((i) => existing.get(i.id) && !existing.get(i.id)!.deleted_at).map((i) => i.id).join();
+    items.forEach((data, index) => {
       const row = existing.get(data.id);
+      const sort_order = sameOrder && row ? row.sort_order : index;
       // Someone moved it to Trash in the admin: leave that decision alone.
       if (row?.deleted_at) { console.log(`  ${collection}/${data.id}: in Trash in the admin, skipped`); return; }
       const entry = { collection, id: data.id, status: 'published', sort_order, publish_at: null, expire_at: null, data, version: row?.version ?? 0 };
