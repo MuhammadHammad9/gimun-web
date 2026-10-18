@@ -23,7 +23,7 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 const PORTRAIT = { width: 800, height: 1000, sizes: '(max-width: 640px) 92vw, 340px' };
 
 /**
- * Resized WebP from the image optimizer, keeping the plain <img> the parallax
+ * Resized WebP from the image optimizer, keeping the plain img element the parallax
  * needs. Only site files and Supabase media are allowed by next.config.ts;
  * any other address (including a protocol-relative "//host/..." path, which
  * getImageProps would throw on) is used as given.
