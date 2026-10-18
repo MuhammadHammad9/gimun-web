@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
   // Do not announce the framework (and so its known weaknesses) in every response.
   poweredByHeader: false,
   distDir: process.env.ADMIN_TEST_BUILD === '1' ? '.next-admin-test' : '.next',
+  // No framework banner on every response; it only helps fingerprinting.
+  poweredByHeader: false,
   typescript: process.env.ADMIN_TEST_BUILD === '1' ? { tsconfigPath: 'tsconfig.admin-test.json' } : {},
   // PDFs embed this font from disk. Tracing finds it today; listing it keeps
   // certificate and invoice generation from breaking after a refactor.
@@ -46,7 +48,15 @@ const nextConfig: NextConfig = {
     ] },
     // Every path except /admin and below, which src/proxy.ts covers with a nonce policy.
     { source: '/((?!admin(?:/|$)).*)', headers: [{ key: 'Content-Security-Policy', value: contentSecurityPolicy }] },
-    { source: '/admin/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }, { key: 'Cache-Control', value: 'private, no-store' }] }];
+    { source: '/admin/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }, { key: 'Cache-Control', value: 'private, no-store' }] },
+    // Files in public/ have no content hash, so they were revalidated on every
+    // visit. A day of browser cache, then a week of background revalidation,
+    // keeps repeat views off the network while a replaced file still shows
+    // within a day. (Hashed /_next/static files are immutable already.)
+    ...['/images/:path*', '/documents/:path*', '/favicon.ico', '/favicon-:size.png', '/apple-icon.png', '/icon-:size.png'].map((source) => ({
+      source,
+      headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
+    }))];
   },
   // Tell Turbopack the workspace root explicitly to avoid the
   // "package-lock.json is outside the current Git repository" warning.

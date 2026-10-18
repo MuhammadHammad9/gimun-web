@@ -66,6 +66,25 @@ if (secret && secret === env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
 if ((env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '').startsWith('sb_secret_')) {
   errors.push('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY holds a secret key. It would be shipped to every browser.');
 }
+// Every NEXT_PUBLIC_ value is inlined into the browser bundle, so none may be a
+// credential: not a server secret's value, not a provider key, and not a
+// legacy Supabase JWT whose role is service_role.
+const jwtRole = (value) => {
+  try {
+    return JSON.parse(Buffer.from(value.split('.')[1], 'base64url').toString('utf8')).role;
+  } catch {
+    return undefined;
+  }
+};
+const serverSecrets = ['SUPABASE_SECRET_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'RESEND_API_KEY', 'UPSTASH_REDIS_REST_TOKEN', 'RATE_LIMIT_HMAC_SECRET', 'CRON_SECRET', 'TURNSTILE_SECRET_KEY']
+  .map((name) => env[name])
+  .filter((value) => value && value.trim().length >= 8);
+for (const [name, value] of Object.entries(env)) {
+  if (!name.startsWith('NEXT_PUBLIC_') || !value) continue;
+  if (serverSecrets.includes(value) || /^(sb_secret_|re_[A-Za-z0-9]{6,}_)/.test(value) || jwtRole(value) === 'service_role') {
+    errors.push(`${name} holds a server credential. Every NEXT_PUBLIC_ value is shipped to every browser.`);
+  }
+}
 
 // Email
 require('RESEND_API_KEY', 'receipts, invoices and certificates');

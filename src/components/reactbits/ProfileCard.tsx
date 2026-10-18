@@ -14,19 +14,27 @@ import { memo, useEffect, useRef, type CSSProperties } from 'react';
 import { getImageProps } from 'next/image';
 import { Phone } from 'lucide-react';
 import { telHref } from '@/components/registration/ContactDirectory';
+import { supabaseOrigin } from '@/lib/csp';
 import './ProfileCard.css';
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 // Team portraits are 800×1000 cutouts; the card is at most 340px wide.
 const PORTRAIT = { width: 800, height: 1000, sizes: '(max-width: 640px) 92vw, 340px' };
 
-/** Resized WebP from the image optimizer for site files; other URLs as given. */
+/**
+ * Resized WebP from the image optimizer, keeping the plain <img> the parallax
+ * needs. Only site files and Supabase media are allowed by next.config.ts;
+ * any other address (including a protocol-relative "//host/..." path, which
+ * getImageProps would throw on) is used as given.
+ */
 function portraitSources(src: string) {
-  if (!src.startsWith('/')) return { src };
+  const media = supabaseOrigin() && `${supabaseOrigin()}/storage/v1/object/public/media/`;
+  const optimizable = (src.startsWith('/') && !src.startsWith('//')) || Boolean(media && src.startsWith(media));
+  if (!optimizable) return { src };
   const { props } = getImageProps({ src, alt: '', ...PORTRAIT });
   return { src: props.src, srcSet: props.srcSet, sizes: props.sizes };
 }
-
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 export interface ProfileCardProps {
   name: string;

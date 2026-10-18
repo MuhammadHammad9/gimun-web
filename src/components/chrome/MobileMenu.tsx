@@ -13,6 +13,7 @@ import { ArrowRight, X } from "lucide-react";
 import { TransitionLink as Link } from "@/components/motion/TransitionLink";
 import { useRenderedAt, useSiteConfig } from "@/components/SiteConfigProvider";
 import { lockScroll, unlockScroll } from "@/lib/motion/bridge";
+import { firstIntent, whenIdle } from "@/lib/motion/gates";
 import { prefersReducedMotion } from "@/lib/motion/policy";
 import { navigationTree } from "@/lib/navigation";
 import { eventPhase } from "@/lib/phase";
@@ -21,9 +22,18 @@ import { isCurrentPath } from "./nav-utils";
 import { ThemeSwitch } from "./ThemeSwitch";
 
 // GSAP stays out of every page's first load (scripts/report-first-load.js):
-// it is fetched while the browser is idle, before anyone opens the menu.
+// it is fetched after the visitor's first touch, scroll or key press, once
+// the browser is idle, and still well before a tap can open the menu.
 let gsapLoad: Promise<typeof Gsap> | undefined;
-const loadGsap = () => (gsapLoad ??= import("gsap").then((m) => m.gsap));
+// A failed fetch (flaky connection) is forgotten, so the next open retries.
+const loadGsap = () =>
+  (gsapLoad ??= import("gsap").then(
+    (m) => m.gsap,
+    (error: unknown) => {
+      gsapLoad = undefined;
+      throw error;
+    },
+  ));
 
 type MenuState = "closed" | "open" | "closing";
 
@@ -57,12 +67,19 @@ export function MobileMenu({
   if (!open && state === "open") setState("closing");
 
   // Only where the menu button shows (phones, tablets) is GSAP worth fetching.
+  // A fixed timer fetched it during every page load (27 KB gzip), before the
+  // visitor had done anything; waiting for intent keeps the load itself lean.
   useEffect(() => {
-    const prefetch = () => {
-      if (triggerRef.current?.offsetParent) void loadGsap();
+    let active = true;
+    void firstIntent()
+      .then(() => whenIdle())
+      .then(() => {
+        if (active && triggerRef.current?.offsetParent) return loadGsap();
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
     };
-    const timer = window.setTimeout(prefetch, 1500);
-    return () => window.clearTimeout(timer);
   }, [triggerRef]);
 
   useEffect(() => {
@@ -81,12 +98,18 @@ export function MobileMenu({
     let cancelled = false;
     let timeline: ReturnType<typeof Gsap.timeline> | undefined;
     let timer: number | undefined;
+    // The panels stay hidden (CSS) until GSAP shows them, so focus moves in
+    // only then; opened before GSAP arrived, the focus effect below was too early.
+    const focusClose = () => {
+      if (state === "open" && !menu.contains(document.activeElement)) closeRef.current?.focus();
+    };
     loadGsap().then((gsap) => {
       if (cancelled) return;
       if (prefersReducedMotion()) {
         gsap.set([...panels, surface], { xPercent: state === "open" ? 0 : 110, visibility: "visible" });
         gsap.set(backdrop, { opacity: state === "open" ? 1 : 0 });
         gsap.set(rows, { y: 0, opacity: 1 });
+        focusClose();
         if (state === "closing") timer = window.setTimeout(() => setState("closed"), 0);
         return;
       }
@@ -98,6 +121,7 @@ export function MobileMenu({
         gsap.set([...panels, surface], { xPercent: 110, visibility: "visible" });
         gsap.set(backdrop, { opacity: 0 });
         gsap.set(rows, { y: 22, opacity: 0.35 });
+        focusClose();
         timeline
           .to(backdrop, { opacity: 1, duration: 0.32, ease: "power2.out" }, 0)
           .to(panels, { xPercent: 0, duration: 0.5, ease: "power4.out", stagger: 0.07 }, 0)
@@ -132,6 +156,17 @@ export function MobileMenu({
           )
           .to(backdrop, { opacity: 0, duration: 0.28, ease: "power2.out" }, 0.12);
       }
+    }).catch(() => {
+      // GSAP could not be fetched: show or close the menu without animation
+      // rather than leave an invisible dialog holding the page's scroll lock.
+      if (cancelled) return;
+      if (state === "closing") {
+        setState("closed");
+        return;
+      }
+      for (const element of [...panels, surface]) element.style.visibility = "visible";
+      backdrop.style.opacity = "1";
+      focusClose();
     });
     return () => {
       cancelled = true;

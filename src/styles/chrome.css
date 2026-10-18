@@ -105,19 +105,31 @@ html .scroll-progress {
   background: color-mix(in srgb, var(--color-canvas) 80%, transparent);
   border: 1px solid var(--color-line);
   box-shadow: var(--shadow-raise);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
   opacity: 0;
   transform: scale(0.985);
+  /* The blur is set only while the pill shows. A backdrop filter at opacity 0
+     still costs a full blur of the header strip on the first frame, which on
+     software-rendered Chrome (Lighthouse, CI) delayed the first paint. On the
+     way out it stays until the 320ms fade has finished, so nothing changes on
+     screen. */
   transition:
     opacity 320ms var(--ease-brand),
-    transform 520ms var(--ease-out-expo);
+    transform 520ms var(--ease-out-expo),
+    -webkit-backdrop-filter 0s linear 320ms,
+    backdrop-filter 0s linear 320ms;
 }
 
 .site-header[data-condensed] .site-header__bar::before,
 .site-header[data-panel] .site-header__bar::before {
   opacity: 1;
   transform: none;
+  /* Prefixed first, standard last: in the other order Lightning CSS kept only
+     the -webkit- form, which Chrome ignores, so the glass never blurred there. */
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  transition:
+    opacity 320ms var(--ease-brand),
+    transform 520ms var(--ease-out-expo);
 }
 
 .brand {
@@ -158,12 +170,12 @@ html .scroll-progress {
 }
 
 .brand-logos__logo--gimun {
-  --logo: url('/images/brand/gimun-logo.png');
+  --logo: url('/images/brand/gimun-logo-192.webp');
   aspect-ratio: 813 / 696;
 }
 
 .brand-logos__logo--gmc {
-  --logo: url('/images/brand/gmc-logo.png');
+  --logo: url('/images/brand/gmc-logo-192.webp');
   aspect-ratio: 924 / 761;
 }
 
